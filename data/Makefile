@@ -1,3 +1,5 @@
+CLASSPATH=/usr/share/java/antlr3-runtime.jar:.:${HOME}/projects/jzmq/src/zmq.jar
+
 LUCENE=$(HOME)/projects/data/lucene-3.0.3.txt
 XERCES=$(HOME)/projects/data/xerces-2_11_0.txt
 DATADIR=$(HOME)/projects/data/

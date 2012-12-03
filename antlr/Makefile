@@ -1,5 +1,4 @@
-CLASSPATH=/usr/share/java/antlr3.jar:.:/usr/local/share/java/zmq.jar
-
+CLASSPATH=/usr/share/java/antlr3-runtime.jar:.:${HOME}/projects/jzmq/src/zmq.jar
 default: LexJava.class
 
 clean:

@@ -69,10 +69,6 @@ sub attempt_compile {
 
 
 
-my $ctxt = ZeroMQ::Context->new();    
-my $socket = ZeroMQ::Socket->new( $ctxt, ZMQ_REQ );
-$socket->connect( "tcp://127.0.0.1:32132" ); # java lexer
-
 my ($lmout, $lmin, $lmpid);
 
 sub startMITLM {
@@ -103,25 +99,45 @@ sub startMITLM {
       return $text;
   };
 
-  sub lex {
-      my @in = @_;
-      # note it says java here
-      my $in =  javaCommentHack( join("", @in));
-      $in =~ s/\s+/ /g;
-#       $in .= $/;
-      print STDOUT "-comments +code +java$/" . $in;
-      $socket->send( "-comments +code +java$/" . $in);
-      my $msg = $socket->recv();
-      my $out = $msg->data();
-      print "OUT OUT OUT " . length($out);
-      $out =~ s/ +([\r\n] )*/<SPACE>/g;
-      $out =~ s/[\r\n]+/ /g;
-      # by clearing up excessive whitespace we seem to lex better
-      $out =~ s/  */ /g;
-#       $out =~ s/<SPACE>/\n/g;
-      #$out =~ s/; /;\n/g;
-      return $out;
-  };
+my $ctxt = ZeroMQ::Context->new();    
+my $socket = ZeroMQ::Socket->new( $ctxt, ZMQ_REQ );
+$socket->connect( "tcp://127.0.0.1:32132" ); # java lexer
+# 
+#   sub lex {
+#       my @in = @_;
+#       # note it says java here
+#       my $in =  javaCommentHack( join("", @in));
+#       $in =~ s/\s+/ /g;
+# #       $in .= $/;
+#       print STDOUT "-comments +code +java$/" . $in;
+#       $socket->send( "-comments +code +java$/" . $in);
+#       my $msg = $socket->recv();
+#       my $out = $msg->data();
+#       print "OUT OUT OUT " . length($out);
+#       $out =~ s/ +([\r\n] )*/<SPACE>/g;
+#       $out =~ s/[\r\n]+/ /g;
+#       # by clearing up excessive whitespace we seem to lex better
+#       $out =~ s/  */ /g;
+# #       $out =~ s/<SPACE>/\n/g;
+#       #$out =~ s/; /;\n/g;
+# 
+#       return $out;
+#   };
+
+    sub lex {
+        my @in = @_;
+        # note it says java here
+        $socket->send( "-comments +code +java$/" . javaCommentHack(join("", @in)  ));
+        my $msg = $socket->recv();
+        my $out = $msg->data();
+#         $out =~ s/[\r\n]/ /g;
+        # by clearing up excessive whitespace we seem to lex better
+#         $out =~ s/  */ /g;
+        $out =~ s/ +([\r\n] )*/<SPACE>/g;
+        #$out =~ s/; /;\n/g;
+        return $out;
+    };
+
 
 
  sub lexAfile {
@@ -144,13 +160,13 @@ sub findNworst {
     sort { $a->[1] <=> $b->[1] } @possibilities;
     return @possibilities[0..$n-1];
   } else {
-    print STDOUT join(" ", @toks);
+    print $lmin join(" ", @toks);
     my $entropy;
     while(my $line = <$lmout>) {
 	chomp($line);
+        print STDERR "MITLM said $line";
 	last if (($entropy) = ($line =~ m/Live Entropy ([-\d.]+)/));
     }
-    print STDERR "MITLM said $entropy";
     return [ [ @toks ], $entropy ];
   }
 }
@@ -183,5 +199,9 @@ unless (attempt_compile(@ARGV)) {
 for (@files_mentioned) { print LOGFILE; }
 
 close LOGFILE;
+
+
+$socket->close();
+$ctxt->term();
 
 exit $status;

@@ -1,4 +1,4 @@
-// $ANTLR !Unknown version! C.g 2012-08-29 21:26:12
+// $ANTLR 3.2 debian-7 C.g 2012-10-23 19:12:04
 
 import java.util.Set;
 import java.util.HashSet;
@@ -4266,7 +4266,7 @@ public class CParser extends Parser {
                     int LA68_0 = input.LA(1);
 
                     if ( (LA68_0==92) ) {
-                        int LA68_2 = input.LA(2);
+                        int LA68_1 = input.LA(2);
 
                         if ( (true) ) {
                             alt68=1;
@@ -5729,7 +5729,7 @@ public class CParser extends Parser {
                         int index2_13 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (((synpred4_C()&&(isTypeName(input.LT(1).getText())))||synpred4_C())) ) {s = 16;}
+                        if ( ((synpred4_C()||(synpred4_C()&&(isTypeName(input.LT(1).getText()))))) ) {s = 16;}
 
                         else if ( ((isTypeName(input.LT(1).getText()))) ) {s = 17;}
 

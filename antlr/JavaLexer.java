@@ -1,4 +1,4 @@
-// $ANTLR 3.2 debian-7 Java.g 2012-10-23 19:10:36
+// $ANTLR 3.2 debian-7ubuntu3 Java.g 2013-05-07 15:01:37
 
 import org.antlr.runtime.*;
 import java.util.Stack;
@@ -31,8 +31,8 @@ public class JavaLexer extends Lexer {
     public static final int UNARY_PLUS=159;
     public static final int TYPE=157;
     public static final int FINAL=70;
-    public static final int INC=21;
     public static final int RPAREN=43;
+    public static final int INC=21;
     public static final int IMPORT=78;
     public static final int STRING_LITERAL=170;
     public static final int FOR_UPDATE=132;
@@ -62,9 +62,9 @@ public class JavaLexer extends Lexer {
     public static final int SWITCH=93;
     public static final int NULL=83;
     public static final int VAR_DECLARATOR=161;
+    public static final int STRICTFP=91;
     public static final int MINUS_ASSIGN=31;
     public static final int ELSE=66;
-    public static final int STRICTFP=91;
     public static final int CHARACTER_LITERAL=169;
     public static final int PRE_INC=150;
     public static final int ANNOTATION_LIST=108;

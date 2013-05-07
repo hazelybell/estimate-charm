@@ -59,7 +59,7 @@ sub attempt_compile {
 
   while (<$ccout>) {
     chomp;
-    print;
+    print $_;
     if (m/\.java/i) {
       print LOGFILE "javac said: " . $_;
       my ($file) = ($_ =~ m/(\S+\.java):/i);
@@ -68,9 +68,10 @@ sub attempt_compile {
       $compile_error++;
     }
   }
-
+  print "waiting...";
   waitpid($pid, 0);
   $status = $? >> 8;
+  print "return $?";
   my $signal = $? & 0xFF;
   if ($status) {
     $compile_error++;
@@ -97,6 +98,13 @@ sub startMITLM {
   print $lmin "for ( i =$/";
   print $!;
   print STDERR "made it";
+  my $i = 0;
+  while(my $line = <$lmout>) {
+      chomp($line);
+      print "MITLM said $line";
+      $i++ if ($line =~ m/Live Entropy ([-\d.]+)/);
+      last if $i >= 2;
+  }
 }
 
   sub javaCommentHack {
@@ -140,15 +148,18 @@ $socket->connect( "tcp://127.0.0.1:32132" ); # java lexer
     sub lex {
         my @in = @_;
         # note it says java here
-        $socket->send( "-comments +code +java$/" . javaCommentHack(join("", @in)  ));
+        $socket->send( "-comments +code +java +lines$/" . javaCommentHack(join("", @in)  ));
         my $msg = $socket->recv();
         my $out = $msg->data();
-        $out =~ s/[\r\n]/ /g;
-        # by clearing up excessive whitespace we seem to lex better
-        $out =~ s/\s\s+/ <SPACE> /g;
-#         $out =~ s/  */ /g;
-        #$out =~ s/; /;\n/g;
-        return $out;
+        my @outlines = ($out =~ m/.+?\s\d+:\d+[\r\n]/sg);
+        my $outst = [];
+        foreach (@outlines) {
+          chomp;
+          s/^\s+\s/<SPACE> /;
+          my ($token, $line, $char) = m/^(.+?)\s(\d+):(\d+)/s;
+          push @$outst, [$token, $line, $char];
+        }
+        return $outst;
     };
 
 
@@ -166,12 +177,38 @@ $socket->connect( "tcp://127.0.0.1:32132" ); # java lexer
      return lex($slurped);
 }
 
+sub toksToTrain {
+  my ($toks) = @_;
+  return join(" ", "<SPACE> " x $order, (map { $_->[0] } @$toks), "<SPACE> " x $order);
+}
+
+sub toksToQuery {
+  my ($toks) = @_;
+  return join(" ", map { $_->[0] } @$toks);
+}
+
+sub toksToCode {
+  my ($toks) = @_;
+  my $lastline = 0;
+  my $code = '';
+  for (@$toks) {
+    my ($tok, $line, $char) = @$_;
+    $tok = ' ' if ($tok eq '<SPACE>');
+    if ($line > $lastline) {
+      $code .= $/;
+      $lastline = $line;
+    }
+    $code .= $tok;
+  }
+  return $code;
+}
+
 sub findNworst {
   my (@toks) = @_;
   my @possibilities;
   for (my $i = 0; $i < ($#toks-($block)); $i += $step) {
-#           print join(" ", @toks[$i..$i+($block-1)]);
-    print $lmin join(" ", @toks[$i..$i+($block-1)]);
+#     print STDOUT toksToQuery([ @toks[$i..$i+($block-1)] ]);
+    print $lmin toksToQuery([ @toks[$i..$i+($block-1)] ]);
     my $entropy;
     while(my $line = <$lmout>) {
 	chomp($line);
@@ -194,23 +231,26 @@ unless ($validate) {
     for my $source (keys(%possible_bad_files)) {
       unless (attempt_compile(@ARGV_NO_LISTS, $source)) {
 	print(STDERR "Maybe the error was in $source?");
-	my @toks = split(' ', lexAfile($source));
+	my @toks = @{lexAfile($source)};
 	print STDERR "Slurped " . @toks . " tokens.";
+	
 	my @worst = findNworst(@toks);
 	for my $i (0..$N) {
-	  my $code = join('', @{$worst[$i][0]});
-	  $code =~ s/<SPACE>/ /g;
-	  print(STDERR "Check near " .$code);
+          print(STDERR "Check near " . $worst[$i][0][0][1].":".$worst[$i][0][0][2]
+            . " to " . $worst[$i][0][$#{$worst[$i][0]}][1].":".$worst[$i][0][$#{$worst[$i][0]}][2]);
+# 	  my $code = join('', @{$worst[$i][0]});
+# 	  print(STDERR "Check near " .$code);
 	  print(STDERR "With entropy " . $worst[$i][1]);
 	}
       }
     }
   } else {
     print LOGFILE "COMPILE OK";
+    print "COMPILE OK";
     $status = 0;
     my $lexed = '';
       for my $file (@inputfiles) {
-	  print TOKFILE lexAfile($file);
+	  print TOKFILE toksToTrain(lexAfile($file));
       }
     }
   } else {
@@ -223,12 +263,12 @@ unless ($validate) {
       if (scalar(@toks) < 10) { next; }
       my @worst = findNworst(@toks);
       my @worst = findNworst(@toks);
-	for my $i (0..$N) {
-	  my $code = join('', @{$worst[$i][0]});
-	  $code =~ s/<SPACE>/ /g;
-	  print(STDERR "Check near " .$code);
-	  print(STDERR "With entropy " . $worst[$i][1]);
-	}
+      for my $i (0..$N) {
+        my $code = join('', @{$worst[$i][0]});
+        $code =~ s/<SPACE>/ /g;
+        print(STDERR "Check near " .$code);
+        print(STDERR "With entropy " . $worst[$i][1]);
+      }
       my @thresh;
       for my $i (0..$#worst) {
 	$thresh[$i] = $worst[$i][1];

@@ -134,6 +134,7 @@ public class LexJava {
         boolean withComments = true;
         boolean withCode = true;
 	boolean withCharIndices = false;
+	boolean withLineNumbers = false;
         StringBuilder output = new StringBuilder();
         LangLexer language = new JavaLangLexer();
         for (int i = 0; i < args.length; i++) {
@@ -155,6 +156,8 @@ public class LexJava {
                 language = new FortranLangLexer();
             } else if (args[i].toLowerCase().equals("+chars")) {
                 withCharIndices = true;
+            } else if (args[i].toLowerCase().equals("+lines")) {
+                withLineNumbers = true;
             }
         }
         LangLexer lexer = language;
@@ -168,12 +171,14 @@ public class LexJava {
                 if ( withComments ) {
                     output.append( token.getText() );
                     if ( withCharIndices ) output.append(" " +  Integer.toString( input.index() ) );
+                    if ( withLineNumbers ) output.append(" " +  Integer.toString( input.getLine() ) + ":" + Integer.toString( input.getCharPositionInLine() ) );
                     output.append("\n");
                 }
             } else {
                 if ( withCode ) {
                     output.append( token.getText() );
                     if ( withCharIndices ) output.append(" " + Integer.toString( input.index() ) );
+                    if ( withLineNumbers ) output.append(" " +  Integer.toString( input.getLine() ) + ":" + Integer.toString( input.getCharPositionInLine() ) );
                     output.append("\n");
                 }
             }

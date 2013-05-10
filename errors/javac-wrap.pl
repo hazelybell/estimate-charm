@@ -14,13 +14,17 @@ use ZeroMQ qw/:all/;
 use Data::Dumper;
 use Digest::MD5 qw(md5 md5_hex md5_base64);
 use List::Util;
+use Text::CSV;
+use File::Basename;
 
 my $real_javac = $ENV{JAVAC_WRAPPER_REAL_JAVAC} ? $ENV{JAVAC_WRAPPER_REAL_JAVAC} : qx{which javac};
 chomp $real_javac;
 
 my @inputfiles = ();
 
-open LOGFILE, '>>', $ENV{JAVAC_WRAPPER_LOGFILE} ? $ENV{JAVAC_WRAPPER_LOGFILE} : "/tmp/javac-logfile" or die;
+my $logfile = $ENV{JAVAC_WRAPPER_LOGFILE} ? $ENV{JAVAC_WRAPPER_LOGFILE} : "/tmp/javac-logfile";
+open LOGFILE, '>>', $logfile or die;
+
 open TOKFILE, '>>', $ENV{JAVAC_WRAPPER_ADDCORPUS} ? $ENV{JAVAC_WRAPPER_ADDCORPUS} : "/tmp/javac-tokfile" or die;
 my $corpus = $ENV{JAVAC_WRAPPER_CORPUS} ? $ENV{JAVAC_WRAPPER_CORPUS} : "/tmp/javac-tokfile";
 my $estimateNgram = $ENV{JAVAC_WRAPPER_ESTIMATENGRAM} ? $ENV{JAVAC_WRAPPER_ESTIMATENGRAM} : qx{which estimate-ngram};
@@ -45,7 +49,7 @@ for my $list (@JAVAC_INPUTFILES_LISTS) {
   close LIST;
 }
 @inputfiles = grep(m/\.java/, @inputfiles, @ARGV);
-for (@inputfiles) {
+for (@ARGV) {
   print LOGFILE;
 }
 
@@ -65,9 +69,9 @@ sub attempt_compile {
     chomp;
     print $_;
     if (m/\.java/i) {
-      print LOGFILE "javac said: " . $_;
+#       print LOGFILE "javac said: " . $_;
       my ($file, $line) = ($_ =~ m/(\S+\.java):(\d+):/i);
-      print LOGFILE "Possible error location: $file";
+#       print LOGFILE "Possible error location: $file";
       $files_mentioned{$file}++;
       $compile_error++;
       push @results, [$file, $line];
@@ -122,6 +126,7 @@ sub startMITLM {
       if ($h{"/*"} < $h{"*/"}) {
 	  $text =~ s#^.*\*/##;
       }
+      $text =~ s/[\t ]+/ /g;
       return $text;
   };
 
@@ -206,13 +211,13 @@ sub toksToQuery {
 
 sub toksToCode {
   my ($toks) = @_;
-  my $lastline = 0;
+  my $lastline = 1;
   my $code = '';
   for (@$toks) {
     my ($tok, $line, $char) = @$_;
     $tok = ' ' if ($tok eq '<SPACE>');
     if ($line > $lastline) {
-      $code .= $/;
+      $code .= $/ x ($line-$lastline);
       $lastline = $line;
     }
     $code .= $tok;
@@ -258,7 +263,7 @@ unless ($validate) {
       %possible_bad_files = %$files_mentioned;
       $main_compile_status = $status;
       startMITLM();
-      print LOGFILE "FAIL";
+#       print LOGFILE "FAIL";
       # we need to determine exactly which file failed because of this dumb compile a ton at once bs
       for my $source (keys(%possible_bad_files)) {
         unless (attempt_compile(@ARGV_NO_LISTS, $source)) {
@@ -270,7 +275,7 @@ unless ($validate) {
         }
       }
     } else {
-      print LOGFILE "COMPILE OK";
+#       print LOGFILE "COMPILE OK";
       print "COMPILE OK";
       $status = 0;
       my $lexed = '';
@@ -280,15 +285,19 @@ unless ($validate) {
     }
   } else {
     my ($validateMode, $validateNumber) = split(' ', $validate);
-    my $testlogfile = "/tmp/javac-testlog-".$validateMode."-".substr(md5_base64(join(chr(0),@inputfiles)),0,5);
-    open TESTLOG, '>>', $testlogfile or die;
+    my $testlogfile = dirname($logfile)."/javactestlog-".$validateMode."-".substr(md5_base64(join(chr(0),@inputfiles)),0,5);
+    my $csv = Text::CSV->new ( { binary => 1, eol => "\n" } )  # should set binary attribute.
+                    or die "Cannot use CSV: ".Text::CSV->error_diag ();
+    my $testlogfh;
+    open $testlogfh, ">:encoding(utf8)", "$testlogfile" or die "$testlogfile: $!";
+    $csv->print($testlogfh, [qw|file tokens Nmean U J JU UJ|]);
     startMITLM();
-    my $oursum = 0;
-    my $jcsum = 0;
-    my $combineda = 0;
-    my $combinedb = 0;
-    my $tries = 0;
     for my $source (@inputfiles) {
+      my $oursum = 0;
+      my $jcsum = 0;
+      my $combineda = 0;
+      my $combinedb = 0;
+      my $tries = 0;
       my $originalsource = slurpAFile($source);
       my @toks = @{lex($originalsource)};
       print STDERR "Slurped " . @toks . " tokens.";
@@ -301,7 +310,7 @@ unless ($validate) {
 	$possibleToks{$_->[0]}++;
       }
       my @possibleToks = keys(%possibleToks);
-      for my $i (1..$validateNumber) {
+      while ($tries < $validateNumber) {
 	my @mutatedToks = @toks;
 	my $loc = int(rand($#mutatedToks));
 	my $mutline = $toks[$loc][1];
@@ -329,8 +338,8 @@ unless ($validate) {
           $ourindex++;
           if ($_->[0][0][1] <= $mutline) {
             if ($_->[0][$#{$_->[0]}][1] >= $mutline) {
-              if ($_->[0][0][1] < $mutline || $_->[0][0][2] <= $mutchar) {
-                if ($_->[0][$#{$_->[0]}][1] > $mutline || $_->[0][$#{$_->[0]}][2] >= $mutchar) {
+              if ($_->[0][0][1] < $mutline || $_->[0][0][2] <= $mutchar+10) {
+                if ($_->[0][$#{$_->[0]}][1] > $mutline || $_->[0][$#{$_->[0]}][2] >= $mutchar-10) {
                   print "Correct: $ourindex";
                   last;
                 }
@@ -338,17 +347,20 @@ unless ($validate) {
             }
           }
 	}
-        my ($success, $status, $files_mentioned, $javacresults) = attempt_compile(@ARGV);
+        my ($success, $status, $files_mentioned, $javacresults) = attempt_compile(@ARGV_NO_LISTS, $source);
         next if $success;
         my $jcindex = 0;
+        my $jcpresent = 0;
         foreach(@$javacresults) {
           $jcindex++;
           if ($_->[0] =~ m/$source/) {
             if ($_->[1] == $mutline) {
+              $jcpresent++;
               last;
             }
           }
         }
+        $jcindex = 10000000 unless $jcpresent;
         $jcsum += 1.0/$jcindex;
         $oursum += 1.0/$ourindex;
         $combineda += max(1.0/(2.0*$jcindex-1), 1.0/(2.0*$ourindex));
@@ -360,6 +372,7 @@ unless ($validate) {
         print STDERR "JavaC,Our MRR: " . $combineda/$tries;
         print STDERR "Our,JavaC MRR: " . $combinedb/$tries;
       }
+      $csv->print($testlogfh, [basename($source), scalar(@toks), $validateNumber, $oursum/$tries, $jcsum/$tries, $combineda/$tries, $combinedb/$tries]);
    }
 }
 

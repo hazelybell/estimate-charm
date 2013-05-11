@@ -289,7 +289,7 @@ unless ($validate) {
     my $csv = Text::CSV->new ( { binary => 1, eol => "\n" } )  # should set binary attribute.
                     or die "Cannot use CSV: ".Text::CSV->error_diag ();
     my $testlogfh;
-    open $testlogfh, ">:encoding(utf8)", "$testlogfile" or die "$testlogfile: $!";
+    open $testlogfh, ">>:encoding(utf8)", "$testlogfile" or die "$testlogfile: $!";
     $csv->print($testlogfh, [qw|file tokens Nmean U J JU UJ|]);
     startMITLM();
     for my $source (@inputfiles) {

@@ -266,12 +266,13 @@ unless ($validate) {
 #       print LOGFILE "FAIL";
       # we need to determine exactly which file failed because of this dumb compile a ton at once bs
       for my $source (keys(%possible_bad_files)) {
-        unless (attempt_compile(@ARGV_NO_LISTS, $source)) {
+        my ($return) = attempt_compile(@ARGV_NO_LISTS, $source);
+        unless ($return) {
           print(STDERR "Maybe the error was in $source?");
           my @toks = @{lexAfile($source)};
           print STDERR "Slurped " . @toks . " tokens.";
           
-          printNWorst(findNWorst(@toks));
+          printNWorst(findNWorst(\@toks));
         }
       }
     } else {

@@ -1,4 +1,4 @@
-// $ANTLR 3.2 debian-7ubuntu3 Java.g 2013-05-07 15:01:36
+// $ANTLR 3.2 debian-7ubuntu3 Java.g 2013-06-25 18:10:50
 
 import org.antlr.runtime.*;
 import java.util.Stack;
@@ -68,186 +68,186 @@ public class JavaParser extends Parser {
     public static final String[] tokenNames = new String[] {
         "<invalid>", "<EOR>", "<DOWN>", "<UP>", "AND", "AND_ASSIGN", "ASSIGN", "AT", "BIT_SHIFT_RIGHT", "BIT_SHIFT_RIGHT_ASSIGN", "COLON", "COMMA", "DEC", "DIV", "DIV_ASSIGN", "DOT", "DOTSTAR", "ELLIPSIS", "EQUAL", "GREATER_OR_EQUAL", "GREATER_THAN", "INC", "LBRACK", "LCURLY", "LESS_OR_EQUAL", "LESS_THAN", "LOGICAL_AND", "LOGICAL_NOT", "LOGICAL_OR", "LPAREN", "MINUS", "MINUS_ASSIGN", "MOD", "MOD_ASSIGN", "NOT", "NOT_EQUAL", "OR", "OR_ASSIGN", "PLUS", "PLUS_ASSIGN", "QUESTION", "RBRACK", "RCURLY", "RPAREN", "SEMI", "SHIFT_LEFT", "SHIFT_LEFT_ASSIGN", "SHIFT_RIGHT", "SHIFT_RIGHT_ASSIGN", "STAR", "STAR_ASSIGN", "XOR", "XOR_ASSIGN", "ABSTRACT", "ASSERT", "BOOLEAN", "BREAK", "BYTE", "CASE", "CATCH", "CHAR", "CLASS", "CONTINUE", "DEFAULT", "DO", "DOUBLE", "ELSE", "ENUM", "EXTENDS", "FALSE", "FINAL", "FINALLY", "FLOAT", "FOR", "IF", "IMPLEMENTS", "INSTANCEOF", "INTERFACE", "IMPORT", "INT", "LONG", "NATIVE", "NEW", "NULL", "PACKAGE", "PRIVATE", "PROTECTED", "PUBLIC", "RETURN", "SHORT", "STATIC", "STRICTFP", "SUPER", "SWITCH", "SYNCHRONIZED", "THIS", "THROW", "THROWS", "TRANSIENT", "TRUE", "TRY", "VOID", "VOLATILE", "WHILE", "ANNOTATION_INIT_ARRAY_ELEMENT", "ANNOTATION_INIT_BLOCK", "ANNOTATION_INIT_DEFAULT_KEY", "ANNOTATION_INIT_KEY_LIST", "ANNOTATION_LIST", "ANNOTATION_METHOD_DECL", "ANNOTATION_SCOPE", "ANNOTATION_TOP_LEVEL_SCOPE", "ARGUMENT_LIST", "ARRAY_DECLARATOR", "ARRAY_DECLARATOR_LIST", "ARRAY_ELEMENT_ACCESS", "ARRAY_INITIALIZER", "BLOCK_SCOPE", "CAST_EXPR", "CATCH_CLAUSE_LIST", "CLASS_CONSTRUCTOR_CALL", "CLASS_INSTANCE_INITIALIZER", "CLASS_STATIC_INITIALIZER", "CLASS_TOP_LEVEL_SCOPE", "CONSTRUCTOR_DECL", "ENUM_TOP_LEVEL_SCOPE", "EXPR", "EXTENDS_BOUND_LIST", "EXTENDS_CLAUSE", "FOR_CONDITION", "FOR_EACH", "FOR_INIT", "FOR_UPDATE", "FORMAL_PARAM_LIST", "FORMAL_PARAM_STD_DECL", "FORMAL_PARAM_VARARG_DECL", "FUNCTION_METHOD_DECL", "GENERIC_TYPE_ARG_LIST", "GENERIC_TYPE_PARAM_LIST", "INTERFACE_TOP_LEVEL_SCOPE", "IMPLEMENTS_CLAUSE", "LABELED_STATEMENT", "LOCAL_MODIFIER_LIST", "JAVA_SOURCE", "METHOD_CALL", "MODIFIER_LIST", "PARENTESIZED_EXPR", "POST_DEC", "POST_INC", "PRE_DEC", "PRE_INC", "QUALIFIED_TYPE_IDENT", "STATIC_ARRAY_CREATOR", "SUPER_CONSTRUCTOR_CALL", "SWITCH_BLOCK_LABEL_LIST", "THIS_CONSTRUCTOR_CALL", "THROWS_CLAUSE", "TYPE", "UNARY_MINUS", "UNARY_PLUS", "VAR_DECLARATION", "VAR_DECLARATOR", "VAR_DECLARATOR_LIST", "VOID_METHOD_DECL", "IDENT", "HEX_LITERAL", "OCTAL_LITERAL", "DECIMAL_LITERAL", "FLOATING_POINT_LITERAL", "CHARACTER_LITERAL", "STRING_LITERAL", "HEX_DIGIT", "INTEGER_TYPE_SUFFIX", "EXPONENT", "FLOAT_TYPE_SUFFIX", "ESCAPE_SEQUENCE", "UNICODE_ESCAPE", "OCTAL_ESCAPE", "JAVA_ID_START", "JAVA_ID_PART", "WS", "COMMENT", "LINE_COMMENT"
     };
-    public static final int PACKAGE=84;
-    public static final int EXPONENT=173;
-    public static final int STAR=49;
-    public static final int WHILE=103;
-    public static final int MOD=32;
-    public static final int MOD_ASSIGN=33;
-    public static final int CASE=58;
-    public static final int CHAR=60;
-    public static final int NEW=82;
-    public static final int DO=64;
-    public static final int GENERIC_TYPE_PARAM_LIST=138;
-    public static final int CLASS_INSTANCE_INITIALIZER=121;
-    public static final int ARRAY_ELEMENT_ACCESS=115;
-    public static final int FOR_CONDITION=129;
-    public static final int NOT=34;
-    public static final int VAR_DECLARATION=160;
-    public static final int ANNOTATION_METHOD_DECL=109;
-    public static final int EOF=-1;
-    public static final int DIV_ASSIGN=14;
-    public static final int LOGICAL_AND=26;
-    public static final int BREAK=56;
-    public static final int UNARY_PLUS=159;
-    public static final int BIT_SHIFT_RIGHT_ASSIGN=9;
     public static final int TYPE=157;
-    public static final int INC=21;
-    public static final int RPAREN=43;
-    public static final int FINAL=70;
-    public static final int IMPORT=78;
-    public static final int STRING_LITERAL=170;
-    public static final int FOR_UPDATE=132;
-    public static final int FLOATING_POINT_LITERAL=168;
-    public static final int CAST_EXPR=118;
-    public static final int NOT_EQUAL=35;
-    public static final int VOID_METHOD_DECL=163;
-    public static final int THIS=95;
-    public static final int RETURN=88;
-    public static final int DOUBLE=65;
-    public static final int ENUM_TOP_LEVEL_SCOPE=125;
-    public static final int VOID=101;
-    public static final int SUPER=92;
-    public static final int COMMENT=181;
-    public static final int ANNOTATION_INIT_KEY_LIST=107;
-    public static final int JAVA_ID_START=178;
-    public static final int FLOAT_TYPE_SUFFIX=174;
-    public static final int PRE_DEC=149;
-    public static final int RBRACK=41;
-    public static final int IMPLEMENTS_CLAUSE=140;
-    public static final int SWITCH_BLOCK_LABEL_LIST=154;
-    public static final int LINE_COMMENT=182;
-    public static final int PRIVATE=85;
+    public static final int VOLATILE=102;
     public static final int STATIC=90;
-    public static final int BLOCK_SCOPE=117;
-    public static final int ANNOTATION_INIT_DEFAULT_KEY=106;
-    public static final int SWITCH=93;
-    public static final int NULL=83;
-    public static final int VAR_DECLARATOR=161;
-    public static final int STRICTFP=91;
-    public static final int MINUS_ASSIGN=31;
-    public static final int ELSE=66;
-    public static final int CHARACTER_LITERAL=169;
-    public static final int PRE_INC=150;
-    public static final int ANNOTATION_LIST=108;
-    public static final int ELLIPSIS=17;
-    public static final int NATIVE=81;
-    public static final int OCTAL_ESCAPE=177;
-    public static final int UNARY_MINUS=158;
-    public static final int THROWS=97;
-    public static final int LCURLY=23;
-    public static final int INT=79;
-    public static final int FORMAL_PARAM_VARARG_DECL=135;
     public static final int METHOD_CALL=144;
-    public static final int ASSERT=54;
-    public static final int TRY=100;
-    public static final int INTERFACE_TOP_LEVEL_SCOPE=139;
-    public static final int SHIFT_LEFT=45;
-    public static final int WS=180;
-    public static final int SHIFT_RIGHT=47;
-    public static final int FORMAL_PARAM_STD_DECL=134;
-    public static final int LOCAL_MODIFIER_LIST=142;
-    public static final int OR=36;
-    public static final int LESS_THAN=25;
-    public static final int SHIFT_RIGHT_ASSIGN=48;
-    public static final int EXTENDS_BOUND_LIST=127;
-    public static final int JAVA_SOURCE=143;
-    public static final int CATCH=59;
-    public static final int FALSE=69;
-    public static final int INTEGER_TYPE_SUFFIX=172;
-    public static final int DECIMAL_LITERAL=167;
-    public static final int THROW=96;
-    public static final int FOR_INIT=131;
-    public static final int DEC=12;
-    public static final int PROTECTED=86;
-    public static final int CLASS=61;
-    public static final int LBRACK=22;
-    public static final int BIT_SHIFT_RIGHT=8;
-    public static final int THROWS_CLAUSE=156;
-    public static final int GREATER_OR_EQUAL=19;
-    public static final int FOR=73;
-    public static final int THIS_CONSTRUCTOR_CALL=155;
-    public static final int LOGICAL_NOT=27;
-    public static final int FLOAT=72;
-    public static final int ABSTRACT=53;
-    public static final int AND=4;
-    public static final int POST_DEC=147;
-    public static final int AND_ASSIGN=5;
-    public static final int STATIC_ARRAY_CREATOR=152;
-    public static final int MODIFIER_LIST=145;
-    public static final int ANNOTATION_SCOPE=110;
-    public static final int LPAREN=29;
-    public static final int IF=74;
-    public static final int AT=7;
-    public static final int ESCAPE_SEQUENCE=175;
-    public static final int CONSTRUCTOR_DECL=124;
-    public static final int LABELED_STATEMENT=141;
-    public static final int UNICODE_ESCAPE=176;
-    public static final int EXPR=126;
-    public static final int SYNCHRONIZED=94;
-    public static final int BOOLEAN=55;
-    public static final int CLASS_TOP_LEVEL_SCOPE=123;
     public static final int IMPLEMENTS=75;
-    public static final int CONTINUE=62;
+    public static final int THROW=96;
+    public static final int SEMI=44;
+    public static final int NATIVE=81;
+    public static final int SHIFT_RIGHT=47;
+    public static final int PACKAGE=84;
+    public static final int FORMAL_PARAM_STD_DECL=134;
+    public static final int ANNOTATION_INIT_DEFAULT_KEY=106;
+    public static final int LBRACK=22;
+    public static final int VAR_DECLARATOR_LIST=162;
+    public static final int ARRAY_INITIALIZER=116;
+    public static final int FINAL=70;
+    public static final int PRIVATE=85;
+    public static final int EXPR=126;
+    public static final int STRICTFP=91;
+    public static final int FLOATING_POINT_LITERAL=168;
     public static final int COMMA=11;
-    public static final int TRANSIENT=98;
-    public static final int EQUAL=18;
-    public static final int XOR_ASSIGN=52;
-    public static final int LOGICAL_OR=28;
+    public static final int TRUE=99;
+    public static final int SUPER_CONSTRUCTOR_CALL=153;
+    public static final int FUNCTION_METHOD_DECL=136;
+    public static final int SUPER=92;
+    public static final int ANNOTATION_TOP_LEVEL_SCOPE=111;
+    public static final int LOCAL_MODIFIER_LIST=142;
+    public static final int CLASS_TOP_LEVEL_SCOPE=123;
+    public static final int ANNOTATION_METHOD_DECL=109;
+    public static final int FLOAT_TYPE_SUFFIX=174;
     public static final int IDENT=164;
-    public static final int QUALIFIED_TYPE_IDENT=151;
-    public static final int ARGUMENT_LIST=112;
+    public static final int MINUS_ASSIGN=31;
+    public static final int FORMAL_PARAM_LIST=133;
+    public static final int MOD_ASSIGN=33;
+    public static final int CATCH_CLAUSE_LIST=119;
+    public static final int ANNOTATION_SCOPE=110;
+    public static final int WHILE=103;
+    public static final int FLOAT=72;
+    public static final int MOD=32;
+    public static final int CASE=58;
+    public static final int UNICODE_ESCAPE=176;
+    public static final int QUESTION=40;
+    public static final int EXTENDS_BOUND_LIST=127;
+    public static final int DIV_ASSIGN=14;
+    public static final int LONG=80;
+    public static final int FINALLY=71;
+    public static final int HEX_DIGIT=171;
+    public static final int GENERIC_TYPE_ARG_LIST=137;
     public static final int PLUS=38;
-    public static final int HEX_LITERAL=165;
-    public static final int ANNOTATION_INIT_BLOCK=105;
+    public static final int DOUBLE=65;
+    public static final int PROTECTED=86;
+    public static final int FALSE=69;
+    public static final int FOR=73;
+    public static final int ARRAY_DECLARATOR=113;
+    public static final int QUALIFIED_TYPE_IDENT=151;
+    public static final int POST_DEC=147;
+    public static final int ABSTRACT=53;
+    public static final int OR_ASSIGN=37;
+    public static final int CONTINUE=62;
+    public static final int XOR_ASSIGN=52;
+    public static final int INC=21;
+    public static final int AT=7;
+    public static final int IMPLEMENTS_CLAUSE=140;
+    public static final int SHIFT_RIGHT_ASSIGN=48;
+    public static final int NEW=82;
+    public static final int IF=74;
     public static final int DOT=15;
     public static final int SHIFT_LEFT_ASSIGN=46;
-    public static final int FORMAL_PARAM_LIST=133;
-    public static final int GENERIC_TYPE_ARG_LIST=137;
-    public static final int ANNOTATION_TOP_LEVEL_SCOPE=111;
-    public static final int DOTSTAR=16;
-    public static final int BYTE=57;
-    public static final int XOR=51;
-    public static final int JAVA_ID_PART=179;
-    public static final int GREATER_THAN=20;
-    public static final int VOLATILE=102;
-    public static final int PARENTESIZED_EXPR=146;
-    public static final int CLASS_STATIC_INITIALIZER=122;
-    public static final int ARRAY_DECLARATOR_LIST=114;
-    public static final int LESS_OR_EQUAL=24;
-    public static final int DEFAULT=63;
-    public static final int OCTAL_LITERAL=166;
-    public static final int HEX_DIGIT=171;
-    public static final int SHORT=89;
-    public static final int INSTANCEOF=76;
-    public static final int MINUS=30;
-    public static final int EXTENDS_CLAUSE=128;
-    public static final int TRUE=99;
-    public static final int SEMI=44;
+    public static final int RPAREN=43;
     public static final int STAR_ASSIGN=50;
-    public static final int VAR_DECLARATOR_LIST=162;
-    public static final int ARRAY_DECLARATOR=113;
-    public static final int COLON=10;
-    public static final int OR_ASSIGN=37;
-    public static final int ENUM=67;
-    public static final int QUESTION=40;
-    public static final int FINALLY=71;
-    public static final int RCURLY=42;
+    public static final int LABELED_STATEMENT=141;
+    public static final int WS=180;
     public static final int PLUS_ASSIGN=39;
     public static final int ASSIGN=6;
-    public static final int ANNOTATION_INIT_ARRAY_ELEMENT=104;
-    public static final int FUNCTION_METHOD_DECL=136;
-    public static final int INTERFACE=77;
+    public static final int FORMAL_PARAM_VARARG_DECL=135;
     public static final int POST_INC=148;
+    public static final int OCTAL_ESCAPE=177;
+    public static final int JAVA_ID_START=178;
+    public static final int HEX_LITERAL=165;
+    public static final int FOR_UPDATE=132;
+    public static final int PRE_DEC=149;
+    public static final int EQUAL=18;
+    public static final int BYTE=57;
+    public static final int INT=79;
+    public static final int FOR_CONDITION=129;
+    public static final int BLOCK_SCOPE=117;
+    public static final int DEFAULT=63;
+    public static final int DOTSTAR=16;
+    public static final int STRING_LITERAL=170;
+    public static final int CAST_EXPR=118;
+    public static final int ANNOTATION_INIT_ARRAY_ELEMENT=104;
+    public static final int LESS_OR_EQUAL=24;
+    public static final int COLON=10;
+    public static final int ELSE=66;
+    public static final int SWITCH_BLOCK_LABEL_LIST=154;
+    public static final int EXTENDS_CLAUSE=128;
+    public static final int SHIFT_LEFT=45;
+    public static final int CHAR=60;
+    public static final int ARRAY_DECLARATOR_LIST=114;
+    public static final int VOID=101;
+    public static final int MODIFIER_LIST=145;
+    public static final int GREATER_THAN=20;
+    public static final int CHARACTER_LITERAL=169;
+    public static final int GENERIC_TYPE_PARAM_LIST=138;
+    public static final int LPAREN=29;
+    public static final int STATIC_ARRAY_CREATOR=152;
+    public static final int LESS_THAN=25;
+    public static final int ESCAPE_SEQUENCE=175;
+    public static final int UNARY_MINUS=158;
+    public static final int INTERFACE_TOP_LEVEL_SCOPE=139;
+    public static final int DO=64;
+    public static final int CONSTRUCTOR_DECL=124;
+    public static final int DECIMAL_LITERAL=167;
+    public static final int UNARY_PLUS=159;
+    public static final int THIS=95;
+    public static final int CLASS=61;
+    public static final int THROWS_CLAUSE=156;
+    public static final int ENUM=67;
+    public static final int BIT_SHIFT_RIGHT_ASSIGN=9;
+    public static final int OCTAL_LITERAL=166;
+    public static final int ARRAY_ELEMENT_ACCESS=115;
+    public static final int JAVA_SOURCE=143;
+    public static final int XOR=51;
+    public static final int PRE_INC=150;
+    public static final int FOR_INIT=131;
     public static final int DIV=13;
-    public static final int CLASS_CONSTRUCTOR_CALL=120;
-    public static final int LONG=80;
-    public static final int FOR_EACH=130;
-    public static final int EXTENDS=68;
+    public static final int COMMENT=181;
+    public static final int AND_ASSIGN=5;
+    public static final int NOT_EQUAL=35;
+    public static final int ENUM_TOP_LEVEL_SCOPE=125;
+    public static final int ANNOTATION_LIST=108;
+    public static final int THIS_CONSTRUCTOR_CALL=155;
+    public static final int PARENTESIZED_EXPR=146;
+    public static final int CLASS_INSTANCE_INITIALIZER=121;
+    public static final int LOGICAL_OR=28;
+    public static final int VAR_DECLARATOR=161;
+    public static final int LCURLY=23;
+    public static final int AND=4;
     public static final int PUBLIC=87;
-    public static final int ARRAY_INITIALIZER=116;
-    public static final int CATCH_CLAUSE_LIST=119;
-    public static final int SUPER_CONSTRUCTOR_CALL=153;
+    public static final int ASSERT=54;
+    public static final int BREAK=56;
+    public static final int LINE_COMMENT=182;
+    public static final int NOT=34;
+    public static final int GREATER_OR_EQUAL=19;
+    public static final int SWITCH=93;
+    public static final int STAR=49;
+    public static final int LOGICAL_NOT=27;
+    public static final int RCURLY=42;
+    public static final int CATCH=59;
+    public static final int ANNOTATION_INIT_KEY_LIST=107;
+    public static final int NULL=83;
+    public static final int EXPONENT=173;
+    public static final int INTEGER_TYPE_SUFFIX=172;
+    public static final int THROWS=97;
+    public static final int DEC=12;
+    public static final int BIT_SHIFT_RIGHT=8;
+    public static final int INSTANCEOF=76;
+    public static final int ARGUMENT_LIST=112;
+    public static final int SYNCHRONIZED=94;
+    public static final int INTERFACE=77;
+    public static final int VOID_METHOD_DECL=163;
+    public static final int RBRACK=41;
+    public static final int JAVA_ID_PART=179;
+    public static final int FOR_EACH=130;
+    public static final int IMPORT=78;
+    public static final int ANNOTATION_INIT_BLOCK=105;
+    public static final int TRANSIENT=98;
+    public static final int LOGICAL_AND=26;
+    public static final int CLASS_STATIC_INITIALIZER=122;
+    public static final int EOF=-1;
+    public static final int EXTENDS=68;
+    public static final int RETURN=88;
+    public static final int OR=36;
+    public static final int SHORT=89;
+    public static final int MINUS=30;
+    public static final int ELLIPSIS=17;
+    public static final int VAR_DECLARATION=160;
+    public static final int CLASS_CONSTRUCTOR_CALL=120;
+    public static final int TRY=100;
+    public static final int BOOLEAN=55;
 
     // delegates
     // delegators
@@ -993,11 +993,11 @@ public class JavaParser extends Parser {
 
         CommonTree CLASS21_tree=null;
         CommonTree IDENT22_tree=null;
-        RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleTokenStream stream_CLASS=new RewriteRuleTokenStream(adaptor,"token CLASS");
+        RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
+        RewriteRuleSubtreeStream stream_implementsClause=new RewriteRuleSubtreeStream(adaptor,"rule implementsClause");
         RewriteRuleSubtreeStream stream_genericTypeParameterList=new RewriteRuleSubtreeStream(adaptor,"rule genericTypeParameterList");
         RewriteRuleSubtreeStream stream_classExtendsClause=new RewriteRuleSubtreeStream(adaptor,"rule classExtendsClause");
-        RewriteRuleSubtreeStream stream_implementsClause=new RewriteRuleSubtreeStream(adaptor,"rule implementsClause");
         RewriteRuleSubtreeStream stream_classBody=new RewriteRuleSubtreeStream(adaptor,"rule classBody");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 7) ) { return retval; }
@@ -1088,7 +1088,7 @@ public class JavaParser extends Parser {
 
 
             // AST REWRITE
-            // elements: genericTypeParameterList, classBody, classExtendsClause, implementsClause, IDENT, CLASS
+            // elements: IDENT, classBody, implementsClause, CLASS, genericTypeParameterList, classExtendsClause
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -1911,8 +1911,8 @@ public class JavaParser extends Parser {
 
         CommonTree EXTENDS43_tree=null;
         CommonTree AND45_tree=null;
-        RewriteRuleTokenStream stream_AND=new RewriteRuleTokenStream(adaptor,"token AND");
         RewriteRuleTokenStream stream_EXTENDS=new RewriteRuleTokenStream(adaptor,"token EXTENDS");
+        RewriteRuleTokenStream stream_AND=new RewriteRuleTokenStream(adaptor,"token AND");
         RewriteRuleSubtreeStream stream_type=new RewriteRuleSubtreeStream(adaptor,"rule type");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 14) ) { return retval; }
@@ -2042,8 +2042,8 @@ public class JavaParser extends Parser {
 
         CommonTree ENUM47_tree=null;
         CommonTree IDENT48_tree=null;
-        RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleTokenStream stream_ENUM=new RewriteRuleTokenStream(adaptor,"token ENUM");
+        RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleSubtreeStream stream_implementsClause=new RewriteRuleSubtreeStream(adaptor,"rule implementsClause");
         RewriteRuleSubtreeStream stream_enumBody=new RewriteRuleSubtreeStream(adaptor,"rule enumBody");
         try {
@@ -2089,7 +2089,7 @@ public class JavaParser extends Parser {
 
 
             // AST REWRITE
-            // elements: ENUM, enumBody, implementsClause, IDENT
+            // elements: IDENT, enumBody, ENUM, implementsClause
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -2166,8 +2166,8 @@ public class JavaParser extends Parser {
 
         CommonTree LCURLY51_tree=null;
         CommonTree RCURLY53_tree=null;
-        RewriteRuleTokenStream stream_LCURLY=new RewriteRuleTokenStream(adaptor,"token LCURLY");
         RewriteRuleTokenStream stream_RCURLY=new RewriteRuleTokenStream(adaptor,"token RCURLY");
+        RewriteRuleTokenStream stream_LCURLY=new RewriteRuleTokenStream(adaptor,"token LCURLY");
         RewriteRuleSubtreeStream stream_enumScopeDeclarations=new RewriteRuleSubtreeStream(adaptor,"rule enumScopeDeclarations");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 16) ) { return retval; }
@@ -2682,8 +2682,8 @@ public class JavaParser extends Parser {
 
         CommonTree INTERFACE66_tree=null;
         CommonTree IDENT67_tree=null;
-        RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleTokenStream stream_INTERFACE=new RewriteRuleTokenStream(adaptor,"token INTERFACE");
+        RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleSubtreeStream stream_genericTypeParameterList=new RewriteRuleSubtreeStream(adaptor,"rule genericTypeParameterList");
         RewriteRuleSubtreeStream stream_interfaceBody=new RewriteRuleSubtreeStream(adaptor,"rule interfaceBody");
         RewriteRuleSubtreeStream stream_interfaceExtendsClause=new RewriteRuleSubtreeStream(adaptor,"rule interfaceExtendsClause");
@@ -2753,7 +2753,7 @@ public class JavaParser extends Parser {
 
 
             // AST REWRITE
-            // elements: INTERFACE, interfaceExtendsClause, IDENT, interfaceBody, genericTypeParameterList
+            // elements: interfaceExtendsClause, interfaceBody, INTERFACE, genericTypeParameterList, IDENT
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -2925,8 +2925,8 @@ public class JavaParser extends Parser {
 
         CommonTree LCURLY74_tree=null;
         CommonTree RCURLY76_tree=null;
-        RewriteRuleTokenStream stream_LCURLY=new RewriteRuleTokenStream(adaptor,"token LCURLY");
         RewriteRuleTokenStream stream_RCURLY=new RewriteRuleTokenStream(adaptor,"token RCURLY");
+        RewriteRuleTokenStream stream_LCURLY=new RewriteRuleTokenStream(adaptor,"token LCURLY");
         RewriteRuleSubtreeStream stream_classScopeDeclarations=new RewriteRuleSubtreeStream(adaptor,"rule classScopeDeclarations");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 23) ) { return retval; }
@@ -3046,8 +3046,8 @@ public class JavaParser extends Parser {
 
         CommonTree LCURLY77_tree=null;
         CommonTree RCURLY79_tree=null;
-        RewriteRuleTokenStream stream_LCURLY=new RewriteRuleTokenStream(adaptor,"token LCURLY");
         RewriteRuleTokenStream stream_RCURLY=new RewriteRuleTokenStream(adaptor,"token RCURLY");
+        RewriteRuleTokenStream stream_LCURLY=new RewriteRuleTokenStream(adaptor,"token LCURLY");
         RewriteRuleSubtreeStream stream_interfaceScopeDeclarations=new RewriteRuleSubtreeStream(adaptor,"rule interfaceScopeDeclarations");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 24) ) { return retval; }
@@ -3215,18 +3215,18 @@ public class JavaParser extends Parser {
         CommonTree SEMI97_tree=null;
         CommonTree SEMI103_tree=null;
         CommonTree SEMI105_tree=null;
-        RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
-        RewriteRuleTokenStream stream_VOID=new RewriteRuleTokenStream(adaptor,"token VOID");
-        RewriteRuleTokenStream stream_SEMI=new RewriteRuleTokenStream(adaptor,"token SEMI");
         RewriteRuleTokenStream stream_STATIC=new RewriteRuleTokenStream(adaptor,"token STATIC");
-        RewriteRuleSubtreeStream stream_arrayDeclaratorList=new RewriteRuleSubtreeStream(adaptor,"rule arrayDeclaratorList");
-        RewriteRuleSubtreeStream stream_throwsClause=new RewriteRuleSubtreeStream(adaptor,"rule throwsClause");
-        RewriteRuleSubtreeStream stream_modifierList=new RewriteRuleSubtreeStream(adaptor,"rule modifierList");
+        RewriteRuleTokenStream stream_SEMI=new RewriteRuleTokenStream(adaptor,"token SEMI");
+        RewriteRuleTokenStream stream_VOID=new RewriteRuleTokenStream(adaptor,"token VOID");
+        RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
+        RewriteRuleSubtreeStream stream_formalParameterList=new RewriteRuleSubtreeStream(adaptor,"rule formalParameterList");
         RewriteRuleSubtreeStream stream_genericTypeParameterList=new RewriteRuleSubtreeStream(adaptor,"rule genericTypeParameterList");
+        RewriteRuleSubtreeStream stream_modifierList=new RewriteRuleSubtreeStream(adaptor,"rule modifierList");
+        RewriteRuleSubtreeStream stream_classFieldDeclaratorList=new RewriteRuleSubtreeStream(adaptor,"rule classFieldDeclaratorList");
+        RewriteRuleSubtreeStream stream_arrayDeclaratorList=new RewriteRuleSubtreeStream(adaptor,"rule arrayDeclaratorList");
         RewriteRuleSubtreeStream stream_block=new RewriteRuleSubtreeStream(adaptor,"rule block");
         RewriteRuleSubtreeStream stream_type=new RewriteRuleSubtreeStream(adaptor,"rule type");
-        RewriteRuleSubtreeStream stream_classFieldDeclaratorList=new RewriteRuleSubtreeStream(adaptor,"rule classFieldDeclaratorList");
-        RewriteRuleSubtreeStream stream_formalParameterList=new RewriteRuleSubtreeStream(adaptor,"rule formalParameterList");
+        RewriteRuleSubtreeStream stream_throwsClause=new RewriteRuleSubtreeStream(adaptor,"rule throwsClause");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 25) ) { return retval; }
             // Java.g:451:5: ( block -> ^( CLASS_INSTANCE_INITIALIZER block ) | STATIC block -> ^( CLASS_STATIC_INITIALIZER[$STATIC, \"CLASS_STATIC_INITIALIZER\"] block ) | modifierList ( ( genericTypeParameterList )? ( type IDENT formalParameterList ( arrayDeclaratorList )? ( throwsClause )? ( block | SEMI ) -> ^( FUNCTION_METHOD_DECL modifierList ( genericTypeParameterList )? type IDENT formalParameterList ( arrayDeclaratorList )? ( throwsClause )? ( block )? ) | VOID IDENT formalParameterList ( throwsClause )? ( block | SEMI ) -> ^( VOID_METHOD_DECL modifierList ( genericTypeParameterList )? IDENT formalParameterList ( throwsClause )? ( block )? ) | ident= IDENT formalParameterList ( throwsClause )? block -> ^( CONSTRUCTOR_DECL[$ident, \"CONSTRUCTOR_DECL\"] modifierList ( genericTypeParameterList )? formalParameterList ( throwsClause )? block ) ) | type classFieldDeclaratorList SEMI -> ^( VAR_DECLARATION modifierList type classFieldDeclaratorList ) ) | typeDeclaration | SEMI )
@@ -3571,7 +3571,7 @@ public class JavaParser extends Parser {
 
 
                                     // AST REWRITE
-                                    // elements: block, throwsClause, IDENT, type, formalParameterList, genericTypeParameterList, modifierList, arrayDeclaratorList
+                                    // elements: IDENT, formalParameterList, arrayDeclaratorList, type, modifierList, genericTypeParameterList, throwsClause, block
                                     // token labels: 
                                     // rule labels: retval
                                     // token list labels: 
@@ -3709,7 +3709,7 @@ public class JavaParser extends Parser {
 
 
                                     // AST REWRITE
-                                    // elements: block, throwsClause, genericTypeParameterList, IDENT, modifierList, formalParameterList
+                                    // elements: formalParameterList, genericTypeParameterList, modifierList, IDENT, block, throwsClause
                                     // token labels: 
                                     // rule labels: retval
                                     // token list labels: 
@@ -3801,7 +3801,7 @@ public class JavaParser extends Parser {
 
 
                                     // AST REWRITE
-                                    // elements: genericTypeParameterList, formalParameterList, modifierList, throwsClause, block
+                                    // elements: modifierList, throwsClause, genericTypeParameterList, block, formalParameterList
                                     // token labels: 
                                     // rule labels: retval
                                     // token list labels: 
@@ -3870,7 +3870,7 @@ public class JavaParser extends Parser {
 
 
                             // AST REWRITE
-                            // elements: modifierList, type, classFieldDeclaratorList
+                            // elements: type, classFieldDeclaratorList, modifierList
                             // token labels: 
                             // rule labels: retval
                             // token list labels: 
@@ -4002,16 +4002,16 @@ public class JavaParser extends Parser {
         CommonTree SEMI118_tree=null;
         CommonTree SEMI121_tree=null;
         CommonTree SEMI123_tree=null;
-        RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
-        RewriteRuleTokenStream stream_VOID=new RewriteRuleTokenStream(adaptor,"token VOID");
         RewriteRuleTokenStream stream_SEMI=new RewriteRuleTokenStream(adaptor,"token SEMI");
-        RewriteRuleSubtreeStream stream_arrayDeclaratorList=new RewriteRuleSubtreeStream(adaptor,"rule arrayDeclaratorList");
-        RewriteRuleSubtreeStream stream_throwsClause=new RewriteRuleSubtreeStream(adaptor,"rule throwsClause");
-        RewriteRuleSubtreeStream stream_modifierList=new RewriteRuleSubtreeStream(adaptor,"rule modifierList");
+        RewriteRuleTokenStream stream_VOID=new RewriteRuleTokenStream(adaptor,"token VOID");
+        RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
+        RewriteRuleSubtreeStream stream_formalParameterList=new RewriteRuleSubtreeStream(adaptor,"rule formalParameterList");
         RewriteRuleSubtreeStream stream_genericTypeParameterList=new RewriteRuleSubtreeStream(adaptor,"rule genericTypeParameterList");
         RewriteRuleSubtreeStream stream_interfaceFieldDeclaratorList=new RewriteRuleSubtreeStream(adaptor,"rule interfaceFieldDeclaratorList");
+        RewriteRuleSubtreeStream stream_modifierList=new RewriteRuleSubtreeStream(adaptor,"rule modifierList");
+        RewriteRuleSubtreeStream stream_arrayDeclaratorList=new RewriteRuleSubtreeStream(adaptor,"rule arrayDeclaratorList");
         RewriteRuleSubtreeStream stream_type=new RewriteRuleSubtreeStream(adaptor,"rule type");
-        RewriteRuleSubtreeStream stream_formalParameterList=new RewriteRuleSubtreeStream(adaptor,"rule formalParameterList");
+        RewriteRuleSubtreeStream stream_throwsClause=new RewriteRuleSubtreeStream(adaptor,"rule throwsClause");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 26) ) { return retval; }
             // Java.g:470:5: ( modifierList ( ( genericTypeParameterList )? ( type IDENT formalParameterList ( arrayDeclaratorList )? ( throwsClause )? SEMI -> ^( FUNCTION_METHOD_DECL modifierList ( genericTypeParameterList )? type IDENT formalParameterList ( arrayDeclaratorList )? ( throwsClause )? ) | VOID IDENT formalParameterList ( throwsClause )? SEMI -> ^( VOID_METHOD_DECL modifierList ( genericTypeParameterList )? IDENT formalParameterList ( throwsClause )? ) ) | type interfaceFieldDeclaratorList SEMI -> ^( VAR_DECLARATION modifierList type interfaceFieldDeclaratorList ) ) | typeDeclaration | SEMI )
@@ -4204,7 +4204,7 @@ public class JavaParser extends Parser {
 
 
                                     // AST REWRITE
-                                    // elements: type, throwsClause, genericTypeParameterList, modifierList, arrayDeclaratorList, IDENT, formalParameterList
+                                    // elements: formalParameterList, throwsClause, modifierList, type, IDENT, genericTypeParameterList, arrayDeclaratorList
                                     // token labels: 
                                     // rule labels: retval
                                     // token list labels: 
@@ -4297,7 +4297,7 @@ public class JavaParser extends Parser {
 
 
                                     // AST REWRITE
-                                    // elements: IDENT, modifierList, throwsClause, formalParameterList, genericTypeParameterList
+                                    // elements: genericTypeParameterList, modifierList, throwsClause, formalParameterList, IDENT
                                     // token labels: 
                                     // rule labels: retval
                                     // token list labels: 
@@ -4366,7 +4366,7 @@ public class JavaParser extends Parser {
 
 
                             // AST REWRITE
-                            // elements: type, modifierList, interfaceFieldDeclaratorList
+                            // elements: interfaceFieldDeclaratorList, type, modifierList
                             // token labels: 
                             // rule labels: retval
                             // token list labels: 
@@ -4594,8 +4594,8 @@ public class JavaParser extends Parser {
 
         CommonTree ASSIGN128_tree=null;
         RewriteRuleTokenStream stream_ASSIGN=new RewriteRuleTokenStream(adaptor,"token ASSIGN");
-        RewriteRuleSubtreeStream stream_variableDeclaratorId=new RewriteRuleSubtreeStream(adaptor,"rule variableDeclaratorId");
         RewriteRuleSubtreeStream stream_variableInitializer=new RewriteRuleSubtreeStream(adaptor,"rule variableInitializer");
+        RewriteRuleSubtreeStream stream_variableDeclaratorId=new RewriteRuleSubtreeStream(adaptor,"rule variableDeclaratorId");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 28) ) { return retval; }
             // Java.g:490:5: ( variableDeclaratorId ( ASSIGN variableInitializer )? -> ^( VAR_DECLARATOR variableDeclaratorId ( variableInitializer )? ) )
@@ -4636,7 +4636,7 @@ public class JavaParser extends Parser {
 
 
             // AST REWRITE
-            // elements: variableInitializer, variableDeclaratorId
+            // elements: variableDeclaratorId, variableInitializer
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -4837,8 +4837,8 @@ public class JavaParser extends Parser {
 
         CommonTree ASSIGN134_tree=null;
         RewriteRuleTokenStream stream_ASSIGN=new RewriteRuleTokenStream(adaptor,"token ASSIGN");
-        RewriteRuleSubtreeStream stream_variableDeclaratorId=new RewriteRuleSubtreeStream(adaptor,"rule variableDeclaratorId");
         RewriteRuleSubtreeStream stream_variableInitializer=new RewriteRuleSubtreeStream(adaptor,"rule variableInitializer");
+        RewriteRuleSubtreeStream stream_variableDeclaratorId=new RewriteRuleSubtreeStream(adaptor,"rule variableDeclaratorId");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 30) ) { return retval; }
             // Java.g:500:5: ( variableDeclaratorId ASSIGN variableInitializer -> ^( VAR_DECLARATOR variableDeclaratorId variableInitializer ) )
@@ -4862,7 +4862,7 @@ public class JavaParser extends Parser {
 
 
             // AST REWRITE
-            // elements: variableDeclaratorId, variableInitializer
+            // elements: variableInitializer, variableDeclaratorId
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -5311,9 +5311,9 @@ public class JavaParser extends Parser {
         CommonTree COMMA145_tree=null;
         CommonTree COMMA147_tree=null;
         CommonTree RCURLY148_tree=null;
-        RewriteRuleTokenStream stream_LCURLY=new RewriteRuleTokenStream(adaptor,"token LCURLY");
         RewriteRuleTokenStream stream_COMMA=new RewriteRuleTokenStream(adaptor,"token COMMA");
         RewriteRuleTokenStream stream_RCURLY=new RewriteRuleTokenStream(adaptor,"token RCURLY");
+        RewriteRuleTokenStream stream_LCURLY=new RewriteRuleTokenStream(adaptor,"token LCURLY");
         RewriteRuleSubtreeStream stream_variableInitializer=new RewriteRuleSubtreeStream(adaptor,"rule variableInitializer");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 35) ) { return retval; }
@@ -6249,8 +6249,8 @@ public class JavaParser extends Parser {
         JavaParser.arrayDeclaratorList_return arrayDeclaratorList169 = null;
 
 
-        RewriteRuleSubtreeStream stream_arrayDeclaratorList=new RewriteRuleSubtreeStream(adaptor,"rule arrayDeclaratorList");
         RewriteRuleSubtreeStream stream_primitiveType=new RewriteRuleSubtreeStream(adaptor,"rule primitiveType");
+        RewriteRuleSubtreeStream stream_arrayDeclaratorList=new RewriteRuleSubtreeStream(adaptor,"rule arrayDeclaratorList");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 42) ) { return retval; }
             // Java.g:568:5: ( primitiveType ( arrayDeclaratorList )? -> ^( TYPE primitiveType ( arrayDeclaratorList )? ) )
@@ -6296,7 +6296,7 @@ public class JavaParser extends Parser {
 
 
             // AST REWRITE
-            // elements: primitiveType, arrayDeclaratorList
+            // elements: arrayDeclaratorList, primitiveType
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -6369,8 +6369,8 @@ public class JavaParser extends Parser {
         JavaParser.arrayDeclaratorList_return arrayDeclaratorList171 = null;
 
 
-        RewriteRuleSubtreeStream stream_arrayDeclaratorList=new RewriteRuleSubtreeStream(adaptor,"rule arrayDeclaratorList");
         RewriteRuleSubtreeStream stream_qualifiedTypeIdent=new RewriteRuleSubtreeStream(adaptor,"rule qualifiedTypeIdent");
+        RewriteRuleSubtreeStream stream_arrayDeclaratorList=new RewriteRuleSubtreeStream(adaptor,"rule arrayDeclaratorList");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 43) ) { return retval; }
             // Java.g:573:5: ( qualifiedTypeIdent ( arrayDeclaratorList )? -> ^( TYPE qualifiedTypeIdent ( arrayDeclaratorList )? ) )
@@ -6485,8 +6485,8 @@ public class JavaParser extends Parser {
         JavaParser.arrayDeclaratorList_return arrayDeclaratorList173 = null;
 
 
-        RewriteRuleSubtreeStream stream_arrayDeclaratorList=new RewriteRuleSubtreeStream(adaptor,"rule arrayDeclaratorList");
         RewriteRuleSubtreeStream stream_qualifiedTypeIdentSimplified=new RewriteRuleSubtreeStream(adaptor,"rule qualifiedTypeIdentSimplified");
+        RewriteRuleSubtreeStream stream_arrayDeclaratorList=new RewriteRuleSubtreeStream(adaptor,"rule arrayDeclaratorList");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 44) ) { return retval; }
             // Java.g:578:5: ( qualifiedTypeIdentSimplified ( arrayDeclaratorList )? -> ^( TYPE qualifiedTypeIdentSimplified ( arrayDeclaratorList )? ) )
@@ -6524,7 +6524,7 @@ public class JavaParser extends Parser {
 
 
             // AST REWRITE
-            // elements: arrayDeclaratorList, qualifiedTypeIdentSimplified
+            // elements: qualifiedTypeIdentSimplified, arrayDeclaratorList
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -7077,8 +7077,8 @@ public class JavaParser extends Parser {
         CommonTree COMMA187_tree=null;
         RewriteRuleTokenStream stream_COMMA=new RewriteRuleTokenStream(adaptor,"token COMMA");
         RewriteRuleTokenStream stream_LESS_THAN=new RewriteRuleTokenStream(adaptor,"token LESS_THAN");
-        RewriteRuleSubtreeStream stream_genericTypeArgument=new RewriteRuleSubtreeStream(adaptor,"rule genericTypeArgument");
         RewriteRuleSubtreeStream stream_genericTypeListClosing=new RewriteRuleSubtreeStream(adaptor,"rule genericTypeListClosing");
+        RewriteRuleSubtreeStream stream_genericTypeArgument=new RewriteRuleSubtreeStream(adaptor,"rule genericTypeArgument");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 50) ) { return retval; }
             // Java.g:612:5: ( LESS_THAN genericTypeArgument ( COMMA genericTypeArgument )* genericTypeListClosing -> ^( GENERIC_TYPE_ARG_LIST[$LESS_THAN, \"GENERIC_TYPE_ARG_LIST\"] ( genericTypeArgument )+ ) )
@@ -7307,7 +7307,7 @@ public class JavaParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: QUESTION, genericWildcardBoundType
+                    // elements: genericWildcardBoundType, QUESTION
                     // token labels: 
                     // rule labels: retval
                     // token list labels: 
@@ -7780,9 +7780,9 @@ public class JavaParser extends Parser {
         CommonTree COMMA207_tree=null;
         CommonTree COMMA209_tree=null;
         CommonTree RPAREN212_tree=null;
-        RewriteRuleTokenStream stream_RPAREN=new RewriteRuleTokenStream(adaptor,"token RPAREN");
-        RewriteRuleTokenStream stream_COMMA=new RewriteRuleTokenStream(adaptor,"token COMMA");
         RewriteRuleTokenStream stream_LPAREN=new RewriteRuleTokenStream(adaptor,"token LPAREN");
+        RewriteRuleTokenStream stream_COMMA=new RewriteRuleTokenStream(adaptor,"token COMMA");
+        RewriteRuleTokenStream stream_RPAREN=new RewriteRuleTokenStream(adaptor,"token RPAREN");
         RewriteRuleSubtreeStream stream_formalParameterVarArgDecl=new RewriteRuleSubtreeStream(adaptor,"rule formalParameterVarArgDecl");
         RewriteRuleSubtreeStream stream_formalParameterStandardDecl=new RewriteRuleSubtreeStream(adaptor,"rule formalParameterStandardDecl");
         try {
@@ -7970,7 +7970,7 @@ public class JavaParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: formalParameterStandardDecl, formalParameterVarArgDecl
+                    // elements: formalParameterVarArgDecl, formalParameterStandardDecl
                     // token labels: 
                     // rule labels: retval
                     // token list labels: 
@@ -8132,8 +8132,8 @@ public class JavaParser extends Parser {
         JavaParser.variableDeclaratorId_return variableDeclaratorId215 = null;
 
 
-        RewriteRuleSubtreeStream stream_variableDeclaratorId=new RewriteRuleSubtreeStream(adaptor,"rule variableDeclaratorId");
         RewriteRuleSubtreeStream stream_localModifierList=new RewriteRuleSubtreeStream(adaptor,"rule localModifierList");
+        RewriteRuleSubtreeStream stream_variableDeclaratorId=new RewriteRuleSubtreeStream(adaptor,"rule variableDeclaratorId");
         RewriteRuleSubtreeStream stream_type=new RewriteRuleSubtreeStream(adaptor,"rule type");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 57) ) { return retval; }
@@ -8161,7 +8161,7 @@ public class JavaParser extends Parser {
 
 
             // AST REWRITE
-            // elements: type, localModifierList, variableDeclaratorId
+            // elements: type, variableDeclaratorId, localModifierList
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -8235,8 +8235,8 @@ public class JavaParser extends Parser {
 
         CommonTree ELLIPSIS218_tree=null;
         RewriteRuleTokenStream stream_ELLIPSIS=new RewriteRuleTokenStream(adaptor,"token ELLIPSIS");
-        RewriteRuleSubtreeStream stream_variableDeclaratorId=new RewriteRuleSubtreeStream(adaptor,"rule variableDeclaratorId");
         RewriteRuleSubtreeStream stream_localModifierList=new RewriteRuleSubtreeStream(adaptor,"rule localModifierList");
+        RewriteRuleSubtreeStream stream_variableDeclaratorId=new RewriteRuleSubtreeStream(adaptor,"rule variableDeclaratorId");
         RewriteRuleSubtreeStream stream_type=new RewriteRuleSubtreeStream(adaptor,"rule type");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 58) ) { return retval; }
@@ -8338,8 +8338,8 @@ public class JavaParser extends Parser {
         CommonTree ident_tree=null;
         CommonTree IDENT220_tree=null;
         CommonTree DOT221_tree=null;
-        RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleTokenStream stream_DOT=new RewriteRuleTokenStream(adaptor,"token DOT");
+        RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 59) ) { return retval; }
@@ -8411,7 +8411,7 @@ public class JavaParser extends Parser {
 
 
             	    // AST REWRITE
-            	    // elements: ident, DOT, qualifiedIdentifier
+            	    // elements: DOT, ident, qualifiedIdentifier
             	    // token labels: ident
             	    // rule labels: retval
             	    // token list labels: 
@@ -8698,8 +8698,8 @@ public class JavaParser extends Parser {
 
         CommonTree LPAREN226_tree=null;
         CommonTree RPAREN228_tree=null;
-        RewriteRuleTokenStream stream_RPAREN=new RewriteRuleTokenStream(adaptor,"token RPAREN");
         RewriteRuleTokenStream stream_LPAREN=new RewriteRuleTokenStream(adaptor,"token LPAREN");
+        RewriteRuleTokenStream stream_RPAREN=new RewriteRuleTokenStream(adaptor,"token RPAREN");
         RewriteRuleSubtreeStream stream_annotationInitializers=new RewriteRuleSubtreeStream(adaptor,"rule annotationInitializers");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 62) ) { return retval; }
@@ -9286,9 +9286,9 @@ public class JavaParser extends Parser {
         CommonTree COMMA242_tree=null;
         CommonTree COMMA244_tree=null;
         CommonTree RCURLY245_tree=null;
-        RewriteRuleTokenStream stream_LCURLY=new RewriteRuleTokenStream(adaptor,"token LCURLY");
         RewriteRuleTokenStream stream_COMMA=new RewriteRuleTokenStream(adaptor,"token COMMA");
         RewriteRuleTokenStream stream_RCURLY=new RewriteRuleTokenStream(adaptor,"token RCURLY");
+        RewriteRuleTokenStream stream_LCURLY=new RewriteRuleTokenStream(adaptor,"token LCURLY");
         RewriteRuleSubtreeStream stream_annotationElementValue=new RewriteRuleSubtreeStream(adaptor,"rule annotationElementValue");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 67) ) { return retval; }
@@ -9463,8 +9463,8 @@ public class JavaParser extends Parser {
         CommonTree INTERFACE247_tree=null;
         CommonTree IDENT248_tree=null;
         RewriteRuleTokenStream stream_AT=new RewriteRuleTokenStream(adaptor,"token AT");
-        RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleTokenStream stream_INTERFACE=new RewriteRuleTokenStream(adaptor,"token INTERFACE");
+        RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleSubtreeStream stream_annotationBody=new RewriteRuleSubtreeStream(adaptor,"rule annotationBody");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 68) ) { return retval; }
@@ -9489,7 +9489,7 @@ public class JavaParser extends Parser {
 
 
             // AST REWRITE
-            // elements: annotationBody, IDENT, AT
+            // elements: annotationBody, AT, IDENT
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -9560,8 +9560,8 @@ public class JavaParser extends Parser {
 
         CommonTree LCURLY250_tree=null;
         CommonTree RCURLY252_tree=null;
-        RewriteRuleTokenStream stream_LCURLY=new RewriteRuleTokenStream(adaptor,"token LCURLY");
         RewriteRuleTokenStream stream_RCURLY=new RewriteRuleTokenStream(adaptor,"token RCURLY");
+        RewriteRuleTokenStream stream_LCURLY=new RewriteRuleTokenStream(adaptor,"token LCURLY");
         RewriteRuleSubtreeStream stream_annotationScopeDeclarations=new RewriteRuleSubtreeStream(adaptor,"rule annotationScopeDeclarations");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 69) ) { return retval; }
@@ -9695,14 +9695,14 @@ public class JavaParser extends Parser {
         CommonTree RPAREN257_tree=null;
         CommonTree SEMI259_tree=null;
         CommonTree SEMI261_tree=null;
-        RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
-        RewriteRuleTokenStream stream_RPAREN=new RewriteRuleTokenStream(adaptor,"token RPAREN");
-        RewriteRuleTokenStream stream_SEMI=new RewriteRuleTokenStream(adaptor,"token SEMI");
         RewriteRuleTokenStream stream_LPAREN=new RewriteRuleTokenStream(adaptor,"token LPAREN");
-        RewriteRuleSubtreeStream stream_modifierList=new RewriteRuleSubtreeStream(adaptor,"rule modifierList");
+        RewriteRuleTokenStream stream_SEMI=new RewriteRuleTokenStream(adaptor,"token SEMI");
+        RewriteRuleTokenStream stream_RPAREN=new RewriteRuleTokenStream(adaptor,"token RPAREN");
+        RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleSubtreeStream stream_annotationDefaultValue=new RewriteRuleSubtreeStream(adaptor,"rule annotationDefaultValue");
-        RewriteRuleSubtreeStream stream_type=new RewriteRuleSubtreeStream(adaptor,"rule type");
+        RewriteRuleSubtreeStream stream_modifierList=new RewriteRuleSubtreeStream(adaptor,"rule modifierList");
         RewriteRuleSubtreeStream stream_classFieldDeclaratorList=new RewriteRuleSubtreeStream(adaptor,"rule classFieldDeclaratorList");
+        RewriteRuleSubtreeStream stream_type=new RewriteRuleSubtreeStream(adaptor,"rule type");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 70) ) { return retval; }
             // Java.g:725:5: ( modifierList type ( IDENT LPAREN RPAREN ( annotationDefaultValue )? SEMI -> ^( ANNOTATION_METHOD_DECL modifierList type IDENT ( annotationDefaultValue )? ) | classFieldDeclaratorList SEMI -> ^( VAR_DECLARATION modifierList type classFieldDeclaratorList ) ) | typeDeclaration )
@@ -9794,7 +9794,7 @@ public class JavaParser extends Parser {
 
 
                             // AST REWRITE
-                            // elements: type, modifierList, IDENT, annotationDefaultValue
+                            // elements: type, modifierList, annotationDefaultValue, IDENT
                             // token labels: 
                             // rule labels: retval
                             // token list labels: 
@@ -9845,7 +9845,7 @@ public class JavaParser extends Parser {
 
 
                             // AST REWRITE
-                            // elements: classFieldDeclaratorList, type, modifierList
+                            // elements: modifierList, type, classFieldDeclaratorList
                             // token labels: 
                             // rule labels: retval
                             // token list labels: 
@@ -9999,8 +9999,8 @@ public class JavaParser extends Parser {
 
         CommonTree LCURLY265_tree=null;
         CommonTree RCURLY267_tree=null;
-        RewriteRuleTokenStream stream_LCURLY=new RewriteRuleTokenStream(adaptor,"token LCURLY");
         RewriteRuleTokenStream stream_RCURLY=new RewriteRuleTokenStream(adaptor,"token RCURLY");
+        RewriteRuleTokenStream stream_LCURLY=new RewriteRuleTokenStream(adaptor,"token LCURLY");
         RewriteRuleSubtreeStream stream_blockStatement=new RewriteRuleSubtreeStream(adaptor,"rule blockStatement");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 72) ) { return retval; }
@@ -10216,8 +10216,8 @@ public class JavaParser extends Parser {
 
 
         RewriteRuleSubtreeStream stream_localModifierList=new RewriteRuleSubtreeStream(adaptor,"rule localModifierList");
-        RewriteRuleSubtreeStream stream_type=new RewriteRuleSubtreeStream(adaptor,"rule type");
         RewriteRuleSubtreeStream stream_classFieldDeclaratorList=new RewriteRuleSubtreeStream(adaptor,"rule classFieldDeclaratorList");
+        RewriteRuleSubtreeStream stream_type=new RewriteRuleSubtreeStream(adaptor,"rule type");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 74) ) { return retval; }
             // Java.g:752:5: ( localModifierList type classFieldDeclaratorList -> ^( VAR_DECLARATION localModifierList type classFieldDeclaratorList ) )
@@ -10244,7 +10244,7 @@ public class JavaParser extends Parser {
 
 
             // AST REWRITE
-            // elements: localModifierList, classFieldDeclaratorList, type
+            // elements: type, localModifierList, classFieldDeclaratorList
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -10443,38 +10443,38 @@ public class JavaParser extends Parser {
         CommonTree COLON333_tree=null;
         CommonTree SEMI336_tree=null;
         CommonTree SEMI337_tree=null;
-        RewriteRuleTokenStream stream_COLON=new RewriteRuleTokenStream(adaptor,"token COLON");
-        RewriteRuleTokenStream stream_RPAREN=new RewriteRuleTokenStream(adaptor,"token RPAREN");
         RewriteRuleTokenStream stream_SYNCHRONIZED=new RewriteRuleTokenStream(adaptor,"token SYNCHRONIZED");
-        RewriteRuleTokenStream stream_WHILE=new RewriteRuleTokenStream(adaptor,"token WHILE");
-        RewriteRuleTokenStream stream_CONTINUE=new RewriteRuleTokenStream(adaptor,"token CONTINUE");
-        RewriteRuleTokenStream stream_SWITCH=new RewriteRuleTokenStream(adaptor,"token SWITCH");
-        RewriteRuleTokenStream stream_RCURLY=new RewriteRuleTokenStream(adaptor,"token RCURLY");
-        RewriteRuleTokenStream stream_ELSE=new RewriteRuleTokenStream(adaptor,"token ELSE");
-        RewriteRuleTokenStream stream_RETURN=new RewriteRuleTokenStream(adaptor,"token RETURN");
-        RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
-        RewriteRuleTokenStream stream_FOR=new RewriteRuleTokenStream(adaptor,"token FOR");
-        RewriteRuleTokenStream stream_DO=new RewriteRuleTokenStream(adaptor,"token DO");
-        RewriteRuleTokenStream stream_LCURLY=new RewriteRuleTokenStream(adaptor,"token LCURLY");
-        RewriteRuleTokenStream stream_SEMI=new RewriteRuleTokenStream(adaptor,"token SEMI");
         RewriteRuleTokenStream stream_ASSERT=new RewriteRuleTokenStream(adaptor,"token ASSERT");
         RewriteRuleTokenStream stream_BREAK=new RewriteRuleTokenStream(adaptor,"token BREAK");
+        RewriteRuleTokenStream stream_SWITCH=new RewriteRuleTokenStream(adaptor,"token SWITCH");
         RewriteRuleTokenStream stream_THROW=new RewriteRuleTokenStream(adaptor,"token THROW");
-        RewriteRuleTokenStream stream_TRY=new RewriteRuleTokenStream(adaptor,"token TRY");
-        RewriteRuleTokenStream stream_LPAREN=new RewriteRuleTokenStream(adaptor,"token LPAREN");
+        RewriteRuleTokenStream stream_SEMI=new RewriteRuleTokenStream(adaptor,"token SEMI");
+        RewriteRuleTokenStream stream_COLON=new RewriteRuleTokenStream(adaptor,"token COLON");
+        RewriteRuleTokenStream stream_ELSE=new RewriteRuleTokenStream(adaptor,"token ELSE");
+        RewriteRuleTokenStream stream_RCURLY=new RewriteRuleTokenStream(adaptor,"token RCURLY");
+        RewriteRuleTokenStream stream_WHILE=new RewriteRuleTokenStream(adaptor,"token WHILE");
+        RewriteRuleTokenStream stream_CONTINUE=new RewriteRuleTokenStream(adaptor,"token CONTINUE");
+        RewriteRuleTokenStream stream_RETURN=new RewriteRuleTokenStream(adaptor,"token RETURN");
         RewriteRuleTokenStream stream_IF=new RewriteRuleTokenStream(adaptor,"token IF");
-        RewriteRuleSubtreeStream stream_statement=new RewriteRuleSubtreeStream(adaptor,"rule statement");
-        RewriteRuleSubtreeStream stream_expression=new RewriteRuleSubtreeStream(adaptor,"rule expression");
-        RewriteRuleSubtreeStream stream_finallyClause=new RewriteRuleSubtreeStream(adaptor,"rule finallyClause");
-        RewriteRuleSubtreeStream stream_catches=new RewriteRuleSubtreeStream(adaptor,"rule catches");
-        RewriteRuleSubtreeStream stream_forUpdater=new RewriteRuleSubtreeStream(adaptor,"rule forUpdater");
-        RewriteRuleSubtreeStream stream_block=new RewriteRuleSubtreeStream(adaptor,"rule block");
-        RewriteRuleSubtreeStream stream_forCondition=new RewriteRuleSubtreeStream(adaptor,"rule forCondition");
+        RewriteRuleTokenStream stream_LPAREN=new RewriteRuleTokenStream(adaptor,"token LPAREN");
+        RewriteRuleTokenStream stream_LCURLY=new RewriteRuleTokenStream(adaptor,"token LCURLY");
+        RewriteRuleTokenStream stream_DO=new RewriteRuleTokenStream(adaptor,"token DO");
+        RewriteRuleTokenStream stream_RPAREN=new RewriteRuleTokenStream(adaptor,"token RPAREN");
+        RewriteRuleTokenStream stream_FOR=new RewriteRuleTokenStream(adaptor,"token FOR");
+        RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
+        RewriteRuleTokenStream stream_TRY=new RewriteRuleTokenStream(adaptor,"token TRY");
         RewriteRuleSubtreeStream stream_localModifierList=new RewriteRuleSubtreeStream(adaptor,"rule localModifierList");
+        RewriteRuleSubtreeStream stream_catches=new RewriteRuleSubtreeStream(adaptor,"rule catches");
+        RewriteRuleSubtreeStream stream_forCondition=new RewriteRuleSubtreeStream(adaptor,"rule forCondition");
+        RewriteRuleSubtreeStream stream_forUpdater=new RewriteRuleSubtreeStream(adaptor,"rule forUpdater");
+        RewriteRuleSubtreeStream stream_statement=new RewriteRuleSubtreeStream(adaptor,"rule statement");
         RewriteRuleSubtreeStream stream_forInit=new RewriteRuleSubtreeStream(adaptor,"rule forInit");
-        RewriteRuleSubtreeStream stream_type=new RewriteRuleSubtreeStream(adaptor,"rule type");
-        RewriteRuleSubtreeStream stream_switchBlockLabels=new RewriteRuleSubtreeStream(adaptor,"rule switchBlockLabels");
+        RewriteRuleSubtreeStream stream_block=new RewriteRuleSubtreeStream(adaptor,"rule block");
         RewriteRuleSubtreeStream stream_parenthesizedExpression=new RewriteRuleSubtreeStream(adaptor,"rule parenthesizedExpression");
+        RewriteRuleSubtreeStream stream_expression=new RewriteRuleSubtreeStream(adaptor,"rule expression");
+        RewriteRuleSubtreeStream stream_switchBlockLabels=new RewriteRuleSubtreeStream(adaptor,"rule switchBlockLabels");
+        RewriteRuleSubtreeStream stream_type=new RewriteRuleSubtreeStream(adaptor,"rule type");
+        RewriteRuleSubtreeStream stream_finallyClause=new RewriteRuleSubtreeStream(adaptor,"rule finallyClause");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 75) ) { return retval; }
             // Java.g:758:5: ( block | ASSERT expr1= expression ( COLON expr2= expression SEMI -> ^( ASSERT $expr1 $expr2) | SEMI -> ^( ASSERT $expr1) ) | IF parenthesizedExpression ifStat= statement ( ELSE elseStat= statement -> ^( IF parenthesizedExpression $ifStat $elseStat) | -> ^( IF parenthesizedExpression $ifStat) ) | FOR LPAREN ( forInit SEMI forCondition SEMI forUpdater RPAREN statement -> ^( FOR forInit forCondition forUpdater statement ) | localModifierList type IDENT COLON expression RPAREN statement -> ^( FOR_EACH[$FOR, \"FOR_EACH\"] localModifierList type IDENT expression statement ) ) | WHILE parenthesizedExpression statement -> ^( WHILE parenthesizedExpression statement ) | DO statement WHILE parenthesizedExpression SEMI -> ^( DO statement parenthesizedExpression ) | TRY block ( catches ( finallyClause )? | finallyClause ) -> ^( TRY block ( catches )? ( finallyClause )? ) | SWITCH parenthesizedExpression LCURLY switchBlockLabels RCURLY -> ^( SWITCH parenthesizedExpression switchBlockLabels ) | SYNCHRONIZED parenthesizedExpression block -> ^( SYNCHRONIZED parenthesizedExpression block ) | RETURN ( expression )? SEMI -> ^( RETURN ( expression )? ) | THROW expression SEMI -> ^( THROW expression ) | BREAK ( IDENT )? SEMI -> ^( BREAK ( IDENT )? ) | CONTINUE ( IDENT )? SEMI -> ^( CONTINUE ( IDENT )? ) | IDENT COLON statement -> ^( LABELED_STATEMENT IDENT statement ) | expression SEMI | SEMI )
@@ -10543,17 +10543,17 @@ public class JavaParser extends Parser {
 
 
                             // AST REWRITE
-                            // elements: expr2, ASSERT, expr1
+                            // elements: ASSERT, expr2, expr1
                             // token labels: 
-                            // rule labels: retval, expr1, expr2
+                            // rule labels: retval, expr2, expr1
                             // token list labels: 
                             // rule list labels: 
                             // wildcard labels: 
                             if ( state.backtracking==0 ) {
                             retval.tree = root_0;
                             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
-                            RewriteRuleSubtreeStream stream_expr1=new RewriteRuleSubtreeStream(adaptor,"rule expr1",expr1!=null?expr1.tree:null);
                             RewriteRuleSubtreeStream stream_expr2=new RewriteRuleSubtreeStream(adaptor,"rule expr2",expr2!=null?expr2.tree:null);
+                            RewriteRuleSubtreeStream stream_expr1=new RewriteRuleSubtreeStream(adaptor,"rule expr1",expr1!=null?expr1.tree:null);
 
                             root_0 = (CommonTree)adaptor.nil();
                             // 760:77: -> ^( ASSERT $expr1 $expr2)
@@ -10683,7 +10683,7 @@ public class JavaParser extends Parser {
 
 
                             // AST REWRITE
-                            // elements: ifStat, elseStat, parenthesizedExpression, IF
+                            // elements: parenthesizedExpression, IF, ifStat, elseStat
                             // token labels: 
                             // rule labels: retval, ifStat, elseStat
                             // token list labels: 
@@ -10720,7 +10720,7 @@ public class JavaParser extends Parser {
                             {
 
                             // AST REWRITE
-                            // elements: IF, ifStat, parenthesizedExpression
+                            // elements: ifStat, parenthesizedExpression, IF
                             // token labels: 
                             // rule labels: retval, ifStat
                             // token list labels: 
@@ -10808,7 +10808,7 @@ public class JavaParser extends Parser {
 
 
                             // AST REWRITE
-                            // elements: forCondition, FOR, forInit, forUpdater, statement
+                            // elements: forUpdater, forCondition, statement, forInit, FOR
                             // token labels: 
                             // rule labels: retval
                             // token list labels: 
@@ -10878,7 +10878,7 @@ public class JavaParser extends Parser {
 
 
                             // AST REWRITE
-                            // elements: IDENT, localModifierList, expression, type, statement
+                            // elements: localModifierList, expression, statement, type, IDENT
                             // token labels: 
                             // rule labels: retval
                             // token list labels: 
@@ -10993,7 +10993,7 @@ public class JavaParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: statement, DO, parenthesizedExpression
+                    // elements: DO, parenthesizedExpression, statement
                     // token labels: 
                     // rule labels: retval
                     // token list labels: 
@@ -11105,7 +11105,7 @@ public class JavaParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: finallyClause, block, catches, TRY
+                    // elements: catches, finallyClause, TRY, block
                     // token labels: 
                     // rule labels: retval
                     // token list labels: 
@@ -11172,7 +11172,7 @@ public class JavaParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: switchBlockLabels, parenthesizedExpression, SWITCH
+                    // elements: parenthesizedExpression, SWITCH, switchBlockLabels
                     // token labels: 
                     // rule labels: retval
                     // token list labels: 
@@ -11222,7 +11222,7 @@ public class JavaParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: parenthesizedExpression, SYNCHRONIZED, block
+                    // elements: block, SYNCHRONIZED, parenthesizedExpression
                     // token labels: 
                     // rule labels: retval
                     // token list labels: 
@@ -11286,7 +11286,7 @@ public class JavaParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: expression, RETURN
+                    // elements: RETURN, expression
                     // token labels: 
                     // rule labels: retval
                     // token list labels: 
@@ -11883,8 +11883,8 @@ public class JavaParser extends Parser {
         JavaParser.switchCaseLabels_return switchCaseLabels348 = null;
 
 
-        RewriteRuleSubtreeStream stream_switchDefaultLabel=new RewriteRuleSubtreeStream(adaptor,"rule switchDefaultLabel");
         RewriteRuleSubtreeStream stream_switchCaseLabels=new RewriteRuleSubtreeStream(adaptor,"rule switchCaseLabels");
+        RewriteRuleSubtreeStream stream_switchDefaultLabel=new RewriteRuleSubtreeStream(adaptor,"rule switchDefaultLabel");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 79) ) { return retval; }
             // Java.g:801:5: ( switchCaseLabels ( switchDefaultLabel )? switchCaseLabels -> ^( SWITCH_BLOCK_LABEL_LIST switchCaseLabels ( switchDefaultLabel )? switchCaseLabels ) )
@@ -11928,7 +11928,7 @@ public class JavaParser extends Parser {
 
 
             // AST REWRITE
-            // elements: switchDefaultLabel, switchCaseLabels, switchCaseLabels
+            // elements: switchCaseLabels, switchDefaultLabel, switchCaseLabels
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -12270,8 +12270,8 @@ public class JavaParser extends Parser {
         JavaParser.expressionList_return expressionList358 = null;
 
 
-        RewriteRuleSubtreeStream stream_expressionList=new RewriteRuleSubtreeStream(adaptor,"rule expressionList");
         RewriteRuleSubtreeStream stream_localVariableDeclaration=new RewriteRuleSubtreeStream(adaptor,"rule localVariableDeclaration");
+        RewriteRuleSubtreeStream stream_expressionList=new RewriteRuleSubtreeStream(adaptor,"rule expressionList");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 83) ) { return retval; }
             // Java.g:818:5: ( localVariableDeclaration -> ^( FOR_INIT localVariableDeclaration ) | expressionList -> ^( FOR_INIT expressionList ) | -> ^( FOR_INIT ) )
@@ -12636,8 +12636,8 @@ public class JavaParser extends Parser {
 
         CommonTree LPAREN361_tree=null;
         CommonTree RPAREN363_tree=null;
-        RewriteRuleTokenStream stream_RPAREN=new RewriteRuleTokenStream(adaptor,"token RPAREN");
         RewriteRuleTokenStream stream_LPAREN=new RewriteRuleTokenStream(adaptor,"token LPAREN");
+        RewriteRuleTokenStream stream_RPAREN=new RewriteRuleTokenStream(adaptor,"token RPAREN");
         RewriteRuleSubtreeStream stream_expression=new RewriteRuleSubtreeStream(adaptor,"rule expression");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 86) ) { return retval; }
@@ -14616,10 +14616,10 @@ public class JavaParser extends Parser {
         CommonTree MINUS431_tree=null;
         CommonTree INC433_tree=null;
         CommonTree DEC435_tree=null;
-        RewriteRuleTokenStream stream_DEC=new RewriteRuleTokenStream(adaptor,"token DEC");
         RewriteRuleTokenStream stream_INC=new RewriteRuleTokenStream(adaptor,"token INC");
-        RewriteRuleTokenStream stream_PLUS=new RewriteRuleTokenStream(adaptor,"token PLUS");
         RewriteRuleTokenStream stream_MINUS=new RewriteRuleTokenStream(adaptor,"token MINUS");
+        RewriteRuleTokenStream stream_DEC=new RewriteRuleTokenStream(adaptor,"token DEC");
+        RewriteRuleTokenStream stream_PLUS=new RewriteRuleTokenStream(adaptor,"token PLUS");
         RewriteRuleSubtreeStream stream_postfixedExpression=new RewriteRuleSubtreeStream(adaptor,"rule postfixedExpression");
         RewriteRuleSubtreeStream stream_unaryExpression=new RewriteRuleSubtreeStream(adaptor,"rule unaryExpression");
         try {
@@ -14927,10 +14927,10 @@ public class JavaParser extends Parser {
         CommonTree LOGICAL_NOT440_tree=null;
         CommonTree LPAREN442_tree=null;
         CommonTree RPAREN444_tree=null;
-        RewriteRuleTokenStream stream_RPAREN=new RewriteRuleTokenStream(adaptor,"token RPAREN");
-        RewriteRuleTokenStream stream_LOGICAL_NOT=new RewriteRuleTokenStream(adaptor,"token LOGICAL_NOT");
         RewriteRuleTokenStream stream_NOT=new RewriteRuleTokenStream(adaptor,"token NOT");
         RewriteRuleTokenStream stream_LPAREN=new RewriteRuleTokenStream(adaptor,"token LPAREN");
+        RewriteRuleTokenStream stream_LOGICAL_NOT=new RewriteRuleTokenStream(adaptor,"token LOGICAL_NOT");
+        RewriteRuleTokenStream stream_RPAREN=new RewriteRuleTokenStream(adaptor,"token RPAREN");
         RewriteRuleSubtreeStream stream_unaryExpression=new RewriteRuleSubtreeStream(adaptor,"rule unaryExpression");
         RewriteRuleSubtreeStream stream_type=new RewriteRuleSubtreeStream(adaptor,"rule type");
         try {
@@ -15049,7 +15049,7 @@ public class JavaParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: type, unaryExpression
+                    // elements: unaryExpression, type
                     // token labels: 
                     // rule labels: retval
                     // token list labels: 
@@ -15165,19 +15165,19 @@ public class JavaParser extends Parser {
         CommonTree RBRACK459_tree=null;
         CommonTree INC460_tree=null;
         CommonTree DEC461_tree=null;
-        RewriteRuleTokenStream stream_RBRACK=new RewriteRuleTokenStream(adaptor,"token RBRACK");
-        RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleTokenStream stream_INC=new RewriteRuleTokenStream(adaptor,"token INC");
-        RewriteRuleTokenStream stream_DEC=new RewriteRuleTokenStream(adaptor,"token DEC");
-        RewriteRuleTokenStream stream_LBRACK=new RewriteRuleTokenStream(adaptor,"token LBRACK");
-        RewriteRuleTokenStream stream_SUPER=new RewriteRuleTokenStream(adaptor,"token SUPER");
-        RewriteRuleTokenStream stream_DOT=new RewriteRuleTokenStream(adaptor,"token DOT");
         RewriteRuleTokenStream stream_THIS=new RewriteRuleTokenStream(adaptor,"token THIS");
-        RewriteRuleSubtreeStream stream_expression=new RewriteRuleSubtreeStream(adaptor,"rule expression");
-        RewriteRuleSubtreeStream stream_arguments=new RewriteRuleSubtreeStream(adaptor,"rule arguments");
-        RewriteRuleSubtreeStream stream_primaryExpression=new RewriteRuleSubtreeStream(adaptor,"rule primaryExpression");
+        RewriteRuleTokenStream stream_RBRACK=new RewriteRuleTokenStream(adaptor,"token RBRACK");
+        RewriteRuleTokenStream stream_DOT=new RewriteRuleTokenStream(adaptor,"token DOT");
+        RewriteRuleTokenStream stream_SUPER=new RewriteRuleTokenStream(adaptor,"token SUPER");
+        RewriteRuleTokenStream stream_LBRACK=new RewriteRuleTokenStream(adaptor,"token LBRACK");
+        RewriteRuleTokenStream stream_DEC=new RewriteRuleTokenStream(adaptor,"token DEC");
+        RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleSubtreeStream stream_genericTypeArgumentListSimplified=new RewriteRuleSubtreeStream(adaptor,"rule genericTypeArgumentListSimplified");
         RewriteRuleSubtreeStream stream_innerNewExpression=new RewriteRuleSubtreeStream(adaptor,"rule innerNewExpression");
+        RewriteRuleSubtreeStream stream_primaryExpression=new RewriteRuleSubtreeStream(adaptor,"rule primaryExpression");
+        RewriteRuleSubtreeStream stream_arguments=new RewriteRuleSubtreeStream(adaptor,"rule arguments");
+        RewriteRuleSubtreeStream stream_expression=new RewriteRuleSubtreeStream(adaptor,"rule expression");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 104) ) { return retval; }
             // Java.g:961:5: ( ( primaryExpression -> primaryExpression ) (outerDot= DOT ( ( ( genericTypeArgumentListSimplified )? IDENT -> ^( DOT $postfixedExpression IDENT ) ) ( arguments -> ^( METHOD_CALL $postfixedExpression ( genericTypeArgumentListSimplified )? arguments ) )? | THIS -> ^( DOT $postfixedExpression THIS ) | Super= SUPER arguments -> ^( SUPER_CONSTRUCTOR_CALL[$Super, \"SUPER_CONSTRUCTOR_CALL\"] $postfixedExpression arguments ) | ( SUPER innerDot= DOT IDENT -> ^( $innerDot ^( $outerDot $postfixedExpression SUPER ) IDENT ) ) ( arguments -> ^( METHOD_CALL $postfixedExpression arguments ) )? | innerNewExpression -> ^( DOT $postfixedExpression innerNewExpression ) ) | LBRACK expression RBRACK -> ^( ARRAY_ELEMENT_ACCESS $postfixedExpression expression ) )* ( INC -> ^( POST_INC[$INC, \"POST_INC\"] $postfixedExpression) | DEC -> ^( POST_DEC[$DEC, \"POST_DEC\"] $postfixedExpression) )? )
@@ -15318,7 +15318,7 @@ public class JavaParser extends Parser {
 
 
             	            // AST REWRITE
-            	            // elements: IDENT, postfixedExpression, DOT
+            	            // elements: DOT, IDENT, postfixedExpression
             	            // token labels: 
             	            // rule labels: retval
             	            // token list labels: 
@@ -15367,7 +15367,7 @@ public class JavaParser extends Parser {
 
 
             	                    // AST REWRITE
-            	                    // elements: arguments, postfixedExpression, genericTypeArgumentListSimplified
+            	                    // elements: genericTypeArgumentListSimplified, arguments, postfixedExpression
             	                    // token labels: 
             	                    // rule labels: retval
             	                    // token list labels: 
@@ -15417,7 +15417,7 @@ public class JavaParser extends Parser {
 
 
             	            // AST REWRITE
-            	            // elements: DOT, THIS, postfixedExpression
+            	            // elements: DOT, postfixedExpression, THIS
             	            // token labels: 
             	            // rule labels: retval
             	            // token list labels: 
@@ -15508,16 +15508,16 @@ public class JavaParser extends Parser {
 
 
             	            // AST REWRITE
-            	            // elements: IDENT, outerDot, SUPER, innerDot, postfixedExpression
-            	            // token labels: outerDot, innerDot
+            	            // elements: IDENT, outerDot, SUPER, postfixedExpression, innerDot
+            	            // token labels: innerDot, outerDot
             	            // rule labels: retval
             	            // token list labels: 
             	            // rule list labels: 
             	            // wildcard labels: 
             	            if ( state.backtracking==0 ) {
             	            retval.tree = root_0;
-            	            RewriteRuleTokenStream stream_outerDot=new RewriteRuleTokenStream(adaptor,"token outerDot",outerDot);
             	            RewriteRuleTokenStream stream_innerDot=new RewriteRuleTokenStream(adaptor,"token innerDot",innerDot);
+            	            RewriteRuleTokenStream stream_outerDot=new RewriteRuleTokenStream(adaptor,"token outerDot",outerDot);
             	            RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             	            root_0 = (CommonTree)adaptor.nil();
@@ -15568,7 +15568,7 @@ public class JavaParser extends Parser {
 
 
             	                    // AST REWRITE
-            	                    // elements: postfixedExpression, arguments
+            	                    // elements: arguments, postfixedExpression
             	                    // token labels: 
             	                    // rule labels: retval
             	                    // token list labels: 
@@ -15615,7 +15615,7 @@ public class JavaParser extends Parser {
 
 
             	            // AST REWRITE
-            	            // elements: DOT, innerNewExpression, postfixedExpression
+            	            // elements: innerNewExpression, DOT, postfixedExpression
             	            // token labels: 
             	            // rule labels: retval
             	            // token list labels: 
@@ -15668,7 +15668,7 @@ public class JavaParser extends Parser {
 
 
             	    // AST REWRITE
-            	    // elements: postfixedExpression, expression
+            	    // elements: expression, postfixedExpression
             	    // token labels: 
             	    // rule labels: retval
             	    // token list labels: 
@@ -15887,16 +15887,16 @@ public class JavaParser extends Parser {
         CommonTree VOID488_tree=null;
         CommonTree DOT489_tree=null;
         CommonTree CLASS490_tree=null;
-        RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleTokenStream stream_CLASS=new RewriteRuleTokenStream(adaptor,"token CLASS");
-        RewriteRuleTokenStream stream_VOID=new RewriteRuleTokenStream(adaptor,"token VOID");
-        RewriteRuleTokenStream stream_SUPER=new RewriteRuleTokenStream(adaptor,"token SUPER");
-        RewriteRuleTokenStream stream_DOT=new RewriteRuleTokenStream(adaptor,"token DOT");
         RewriteRuleTokenStream stream_THIS=new RewriteRuleTokenStream(adaptor,"token THIS");
-        RewriteRuleSubtreeStream stream_arrayDeclarator=new RewriteRuleSubtreeStream(adaptor,"rule arrayDeclarator");
-        RewriteRuleSubtreeStream stream_arguments=new RewriteRuleSubtreeStream(adaptor,"rule arguments");
+        RewriteRuleTokenStream stream_DOT=new RewriteRuleTokenStream(adaptor,"token DOT");
+        RewriteRuleTokenStream stream_SUPER=new RewriteRuleTokenStream(adaptor,"token SUPER");
+        RewriteRuleTokenStream stream_VOID=new RewriteRuleTokenStream(adaptor,"token VOID");
+        RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleSubtreeStream stream_primitiveType=new RewriteRuleSubtreeStream(adaptor,"rule primitiveType");
         RewriteRuleSubtreeStream stream_genericTypeArgumentListSimplified=new RewriteRuleSubtreeStream(adaptor,"rule genericTypeArgumentListSimplified");
+        RewriteRuleSubtreeStream stream_arguments=new RewriteRuleSubtreeStream(adaptor,"rule arguments");
+        RewriteRuleSubtreeStream stream_arrayDeclarator=new RewriteRuleSubtreeStream(adaptor,"rule arrayDeclarator");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 105) ) { return retval; }
             // Java.g:988:5: ( parenthesizedExpression | literal | newExpression | qualifiedIdentExpression | genericTypeArgumentListSimplified ( SUPER ( arguments -> ^( SUPER_CONSTRUCTOR_CALL[$SUPER, \"SUPER_CONSTRUCTOR_CALL\"] genericTypeArgumentListSimplified arguments ) | DOT IDENT arguments -> ^( METHOD_CALL ^( DOT SUPER IDENT ) genericTypeArgumentListSimplified arguments ) ) | IDENT arguments -> ^( METHOD_CALL IDENT genericTypeArgumentListSimplified arguments ) | THIS arguments -> ^( THIS_CONSTRUCTOR_CALL[$THIS, \"THIS_CONSTRUCTOR_CALL\"] genericTypeArgumentListSimplified arguments ) ) | ( THIS -> THIS ) ( arguments -> ^( THIS_CONSTRUCTOR_CALL[$THIS, \"THIS_CONSTRUCTOR_CALL\"] arguments ) )? | SUPER arguments -> ^( SUPER_CONSTRUCTOR_CALL[$SUPER, \"SUPER_CONSTRUCTOR_CALL\"] arguments ) | ( SUPER DOT IDENT ) ( arguments -> ^( METHOD_CALL ^( DOT SUPER IDENT ) arguments ) | -> ^( DOT SUPER IDENT ) ) | ( primitiveType -> primitiveType ) ( arrayDeclarator -> ^( arrayDeclarator $primaryExpression) )* DOT CLASS -> ^( DOT $primaryExpression CLASS ) | VOID DOT CLASS -> ^( DOT VOID CLASS ) )
@@ -16078,7 +16078,7 @@ public class JavaParser extends Parser {
 
 
                                     // AST REWRITE
-                                    // elements: DOT, arguments, genericTypeArgumentListSimplified, SUPER, IDENT
+                                    // elements: DOT, arguments, genericTypeArgumentListSimplified, IDENT, SUPER
                                     // token labels: 
                                     // rule labels: retval
                                     // token list labels: 
@@ -16395,7 +16395,7 @@ public class JavaParser extends Parser {
 
 
                             // AST REWRITE
-                            // elements: IDENT, SUPER, DOT, arguments
+                            // elements: SUPER, IDENT, DOT, arguments
                             // token labels: 
                             // rule labels: retval
                             // token list labels: 
@@ -16575,7 +16575,7 @@ public class JavaParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: primaryExpression, CLASS, DOT
+                    // elements: CLASS, primaryExpression, DOT
                     // token labels: 
                     // rule labels: retval
                     // token list labels: 
@@ -16619,7 +16619,7 @@ public class JavaParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: VOID, DOT, CLASS
+                    // elements: CLASS, VOID, DOT
                     // token labels: 
                     // rule labels: retval
                     // token list labels: 
@@ -16723,16 +16723,16 @@ public class JavaParser extends Parser {
         CommonTree IDENT500_tree=null;
         CommonTree IDENT502_tree=null;
         CommonTree THIS504_tree=null;
-        RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleTokenStream stream_CLASS=new RewriteRuleTokenStream(adaptor,"token CLASS");
-        RewriteRuleTokenStream stream_SUPER=new RewriteRuleTokenStream(adaptor,"token SUPER");
-        RewriteRuleTokenStream stream_DOT=new RewriteRuleTokenStream(adaptor,"token DOT");
         RewriteRuleTokenStream stream_THIS=new RewriteRuleTokenStream(adaptor,"token THIS");
-        RewriteRuleSubtreeStream stream_arrayDeclarator=new RewriteRuleSubtreeStream(adaptor,"rule arrayDeclarator");
-        RewriteRuleSubtreeStream stream_arguments=new RewriteRuleSubtreeStream(adaptor,"rule arguments");
-        RewriteRuleSubtreeStream stream_qualifiedIdentifier=new RewriteRuleSubtreeStream(adaptor,"rule qualifiedIdentifier");
+        RewriteRuleTokenStream stream_DOT=new RewriteRuleTokenStream(adaptor,"token DOT");
+        RewriteRuleTokenStream stream_SUPER=new RewriteRuleTokenStream(adaptor,"token SUPER");
+        RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
         RewriteRuleSubtreeStream stream_genericTypeArgumentListSimplified=new RewriteRuleSubtreeStream(adaptor,"rule genericTypeArgumentListSimplified");
         RewriteRuleSubtreeStream stream_innerNewExpression=new RewriteRuleSubtreeStream(adaptor,"rule innerNewExpression");
+        RewriteRuleSubtreeStream stream_qualifiedIdentifier=new RewriteRuleSubtreeStream(adaptor,"rule qualifiedIdentifier");
+        RewriteRuleSubtreeStream stream_arguments=new RewriteRuleSubtreeStream(adaptor,"rule arguments");
+        RewriteRuleSubtreeStream stream_arrayDeclarator=new RewriteRuleSubtreeStream(adaptor,"rule arrayDeclarator");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 106) ) { return retval; }
             // Java.g:1020:5: ( ( qualifiedIdentifier -> qualifiedIdentifier ) ( ( arrayDeclarator -> ^( arrayDeclarator $qualifiedIdentExpression) )+ ( DOT CLASS -> ^( DOT $qualifiedIdentExpression CLASS ) ) | arguments -> ^( METHOD_CALL qualifiedIdentifier arguments ) | outerDot= DOT ( CLASS -> ^( DOT qualifiedIdentifier CLASS ) | genericTypeArgumentListSimplified (Super= SUPER arguments -> ^( SUPER_CONSTRUCTOR_CALL[$Super, \"SUPER_CONSTRUCTOR_CALL\"] qualifiedIdentifier genericTypeArgumentListSimplified arguments ) | SUPER innerDot= DOT IDENT arguments -> ^( METHOD_CALL ^( $innerDot ^( $outerDot qualifiedIdentifier SUPER ) IDENT ) genericTypeArgumentListSimplified arguments ) | IDENT arguments -> ^( METHOD_CALL ^( DOT qualifiedIdentifier IDENT ) genericTypeArgumentListSimplified arguments ) ) | THIS -> ^( DOT qualifiedIdentifier THIS ) | Super= SUPER arguments -> ^( SUPER_CONSTRUCTOR_CALL[$Super, \"SUPER_CONSTRUCTOR_CALL\"] qualifiedIdentifier arguments ) | innerNewExpression -> ^( DOT qualifiedIdentifier innerNewExpression ) ) )? )
@@ -16802,7 +16802,7 @@ public class JavaParser extends Parser {
 
 
                     	    // AST REWRITE
-                    	    // elements: qualifiedIdentExpression, arrayDeclarator
+                    	    // elements: arrayDeclarator, qualifiedIdentExpression
                     	    // token labels: 
                     	    // rule labels: retval
                     	    // token list labels: 
@@ -16853,7 +16853,7 @@ public class JavaParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: CLASS, qualifiedIdentExpression, DOT
+                    // elements: qualifiedIdentExpression, CLASS, DOT
                     // token labels: 
                     // rule labels: retval
                     // token list labels: 
@@ -16897,7 +16897,7 @@ public class JavaParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: arguments, qualifiedIdentifier
+                    // elements: qualifiedIdentifier, arguments
                     // token labels: 
                     // rule labels: retval
                     // token list labels: 
@@ -16978,7 +16978,7 @@ public class JavaParser extends Parser {
 
 
                             // AST REWRITE
-                            // elements: CLASS, DOT, qualifiedIdentifier
+                            // elements: CLASS, qualifiedIdentifier, DOT
                             // token labels: 
                             // rule labels: retval
                             // token list labels: 
@@ -17063,7 +17063,7 @@ public class JavaParser extends Parser {
 
 
                                     // AST REWRITE
-                                    // elements: arguments, genericTypeArgumentListSimplified, qualifiedIdentifier
+                                    // elements: qualifiedIdentifier, arguments, genericTypeArgumentListSimplified
                                     // token labels: 
                                     // rule labels: retval
                                     // token list labels: 
@@ -17114,16 +17114,16 @@ public class JavaParser extends Parser {
 
 
                                     // AST REWRITE
-                                    // elements: arguments, outerDot, qualifiedIdentifier, genericTypeArgumentListSimplified, IDENT, innerDot, SUPER
-                                    // token labels: outerDot, innerDot
+                                    // elements: outerDot, arguments, qualifiedIdentifier, IDENT, genericTypeArgumentListSimplified, SUPER, innerDot
+                                    // token labels: innerDot, outerDot
                                     // rule labels: retval
                                     // token list labels: 
                                     // rule list labels: 
                                     // wildcard labels: 
                                     if ( state.backtracking==0 ) {
                                     retval.tree = root_0;
-                                    RewriteRuleTokenStream stream_outerDot=new RewriteRuleTokenStream(adaptor,"token outerDot",outerDot);
                                     RewriteRuleTokenStream stream_innerDot=new RewriteRuleTokenStream(adaptor,"token innerDot",innerDot);
+                                    RewriteRuleTokenStream stream_outerDot=new RewriteRuleTokenStream(adaptor,"token outerDot",outerDot);
                                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                                     root_0 = (CommonTree)adaptor.nil();
@@ -17179,7 +17179,7 @@ public class JavaParser extends Parser {
 
 
                                     // AST REWRITE
-                                    // elements: arguments, IDENT, genericTypeArgumentListSimplified, DOT, qualifiedIdentifier
+                                    // elements: genericTypeArgumentListSimplified, qualifiedIdentifier, DOT, arguments, IDENT
                                     // token labels: 
                                     // rule labels: retval
                                     // token list labels: 
@@ -17233,7 +17233,7 @@ public class JavaParser extends Parser {
 
 
                             // AST REWRITE
-                            // elements: THIS, qualifiedIdentifier, DOT
+                            // elements: THIS, DOT, qualifiedIdentifier
                             // token labels: 
                             // rule labels: retval
                             // token list labels: 
@@ -17318,7 +17318,7 @@ public class JavaParser extends Parser {
 
 
                             // AST REWRITE
-                            // elements: innerNewExpression, qualifiedIdentifier, DOT
+                            // elements: DOT, innerNewExpression, qualifiedIdentifier
                             // token labels: 
                             // rule labels: retval
                             // token list labels: 
@@ -17411,12 +17411,12 @@ public class JavaParser extends Parser {
 
         CommonTree NEW507_tree=null;
         RewriteRuleTokenStream stream_NEW=new RewriteRuleTokenStream(adaptor,"token NEW");
-        RewriteRuleSubtreeStream stream_newArrayConstruction=new RewriteRuleSubtreeStream(adaptor,"rule newArrayConstruction");
-        RewriteRuleSubtreeStream stream_arguments=new RewriteRuleSubtreeStream(adaptor,"rule arguments");
-        RewriteRuleSubtreeStream stream_qualifiedTypeIdentSimplified=new RewriteRuleSubtreeStream(adaptor,"rule qualifiedTypeIdentSimplified");
         RewriteRuleSubtreeStream stream_primitiveType=new RewriteRuleSubtreeStream(adaptor,"rule primitiveType");
-        RewriteRuleSubtreeStream stream_classBody=new RewriteRuleSubtreeStream(adaptor,"rule classBody");
         RewriteRuleSubtreeStream stream_genericTypeArgumentListSimplified=new RewriteRuleSubtreeStream(adaptor,"rule genericTypeArgumentListSimplified");
+        RewriteRuleSubtreeStream stream_qualifiedTypeIdentSimplified=new RewriteRuleSubtreeStream(adaptor,"rule qualifiedTypeIdentSimplified");
+        RewriteRuleSubtreeStream stream_arguments=new RewriteRuleSubtreeStream(adaptor,"rule arguments");
+        RewriteRuleSubtreeStream stream_newArrayConstruction=new RewriteRuleSubtreeStream(adaptor,"rule newArrayConstruction");
+        RewriteRuleSubtreeStream stream_classBody=new RewriteRuleSubtreeStream(adaptor,"rule classBody");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 107) ) { return retval; }
             // Java.g:1043:5: ( NEW ( primitiveType newArrayConstruction -> ^( STATIC_ARRAY_CREATOR[$NEW, \"STATIC_ARRAY_CREATOR\"] primitiveType newArrayConstruction ) | ( genericTypeArgumentListSimplified )? qualifiedTypeIdentSimplified ( newArrayConstruction -> ^( STATIC_ARRAY_CREATOR[$NEW, \"STATIC_ARRAY_CREATOR\"] ( genericTypeArgumentListSimplified )? qualifiedTypeIdentSimplified newArrayConstruction ) | arguments ( classBody )? -> ^( CLASS_CONSTRUCTOR_CALL[$NEW, \"STATIC_ARRAY_CREATOR\"] ( genericTypeArgumentListSimplified )? qualifiedTypeIdentSimplified arguments ( classBody )? ) ) ) )
@@ -17461,7 +17461,7 @@ public class JavaParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: primitiveType, newArrayConstruction
+                    // elements: newArrayConstruction, primitiveType
                     // token labels: 
                     // rule labels: retval
                     // token list labels: 
@@ -17552,7 +17552,7 @@ public class JavaParser extends Parser {
 
 
                             // AST REWRITE
-                            // elements: newArrayConstruction, qualifiedTypeIdentSimplified, genericTypeArgumentListSimplified
+                            // elements: genericTypeArgumentListSimplified, qualifiedTypeIdentSimplified, newArrayConstruction
                             // token labels: 
                             // rule labels: retval
                             // token list labels: 
@@ -17622,7 +17622,7 @@ public class JavaParser extends Parser {
 
 
                             // AST REWRITE
-                            // elements: arguments, qualifiedTypeIdentSimplified, classBody, genericTypeArgumentListSimplified
+                            // elements: genericTypeArgumentListSimplified, classBody, arguments, qualifiedTypeIdentSimplified
                             // token labels: 
                             // rule labels: retval
                             // token list labels: 
@@ -17722,9 +17722,9 @@ public class JavaParser extends Parser {
         CommonTree IDENT517_tree=null;
         RewriteRuleTokenStream stream_NEW=new RewriteRuleTokenStream(adaptor,"token NEW");
         RewriteRuleTokenStream stream_IDENT=new RewriteRuleTokenStream(adaptor,"token IDENT");
+        RewriteRuleSubtreeStream stream_genericTypeArgumentListSimplified=new RewriteRuleSubtreeStream(adaptor,"rule genericTypeArgumentListSimplified");
         RewriteRuleSubtreeStream stream_arguments=new RewriteRuleSubtreeStream(adaptor,"rule arguments");
         RewriteRuleSubtreeStream stream_classBody=new RewriteRuleSubtreeStream(adaptor,"rule classBody");
-        RewriteRuleSubtreeStream stream_genericTypeArgumentListSimplified=new RewriteRuleSubtreeStream(adaptor,"rule genericTypeArgumentListSimplified");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 108) ) { return retval; }
             // Java.g:1056:5: ( NEW ( genericTypeArgumentListSimplified )? IDENT arguments ( classBody )? -> ^( CLASS_CONSTRUCTOR_CALL[$NEW, \"STATIC_ARRAY_CREATOR\"] ( genericTypeArgumentListSimplified )? IDENT arguments ( classBody )? ) )
@@ -17791,7 +17791,7 @@ public class JavaParser extends Parser {
 
 
             // AST REWRITE
-            // elements: IDENT, classBody, arguments, genericTypeArgumentListSimplified
+            // elements: classBody, arguments, IDENT, genericTypeArgumentListSimplified
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -18049,8 +18049,8 @@ public class JavaParser extends Parser {
 
         CommonTree LPAREN529_tree=null;
         CommonTree RPAREN531_tree=null;
-        RewriteRuleTokenStream stream_RPAREN=new RewriteRuleTokenStream(adaptor,"token RPAREN");
         RewriteRuleTokenStream stream_LPAREN=new RewriteRuleTokenStream(adaptor,"token LPAREN");
+        RewriteRuleTokenStream stream_RPAREN=new RewriteRuleTokenStream(adaptor,"token RPAREN");
         RewriteRuleSubtreeStream stream_expressionList=new RewriteRuleSubtreeStream(adaptor,"rule expressionList");
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 110) ) { return retval; }
@@ -18315,11 +18315,11 @@ public class JavaParser extends Parser {
             {
             int LA166_2 = input.LA(2);
 
-            if ( (LA166_2==LPAREN) ) {
-                alt166=3;
-            }
-            else if ( (LA166_2==DOT||LA166_2==LBRACK||LA166_2==LESS_THAN||LA166_2==IDENT) ) {
+            if ( (LA166_2==DOT||LA166_2==LBRACK||LA166_2==LESS_THAN||LA166_2==IDENT) ) {
                 alt166=1;
+            }
+            else if ( (LA166_2==LPAREN) ) {
+                alt166=3;
             }
             else {
                 if (state.backtracking>0) {state.failed=true; return ;}
@@ -20103,67 +20103,11 @@ public class JavaParser extends Parser {
 
     // Delegated rules
 
-    public final boolean synpred226_Java() {
+    public final boolean synpred16_Java() {
         state.backtracking++;
         int start = input.mark();
         try {
-            synpred226_Java_fragment(); // can never throw exception
-        } catch (RecognitionException re) {
-            System.err.println("impossible: "+re);
-        }
-        boolean success = !state.failed;
-        input.rewind(start);
-        state.backtracking--;
-        state.failed=false;
-        return success;
-    }
-    public final boolean synpred43_Java() {
-        state.backtracking++;
-        int start = input.mark();
-        try {
-            synpred43_Java_fragment(); // can never throw exception
-        } catch (RecognitionException re) {
-            System.err.println("impossible: "+re);
-        }
-        boolean success = !state.failed;
-        input.rewind(start);
-        state.backtracking--;
-        state.failed=false;
-        return success;
-    }
-    public final boolean synpred121_Java() {
-        state.backtracking++;
-        int start = input.mark();
-        try {
-            synpred121_Java_fragment(); // can never throw exception
-        } catch (RecognitionException re) {
-            System.err.println("impossible: "+re);
-        }
-        boolean success = !state.failed;
-        input.rewind(start);
-        state.backtracking--;
-        state.failed=false;
-        return success;
-    }
-    public final boolean synpred76_Java() {
-        state.backtracking++;
-        int start = input.mark();
-        try {
-            synpred76_Java_fragment(); // can never throw exception
-        } catch (RecognitionException re) {
-            System.err.println("impossible: "+re);
-        }
-        boolean success = !state.failed;
-        input.rewind(start);
-        state.backtracking--;
-        state.failed=false;
-        return success;
-    }
-    public final boolean synpred114_Java() {
-        state.backtracking++;
-        int start = input.mark();
-        try {
-            synpred114_Java_fragment(); // can never throw exception
+            synpred16_Java_fragment(); // can never throw exception
         } catch (RecognitionException re) {
             System.err.println("impossible: "+re);
         }
@@ -20187,249 +20131,11 @@ public class JavaParser extends Parser {
         state.failed=false;
         return success;
     }
-    public final boolean synpred97_Java() {
+    public final boolean synpred114_Java() {
         state.backtracking++;
         int start = input.mark();
         try {
-            synpred97_Java_fragment(); // can never throw exception
-        } catch (RecognitionException re) {
-            System.err.println("impossible: "+re);
-        }
-        boolean success = !state.failed;
-        input.rewind(start);
-        state.backtracking--;
-        state.failed=false;
-        return success;
-    }
-    public final boolean synpred102_Java() {
-        state.backtracking++;
-        int start = input.mark();
-        try {
-            synpred102_Java_fragment(); // can never throw exception
-        } catch (RecognitionException re) {
-            System.err.println("impossible: "+re);
-        }
-        boolean success = !state.failed;
-        input.rewind(start);
-        state.backtracking--;
-        state.failed=false;
-        return success;
-    }
-    public final boolean synpred218_Java() {
-        state.backtracking++;
-        int start = input.mark();
-        try {
-            synpred218_Java_fragment(); // can never throw exception
-        } catch (RecognitionException re) {
-            System.err.println("impossible: "+re);
-        }
-        boolean success = !state.failed;
-        input.rewind(start);
-        state.backtracking--;
-        state.failed=false;
-        return success;
-    }
-    public final boolean synpred117_Java() {
-        state.backtracking++;
-        int start = input.mark();
-        try {
-            synpred117_Java_fragment(); // can never throw exception
-        } catch (RecognitionException re) {
-            System.err.println("impossible: "+re);
-        }
-        boolean success = !state.failed;
-        input.rewind(start);
-        state.backtracking--;
-        state.failed=false;
-        return success;
-    }
-    public final boolean synpred79_Java() {
-        state.backtracking++;
-        int start = input.mark();
-        try {
-            synpred79_Java_fragment(); // can never throw exception
-        } catch (RecognitionException re) {
-            System.err.println("impossible: "+re);
-        }
-        boolean success = !state.failed;
-        input.rewind(start);
-        state.backtracking--;
-        state.failed=false;
-        return success;
-    }
-    public final boolean synpred101_Java() {
-        state.backtracking++;
-        int start = input.mark();
-        try {
-            synpred101_Java_fragment(); // can never throw exception
-        } catch (RecognitionException re) {
-            System.err.println("impossible: "+re);
-        }
-        boolean success = !state.failed;
-        input.rewind(start);
-        state.backtracking--;
-        state.failed=false;
-        return success;
-    }
-    public final boolean synpred16_Java() {
-        state.backtracking++;
-        int start = input.mark();
-        try {
-            synpred16_Java_fragment(); // can never throw exception
-        } catch (RecognitionException re) {
-            System.err.println("impossible: "+re);
-        }
-        boolean success = !state.failed;
-        input.rewind(start);
-        state.backtracking--;
-        state.failed=false;
-        return success;
-    }
-    public final boolean synpred147_Java() {
-        state.backtracking++;
-        int start = input.mark();
-        try {
-            synpred147_Java_fragment(); // can never throw exception
-        } catch (RecognitionException re) {
-            System.err.println("impossible: "+re);
-        }
-        boolean success = !state.failed;
-        input.rewind(start);
-        state.backtracking--;
-        state.failed=false;
-        return success;
-    }
-    public final boolean synpred42_Java() {
-        state.backtracking++;
-        int start = input.mark();
-        try {
-            synpred42_Java_fragment(); // can never throw exception
-        } catch (RecognitionException re) {
-            System.err.println("impossible: "+re);
-        }
-        boolean success = !state.failed;
-        input.rewind(start);
-        state.backtracking--;
-        state.failed=false;
-        return success;
-    }
-    public final boolean synpred143_Java() {
-        state.backtracking++;
-        int start = input.mark();
-        try {
-            synpred143_Java_fragment(); // can never throw exception
-        } catch (RecognitionException re) {
-            System.err.println("impossible: "+re);
-        }
-        boolean success = !state.failed;
-        input.rewind(start);
-        state.backtracking--;
-        state.failed=false;
-        return success;
-    }
-    public final boolean synpred190_Java() {
-        state.backtracking++;
-        int start = input.mark();
-        try {
-            synpred190_Java_fragment(); // can never throw exception
-        } catch (RecognitionException re) {
-            System.err.println("impossible: "+re);
-        }
-        boolean success = !state.failed;
-        input.rewind(start);
-        state.backtracking--;
-        state.failed=false;
-        return success;
-    }
-    public final boolean synpred77_Java() {
-        state.backtracking++;
-        int start = input.mark();
-        try {
-            synpred77_Java_fragment(); // can never throw exception
-        } catch (RecognitionException re) {
-            System.err.println("impossible: "+re);
-        }
-        boolean success = !state.failed;
-        input.rewind(start);
-        state.backtracking--;
-        state.failed=false;
-        return success;
-    }
-    public final boolean synpred51_Java() {
-        state.backtracking++;
-        int start = input.mark();
-        try {
-            synpred51_Java_fragment(); // can never throw exception
-        } catch (RecognitionException re) {
-            System.err.println("impossible: "+re);
-        }
-        boolean success = !state.failed;
-        input.rewind(start);
-        state.backtracking--;
-        state.failed=false;
-        return success;
-    }
-    public final boolean synpred100_Java() {
-        state.backtracking++;
-        int start = input.mark();
-        try {
-            synpred100_Java_fragment(); // can never throw exception
-        } catch (RecognitionException re) {
-            System.err.println("impossible: "+re);
-        }
-        boolean success = !state.failed;
-        input.rewind(start);
-        state.backtracking--;
-        state.failed=false;
-        return success;
-    }
-    public final boolean synpred52_Java() {
-        state.backtracking++;
-        int start = input.mark();
-        try {
-            synpred52_Java_fragment(); // can never throw exception
-        } catch (RecognitionException re) {
-            System.err.println("impossible: "+re);
-        }
-        boolean success = !state.failed;
-        input.rewind(start);
-        state.backtracking--;
-        state.failed=false;
-        return success;
-    }
-    public final boolean synpred15_Java() {
-        state.backtracking++;
-        int start = input.mark();
-        try {
-            synpred15_Java_fragment(); // can never throw exception
-        } catch (RecognitionException re) {
-            System.err.println("impossible: "+re);
-        }
-        boolean success = !state.failed;
-        input.rewind(start);
-        state.backtracking--;
-        state.failed=false;
-        return success;
-    }
-    public final boolean synpred123_Java() {
-        state.backtracking++;
-        int start = input.mark();
-        try {
-            synpred123_Java_fragment(); // can never throw exception
-        } catch (RecognitionException re) {
-            System.err.println("impossible: "+re);
-        }
-        boolean success = !state.failed;
-        input.rewind(start);
-        state.backtracking--;
-        state.failed=false;
-        return success;
-    }
-    public final boolean synpred32_Java() {
-        state.backtracking++;
-        int start = input.mark();
-        try {
-            synpred32_Java_fragment(); // can never throw exception
+            synpred114_Java_fragment(); // can never throw exception
         } catch (RecognitionException re) {
             System.err.println("impossible: "+re);
         }
@@ -20453,25 +20159,11 @@ public class JavaParser extends Parser {
         state.failed=false;
         return success;
     }
-    public final boolean synpred92_Java() {
+    public final boolean synpred190_Java() {
         state.backtracking++;
         int start = input.mark();
         try {
-            synpred92_Java_fragment(); // can never throw exception
-        } catch (RecognitionException re) {
-            System.err.println("impossible: "+re);
-        }
-        boolean success = !state.failed;
-        input.rewind(start);
-        state.backtracking--;
-        state.failed=false;
-        return success;
-    }
-    public final boolean synpred90_Java() {
-        state.backtracking++;
-        int start = input.mark();
-        try {
-            synpred90_Java_fragment(); // can never throw exception
+            synpred190_Java_fragment(); // can never throw exception
         } catch (RecognitionException re) {
             System.err.println("impossible: "+re);
         }
@@ -20495,11 +20187,11 @@ public class JavaParser extends Parser {
         state.failed=false;
         return success;
     }
-    public final boolean synpred50_Java() {
+    public final boolean synpred77_Java() {
         state.backtracking++;
         int start = input.mark();
         try {
-            synpred50_Java_fragment(); // can never throw exception
+            synpred77_Java_fragment(); // can never throw exception
         } catch (RecognitionException re) {
             System.err.println("impossible: "+re);
         }
@@ -20509,11 +20201,11 @@ public class JavaParser extends Parser {
         state.failed=false;
         return success;
     }
-    public final boolean synpred14_Java() {
+    public final boolean synpred143_Java() {
         state.backtracking++;
         int start = input.mark();
         try {
-            synpred14_Java_fragment(); // can never throw exception
+            synpred143_Java_fragment(); // can never throw exception
         } catch (RecognitionException re) {
             System.err.println("impossible: "+re);
         }
@@ -20523,11 +20215,39 @@ public class JavaParser extends Parser {
         state.failed=false;
         return success;
     }
-    public final boolean synpred99_Java() {
+    public final boolean synpred226_Java() {
         state.backtracking++;
         int start = input.mark();
         try {
-            synpred99_Java_fragment(); // can never throw exception
+            synpred226_Java_fragment(); // can never throw exception
+        } catch (RecognitionException re) {
+            System.err.println("impossible: "+re);
+        }
+        boolean success = !state.failed;
+        input.rewind(start);
+        state.backtracking--;
+        state.failed=false;
+        return success;
+    }
+    public final boolean synpred52_Java() {
+        state.backtracking++;
+        int start = input.mark();
+        try {
+            synpred52_Java_fragment(); // can never throw exception
+        } catch (RecognitionException re) {
+            System.err.println("impossible: "+re);
+        }
+        boolean success = !state.failed;
+        input.rewind(start);
+        state.backtracking--;
+        state.failed=false;
+        return success;
+    }
+    public final boolean synpred101_Java() {
+        state.backtracking++;
+        int start = input.mark();
+        try {
+            synpred101_Java_fragment(); // can never throw exception
         } catch (RecognitionException re) {
             System.err.println("impossible: "+re);
         }
@@ -20542,6 +20262,132 @@ public class JavaParser extends Parser {
         int start = input.mark();
         try {
             synpred234_Java_fragment(); // can never throw exception
+        } catch (RecognitionException re) {
+            System.err.println("impossible: "+re);
+        }
+        boolean success = !state.failed;
+        input.rewind(start);
+        state.backtracking--;
+        state.failed=false;
+        return success;
+    }
+    public final boolean synpred92_Java() {
+        state.backtracking++;
+        int start = input.mark();
+        try {
+            synpred92_Java_fragment(); // can never throw exception
+        } catch (RecognitionException re) {
+            System.err.println("impossible: "+re);
+        }
+        boolean success = !state.failed;
+        input.rewind(start);
+        state.backtracking--;
+        state.failed=false;
+        return success;
+    }
+    public final boolean synpred43_Java() {
+        state.backtracking++;
+        int start = input.mark();
+        try {
+            synpred43_Java_fragment(); // can never throw exception
+        } catch (RecognitionException re) {
+            System.err.println("impossible: "+re);
+        }
+        boolean success = !state.failed;
+        input.rewind(start);
+        state.backtracking--;
+        state.failed=false;
+        return success;
+    }
+    public final boolean synpred123_Java() {
+        state.backtracking++;
+        int start = input.mark();
+        try {
+            synpred123_Java_fragment(); // can never throw exception
+        } catch (RecognitionException re) {
+            System.err.println("impossible: "+re);
+        }
+        boolean success = !state.failed;
+        input.rewind(start);
+        state.backtracking--;
+        state.failed=false;
+        return success;
+    }
+    public final boolean synpred147_Java() {
+        state.backtracking++;
+        int start = input.mark();
+        try {
+            synpred147_Java_fragment(); // can never throw exception
+        } catch (RecognitionException re) {
+            System.err.println("impossible: "+re);
+        }
+        boolean success = !state.failed;
+        input.rewind(start);
+        state.backtracking--;
+        state.failed=false;
+        return success;
+    }
+    public final boolean synpred117_Java() {
+        state.backtracking++;
+        int start = input.mark();
+        try {
+            synpred117_Java_fragment(); // can never throw exception
+        } catch (RecognitionException re) {
+            System.err.println("impossible: "+re);
+        }
+        boolean success = !state.failed;
+        input.rewind(start);
+        state.backtracking--;
+        state.failed=false;
+        return success;
+    }
+    public final boolean synpred50_Java() {
+        state.backtracking++;
+        int start = input.mark();
+        try {
+            synpred50_Java_fragment(); // can never throw exception
+        } catch (RecognitionException re) {
+            System.err.println("impossible: "+re);
+        }
+        boolean success = !state.failed;
+        input.rewind(start);
+        state.backtracking--;
+        state.failed=false;
+        return success;
+    }
+    public final boolean synpred121_Java() {
+        state.backtracking++;
+        int start = input.mark();
+        try {
+            synpred121_Java_fragment(); // can never throw exception
+        } catch (RecognitionException re) {
+            System.err.println("impossible: "+re);
+        }
+        boolean success = !state.failed;
+        input.rewind(start);
+        state.backtracking--;
+        state.failed=false;
+        return success;
+    }
+    public final boolean synpred97_Java() {
+        state.backtracking++;
+        int start = input.mark();
+        try {
+            synpred97_Java_fragment(); // can never throw exception
+        } catch (RecognitionException re) {
+            System.err.println("impossible: "+re);
+        }
+        boolean success = !state.failed;
+        input.rewind(start);
+        state.backtracking--;
+        state.failed=false;
+        return success;
+    }
+    public final boolean synpred32_Java() {
+        state.backtracking++;
+        int start = input.mark();
+        try {
+            synpred32_Java_fragment(); // can never throw exception
         } catch (RecognitionException re) {
             System.err.println("impossible: "+re);
         }
@@ -20570,6 +20416,160 @@ public class JavaParser extends Parser {
         int start = input.mark();
         try {
             synpred44_Java_fragment(); // can never throw exception
+        } catch (RecognitionException re) {
+            System.err.println("impossible: "+re);
+        }
+        boolean success = !state.failed;
+        input.rewind(start);
+        state.backtracking--;
+        state.failed=false;
+        return success;
+    }
+    public final boolean synpred99_Java() {
+        state.backtracking++;
+        int start = input.mark();
+        try {
+            synpred99_Java_fragment(); // can never throw exception
+        } catch (RecognitionException re) {
+            System.err.println("impossible: "+re);
+        }
+        boolean success = !state.failed;
+        input.rewind(start);
+        state.backtracking--;
+        state.failed=false;
+        return success;
+    }
+    public final boolean synpred218_Java() {
+        state.backtracking++;
+        int start = input.mark();
+        try {
+            synpred218_Java_fragment(); // can never throw exception
+        } catch (RecognitionException re) {
+            System.err.println("impossible: "+re);
+        }
+        boolean success = !state.failed;
+        input.rewind(start);
+        state.backtracking--;
+        state.failed=false;
+        return success;
+    }
+    public final boolean synpred90_Java() {
+        state.backtracking++;
+        int start = input.mark();
+        try {
+            synpred90_Java_fragment(); // can never throw exception
+        } catch (RecognitionException re) {
+            System.err.println("impossible: "+re);
+        }
+        boolean success = !state.failed;
+        input.rewind(start);
+        state.backtracking--;
+        state.failed=false;
+        return success;
+    }
+    public final boolean synpred42_Java() {
+        state.backtracking++;
+        int start = input.mark();
+        try {
+            synpred42_Java_fragment(); // can never throw exception
+        } catch (RecognitionException re) {
+            System.err.println("impossible: "+re);
+        }
+        boolean success = !state.failed;
+        input.rewind(start);
+        state.backtracking--;
+        state.failed=false;
+        return success;
+    }
+    public final boolean synpred15_Java() {
+        state.backtracking++;
+        int start = input.mark();
+        try {
+            synpred15_Java_fragment(); // can never throw exception
+        } catch (RecognitionException re) {
+            System.err.println("impossible: "+re);
+        }
+        boolean success = !state.failed;
+        input.rewind(start);
+        state.backtracking--;
+        state.failed=false;
+        return success;
+    }
+    public final boolean synpred14_Java() {
+        state.backtracking++;
+        int start = input.mark();
+        try {
+            synpred14_Java_fragment(); // can never throw exception
+        } catch (RecognitionException re) {
+            System.err.println("impossible: "+re);
+        }
+        boolean success = !state.failed;
+        input.rewind(start);
+        state.backtracking--;
+        state.failed=false;
+        return success;
+    }
+    public final boolean synpred102_Java() {
+        state.backtracking++;
+        int start = input.mark();
+        try {
+            synpred102_Java_fragment(); // can never throw exception
+        } catch (RecognitionException re) {
+            System.err.println("impossible: "+re);
+        }
+        boolean success = !state.failed;
+        input.rewind(start);
+        state.backtracking--;
+        state.failed=false;
+        return success;
+    }
+    public final boolean synpred100_Java() {
+        state.backtracking++;
+        int start = input.mark();
+        try {
+            synpred100_Java_fragment(); // can never throw exception
+        } catch (RecognitionException re) {
+            System.err.println("impossible: "+re);
+        }
+        boolean success = !state.failed;
+        input.rewind(start);
+        state.backtracking--;
+        state.failed=false;
+        return success;
+    }
+    public final boolean synpred51_Java() {
+        state.backtracking++;
+        int start = input.mark();
+        try {
+            synpred51_Java_fragment(); // can never throw exception
+        } catch (RecognitionException re) {
+            System.err.println("impossible: "+re);
+        }
+        boolean success = !state.failed;
+        input.rewind(start);
+        state.backtracking--;
+        state.failed=false;
+        return success;
+    }
+    public final boolean synpred79_Java() {
+        state.backtracking++;
+        int start = input.mark();
+        try {
+            synpred79_Java_fragment(); // can never throw exception
+        } catch (RecognitionException re) {
+            System.err.println("impossible: "+re);
+        }
+        boolean success = !state.failed;
+        input.rewind(start);
+        state.backtracking--;
+        state.failed=false;
+        return success;
+    }
+    public final boolean synpred76_Java() {
+        state.backtracking++;
+        int start = input.mark();
+        try {
+            synpred76_Java_fragment(); // can never throw exception
         } catch (RecognitionException re) {
             System.err.println("impossible: "+re);
         }

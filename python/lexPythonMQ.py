@@ -21,7 +21,7 @@ class LexPyMQ(object):
 			if not msg.get('python'):
 				err('received non-python code')
 			code = msg.get('body', '')
-			self.socket.send_json(tokenize.generate_tokens(StringIO(code)))
+			self.socket.send_json(list(tokenize.generate_tokens(StringIO(code).readline)))
 
 if __name__ == '__main__':
 	LexPyMQ().run()

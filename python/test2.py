@@ -1,1 +1,2 @@
-stuff.method()
+while True:
+	print stuff.method()

@@ -1,0 +1,11 @@
+*.cfg
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*~
+*.cls
+*.sty
+IEEEtran.bst
+*.kate-swp

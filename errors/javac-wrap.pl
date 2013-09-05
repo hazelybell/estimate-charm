@@ -7,15 +7,21 @@ $|=1;
 use IPC::Open3;
 use IPC::Open2;
 use IO::Handle;
+use IPC::System::Simple;
+use autodie qw(:all);
 # use Symbol;
 use List::Util qw(max min);
 $SIG{PIPE} = 'IGNORE';
 use ZeroMQ qw/:all/;
+my $ctxt = ZeroMQ::Context->new();
+
 use Data::Dumper;
 use Digest::MD5 qw(md5 md5_hex md5_base64);
 use List::Util;
 use Text::CSV;
 use File::Basename;
+use Scalar::Util qw(looks_like_number);
+
 
 my $real_javac = $ENV{JAVAC_WRAPPER_REAL_JAVAC} ? $ENV{JAVAC_WRAPPER_REAL_JAVAC} : qx{which javac};
 chomp $real_javac;
@@ -89,32 +95,48 @@ sub attempt_compile {
 }
 
 my ($lmout, $lmerr, $lmin, $lmpid);
+my ($mitlmSocket, $mitlmSocketPath);
 
 sub startMITLM {
   die "No corpus: $corpus" unless -e $corpus;
-  my @run = ('-t', $corpus, '-o', $order, '-s', 'ModKN', '-u', '-live-prob');
+  $mitlmSocketPath = "ipc:///tmp/uc-$$";
+  my @run = ('-t', $corpus, '-o', $order+1, '-s', 'ModKN', '-u', '-live-prob', $mitlmSocketPath);
   print STDERR  "Corpus ok. MITLM starting: $estimateNgram " . join(" ", @run);
-  $lmpid = open2($lmout, $lmin, join(" ", "(", $estimateNgram, @run, ";)")) or print $?;
+  exec($estimateNgram, @run) unless ($lmpid = fork);
+#   $lmpid = open2($lmout, $lmin, join(" ", "(", $estimateNgram, @run, ";)")) or print $?;
   print STDERR "Started MITLM as pid $lmpid";
-  while(my $line = <$lmout>) {
-      chomp($line);
-      print STDERR "[mitlm] $line";
-      if ($line =~ m/Live Entropy Ready/) {
-	print STDERR "MITLM ready";  
-	last;
-      }
+#   while(my $line = <$lmout>) {
+#       chomp($line);
+#       print STDERR "[mitlm] $line";
+#       if ($line =~ m/Live Entropy Ready/) {
+# 	print STDERR "MITLM ready";  
+# 	last;
+#       }
+#   }
+  # Connect to MITLM ZMQ Socket
+  $mitlmSocket = ZeroMQ::Socket->new( $ctxt, ZMQ_REQ );
+  $mitlmSocket->connect( $mitlmSocketPath ); # 
+  $mitlmSocket->send("for ( i =");
+  my $resp = $mitlmSocket->recv()->data();
+  print STDERR "MITLM said $resp";
+  if (looks_like_number($resp) && $resp > 0) {
+    print STDERR "MITLM seems okay";
+  } else {
+    die;
   }
-  print $lmin "for ( i =";
-  print $!;
-  my $i = 0;
-  while(my $line = <$lmout>) {
-      chomp($line);
-      print "MITLM said $line";
-      $i++ if ($line =~ m/Live Entropy ([-\d.]+)/);
-      last if $i >= 1;
-  }
-  print STDERR "MITLM seems okay";
 }
+#   print $lmin "for ( i =";
+#   print $!;    [javac] Can't call method "close" on an undefined value at /home/joshua/projects/ngram-complete-dist/errors/javac-wrap.pl line 399.
+
+#   my $i = 0;
+#   while(my $line = <$lmout>) {
+#       chomp($line);
+#       print "MITLM said $line";
+#       $i++ if ($line =~ m/Live Entropy ([-\d.]+)/);
+#       last if $i >= 1;
+#   }
+#   print STDERR "MITLM seems okay";
+# }
 
   sub javaCommentHack {
       my ($text) = @_;
@@ -130,7 +152,6 @@ sub startMITLM {
       return $text;
   };
 
-my $ctxt = ZeroMQ::Context->new();    
 my $socket = ZeroMQ::Socket->new( $ctxt, ZMQ_REQ );
 $socket->connect( "tcp://127.0.0.1:32132" ); # java lexer
 # 
@@ -206,7 +227,7 @@ sub toksToTrain {
 
 sub toksToQuery {
   my ($toks) = @_;
-  return join(" ", map { $_->[0] } @$toks);
+  return join(" ", map { $_->[0] } @$toks) . " ";
 }
 
 sub toksToCode {
@@ -230,14 +251,10 @@ sub findNWorst {
   my @toks = @$toks;
   my @possibilities;
   for (my $i = 0; $i < ($#toks-($block)); $i += $step) {
-#     print STDOUT toksToQuery([ @toks[$i..$i+($block-1)] ]);
-    print $lmin toksToQuery([ @toks[$i..$i+($block-1)] ]);
-    my $entropy;
-    while(my $line = <$lmout>) {
-	chomp($line);
-#         print "MITLM said $line";
-	last if (($entropy) = ($line =~ m/Live Entropy ([-\d.]+)/));
-    }
+#     print STDERR toksToQuery([ @toks[$i..$i+($block-1)] ]);
+    $mitlmSocket->send(toksToQuery([ @toks[$i..$i+($block-1)] ]));
+    my $entropy = $mitlmSocket->recv()->data();
+#     print STDERR $entropy;
     push @possibilities, [ [ @toks[$i..$i+($block-1)] ], $entropy ];
   }
   @possibilities = sort { $b->[1] <=> $a->[1] } @possibilities;
@@ -380,10 +397,14 @@ unless ($validate) {
 for (%possible_bad_files) { print LOGFILE; }
 
 close LOGFILE;
-defined ($lmin) and close $lmin;
-defined ($lmout) and close $lmout;
-
+$socket->setsockopt(ZMQ_LINGER, 0);
 $socket->close();
+if(defined($mitlmSocket)) {
+    $mitlmSocket->setsockopt(ZMQ_LINGER, 0);
+    $mitlmSocket->close();
+}
 $ctxt->term();
+kill 1, $lmpid;
+wait;
 
 exit $main_compile_status;

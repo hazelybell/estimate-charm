@@ -1,8 +1,9 @@
 CLASSPATH=/usr/share/java/antlr3-runtime.jar:.:${HOME}/projects/jzmq/src/zmq.jar
-default: LexJava.class
+default: LexJavaMQ.class
+BUILTJAVAFILES="JavaLexer.java CLexer.java PythonLexer.java FortranLexer.java"
 
 clean:
-	rm *class JavaLexer.java Java.tokens || echo Already Done
+	rm *class JavaLexer.java Java.tokens ${BUILTJAVAFILES} || echo Already Done
 
 JavaLexer.java: Java.g
 	antlr3 Java.g
@@ -23,5 +24,5 @@ LexJavaMQ.class: LexJava.class LexJavaMQ.java
 	javac -cp $(CLASSPATH) $<
 
 run: LexJavaMQ.class
-	java -Xmx1000m -server -Djava.library.path=/usr/local/lib -classpath $(CLASSPATH) LexJavaMQ
+	java -Xmx1000m -server -Djava.library.path=/usr/local/lib:${HOME}/projects/jzmq/src/.libs -classpath $(CLASSPATH) LexJavaMQ
 

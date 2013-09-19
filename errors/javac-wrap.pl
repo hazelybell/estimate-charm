@@ -64,12 +64,13 @@ my %possible_bad_files;
 
 sub attempt_compile {
 #   print LOGFILE join(' ', @_);
-  my $ccout;
-  my $pid = open3("<&STDIN", $ccout, $ccout, $real_javac, @_) or die $?;
+  my ($ccout, $ccin);
+  print join(" ", $real_javac, @_);
+  my $pid = open3($ccin, $ccout, $ccout, $real_javac, @_) or die $?;
   my $compile_error = 0;
   my %files_mentioned;
   my $status;
-  my @results;
+  my @results; 
 
   while (<$ccout>) {
     chomp;
@@ -101,10 +102,10 @@ sub startMITLM {
   die "No corpus: $corpus" unless -e $corpus;
   $mitlmSocketPath = "ipc:///tmp/uc-$$";
   my @run = ('-t', $corpus, '-o', $order+1, '-s', 'ModKN', '-u', '-live-prob', $mitlmSocketPath);
-  print STDERR  "Corpus ok. MITLM starting: $estimateNgram " . join(" ", @run);
+  print  "Corpus ok. MITLM starting: $estimateNgram " . join(" ", @run);
   exec($estimateNgram, @run) unless ($lmpid = fork);
 #   $lmpid = open2($lmout, $lmin, join(" ", "(", $estimateNgram, @run, ";)")) or print $?;
-  print STDERR "Started MITLM as pid $lmpid";
+  print "Started MITLM as pid $lmpid";
 #   while(my $line = <$lmout>) {
 #       chomp($line);
 #       print STDERR "[mitlm] $line";
@@ -118,9 +119,9 @@ sub startMITLM {
   $mitlmSocket->connect( $mitlmSocketPath ); # 
   $mitlmSocket->send("for ( i =");
   my $resp = $mitlmSocket->recv()->data();
-  print STDERR "MITLM said $resp";
+  print "MITLM said $resp";
   if (looks_like_number($resp) && $resp > 0) {
-    print STDERR "MITLM seems okay";
+    print "MITLM seems okay";
   } else {
     die;
   }
@@ -207,9 +208,9 @@ sub slurpAFile {
 }
 
 sub replaceAFile {
+  my ($file, $text) = @_;
   local $/ = '';
   local $\ = '';
-  my ($file, $text) = @_;
   open OUTPUTFILE, '>', $file or die;
   print OUTPUTFILE $text or die;
   close OUTPUTFILE or die;
@@ -265,11 +266,11 @@ sub printNWorst {
   my ($worst) = @_;
   for my $i (0..$N) {
 #     print (STDERR Dumper $worst);
-    print(STDERR "Check near " . $worst->[$i][0][0][1].":".$worst->[$i][0][0][2]
+    print("Check near " . $worst->[$i][0][0][1].":".$worst->[$i][0][0][2]
       . " to " . $worst->[$i][0][$#{$worst->[$i][0]}][1].":".$worst->[$i][0][$#{$worst->[$i][0]}][2]);
 #         my $code = join('', @{$worst[$i][0]});
 #         print(STDERR "Check near " .$code);
-    print(STDERR "With entropy " . $worst->[$i][1]);
+    print("With entropy " . $worst->[$i][1]);
   }
 }
 
@@ -285,9 +286,9 @@ unless ($validate) {
       for my $source (keys(%possible_bad_files)) {
         my ($return) = attempt_compile(@ARGV_NO_LISTS, $source);
         unless ($return) {
-          print(STDERR "Maybe the error was in $source?");
+          print("Maybe the error was in $source?");
           my @toks = @{lexAfile($source)};
-          print STDERR "Slurped " . @toks . " tokens.";
+          print "Slurped " . @toks . " tokens.";
           
           printNWorst(findNWorst(\@toks));
         }
@@ -303,7 +304,7 @@ unless ($validate) {
     }
   } else {
     my ($validateMode, $validateNumber) = split(' ', $validate);
-    my $testlogfile = dirname($logfile)."/javactestlog-".$validateMode."-".substr(md5_base64(join(chr(0),@inputfiles)),0,5);
+    my $testlogfile = dirname($logfile)."/javactestlog-".$validateMode."-".substr(md5_hex(join(chr(0),@inputfiles)),0,5);
     my $csv = Text::CSV->new ( { binary => 1, eol => "\n" } )  # should set binary attribute.
                     or die "Cannot use CSV: ".Text::CSV->error_diag ();
     my $testlogfh;
@@ -318,7 +319,7 @@ unless ($validate) {
       my $tries = 0;
       my $originalsource = slurpAFile($source);
       my @toks = @{lex($originalsource)};
-      print STDERR "Slurped " . @toks . " tokens.";
+      print "Slurped " . @toks . " tokens.";
       if (scalar(@toks) < 10) { next; }
       my $worst = findNWorst(\@toks);
       printNWorst($worst);
@@ -348,7 +349,7 @@ unless ($validate) {
 	  die "what?"
 	}
 	replaceAFile($source, toksToCode(\@mutatedToks));
-	print STDERR "Mutated $source:$mutline:$mutchar";
+	print "Mutated $source:$mutline:$mutchar";
 	my $ourResults = findNWorst(\@mutatedToks);
 	printNWorst($ourResults);
         my $ourindex = 0;
@@ -385,10 +386,10 @@ unless ($validate) {
         $combinedb += max(1.0/(2.0*$jcindex), 1.0/(2.0*$ourindex-1));
 	$tries += 1;
 	replaceAFile($source, $originalsource);
-        print STDERR "Our MRR: " . $oursum/$tries;
-        print STDERR "JavaC MRR: " . $jcsum/$tries;
-        print STDERR "JavaC,Our MRR: " . $combineda/$tries;
-        print STDERR "Our,JavaC MRR: " . $combinedb/$tries;
+        print "Our MRR: " . $oursum/$tries;
+        print "JavaC MRR: " . $jcsum/$tries;
+        print "JavaC,Our MRR: " . $combineda/$tries;
+        print "Our,JavaC MRR: " . $combinedb/$tries;
       }
       $csv->print($testlogfh, [basename($source), scalar(@toks), $validateNumber, $oursum/$tries, $jcsum/$tries, $combineda/$tries, $combinedb/$tries]);
    }
@@ -404,7 +405,9 @@ if(defined($mitlmSocket)) {
     $mitlmSocket->close();
 }
 $ctxt->term();
-kill 1, $lmpid;
-wait;
+if ($lmpid) {
+    kill 1, $lmpid;
+    wait;
+}
 
 exit $main_compile_status;

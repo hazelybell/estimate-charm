@@ -24,5 +24,5 @@ LexJavaMQ.class: LexJava.class LexJavaMQ.java
 	javac -cp $(CLASSPATH) $<
 
 run: LexJavaMQ.class
-	java -Xmx1000m -server -Djava.library.path=/usr/local/lib -classpath $(CLASSPATH) LexJavaMQ
+	java -Xmx1000m -server -Djava.library.path=/usr/local/lib:${HOME}/projects/jzmq/src/.libs -classpath $(CLASSPATH) LexJavaMQ
 

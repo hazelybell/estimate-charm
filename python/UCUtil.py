@@ -6,26 +6,31 @@ import json
 
 ws = re.compile('^\s+$')
 
+class corpusModel(object):
+    def __init__(self, readCorpus=None, writeCorpus=None, logFilePath=None, estimateNgramPath=None):
+        self.readCorpus = (readCorpus or os.getenv("ucCorpus", "/tmp/ucCorpus"))
+        self.writeCorpus = (writeCorpus or os.getenv("ucWriteCorpus", self.readCorpus))
+        self.logFilePath = (logFilePath or os.getenv("ucLogFile", "/tmp/ucLog-%i" % os.getpid()))
+        self.mitlmSocketPath = "ipc://%s-%i-%i" % (os.path.dirname(self.logFilePath), os.getpid(), id(self))
+        self.estimateNgramPath = (estimateNgramPath or os.getenv("ESTIMATENGRAM", os.popen('which estimate-ngram').read()))
+    def startMitlm(self):
+        assert exists(self.readCorpus), "No such corpus."
+        assert exists(self.estimateNgramPath), "No such estimate-ngram."
+        self.mitlmPID = os.fork()
+        if self.mitlmPID == 0:
+            os.execv(self.estimateNgramPath, ["-t", self.readCorpus, "-o", order+1, "-s", "ModKN", "-u", "-live-prob", self.mitlmSocketPath])
+            assert false, "Failed to exec."
+        print "Started MITLM as PID %i." % self.mitlmPID
+        self.mitlmSocket = zctx.socket(zmq.REQ)
+        self.mitlmSocket.connect(mitlmSocketPath)
+        self.mitlmSocket.send("for ( i =")
+        r = float(self.mitlmSocket.recv().data())
+        print "MITLM said %f" % r
+        
+
 def toBool(inputString):
     return json.loads(inputString)
 
-def startMitlm():
-    assert exists(readCorpus), "No such corpus."
-    assert exists(estimateNgramPath), "No such estimate-ngram."
-    global mitlmSocketPath
-    mitlmSocketPath = "ipc:///tmp/ucSocket-%i" % os.getpid()
-    global mitlmPID 
-    mitlmPID = os.fork()
-    if mitlmPID == 0:
-        os.execv(estimateNgramPath, ["-t", readCorpus, "-o", order+1, "-s", "ModKN", "-u", "-live-prob", mitlmSocketPath])
-        assert false, "Failed to exec."
-    print "Started MITLM as PID %i." % mitlmPID
-    global mitlmSocket
-    mitlmSocket = zctx.socket(zmq.REQ)
-    mitlmSocket.connect(mitlmSocketPath)
-    mitlmSocket.send("for ( i =")
-    r = float(mitlmSocket.recv().data())
-    print "MITLM said %f" % r
     
 def corpify1(lexeme):
     if ws.match(str(lexeme['value'])) :
@@ -40,11 +45,7 @@ def corpify(inputLexed):
     return " ".join(map(corpify1, inputLexed))
     
 
-readCorpus = os.getenv("ucCorpus", "/tmp/ucCorpus")
-writeCorpus = os.getenv("ucWriteCorpus", readCorpus)
-logFilePath = os.getenv("ucLogFile", "/tmp/ucLog-%i" % os.getpid())
 #corpusFH = open(writeCorpus, "a")
-estimateNgramPath = os.getenv("ESTIMATENGRAM", os.popen('which estimate-ngram').read())
 forceTrain = toBool(os.getenv("ucForceTrain", "false"))
 forceValidate = toBool(os.getenv("ucValidate", "false"))
 

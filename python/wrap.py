@@ -1,6 +1,9 @@
+#!/usr/bin/env python
 import re, runpy, sys, traceback
 
 from UCUtil import *
+
+startMitlm()
 
 name_err_extract = re.compile(r"^name\s+'([^']+)'")
 

@@ -3,16 +3,12 @@
 import sys, token, tokenize, zmq;
 from StringIO import StringIO
 
-def err(msg):
-	sys.err.write(str(msg) + '\n')
-
-
 class LexPy(object):
 	
 	def __init__(self):
 		pass
 
-	def lex(code):
+	def lex(self, code):
 		def tup_to_dict(tup):
 			# tup = [type, val, [startrow, col], [endrow, col], line]
 			return {
@@ -38,8 +34,7 @@ class LexPyMQ(object):
 		while True:
 			msg = self.socket.recv_json(0)
 			# there are definitely new lines in the code
-			if not msg.get('python'):
-				err('received non-python code')
+			assert msg.get('python'), 'received non-python code'
 			code = msg.get('body', '')
 			self.socket.send_json(list(tokenize.generate_tokens(StringIO(code).readline)))
 

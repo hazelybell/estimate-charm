@@ -9,3 +9,4 @@
 *.sty
 IEEEtran.bst
 *.kate-swp
+*.pyc

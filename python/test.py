@@ -1,7 +1,7 @@
 import unittest
-from UCUtil import *
+from UCUtil, lexPythonMQ import *
 import os, os.path, zmq, sys
-from lexPythonMQ import *
+from tempfile import *
 
 somePythonCode = "print (1+2**2)"
 someLexemes = [{'end': (1, 5), 'start': (1, 0), 'type': 'NAME', 'value': 'print'},
@@ -84,11 +84,15 @@ class testLexPy(unittest.TestCase):
 class testUCUtilWithCorpus(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        print "x"
+        global readCorpus
+        global writeCorpus
+        global logFilePath
     @classmethod
     def tearDownClass(self):
-        print "y"
-
+        global readCorpus
+        global writeCorpus
+        global logFilePath
+        
         
 
 #hamburgers

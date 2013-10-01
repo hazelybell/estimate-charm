@@ -3,7 +3,7 @@
 import sys, token, tokenize, zmq;
 from StringIO import StringIO
 
-class LexPy(object):
+class pythonLexicalModel(object):
 	
 	def __init__(self):
 		pass

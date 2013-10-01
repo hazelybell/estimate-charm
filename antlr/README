@@ -1,0 +1,75 @@
+The first attempt at packaging the emacs n-gram completer.
+
+Must be installed to ~/projects/ngram-complete-dist
+
+Currently hardcoded for java
+
+Require a modified version of MITLM https://github.com/abramhindle/MIT-Language-Modeling-Toolkit
+
+put into ~/projects/mitlm 
+
+
+== Installation
+
+Get jzmq http://www.zeromq.org/bindings:java
+	git clone https://github.com/zeromq/jzmq.git
+	cd jzmq
+	autogen.sh
+	./configure
+	make
+	sudo make install
+
+Get modified mitlm  https://github.com/abramhindle/MIT-Language-Modeling-Toolkit
+	git clone  https://github.com/abramhindle/MIT-Language-Modeling-Toolkit.git mitlm
+	cd mitlm
+	./autogen.sh
+	make
+	
+get antlr3
+	sudo apt-get install antlr3
+
+build antlr stuff
+	cd ngram-complete-dist/antlr
+	make
+
+install perl reqs:
+	sudo aptitude install  libmoosex-singleton-perl  libmoosex-yaml-perl  libmoose-perl  libany-moose-perl  libmoose-autobox-perl libzeromq-perl
+
+== Running	
+
+	cd ngram-complete-dist/emacs
+	make run-java-lexer
+	perl ngram-completer -server 1
+
+then you can run
+	perl ngram-completer -client 1
+And type in text to complete
+	
+In emacs you can eval ngrams.elisp to get code completion added
+
+
+== LICENSING
+
+Assume GPL2+ for a license unless otherwise specified.
+
+Assume this default license:
+
+    Copyright 2010,2011,2012 Abram Hindle, Prem Devanbu, Earl T. Barr, Daryl Posnett
+
+    This file is part of ngram-complete
+
+    ngram-complete is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Foobar is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
+
+data/lucene-split is under the apache 2.0 license: http://www.apache.org/licenses/LICENSE-2.0.html (it is a derivative work of data)

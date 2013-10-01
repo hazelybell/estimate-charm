@@ -1,75 +1,70 @@
-The first attempt at packaging the emacs n-gram completer.
+********** ABOUT ***************************************************************
 
-Must be installed to ~/projects/ngram-complete-dist
+    UnnaturalCode is a system with the purpose of augmenting the compiler's own
+syntax error location strategies. It is designed to assist the developer in
+locating syntax errors in their software. For more information, please consult
+the current draft of the UnnaturalCode paper (on submission) at:
 
-Currently hardcoded for java
+    http://webdocs.cs.ualberta.ca/~joshua2/syntax.pdf
 
-Require a modified version of MITLM https://github.com/abramhindle/MIT-Language-Modeling-Toolkit
+UnnaturalCode should be considered proof-of-concept quality software. The 
+primary author of UnnaturalCode can be reached at:
 
-put into ~/projects/mitlm 
+    unnaturalcode@orezpraw.com
 
+********** INSTALLATION ********************************************************
 
-== Installation
+Requires the modified version of MITLM available at:
+https://github.com/orezpraw/MIT-Language-Modeling-Toolkit
 
 Get jzmq http://www.zeromq.org/bindings:java
-	git clone https://github.com/zeromq/jzmq.git
-	cd jzmq
-	autogen.sh
-	./configure
-	make
-	sudo make install
+    git clone https://github.com/zeromq/jzmq.git
+    cd jzmq
+    autogen.sh
+    ./configure
+    make
+    sudo make install
 
-Get modified mitlm  https://github.com/abramhindle/MIT-Language-Modeling-Toolkit
-	git clone  https://github.com/abramhindle/MIT-Language-Modeling-Toolkit.git mitlm
-	cd mitlm
-	./autogen.sh
-	make
-	
+Get modified mitlm
+    git clone \
+        https://github.com/orezpraw/MIT-Language-Modeling-Toolkit.git mitlm
+    cd mitlm
+    ./autogen.sh
+    make
+    export ESTIMATENGRAM="`pwd`/.libs/estimate-ngram"
+    export LD_LIBRARY_PATH="`pwd`/.libs"
+
 get antlr3
-	sudo apt-get install antlr3
+    sudo apt-get install antlr3
 
 build antlr stuff
-	cd ngram-complete-dist/antlr
-	make
+    cd unnaturalcode/antlr
+    make
 
-install perl reqs:
-	sudo aptitude install  libmoosex-singleton-perl  libmoosex-yaml-perl  libmoose-perl  libany-moose-perl  libmoose-autobox-perl libzeromq-perl
+install python and perl reqs: ?????
 
-== Running	
+********** RUNNING *************************************************************
 
-	cd ngram-complete-dist/emacs
-	make run-java-lexer
-	perl ngram-completer -server 1
+ESTIMATENGRAM="/path/to/estimate-ngram"
+LD_LIBRARY_PATH="/path/to/mitlm/libs"
 
-then you can run
-	perl ngram-completer -client 1
-And type in text to complete
-	
-In emacs you can eval ngrams.elisp to get code completion added
+********** LICENSING ***********************************************************
 
+Assume that UnnaturalCode is licensed under the AGPL3+ unless otherwise
+specified.
 
-== LICENSING
+Copyright 2010,2011,2012 Abram Hindle, Prem Devanbu, Earl T. Barr, Daryl Posnett
+Copyright 2012, 2013 Joshua Charles Campbell, Abram Hindle, Alex Wilson
 
-Assume GPL2+ for a license unless otherwise specified.
+UnnaturalCode is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-Assume this default license:
+UnnaturalCode is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
 
-    Copyright 2010,2011,2012 Abram Hindle, Prem Devanbu, Earl T. Barr, Daryl Posnett
-
-    This file is part of ngram-complete
-
-    ngram-complete is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    Foobar is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
-
-
-data/lucene-split is under the apache 2.0 license: http://www.apache.org/licenses/LICENSE-2.0.html (it is a derivative work of data)
+You should have received a copy of the GNU Affero General Public License
+along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.

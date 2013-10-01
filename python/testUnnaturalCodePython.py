@@ -1,16 +1,57 @@
+#    Copyright 2013 Joshua Charles Campbell
+#
+#    This file is part of UnnaturalCode.
+#    
+#    UnnaturalCode is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    UnnaturalCode is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
+
 import unittest
-from UCUtil import *
-from lexPythonMQ import *
+from unnaturalCode import *
+from ucUtil import *
+from pythonLexical import *
+from mitlmCorpus import *
+
 import os, os.path, zmq, sys, shutil
 from tempfile import *
 from ucTestData import *
 
-class testUCUtil(unittest.TestCase):
+class testUcUtil(unittest.TestCase):
     def testToBool(self):
         self.assertFalse(toBool("false"), 'toBool false not false')
         self.assertTrue(toBool("true"), 'toBool true not true')
+    def testWS(self):
+        self.assertTrue(ws.match('        '))
+        self.assertTrue(ws.match(indentLexeme['value']))
+
+class testUnnaturalCode(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        self.uc = unnaturalCode()
+    def testEnvBools(self):
+        self.assertEquals(type(self.uc.forceTrain), bool)
+        self.assertEquals(type(self.uc.forceValidate), bool)
+    def testZctx(self):
+        self.assertEquals(type(self.uc.zctx), zmq.core.context.Context)
+    @classmethod
+    def tearDownClass(self):
+        del self.uc
+
+class testMitlmCorpus(unittest.TestCase):
+    def testEnvMitlm(self):
+        cm = mitlmCorpus()
+        self.assertTrue(os.access(cm.estimateNgramPath, os.X_OK & os.R_OK))
     def testDefaultCorpusEnv(self):
-        cm = corpusModel()
+        cm = mitlmCorpus()
         dir=os.path.dirname(cm.readCorpus)
         self.assertTrue(os.access(dir, os.X_OK & os.R_OK & os.W_OK))
         self.assertTrue(os.path.isdir(dir))
@@ -20,34 +61,19 @@ class testUCUtil(unittest.TestCase):
         dir=os.path.dirname(cm.logFilePath)
         self.assertTrue(os.access(dir, os.X_OK & os.R_OK & os.W_OK))
         self.assertTrue(os.path.isdir(dir))
-    def testEnvMitlm(self):
-        cm = corpusModel()
-        self.assertTrue(os.access(cm.estimateNgramPath, os.X_OK & os.R_OK))
-    def testEnvBools(self):
-        self.assertEquals(type(forceTrain), bool)
-        self.assertEquals(type(forceValidate), bool)
-    def testZctx(self):
-        self.assertEquals(type(zctx), zmq.core.context.Context)
-    def testCorpify1(self):
-        self.assertEquals(corpify1(someLexemes[0]), 'print')
-        self.assertEquals(corpify1(someLexemes[8]), '<ENDMARKER>')
-        self.assertEquals(corpify1(indentLexeme), '<INDENT>')
     def testCorpify(self):
-        self.assertEquals(corpify(someLexemes), 'print ( 1 + 2 ** 2 ) <ENDMARKER>')
-    def testWS(self):
-        self.assertTrue(ws.match('        '))
-        self.assertTrue(ws.match(indentLexeme['value']))
-            
+        sm = sourceModel(cm=mitlmCorpus())
+        self.assertEquals(sm.corpify(someLexemes), 'print ( 1 + 2 ** 2 ) <ENDMARKER>')
         
-class testLexPy(unittest.TestCase):
+class testPythonLexical(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        self.l = LexPy()
+        self.lm = pythonLexical()
     def testLexExpectedLength(self):
-        r = self.l.lex(somePythonCode)
+        r = self.lm.lex(somePythonCode)
         self.assertEquals(len(r), 9)
     def testLexExpectedFormat(self):
-        r = self.l.lex(somePythonCode)
+        r = self.lm.lex(somePythonCode)
         self.assertTrue(isinstance(r[0], dict))
         self.assertTrue(isinstance(r[0]['end'], tuple))
         self.assertTrue(isinstance(r[0]['end'][0], int))
@@ -58,18 +84,22 @@ class testLexPy(unittest.TestCase):
         self.assertTrue(isinstance(r[0]['type'], str))
         self.assertTrue(isinstance(r[0]['value'], str))
     def testLexExpectedToken(self):
-        r = self.l.lex(somePythonCode)
+        r = self.lm.lex(somePythonCode)
         self.assertEquals(r[0]['end'][0], 1)
         self.assertEquals(r[0]['end'][1], 5)
         self.assertEquals(r[0]['start'][0], 1)
         self.assertEquals(r[0]['start'][1], 0)
         self.assertEquals(r[0]['type'], 'NAME')
         self.assertEquals(r[0]['value'], 'print')
+    def testStringify1(self):
+        self.assertEquals(self.lm.stringify1(someLexemes[0]), 'print')
+        self.assertEquals(self.lm.stringify1(someLexemes[8]), '<ENDMARKER>')
+        self.assertEquals(self.lm.stringify1(indentLexeme), '<INDENT>')
     @classmethod
     def tearDownClass(self):
-        del self.l
+        del self.lm
             
-class testCorpusModelWithFiles(unittest.TestCase):
+class testMitlmCorpusWithFiles(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.td = mkdtemp(prefix='ucUnitTest-')
@@ -77,7 +107,7 @@ class testCorpusModelWithFiles(unittest.TestCase):
         assert os.path.isdir(self.td)
         readCorpus = os.path.join(self.td, 'ucCorpus') 
         logFilePath = os.path.join(self.td, 'ucLogFile')
-        self.cm = corpusModel(readCorpus=readCorpus, writeCorpus=readCorpus, logFilePath=logFilePath)
+        self.cm = mitlmCorpus(readCorpus=readCorpus, writeCorpus=readCorpus, logFilePath=logFilePath)
     def testEnvCorpus(self):
         dir=os.path.dirname(self.cm.readCorpus)
         self.assertTrue(os.access(dir, os.X_OK & os.R_OK & os.W_OK))

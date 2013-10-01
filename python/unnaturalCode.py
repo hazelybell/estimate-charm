@@ -1,3 +1,24 @@
+#    Copyright 2013 Joshua Charles Campbell
+#
+#    This file is part of UnnaturalCode.
+#    
+#    UnnaturalCode is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    UnnaturalCode is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
+from ucUtil import *
+from mitlmCorpus import *
+from pythonLexical import *
+import os, zmq
+
 zctx = None
 
 @singleton
@@ -12,7 +33,7 @@ class unnaturalCode(object):
 
 class sourceModel(object):
     
-    def __init__(self, cm=corpusModel(), lm=pythonLexicalModel()):
+    def __init__(self, cm=mitlmCorpus(), lm=pythonLexical()):
         self.cm = cm
         self.lm = lm
     
@@ -26,7 +47,7 @@ class sourceModel(object):
 
     # Corpify a string
     def corpify(self, lexemes):
-        return cm.corpify(map(lm.stringify1, inputLexed))
+        return self.cm.corpify(map(self.lm.stringify1, lexemes))
     
     # Train on a source code string
     def trainString(self, sourceCode):

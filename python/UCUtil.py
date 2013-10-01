@@ -31,6 +31,7 @@ class corpusModel(object):
         print "MITLM said %f" % r
     
 class sourceModel(object):
+    
     def __init__(self, cm=corpusModel(), lm=pythonLexicalModel()):
         self.cm = cm
         self.lm = lm
@@ -45,21 +46,7 @@ class sourceModel(object):
     
     # Train on a source code string
     def trainString(self, sourceCode):
-        
-    def corpify1(lexeme):
-        if ws.match(str(lexeme['value'])) :
-            return '<'+lexeme['type']+'>'
-        elif len(lexeme['value']) > 0 :
-            return lexeme['value']
-        else:
-            return '<'+lexeme['type']+'>'
-        
-        
-    def corpify(inputLexed):
-        return " ".join(map(corpify1, inputLexed))
-    
-        
-        
+        pass
 
 def slurp(fn):
     return open(fn).read()

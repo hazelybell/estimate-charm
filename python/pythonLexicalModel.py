@@ -20,7 +20,18 @@ class pythonLexicalModel(object):
 
 		return [tup_to_dict(tok) for tok in \
 			tokenize.generate_tokens(StringIO(code).readline)]
-		
+    
+    def corpify1(lexeme):
+        if ws.match(str(lexeme['value'])) :
+            return '<'+lexeme['type']+'>'
+        elif len(lexeme['value']) > 0 :
+            return lexeme['value']
+        else:
+            return '<'+lexeme['type']+'>'
+        
+        
+    def corpify(inputLexed):
+        return " ".join(map(corpify1, inputLexed))
 
 class LexPyMQ(object):
 	def __init__(self, lexer):

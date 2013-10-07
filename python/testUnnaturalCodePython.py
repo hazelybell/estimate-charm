@@ -148,6 +148,10 @@ class testSourceModelWithFiles(unittest.TestCase):
     def testTrainString(self):
         self.sm.trainString(lotsOfPythonCode)
         self.sm.trainString(somePythonCode)
+    def testTrainFile(self):
+        self.sm.trainFile("testdata/launchpad/lib/lp/hardwaredb/scripts/tests/test_hwdb_submission_processing.py")
+    def testTrainProject(self):
+        self.sm.trainFile(
     @classmethod
     def tearDownClass(self):
         shutil.rmtree(self.td)

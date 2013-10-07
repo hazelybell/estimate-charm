@@ -16,19 +16,21 @@
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function
-import os, zmq, signal
+import os, zmq, signal, os.path
 from unnaturalCode import *
 
 class mitlmCorpus(object):
     
-    def __init__(self, readCorpus=None, writeCorpus=None, estimateNgramPath=None, uc=unnaturalCode()):
+    def __init__(self, readCorpus=None, writeCorpus=None, estimateNgramPath=None, uc=unnaturalCode(), order=10):
         self.readCorpus = (readCorpus or os.getenv("ucCorpus", "/tmp/ucCorpus"))
         self.writeCorpus = (writeCorpus or os.getenv("ucWriteCorpus", self.readCorpus))
-        self.mitlmSocketPath = "ipc://%s-%i-%i" % (os.path.dirname(uc.logFilePath), os.getpid(), id(self))
+        self.mitlmSocketPath = "ipc://%s/%s-%i-%i" % (os.path.dirname(self.readCorpus), "ucMitlmSocket", os.getpid(), id(self))
         self.estimateNgramPath = (estimateNgramPath or os.getenv("ESTIMATENGRAM", os.popen('which estimate-ngram').read()))
         self.corpusFile = False
         self.mitlmSocket = False
         self.mitlmPID = 0
+        self.order = order
+        self.zctx = uc.zctx
     
     def startMitlm(self):
         """Start MITLM estimate-ngram in 0MQ entropy query mode, unless already running."""
@@ -39,18 +41,18 @@ class mitlmCorpus(object):
             assert r == (0, 0)
             # Already running
             return
-        assert exists(self.readCorpus), "No such corpus."
-        assert exists(self.estimateNgramPath), "No such estimate-ngram."
+        assert os.path.exists(self.readCorpus), "No such corpus."
+        assert os.path.exists(self.estimateNgramPath), "No such estimate-ngram."
         self.mitlmPID = os.fork()
         if self.mitlmPID == 0:
-            os.execv(self.estimateNgramPath, ["-t", self.readCorpus, "-o", order+1, "-s", "ModKN", "-u", "-live-prob", self.mitlmSocketPath])
+            os.execv(self.estimateNgramPath, [self.estimateNgramPath, "-t", self.readCorpus, "-o", str(self.order+1), "-s", "ModKN", "-u", "-live-prob", self.mitlmSocketPath])
             assert false, "Failed to exec."
-        print ("Started MITLM as PID %i." % self.mitlmPID)
-        self.mitlmSocket = zctx.socket(zmq.REQ)
-        self.mitlmSocket.connect(mitlmSocketPath)
+        debug("Started MITLM as PID %i." % self.mitlmPID)
+        self.mitlmSocket = self.zctx.socket(zmq.REQ)
+        self.mitlmSocket.connect(self.mitlmSocketPath)
         self.mitlmSocket.send("for ( i =")
-        r = float(self.mitlmSocket.recv().data())
-        print ("MITLM said %f" % r)
+        r = float(self.mitlmSocket.recv())
+        debug("MITLM said %f" % r)
         
     def stopMitlm(self):
         """Stop MITLM estimate-ngram, unless not running."""
@@ -91,7 +93,14 @@ class mitlmCorpus(object):
         print(self.corpify(lexemes), file=self.corpusFile)
         self.corpusFile.flush()
         self.stopMitlm
-        
+    
+    def queryCorpus(self, lexemes):
+        self.startMitlm()
+        qString = self.corpify(lexemes)
+        self.mitlmSocket.send(qString)
+        r = float(self.mitlmSocket.recv())
+        return r
+    
     def release(self):
         """Close files and stop MITLM"""
         self.closeCorpus

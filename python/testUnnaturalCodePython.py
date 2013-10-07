@@ -149,13 +149,41 @@ class testSourceModelWithFiles(unittest.TestCase):
         self.sm.trainString(lotsOfPythonCode)
         self.sm.trainString(somePythonCode)
     def testTrainFile(self):
-        self.sm.trainFile("testdata/launchpad/lib/lp/hardwaredb/scripts/tests/test_hwdb_submission_processing.py")
+        self.sm.trainFile(testProject1File)
     def testTrainProject(self):
         self.sm.trainFile(testProjectFiles)
     @classmethod
     def tearDownClass(self):
+        self.sm.release()
         shutil.rmtree(self.td)
 
+class testSourceModelWithFiles(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        self.td = mkdtemp(prefix='ucUnitTest-')
+        assert os.access(self.td, os.X_OK & os.R_OK & os.W_OK)
+        assert os.path.isdir(self.td)
+        readCorpus = os.path.join(self.td, 'ucCorpus') 
+        logFilePath = os.path.join(self.td, 'ucLogFile')
+        self.uc = unnaturalCode(logFilePath=logFilePath)
+        self.cm = mitlmCorpus(readCorpus=readCorpus, writeCorpus=readCorpus, uc=ucGlobal)
+        self.lm = pythonLexical()
+        self.sm = sourceModel(cm=self.cm, lm=self.lm)
+        self.sm.trainFile(testProjectFiles)
+    def testQueryCorpus(self):
+        ls = self.sm.stringifyAll(someLexemes)
+        r = self.cm.queryCorpus(self.sm.stringifyAll(someLexemes))
+        self.assertNotEqual(r, 70.0)
+        self.assertGreater(r, 0.1)
+        self.assertLess(r, 70.0)
+    def testQueryCorpusString(self):
+        r = self.sm.queryString(somePythonCodeFromProject)
+        self.assertLess(r, 70.0)
+        self.assertGreater(r, 0.1)
+    @classmethod
+    def tearDownClass(self):
+        self.sm.release()
+        shutil.rmtree(self.td)
 
 def tearDownModule():
     global ucGlobal

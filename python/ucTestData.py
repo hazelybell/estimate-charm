@@ -38,3 +38,11 @@ print mul(1, 2)
 """
 
 testProjectFiles = open("testdata/launchpad/python-file-list.txt").read().splitlines()
+testProject1File = "testdata/launchpad/lib/lp/hardwaredb/scripts/tests/test_hwdb_submission_processing.py"
+somePythonCodeFromProject = """
+submission_set = getUtility(IHWSubmissionSet)
+submission_2 = submission_set.getBySubmissionKey('submission-2')
+self.assertEqual(
+    submission_2.status, HWSubmissionProcessingStatus.SUBMITTED,
+    'Unexpected status of submission 1: %s' % submission_2.status)
+"""

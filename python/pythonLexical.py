@@ -24,7 +24,7 @@ class pythonLexical(object):
     
     def __init__(self):
         pass
-
+    
     def lex(self, code):
         def tup_to_dict(tup):
             # tup = [type, val, [startrow, col], [endrow, col], line]
@@ -40,13 +40,57 @@ class pythonLexical(object):
     
     # Stringify a lexeme: produce text describing its value
     def stringify1(self, lexeme):
-        if ws.match(str(lexeme['value'])) :
+        if lexeme['type'] == 'COMMENT':
+            return '<'+lexeme['type']+'>'
+        elif ws.match(str(lexeme['value'])) :
             return '<'+lexeme['type']+'>'
         elif len(lexeme['value']) > 0 :
             return lexeme['value']
         else:
             return '<'+lexeme['type']+'>'
-        
+    
+    def deLex(self, lexemes):
+        line = 1
+        col = 0
+        src = ""
+        for l in lexemes:
+            for i in range(line, l['start'][0]):
+                src += os.linesep
+                col = 0
+                line += 1
+            for i in range(col, l['start'][1]):
+                src += " "
+                col += 1
+            src += l['value']
+            col += len(l['value'])
+            nls = l['value'].count(os.linesep)
+            if (nls > 0):
+                line += nls
+                col = len(l['value'].splitlines().pop())
+        return src
+    
+    def isntComment(self, lexeme):
+        return not (lexeme['type'] == 'COMMENT')
+    
+    def unComment(self, lexemes):
+        return filter(self.isntComment, lexemes)
+    
+    def scrub(self, lexemes):
+        """Clean up python source code removing extra whitespace tokens and comments"""
+        ls = self.unComment(lexemes)
+        i = 0
+        r = []
+        for i in range(0, len(ls)):
+            if ls[i]['type'] == 'NL':
+                continue
+            elif ls[i]['type'] == 'NEWLINE' and ls[i+1]['type'] == 'NEWLINE':
+                continue
+            elif ls[i]['type'] == 'NEWLINE' and ls[i+1]['type'] == 'INDENT':
+                continue
+            else:
+                r.append(ls[i])
+        return r
+    
 class LexPyMQ(object):
 	def __init__(self, lexer):
 		self.lexer = lexer

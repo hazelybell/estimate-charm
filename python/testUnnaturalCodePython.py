@@ -112,6 +112,9 @@ class testPythonLexical(unittest.TestCase):
         self.assertEquals(self.lm.stringify1(someLexemes[0]), 'print')
         self.assertEquals(self.lm.stringify1(someLexemes[8]), '<ENDMARKER>')
         self.assertEquals(self.lm.stringify1(indentLexeme), '<INDENT>')
+    def testLexDeLex(self):
+        self.assertEquals(lotsOfPythonCode, (self.lm.deLex(self.lm.lex(lotsOfPythonCode))))
+        self.assertEquals(codeWithComments, (self.lm.deLex(self.lm.lex(codeWithComments))))
     @classmethod
     def tearDownClass(self):
         del self.lm
@@ -174,7 +177,6 @@ class testSourceModelWithFiles(unittest.TestCase):
     def testQueryCorpus(self):
         ls = self.sm.stringifyAll(someLexemes)
         r = self.cm.queryCorpus(self.sm.stringifyAll(someLexemes))
-        self.assertNotEqual(r, 70.0)
         self.assertGreater(r, 0.1)
         self.assertLess(r, 70.0)
     def testQueryCorpusString(self):

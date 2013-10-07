@@ -37,8 +37,21 @@ def mult(x, y):
 print mul(1, 2)
 """
 
+codeWithComments = """
+# this is the multiplcation algorithm
+def mult(x, y):
+    # initialize
+    r = 0
+    for _ in range(0, x): # loop and stuff
+        r = r + y # inside of the loop
+
+print mul(1, 2) # output the result
+"""
+
 testProjectFiles = open("testdata/launchpad/python-file-list.txt").read().splitlines()
+
 testProject1File = "testdata/launchpad/lib/lp/hardwaredb/scripts/tests/test_hwdb_submission_processing.py"
+
 somePythonCodeFromProject = """
 submission_set = getUtility(IHWSubmissionSet)
 submission_2 = submission_set.getBySubmissionKey('submission-2')

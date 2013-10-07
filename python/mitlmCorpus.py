@@ -27,14 +27,14 @@ class mitlmCorpus(object):
         self.mitlmSocketPath = "ipc://%s/%s-%i-%i" % (os.path.dirname(self.readCorpus), "ucMitlmSocket", os.getpid(), id(self))
         self.estimateNgramPath = (estimateNgramPath or os.getenv("ESTIMATENGRAM", os.popen('which estimate-ngram').read()))
         self.corpusFile = False
-        self.mitlmSocket = False
+        self.mitlmSocket = None
         self.mitlmPID = 0
         self.order = order
         self.zctx = uc.zctx
     
     def startMitlm(self):
         """Start MITLM estimate-ngram in 0MQ entropy query mode, unless already running."""
-        if self.mitlmSocket:
+        if not self.mitlmSocket == None :
             assert not self.mitlmSocket.closed
             assert self.mitlmPID
             r = os.waitpid(self.mitlmPID, os.WNOHANG)
@@ -61,7 +61,7 @@ class mitlmCorpus(object):
             self.mitlmSocket.close()
             assert self.mitlmSocket.closed
             os.remove(self.mitlmSocketPath)
-            self.mitlmSocket = False
+            self.mitlmSocket = None
         if self.mitlmPID > 0:
             r = os.waitpid(self.mitlmPID, os.WNOHANG)
             if r == (0, 0):

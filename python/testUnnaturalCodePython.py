@@ -16,6 +16,7 @@
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
 
 import unittest
+from logging import debug, info, warning, error
 
 from ucUtil import *
 from unnaturalCode import *
@@ -180,6 +181,17 @@ class testSourceModelWithFiles(unittest.TestCase):
         r = self.sm.queryString(somePythonCodeFromProject)
         self.assertLess(r, 70.0)
         self.assertGreater(r, 0.1)
+    def testWindowedQuery(self):
+        r = self.sm.windowedQuery(self.lm.lex(somePythonCodeFromProject))
+        debug(type(r))
+        debug(type(r[0]))
+        debug(type(r[0][0]))
+        self.assertLess(r[0][1], 70.0)
+        self.assertGreater(r[0][1], 0.1)
+    def testWorst(self):
+        r = self.sm.worstWindows(self.lm.lex(somePythonCodeFromProject))
+        for i in range(0, len(r)-2):
+            self.assertGreater(r[i][1], r[i+1][1])
     @classmethod
     def tearDownClass(self):
         self.sm.release()

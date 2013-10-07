@@ -151,7 +151,7 @@ class testSourceModelWithFiles(unittest.TestCase):
     def testTrainFile(self):
         self.sm.trainFile("testdata/launchpad/lib/lp/hardwaredb/scripts/tests/test_hwdb_submission_processing.py")
     def testTrainProject(self):
-        self.sm.trainFile(
+        self.sm.trainFile(testProjectFiles)
     @classmethod
     def tearDownClass(self):
         shutil.rmtree(self.td)

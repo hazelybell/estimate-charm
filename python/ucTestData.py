@@ -37,3 +37,4 @@ def mult(x, y):
 print mul(1, 2)
 """
 
+testProjectFiles = open("testdata/launchpad/python-file-list.txt").read().splitlines()

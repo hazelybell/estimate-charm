@@ -7,7 +7,6 @@ testdata/launchpad/scripts/code-import-worker.py
 testdata/launchpad/scripts/process-one-mail.py
 testdata/launchpad/scripts/code-import-worker-monitor.py
 testdata/launchpad/scripts/bug-export.py
-testdata/launchpad/scripts/_pythonpath.py
 testdata/launchpad/scripts/unscan-branch.py
 testdata/launchpad/scripts/cache-country-mirrors.py
 testdata/launchpad/scripts/process-upload.py
@@ -23,7 +22,6 @@ testdata/launchpad/scripts/process-accepted.py
 testdata/launchpad/scripts/copy-translations-from-parent.py
 testdata/launchpad/scripts/bugsummary-rebuild.py
 testdata/launchpad/scripts/ftpmaster-tools/buildd-mass-retry.py
-testdata/launchpad/scripts/ftpmaster-tools/_pythonpath.py
 testdata/launchpad/scripts/ftpmaster-tools/obsolete-distroseries.py
 testdata/launchpad/scripts/ftpmaster-tools/lp-query-distro.py
 testdata/launchpad/scripts/modified-branches.py
@@ -42,7 +40,6 @@ testdata/launchpad/scripts/update-stacked-on.py
 testdata/launchpad/scripts/populate-distroseriesdiff.py
 testdata/launchpad/scripts/ppa-report.py
 testdata/launchpad/scripts/rosetta/migrate_current_flag.py
-testdata/launchpad/scripts/rosetta/_pythonpath.py
 testdata/launchpad/scripts/rosetta/merge-existing-packagings.py
 testdata/launchpad/scripts/rosetta/pottery-generate-intltool.py
 testdata/launchpad/scripts/rosetta/validate-translations-file.py
@@ -64,7 +61,6 @@ testdata/launchpad/utilities/create-lp-wadl-and-apidoc.py
 testdata/launchpad/utilities/pgkillidle.py
 testdata/launchpad/utilities/report-database-stats.py
 testdata/launchpad/utilities/roundup-sniffer.py
-testdata/launchpad/utilities/_pythonpath.py
 testdata/launchpad/utilities/shhh.py
 testdata/launchpad/utilities/pgkillactive.py
 testdata/launchpad/utilities/python_standard_libs.py
@@ -94,7 +90,6 @@ testdata/launchpad/cronscripts/expire-bugtasks.py
 testdata/launchpad/cronscripts/generate-extra-overrides.py
 testdata/launchpad/cronscripts/update-standing.py
 testdata/launchpad/cronscripts/update-bugzilla-remote-components.py
-testdata/launchpad/cronscripts/_pythonpath.py
 testdata/launchpad/cronscripts/process-hwdb-submissions.py
 testdata/launchpad/cronscripts/publishing/maintenance-check.py
 testdata/launchpad/cronscripts/generate-contents-files.py
@@ -128,7 +123,6 @@ testdata/launchpad/cronscripts/parse-ppa-apache-access-logs.py
 testdata/launchpad/cronscripts/garbo-daily.py
 testdata/launchpad/cronscripts/parse-librarian-apache-access-logs.py
 testdata/launchpad/cronscripts/send-person-notifications.py
-testdata/launchpad/daemons/_pythonpath.py
 testdata/launchpad/lib/lp/patchwebservice.py
 testdata/launchpad/lib/lp/buildmaster/interactor.py
 testdata/launchpad/lib/lp/buildmaster/model/builder.py
@@ -280,7 +274,6 @@ testdata/launchpad/lib/lp/services/longpoll/testing.py
 testdata/launchpad/lib/lp/services/scripts/model/__init__.py
 testdata/launchpad/lib/lp/services/scripts/model/scriptactivity.py
 testdata/launchpad/lib/lp/services/scripts/tests/loglevels.py
-testdata/launchpad/lib/lp/services/scripts/tests/_pythonpath.py
 testdata/launchpad/lib/lp/services/scripts/tests/test_all_scripts.py
 testdata/launchpad/lib/lp/services/scripts/tests/test_feature_controller.py
 testdata/launchpad/lib/lp/services/scripts/tests/test_cronscript_enabled.py
@@ -2650,7 +2643,6 @@ testdata/launchpad/lib/devscripts/tests/test_sourcecode.py
 testdata/launchpad/lib/devscripts/tests/__init__.py
 testdata/launchpad/lib/devscripts/__init__.py
 testdata/launchpad/lib/devscripts/sourcecode.py
-testdata/launchpad/lib/launchpadversioninfo.py
 testdata/launchpad/lib/sqlobject/__init__.py
 testdata/launchpad/lib/launchpad_loggerhead/app.py
 testdata/launchpad/lib/launchpad_loggerhead/__init__.py
@@ -2672,11 +2664,9 @@ testdata/launchpad/setup.py
 testdata/launchpad/doc/conf.py
 testdata/launchpad/database/replication/preamble.py
 testdata/launchpad/database/replication/sync.py
-testdata/launchpad/database/replication/_pythonpath.py
 testdata/launchpad/database/replication/__init__.py
 testdata/launchpad/database/replication/helpers.py
 testdata/launchpad/database/schema/emptytables.py
-testdata/launchpad/database/schema/_pythonpath.py
 testdata/launchpad/database/schema/unautovacuumable.py
 testdata/launchpad/database/schema/dbcontroller.py
 testdata/launchpad/database/schema/preflight.py

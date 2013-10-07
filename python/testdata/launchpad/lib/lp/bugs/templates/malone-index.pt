@@ -1,0 +1,89 @@
+<malone-index
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="malone">
+
+  <h1 metal:fill-slot="heading">Bug tracking</h1>
+
+  <div metal:fill-slot="main">
+
+    <div class="top-portlet">
+      <p class="error message"
+         tal:condition="view/error_message"
+         tal:content="view/error_message">
+        Error message.
+      </p>
+      <form id="search-all-bugs" class="central" action="/bugs/+bugs" method="get">
+        <table>
+          <tbody>
+            <tr>
+              <td style="text-align: right;">
+                <input tal:replace="structure view/widgets/searchtext" />
+              </td>
+              <td>
+                <input id="field.actions.search" type="submit"
+                  name="search" value="Search Bug Reports" />
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2"
+                tal:attributes="class view/target_css_class">
+                <input tal:replace="structure view/widgets/scope" />
+                <div class="message"
+                  tal:condition="view/widgets/scope/error"
+                  tal:content="structure view/widgets/scope/error">
+                  Error message
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <script type="text/javascript"
+                tal:define="script view/focusedElementScript"
+                tal:condition="script"
+                tal:content="structure script" ></script>
+      </form>
+      <p id="application-summary">
+        Launchpad&rsquo;s bug tracker helps software teams to
+        collaborate on bug reports and fixes.
+        (<a href="https://help.launchpad.net/Bugs">Read our guide</a> or
+         <a href="/+tour">take a tour</a>)
+      </p>
+    </div>
+
+    <div class="yui-g">
+      <div class="first yui-u">
+        <div class="portlet">
+          <h2>Recently reported</h2>
+          <ul id="reported-bugs">
+            <li tal:repeat="bug view/most_recently_reported_bugs"
+                tal:replace="structure bug/@@+listing-detailed" />
+          </ul>
+        </div>
+      </div>
+      <div class="yui-u">
+        <div class="portlet">
+          <h2>Recently fixed</h2>
+          <ul id="fixed-bugs">
+            <li tal:repeat="fixed_bug view/most_recently_fixed_bugs"
+                tal:replace="structure fixed_bug/@@+listing-detailed" />
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="yui-g">
+      <div class="first yui-u">
+        <div tal:replace="structure context/@@+portlet-stats" />
+      </div>
+      <div class="yui-u">
+        <tal:menu replace="structure view/@@+related-pages" />
+      </div>
+    </div>
+
+  </div>
+
+</malone-index>

@@ -1,0 +1,30 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Format: 1.7
+Date: Thu, 15 Feb 2006 14:11:09 -0200
+Source: language-pack-pt
+Binary: language-pack-pt
+Architecture: source
+Version: 1.0-3
+Distribution: breezy
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Celso Providelo <cprov@canonical.com>
+Description: 
+ language-pack-pt - Stuff for testing
+Changes: 
+ language-pack-pt (1.0-3) breezy; urgency=low
+ .
+   * bump version again to check unapproved message
+Files: 
+ 923eed5ee3ca7207c1185ea7cfe2e1b0 492 translations optional language-pack-pt_1.0-3.dsc
+ ffba7584c9716d2081551b319a5ae651 796 translations optional language-pack-pt_1.0-3.tar.gz
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.3 (GNU/Linux)
+
+iD8DBQFF1Ifrjn63CGxkqMURAsn6AJ9l28yrLq/pW5yqi+OCVzEbWUItlACfVUWy
+u8RWMsyzadm80/c7rq8EhKA=
+=kNq5
+-----END PGP SIGNATURE-----

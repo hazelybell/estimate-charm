@@ -1,0 +1,59 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+
+<body>
+
+<h1 metal:fill-slot="heading">Code Import Machines for Launchpad</h1>
+
+<div metal:fill-slot="main" class="visualPadding">
+
+  <table class="listing" id="code-import-machine-listing">
+    <thead>
+      <tr>
+        <th>Machine</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tal:machine repeat="machine view/machines">
+        <tal:vars define="jobs python:list(machine.current_jobs);
+                          job_count python:len(jobs)">
+          <tr>
+            <td>
+              <tal:hostname replace="structure machine/fmt:link"/>
+              <tal:job-status condition="machine/state/enumvalue:ONLINE">
+                (<tal:count replace="job_count"/>
+                job<tal:s condition="python: job_count != 1">s</tal:s>
+                running)
+              </tal:job-status>
+            </td>
+            <td><tal:status replace="machine/state/title"/></td>
+          </tr>
+          <tal:has-jobs condition="jobs">
+            <tr>
+              <td colspan="2">
+                <table class="simple">
+                  <tal:jobs repeat="job jobs">
+                    <tr>
+                      <td><tal:branch replace="structure job/code_import/branch/fmt:link"/></td>
+                      <td>Started: <tal:branch replace="job/date_started/fmt:approximatedate"/></td>
+                      <td>Last heartbeat: <tal:branch replace="job/heartbeat/fmt:approximatedate"/></td>
+                    </tr>
+                  </tal:jobs>
+                </table>
+              </td>
+            </tr>
+          </tal:has-jobs>
+        </tal:vars>
+      </tal:machine>
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>

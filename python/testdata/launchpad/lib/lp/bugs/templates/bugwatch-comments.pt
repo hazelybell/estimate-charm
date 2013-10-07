@@ -1,0 +1,30 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+>
+  <body>
+    <div metal:fill-slot="main">
+      <div class="top-portlet">
+        <h1 tal:replace="view/page_title">Imported comments</h1>
+      </div>
+
+      <div class="yui-g">
+        <div class="yui-u first">
+          <div tal:replace="structure context/@@+portlet-details" />
+        </div>
+        <div class="yui-u">
+          <div tal:replace="structure context/@@+portlet-bugtasks" />
+        </div>
+      </div>
+
+      <div class="yui-g">
+        <tal:comments repeat="comment view/comments">
+          <tal:coment tal:replace="structure comment/@@+box" />
+        </tal:comments>
+      </div>
+    </div>
+  </body>
+</html>

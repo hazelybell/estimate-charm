@@ -1,0 +1,71 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+>
+<head>
+  <tal:head-epilogue metal:fill-slot="head_epilogue">
+    <meta tal:condition="context/codehosting_usage/enumvalue:UNKNOWN"
+      name="robots" content="noindex,nofollow" />
+  </tal:head-epilogue>
+</head>
+
+<body>
+
+  <metal:side fill-slot="side" tal:define="context_menu context/menu:context">
+    <div id="branch-portlet"
+         tal:condition="not: context/codehosting_usage/enumvalue:UNKNOWN">
+      <div id="privacy"
+           tal:define="private_class python: 'private' if view.default_information_type_is_private else 'public'"
+           tal:attributes="class string:first portlet ${private_class}">
+        <span tal:condition="not: view/default_information_type"
+           id="privacy-text">
+          You can't create new branches for
+          <tal:name replace="context/displayname"/>.
+          <tal:sharing-link condition="context/required:launchpad.Edit">
+          <br/>This can be fixed by changing the bug sharing policy on the
+          <a tal:attributes="href string:${context/fmt:url:mainsite}/+sharing">sharing page</a>.
+          </tal:sharing-link>
+        </span>
+
+        <span tal:condition="view/default_information_type"
+           tal:attributes="class string:sprite ${private_class}"
+           id="privacy-text">
+          New branches for <tal:name replace="context/displayname"/> are
+          <strong tal:content="view/default_information_type_title" />.
+        </span>
+      </div>
+
+      <div id="involvement" class="portlet"
+           tal:define="menu context/menu:branches">
+        <p tal:define="link menu/code_import"
+           tal:condition="link/enabled"
+           tal:content="structure link/render"></p>
+        <p tal:define="configure_codehosting view/configure_codehosting | nothing"
+           tal:condition="configure_codehosting"
+           tal:replace="structure configure_codehosting/fmt:link"></p>
+      </div>
+
+    </div>
+  </metal:side>
+
+  <tal:main metal:fill-slot="main">
+
+    <tal:branch-summary content="structure context/@@+branch-summary" />
+
+    <tal:code-statistics
+      condition="not: view/context/codehosting_usage/enumvalue:UNKNOWN"
+      replace="structure context/@@+portlet-product-codestatistics" />
+
+    <tal:has-branches condition="view/branch_count"
+                      define="branches view/branches">
+      <tal:branchlisting content="structure branches/@@+branch-listing" />
+    </tal:has-branches>
+
+  </tal:main>
+
+</body>
+</html>

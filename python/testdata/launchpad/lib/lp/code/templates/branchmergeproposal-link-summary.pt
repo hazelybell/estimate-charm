@@ -1,0 +1,24 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+
+  <img src="/@@/merge-proposal-icon" />
+  <a tal:attributes="href context/fmt:url;
+                     title view/status_title"
+     tal:content="view/friendly_text">Approved</a>
+  <tal:for-merging condition="not: context/queue_status/enumvalue:MERGED">
+    for merging
+  </tal:for-merging>
+  into
+  <tal:source-branch
+      tal:define="branch context/target_branch">
+    <a tal:attributes="href branch/fmt:url"
+       tal:content="branch/bzr_identity">lp:product/branch-name</a>
+  </tal:source-branch>
+  <tal:for-merging condition="context/queue_status/enumvalue:MERGED">
+    <tal:have-revno condition="context/merged_revno">
+      at revision <tal:revno replace="context/merged_revno"/>
+    </tal:have-revno>
+  </tal:for-merging>
+</tal:root>

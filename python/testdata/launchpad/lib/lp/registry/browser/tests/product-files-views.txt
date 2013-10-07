@@ -1,0 +1,93 @@
+ Product Download Files Page
+=============================
+
+Test for the product/+download page.
+
+    >>> product = factory.makeProduct(name='alfajore')
+    >>> productseries = factory.makeProductSeries(
+    ...     product=product, name="sammy")
+    >>> milestone = factory.makeMilestone(productseries=productseries,
+    ...                                   name="apple")
+    >>> release_file = factory.makeProductReleaseFile(
+    ...     product=product, productseries=productseries, milestone=milestone)
+    >>> view = create_initialized_view(product, '+download')
+
+    >>> view.batch_size
+    4
+
+    >>> batch = view.series_and_releases_batch.currentBatch()
+    >>> print len(list(batch))
+    1
+
+    >>> def print_series_release(sr):
+    ...     print "%s from the %s series" % (sr.release.name_with_codename,
+    ...                                      sr.series.name)
+
+    >>> for sr in batch:
+    ...     print_series_release(sr)
+    apple from the sammy series
+
+    >>> product = factory.makeProduct(name='bombilla')
+    >>> for i in range(1,5):
+    ...     productseries = factory.makeProductSeries(
+    ...         product=product, name="s%d"%i)
+    ...     for j in range(1,4):
+    ...         milestone = factory.makeMilestone(productseries=productseries,
+    ...                                           name="%d.%d"%(i,j))
+    ...         release_file = factory.makeProductReleaseFile(
+    ...             product=product, productseries=productseries,
+    ...             milestone=milestone)
+    >>> view = create_initialized_view(product, '+download')
+    >>> batch = view.series_and_releases_batch.currentBatch()
+    >>> print len(batch)
+    4
+    >>> for sr in batch:
+    ...     print_series_release(sr)
+    4.3 from the s4 series
+    4.2 from the s4 series
+    4.1 from the s4 series
+    3.3 from the s3 series
+
+    >>> batch = batch.nextBatch()
+    >>> for sr in batch:
+    ...     print_series_release(sr)
+    3.2 from the s3 series
+    3.1 from the s3 series
+    2.3 from the s2 series
+    2.2 from the s2 series
+
+For an administrator of the project, at the bottom of each batched
+page will be links to add new files for each series and release.
+
+    >>> from lp.testing.pages import (
+    ...     extract_text, find_tag_by_id)
+    >>> ignored = login_person(product.owner)
+    >>> view = create_initialized_view(product, '+download',
+    ...                                principal=product.owner)
+    >>> admin_links = find_tag_by_id(view.render(), 'admin-links')
+    >>> content = extract_text(admin_links)
+    >>> print content
+    Add download file to the s4 series for release: 4.3, 4.2, 4.1
+    Add download file to the s3 series for release: 3.3, 3.2, 3.1
+    Add download file to the s2 series for release: 2.3, 2.2, 2.1
+    Add download file to the s1 series for release: 1.3, 1.2, 1.1
+
+
+Product index
+-------------
+
+The product index view shows the latest release for the project.
+
+    >>> view = create_initialized_view(product, name='+index')
+    >>> print view.latest_release_with_download_files.version
+    4.3
+
+Obsolete series are ignored.
+
+    >>> from lp.registry.interfaces.series import SeriesStatus
+
+    >>> obsolete_series = product.getSeries('s4')
+    >>> obsolete_series.status = SeriesStatus.OBSOLETE
+    >>> view = create_initialized_view(product, name='+index')
+    >>> print view.latest_release_with_download_files.version
+    3.3

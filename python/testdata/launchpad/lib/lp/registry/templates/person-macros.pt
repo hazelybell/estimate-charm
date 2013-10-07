@@ -1,0 +1,239 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  omit-tag="">
+
+<!-- contact-details macro. -->
+<metal:macro define-macro="team-details">
+  <div class="portlet"
+       id="contact-details">
+    <h2 tal:condition="context/is_team">Team details</h2>
+
+    <dl id="contact-email">
+      <dt>Email:</dt>
+
+      <dd>
+        <tal:not_logged_in
+          condition="view/email_address_visibility/is_login_required">
+          <a href="+login">Log in</a> for email information.
+        </tal:not_logged_in>
+
+        <tal:no_preferredemail
+          condition="view/email_address_visibility/are_none_available">
+          None, members emailed directly
+        </tal:no_preferredemail>
+
+        <tal:emails repeat="email view/visible_email_addresses">
+          <div style="white-space: nowrap">
+            <img src="/@@/mail" alt="mail" />
+            <tal:email replace="email">foo2@bar.com</tal:email>
+            <a tal:replace="structure overview_menu/editemail/fmt:icon"></a>
+          </div>
+        </tal:emails>
+        <a tal:condition="not: view/visible_email_addresses"
+           tal:replace="structure overview_menu/editemail/fmt:icon"></a>
+      </dd>
+    </dl>
+
+    <div class="two-column-list">
+      <dl id="team-owner">
+        <dt>Owner:</dt>
+        <dd>
+          <tal:owner replace="structure context/teamowner/fmt:link"/>
+        </dd>
+      </dl>
+
+      <dl id="team-datecreated">
+        <dt>Created on:</dt>
+        <dd>
+          <span id="created-date"
+                tal:attributes="title context/datecreated/fmt:datetime"
+                tal:content="context/datecreated/fmt:date" />
+        </dd>
+      </dl>
+
+      <dl id="contact-languages">
+        <dt>Languages:</dt>
+        <dd>
+          <tal:languages content="view/languages">English</tal:languages>
+          <a tal:replace="structure overview_menu/editlanguages/fmt:icon" />
+        </dd>
+      </dl>
+      <dl id="subscription-policy">
+        <dt>Membership policy:</dt>
+        <dd
+          tal:attributes="title context/membership_policy/description">
+          <span tal:replace="context/membership_policy/title" />
+          <a class="sprite maybe action-icon" href="/+help-registry/team-subscription-policy.html"
+            target="help"></a>
+        </dd>
+      </dl>
+
+    </div>
+  </div>
+</metal:macro>
+
+<!-- contact macro -->
+<metal:macro define-macro="contact">
+  <div class="portlet" id="contact-user"
+    tal:condition="view/can_contact">
+    <a href="+contactuser" class="sprite mail"
+      tal:attributes="title view/contact_link_title"
+      tal:content="view/specific_contact_text">Contact
+        this person</a>
+  </div>
+</metal:macro>
+
+<!-- subteam-of macro. -->
+<metal:macro define-macro="subteam-of">
+  <div class="portlet"
+       id="subteam-of"
+       tal:condition="view/can_show_subteam_portlet"
+       >
+    <h2>Subteam of</h2>
+
+    <p tal:condition="not: view/super_teams">
+      &#8220;<span tal:replace="context/displayname"/>&#8221;
+      itself is not a member of any other team.
+    </p>
+
+    <tal:is-a-subteam condition="view/super_teams">
+      <p>
+        &#8220;<span tal:replace="context/displayname"/>&#8221;
+        is a member of these teams:
+      </p>
+      <ul class="iconed">
+        <li tal:repeat="team view/super_teams">
+          <tal:block replace="structure team/fmt:link" />
+        </li>
+      </ul>
+    </tal:is-a-subteam>
+
+    <ul class="horizontal">
+      <li
+        tal:condition="view/super_teams"
+        tal:replace="structure overview_menu/memberships/fmt:link" />
+      <li
+        tal:condition="context/open_membership_invitations"
+        tal:replace="structure overview_menu/received_invitations/fmt:link" />
+    </ul>
+  </div>
+</metal:macro>
+
+<metal:macro define-macro="sourcepackagerelease-rows">
+
+  <tal:comment replace="nothing">
+    This macro expects the following variables defined:
+    :sourcepackagereleases: A list of SourcePackageRelease objects
+  </tal:comment>
+
+  <tr tal:repeat="sourcepackagerelease sourcepackagereleases">
+  <tal:define define="spr sourcepackagerelease;
+                     distroseries spr/upload_distroseries">
+    <td>
+      <a tal:attributes="href string:${distroseries/distribution/fmt:url}/+source/${spr/name}"
+         class="distrosrcpackage"
+         tal:content="spr/sourcepackagename/name">
+      </a>
+    </td>
+    <td>
+      <a tal:attributes="href string:${distroseries/fmt:url}/+source/${spr/name}"
+         class="distroseriessrcpackage"
+         tal:content="distroseries/fullseriesname">
+      </a>
+    </td>
+    <td>
+      <a tal:attributes="href string:${distroseries/distribution/fmt:url}/+source/${spr/name}/${spr/version}"
+         class="distrosrcpackagerelease"
+         tal:content="spr/version">
+      </a>
+    </td>
+    <td
+      tal:attributes="title spr/dateuploaded/fmt:datetime"
+      tal:content="spr/dateuploaded/fmt:approximatedate">
+      2005-10-24
+    </td>
+    <td>
+      <tal:needs_building condition="spr/needs_building">
+          Not yet built
+      </tal:needs_building>
+      <tal:built condition="not: spr/needs_building">
+          <tal:failed repeat="build spr/failed_builds">
+             <a tal:attributes="href build/fmt:url"
+                tal:content="build/distro_arch_series/architecturetag" />
+          </tal:failed>
+          <tal:not_failed condition="not: spr/failed_builds">
+             None
+          </tal:not_failed>
+      </tal:built>
+    </td>
+  </tal:define>
+  </tr>
+</metal:macro>
+
+<metal:macro define-macro="spphs-rows">
+
+  <tal:comment replace="nothing">
+    This macro expects the following variables defined:
+    :spphs: A list of SourcePackagePublishingHistory objects
+  </tal:comment>
+
+  <tr tal:repeat="spph spphs">
+  <tal:define define="spr spph/sourcepackagerelease;
+                     distroseries spph/distroseries">
+    <td>
+      <a tal:attributes="href string:${distroseries/distribution/fmt:url}/+source/${spr/name}"
+         class="distrosrcpackage"
+         tal:content="spr/sourcepackagename/name">
+      </a>
+    </td>
+    <td>
+      <a tal:attributes="href string:${distroseries/fmt:url}/+source/${spr/name}"
+         class="distroseriessrcpackage"
+         tal:content="distroseries/fullseriesname">
+      </a>
+    </td>
+    <td>
+      <a tal:attributes="href string:${distroseries/distribution/fmt:url}/+source/${spr/name}/${spr/version}"
+         class="distrosrcpackagerelease"
+         tal:content="spr/version">
+      </a>
+    </td>
+    <td
+      tal:attributes="title spph/datecreated/fmt:datetime"
+      tal:content="spph/datecreated/fmt:approximatedate">
+      2005-10-24
+    </td>
+    <td>
+      <tal:needs_building condition="spph/needs_building">
+          Not yet built
+      </tal:needs_building>
+      <tal:built condition="not: spph/needs_building">
+          <tal:failed repeat="build spph/failed_builds">
+             <a tal:attributes="href build/fmt:url"
+                tal:content="build/distro_arch_series/architecturetag" />
+          </tal:failed>
+          <tal:not_failed condition="not: spph/failed_builds">
+             None
+          </tal:not_failed>
+      </tal:built>
+    </td>
+  </tal:define>
+  </tr>
+</metal:macro>
+
+<metal:macro define-macro="team-js">
+  <tal:comment replace="nothing">
+    This macro inserts the javascript used on the team add/edit pages.
+    It is here since it is shared in multiple templates.
+  </tal:comment>
+  <script type="text/javascript"
+          tal:content="string:
+    LPJS.use('node', 'event','lp.registry.team', function(Y) {
+      Y.on('domready', function(e) {
+        Y.lp.registry.team.initialise_team_edit();
+      });
+    });">
+  </script>
+</metal:macro>
+</tal:root>

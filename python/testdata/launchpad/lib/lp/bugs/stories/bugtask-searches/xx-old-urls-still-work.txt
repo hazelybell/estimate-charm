@@ -1,0 +1,140 @@
+= Keeping old bookmarks working =
+
+As part of the bug workflow spec various statuses are being changed
+but we need old bookmarks to keep working with the status names.
+
+    >>> query = (
+    ...     "field.searchtext="
+    ...     "&orderby=-importance"
+    ...     "&search=Search"
+    ...     "&field.status%3Alist=Unconfirmed"
+    ...     "&field.status%3Alist=In+Progress"
+    ...     "&assignee_option=any"
+    ...     "&field.status_upstream-empty-marker=1"
+    ...     "&field.omit_dupes=on"
+    ...     "&field.has_patch.used="
+    ... )
+    >>> url = "http://bugs.launchpad.dev/ubuntu/+bugs?" + query
+    >>> anon_browser.open(url)
+
+The user is redirected to a new url to make the change explicit, and
+to allow user agents (and users) to update bookmarks, etc.
+
+    >>> def print_query_changes(query_string_before, query_string_after):
+    ...     from cgi import parse_qsl
+    ...     query_before = parse_qsl(
+    ...         query_string_before, keep_blank_values=True)
+    ...     query_after = parse_qsl(
+    ...         query_string_after, keep_blank_values=True)
+    ...     for term_before, term_after in zip(query_before, query_after):
+    ...         if term_before != term_after:
+    ...             print '%s --> %s' % (
+    ...                 '='.join(term_before),
+    ...                 '='.join(term_after))
+
+    >>> from lazr.uri import URI
+    >>> uri = URI(anon_browser.url)
+
+    >>> print uri.path
+    /ubuntu/+bugs
+
+    >>> print_query_changes(query, uri.query)
+    field.status:list=Unconfirmed --> field.status:list=New
+
+    >>> from lp.bugs.tests.bug import print_bugtasks
+    >>> print_bugtasks(anon_browser.contents)
+     1  Firefox does not support SVG mozilla-firefox (Ubuntu) Medium  New
+    10  another test bug linux-source-2.6.15 (Ubuntu) Medium  New
+     2  Blackhole Trash folder Ubuntu Medium  New
+
+Searching amongst all bugs also redirects to an updated location with
+the new status names in place of the old.
+
+    >>> query = (
+    ...     "orderby=-importance&"
+    ...     "search=Search&"
+    ...     "field.status%3Alist=Unconfirmed&"
+    ...     "field.status%3Alist=Needs+Info&"
+    ...     "assignee_option=any&"
+    ...     "field.status_upstream-empty-marker=1&"
+    ...     "field.omit_dupes=on"
+    ...     )
+    >>> url = "http://bugs.launchpad.dev/bugs/+bugs?" + query
+    >>> anon_browser.open(url)
+
+    >>> uri = URI(anon_browser.url)
+    >>> print uri.path
+    /bugs/+bugs
+
+    >>> print_query_changes(query, uri.query)
+    field.status:list=Unconfirmed --> field.status:list=New
+    field.status:list=Needs Info  --> field.status:list=Incomplete
+
+== Assigned, Reported and Subscribed Bugs ==
+
+Bugs searched for in the context of a person or team are redirected
+too.
+
+    >>> query = (
+    ...     "field.searchtext="
+    ...     "&orderby=-importance"
+    ...     "&search=Search"
+    ...     "&field.status%3Alist=Unconfirmed"
+    ...     "&field.status%3Alist=In+Progress"
+    ...     "&field.status%3Alist=Rejected"
+    ...     "&assignee_option=any"
+    ...     "&field.status_upstream-empty-marker=1"
+    ...     "&field.omit_dupes=on"
+    ...     "&field.has_patch.used="
+    ... )
+
+Searching for assigned bugs using old status names works fine, but the
+user agent is automatically redirected to an updated location:
+
+    >>> url = "http://bugs.launchpad.dev/~mark/+assignedbugs?" + query
+    >>> anon_browser.open(url)
+
+    >>> uri = URI(anon_browser.url)
+    >>> print uri.path
+    /~mark/+assignedbugs
+
+    >>> print_query_changes(query, uri.query)
+    field.status:list=Unconfirmed --> field.status:list=New
+    field.status:list=Rejected --> field.status:list=Invalid
+
+    >>> print_bugtasks(anon_browser.contents)
+     1  Firefox does not support SVG Mozilla Firefox Low New
+
+Just as with assigned bugs, searching for reported bugs takes the user
+agent to a corrected location:
+
+    >>> url = "http://bugs.launchpad.dev/~mark/+reportedbugs?" + query
+    >>> anon_browser.open(url)
+
+    >>> uri = URI(anon_browser.url)
+    >>> print uri.path
+    /~mark/+reportedbugs
+
+    >>> print_query_changes(query, uri.query)
+    field.status:list=Unconfirmed --> field.status:list=New
+    field.status:list=Rejected --> field.status:list=Invalid
+
+    >>> print_bugtasks(anon_browser.contents)
+
+Again, subscribed bugs get the same treatment. Some day this
+functionality may be removed so it's important to get people moved
+over to the new locations as quickly and seamlessly as possible to
+avoid disruption.
+
+    >>> url = "http://bugs.launchpad.dev/~mark/+subscribedbugs?" + query
+    >>> anon_browser.open(url)
+
+    >>> uri = URI(anon_browser.url)
+    >>> print uri.path
+    /~mark/+subscribedbugs
+
+    >>> print_query_changes(query, uri.query)
+    field.status:list=Unconfirmed --> field.status:list=New
+    field.status:list=Rejected --> field.status:list=Invalid
+
+    >>> print_bugtasks(anon_browser.contents)

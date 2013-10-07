@@ -1,0 +1,12 @@
+Hello %(person)s,
+
+Launchpad encountered problems exporting the files you requested.
+The Launchpad Translations team has been notified of this problem.
+Please reply to this email for further assistance.
+
+If you want to retry your request, you can do so at
+
+  %(request_url)s.
+
+-- 
+Automatic message from Launchpad.net.

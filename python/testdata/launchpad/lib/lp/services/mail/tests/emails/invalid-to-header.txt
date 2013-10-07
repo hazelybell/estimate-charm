@@ -1,0 +1,23 @@
+From: "Fonti Hanna" <manager@cinemahollywood.com>
+To: <<35845@bugs.launchpad.net>,
+	<380449@bugs.launchpad.net>,
+	<377016@bugs.launchpad.net>,
+	<302452@bugs.launchpad.net>,
+	<244148@bugs.launchpad.net>,
+	<323848@bugs.launchpad.net>,
+	<322385@bugs.launchpad.net>,
+	<469470@bugs.launchpad.net>,
+	<407133@bugs.launchpad.net>>
+Subject: (no subject)
+Date: Sat, 29 May 2010 10:13:18 +0800
+Message-ID: <01caff17$8ee25a10$b28c2872@manager>
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_000E_01CAFF17.8EE25A10"
+X-Priority: 3 (Normal)
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook IMO, Build 9.0.2416 (9.0.2910.0)
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2900.2670
+Importance: Normal
+
+Some spam with invalid To: header.

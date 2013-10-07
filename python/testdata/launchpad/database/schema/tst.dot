@@ -1,0 +1,11 @@
+digraph g {
+
+    "POTemplate" [label="POTemplate"];
+    "SourcePackageName" [label="SourcePackageName"];
+    "DistroRelease" [label="DistroRelease"];
+    "Product" [label="Product"];
+
+    "POTemplate" -> "SourcePackageName" [label=""];
+    "POTemplate" -> "DistroRelease" [label=""];
+    "POTemplate" -> "Product" [label=""];
+}

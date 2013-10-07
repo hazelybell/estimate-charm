@@ -1,0 +1,34 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  class="portlet"
+  tal:define="series context/series"
+  tal:condition="series">
+
+  <h2>PPA supported series</h2>
+  <div>
+    <ul>
+      <tal:per_series repeat="series series">
+        <li tal:condition="series/active">
+          <a class="sprite distribution"
+             tal:attributes="href series/fmt:url"
+             tal:content="series/named_version" />
+          - <tal:status replace="series/status/name/fmt:lower" />
+          <ul tal:define="archs series/virtualized_architectures"
+              tal:condition="archs">
+            <li class="sprite" tal:repeat="arch archs">
+              <a class="sprite architecture"
+                 tal:attributes="href arch/fmt:url">
+                <tal:title replace="arch/architecturetag" />
+                <tal:official condition="arch/official">
+                  (official)
+                </tal:official>
+              </a>
+            </li>
+          </ul>
+        </li>
+      </tal:per_series>
+     </ul>
+   </div>
+</div>

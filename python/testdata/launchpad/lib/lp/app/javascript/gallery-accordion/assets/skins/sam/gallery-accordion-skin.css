@@ -1,0 +1,77 @@
+.yui3-skin-sam .yui3-accordion {
+    border-width: 1px 1px 0 1px;
+    border-style: solid;
+    border-color: #DDD;
+}
+
+.yui3-skin-sam .yui3-accordion-item .yui3-widget-hd {
+    background-color: #EEE;
+    border-bottom: 1px solid #DDD;
+    height: 25px;
+    position: relative;
+    padding-left: 25px;
+}
+
+.yui3-accordion-item .yui3-widget-bd {
+    border-bottom: 1px solid #DDD;
+    margin: 0;
+}
+
+.yui3-skin-sam .yui3-accordion-item-iconexpanded,
+.yui3-skin-sam .yui3-accordion-item-iconclose {
+    background-repeat: no-repeat;
+}
+
+.yui3-skin-sam .yui3-accordion-item-label:hover,
+.yui3-skin-sam .yui3-accordion-item-label {
+    text-decoration: none;
+    background: transparent;
+    overflow: hidden;
+    color: #444444;
+    font-weight: bold;
+}
+
+.yui3-skin-sam .yui3-accordion-item-iconexpanded-off:hover,
+.yui3-skin-sam .yui3-accordion-item-iconexpanded-collapsing,
+.yui3-skin-sam .yui3-accordion-item-iconexpanded,
+.yui3-skin-sam .yui3-accordion-item-iconexpanded-off {
+    background-image: url( accordion_sprite.png );
+    background-position: 0px -175px;
+    _background-position: 0px -177px;
+}
+
+.yui3-skin-sam .yui3-accordion-item-iconexpanded-on:hover,
+.yui3-skin-sam .yui3-accordion-item-iconexpanded-expanding,
+.yui3-skin-sam .yui3-accordion-item-iconexpanded-on {
+    background-image: url( accordion_sprite.png );
+    background-position: 0px -115px;
+    _background-position: 0px -117px;
+}
+
+.yui3-skin-sam .yui3-accordion-item-iconclose {
+    background-image: url( accordion_sprite.png );
+    background-position: 0px -235px;
+    _background-position: 0px -237px;
+}
+
+
+.yui3-skin-sam .yui3-accordion-proxyel-visible {
+    border-color : blue;
+    color : white;
+    font-weight : bold;
+    background-color : red;
+    opacity : 0.7;
+    filter: alpha(opacity = 70);
+} 
+
+.yui3-accordion-item-icons {
+    position: absolute;
+    float: none;
+    top: 0;
+    left: 5px;
+}
+
+.yui3-accordion-item-icon,
+.yui3-accordion-item-iconalwaysvisible {
+    display: none;
+}

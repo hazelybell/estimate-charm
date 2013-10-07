@@ -1,0 +1,46 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+
+  <body>
+
+<div metal:fill-slot="main">
+
+<tal:subscribed condition="view/user_is_subscribed">
+
+  <div metal:use-macro="context/@@launchpad_form/form" >
+    <metal:extra fill-slot="extra_info">
+      <p class="documentDescription">
+        If you unsubscribe from a branch it will no longer show up on your
+        personal pages.
+      </p>
+    </metal:extra>
+  </div>
+
+</tal:subscribed>
+
+<tal:not_subscribed condition="not: view/user_is_subscribed">
+
+  <tal:comment condition="nothing">
+    This occurs if the user is hacking the URLs, 
+    and should never be linked to from a valid page.
+
+    It could occur from a stale page as well if the user
+    is using a tabbed browser and hasn't refreshed the page.
+  </tal:comment>
+
+  <p class="documentDescription">
+    You are not currently subscribed to this branch.
+  </p>
+
+</tal:not_subscribed>
+
+</div>
+
+</body>
+</html>
+

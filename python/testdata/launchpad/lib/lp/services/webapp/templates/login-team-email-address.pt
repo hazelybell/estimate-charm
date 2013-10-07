@@ -1,0 +1,22 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+
+  <body>
+    <div class="top-portlet" metal:fill-slot="main">
+
+      <h1>Team email address conflict</h1>
+      <p class="error">
+        Your can't log in because your OpenID account's email address is
+        associated with a Launchpad team.
+        Contact <a href="mailto:feedback@launchpad.net?subject=Team%20email%20address%20conflict"
+          >Launchpad Support</a> about this issue.
+      </p>
+
+    </div>
+  </body>
+</html>

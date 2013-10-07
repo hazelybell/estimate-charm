@@ -1,0 +1,196 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+<tal:do-this-first condition="view/form_action" />
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+  <body>
+  <div metal:fill-slot="main">
+    <p tal:condition="view/error_message"
+       tal:content="structure view/error_message/escapedtext" class="error message"
+      >Error message.</p>
+
+    <p tal:condition="view/info_message"
+       tal:content="structure view/info_message/escapedtext" class="informational message"
+      >Informational message.</p>
+
+    <div tal:condition="view/invalid_fingerprint" class="error message">
+      There seems to be a problem with the fingerprint you submitted. You can get your gpg fingerprint by opening
+      a terminal and typing:
+        <blockquote>
+        <kbd>gpg --fingerprint</kbd>
+        </blockquote>
+      Please try again.
+    </div>
+
+    <div tal:condition="view/key_already_imported" class="error message">
+      The key <code tal:content="view/fingerprint" /> has already been imported.
+    </div>
+
+    <div tal:condition="view/key_retrieval_failed" class="error message">
+      <strong>Launchpad could not import your OpenPGP key</strong>
+      <ul>
+        <li>Did you enter your complete fingerprint correctly?
+        (<a href="/+help-registry/import-pgp-key.html"
+        target="help">Help with fingerprints</a>)</li>
+
+        <li>Is your key in the Ubuntu keyserver yet?
+            You may have to wait between ten minutes (if you pushed
+            directly to the Ubuntu key server) and one hour (if you pushed
+            your key to another server). (<a href="/+help-registry/openpgp-keys.html" target="help">Help with publishing keys</a>)</li>
+      </ul>
+
+    </div>
+
+    <tal:has_key condition="view/key">
+      <p tal:condition="view/key/revoked" class="error message">
+        The key <span tal:replace="view/key/keyid" /> cannot be validated
+        because it has been publicly revoked. You will need to generate a
+        new key (using <kbd>gpg --genkey</kbd>) and repeat the process
+        to import it.
+      </p>
+
+      <p tal:condition="view/key/expired" class="error message">
+        The key <span tal:replace="view/key/keyid" /> cannot be validated
+        because it has expired. Change the expiry date (in a terminal, enter
+        <kbd>gpg --edit-key <var>your@e-mail.address</var></kbd> then enter
+        <kbd>expire</kbd>), and try again.
+      </p>
+
+      <tal:key_ok condition="view/key_ok">
+        <p tal:condition="view/key/can_encrypt" class="informational message">
+          A message has been sent to <code
+          tal:content="context/preferredemail/email">foo@bar.com</code>, encrypted
+          with the key <code tal:content="view/key/displayname">DE233E22</code>.
+          To confirm the key is yours, decrypt the message and follow the
+          link inside.
+        </p>
+        <p tal:condition="not: view/key/can_encrypt" class="informational message">
+          A message has been sent to <code
+          tal:content="context/preferredemail/email">foo@bar.com</code>.
+          To confirm the key <code
+          tal:content="view/key/displayname">DA123F22</code> is yours,
+          follow the link inside.
+        </p>
+      </tal:key_ok>
+    </tal:has_key>
+
+    <p>
+      Sometimes, such as when you're using the bug tracker's email interface, it's not possible to identify
+      yourself to Launchpad with your username and password. Or you might want to sign a
+      <a href="/codeofconduct">code of conduct</a>.</p>
+
+    <p>In both cases, you need to use your OpenPGP key. Here you can tell Launchpad which keys you want to use.
+       (<a href="/+help-registry/openpgp-keys.html" target="help">Learn more about OpenPGP keys</a>)</p>
+
+    <form tal:condition="context/gpg_keys/count"
+          name="gpg_actions" action="" method="POST">
+      <input type="hidden" name="action" value="deactivate_gpg" />
+
+      <h2>Your active keys</h2>
+
+      <div tal:repeat="key context/gpg_keys">
+        <label>
+          <input type="checkbox" name="DEACTIVATE_GPGKEY"
+                 tal:attributes="value key/id"/>
+          <span tal:replace="key/displayname">KEY</span>
+          <tal:block condition="not:key/can_encrypt">(sign only)</tal:block>
+        </label>
+      </div>
+      <div><input type="submit" value="Deactivate Key" /></div>
+
+      <p>
+        <strong>Note:</strong> deactivating a key in Launchpad disables all
+        Launchpad features that use that key such as signed codes of conduct.
+        Deactivating the key in Launchpad does not alter the key outside of
+        Launchpad.
+      </p>
+
+    </form>
+
+    <form tal:condition="context/pending_gpg_keys" name="gpg_actions"
+          action="" method="POST">
+      <input type="hidden" name="action" value="remove_gpgtoken" />
+
+      <h2>Keys pending validation</h2>
+
+      <div>
+        <label tal:repeat="fingerprint context/pending_gpg_keys">
+          <input type="checkbox" name="REMOVE_GPGTOKEN"
+                 tal:attributes="value fingerprint"/>
+          <span tal:replace="fingerprint">TOKEN</span>
+        </label>
+      </div>
+
+      <input type="submit" value="Cancel Validation for Selected Keys" />
+    </form>
+
+    <form tal:condition="context/inactive_gpg_keys" name="gpg_actions"
+          action="" method="POST">
+      <input type="hidden" name="action" value="reactivate_gpg" />
+
+      <h2>Deactivated keys</h2>
+
+      <p>You can reactivate any of these keys for use in Launchpad whenever you choose.</p>
+
+      <div tal:repeat="key context/inactive_gpg_keys">
+        <label>
+        <input type="checkbox" name="REACTIVATE_GPGKEY"
+               tal:attributes="value key/id"/>
+          <span tal:replace="key/displayname">KEY</span>
+          <tal:block condition="not:key/can_encrypt">(sign only)</tal:block>
+        </label>
+      </div>
+      <input type="submit" value="Reactivate Key" />
+    </form>
+
+    <form name="gpg_actions" action="" method="POST">
+      <input type="hidden" name="action" value="claim_gpg" />
+      <h2>Import an OpenPGP key</h2>
+
+      <p>To start using an OpenPGP key with your Launchpad account, simply
+        paste its fingerprint below. The key must be registered with the
+        Ubuntu key server.
+        (<a href="/+help-registry/import-pgp-key.html" target="help">How to get the
+        fingerprint</a>)
+      </p>
+
+          <table class="form" id="launchpad-form-widgets">
+            <tbody>
+              <tr>
+                <div style="margin-bottom: 2.0 em;">
+                <th><label>Fingerprint:</label></th>
+                <td><input type="text" size="50" name="fingerprint" /></td>
+                </div>
+              </tr>
+              <tr class="lesser">
+                <th>Example:</th>
+                <td>
+                  <code>27E0 7815 B47C 0397 90D5&nbsp;&nbsp;8589 27D9 A27B F3F9 6058</code>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            Next, Launchpad will send e-mail to you at
+            <code tal:content="context/preferredemail/email"/> with instructions
+            on finishing the process.
+          </p>
+          <div>
+            <input type="submit" name="import" value="Import Key"/>
+            or&nbsp;<a tal:attributes="href view/cancel_url">Cancel</a>
+          </div>
+
+      </form>
+    </div>
+  </body>
+</html>
+</tal:root>

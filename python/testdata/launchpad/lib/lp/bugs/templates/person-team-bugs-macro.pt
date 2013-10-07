@@ -1,0 +1,27 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<metal:block define-macro="show">
+  <div class="portlet" id="portlet-team-bugs"
+       tal:condition="context/team_memberships">
+
+    <h2><span tal:replace="context/title" />'s teams</h2>
+
+      <table>
+        <tal:teams repeat="team context/teams_participated_in">
+          <tr tal:condition="team/@@+restricted-membership/userCanViewMembership">
+            <td tal:content="structure team/image:icon" />
+            <td>
+              <a tal:attributes="
+                  href string:${team/fmt:url}/${view/view_name}"
+                tal:content="team/title">Team name</a>
+            </td>
+          </tr>
+        </tal:teams>
+      </table>
+  </div>
+</metal:block>
+</tal:root>

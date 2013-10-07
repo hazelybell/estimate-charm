@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!--
+Copyright 2012 Canonical Ltd.  This software is licensed under the
+GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<html>
+    <head>
+        <title>Test lp.translations.poexport</title>
+
+        <!-- YUI and test setup -->
+        <script type="text/javascript"
+            src="../../../../../build/js/yui/yui/yui.js">
+        </script>
+        <link rel="stylesheet"
+            href="../../../../../build/js/yui/console/assets/console-core.css" />
+        <link rel="stylesheet"
+            href="../../../../../build/js/yui/test-console/assets/skins/sam/test-console.css" />
+        <link rel="stylesheet"
+            href="../../../../../build/js/yui/test/assets/skins/sam/test.css" />
+
+        <script type="text/javascript"
+                src="../../../../../build/js/lp/app/testing/testrunner.js"></script>
+
+        <link rel="stylesheet" href="../../../app/javascript/testing/test.css" />
+
+        <!-- Dependencies -->
+
+        <!-- The module under test. -->
+        <script type="text/javascript" src="../poexport.js"></script>
+
+        <!-- The test suite. -->
+        <script type="text/javascript" src="test_poexport.js"></script>
+    </head>
+    <body class="yui3-skin-sam">
+        <ul id="suites">
+            <li>lp.translations.poexport.test</li>
+        </ul>
+
+        <div id="fixture"></div>
+
+        <script type="text/x-template" id="pofile-export">
+            <form>
+                <div id="div_format">
+                    <label for="sel_format">Format:</label>
+                    <select name="format" id="sel_format">
+                        <option value="PO">PO format</option>
+                        <option value="MO">MO format</option>
+                    </select>
+                </div>
+                <div id="div_pochanged">
+                    <input type="checkbox" name="pochanged" id="cb_pochanged"
+                        value="POCHANGED" />
+                    <label for="cb_pochanged">
+                        <span>
+                            <em id="po-format-only">PO format only:</em>
+                            Only strings that differ from imported versions
+                        </span>
+                    </label>
+                </div>
+            </form>
+        </script>
+    </body>
+</html>

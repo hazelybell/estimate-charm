@@ -1,0 +1,13 @@
+<tal:root
+   xmlns:tal="http://xml.zope.org/namespaces/tal"
+   xmlns:metal="http://xml.zope.org/namespaces/metal"
+   omit-tag="">
+
+  <tal:revisions define="branch context/branch;
+                         revisions context/revisions;
+                         show_diff_expander python:True;">
+    <metal:landing-target use-macro="branch/@@+macros/branch-revisions"/>
+  </tal:revisions>
+  <tal:diff condition="context/diff" replace="structure context/diff/text/fmt:diff" />
+
+</tal:root>

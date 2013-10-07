@@ -1,0 +1,126 @@
+<div
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    id="branch-messages"
+    tal:define="branch context">
+
+  <tal:mirrored-branch tal:condition="branch/branch_type/enumvalue:MIRRORED">
+
+    <div id="mirror-failure"
+         class="warning message" style="font-weight: normal"
+         tal:condition="view/show_mirror_failure">
+
+      <tal:detailed-error-message condition="view/show_detailed_error_message">
+        <tal:mirror-disabled tal:condition="view/mirror_disabled">
+          Launchpad no longer mirrors this branch, because
+          <tal:number-of-failures
+              tal:replace="branch/mirror_failures">3
+          </tal:number-of-failures> attempts failed.
+        </tal:mirror-disabled>
+
+        <tal:mirror-scheduled tal:condition="not:view/mirror_disabled">
+          <tal:failed-once tal:condition="view/mirror_failed_once">
+            This branch may be out of date, as Launchpad was not able to
+            access it
+            <span tal:attributes="title branch/last_mirror_attempt/fmt:datetime"
+                  tal:content="branch/last_mirror_attempt/fmt:displaydate" />.
+          </tal:failed-once>
+
+          <tal:failed-multiple tal:condition="not:view/mirror_failed_once">
+            <tal:mirrored-yet tal:condition="branch/last_mirrored">
+              This branch may be out of date, as Launchpad has not been able to
+              access between
+              <span tal:attributes="title branch/last_mirrored/fmt:datetime"
+                    tal:content="branch/last_mirrored/fmt:approximatedate" />
+              and
+              <span tal:attributes="title branch/last_mirror_attempt/fmt:datetime"
+                    tal:content="branch/last_mirror_attempt/fmt:approximatedate" />.
+            </tal:mirrored-yet>
+            <tal:not-mirrored-yet tal:condition="not:branch/last_mirrored">
+              Launchpad has not been able to mirror this branch. The last attempt
+              was
+              <span tal:attributes="title branch/last_mirror_attempt/fmt:datetime"
+                    tal:content="branch/last_mirror_attempt/fmt:displaydate" />.
+            </tal:not-mirrored-yet>
+          </tal:failed-multiple>
+        </tal:mirror-scheduled>
+
+        <tal:has-error-message tal:condition="branch/mirror_status_message">
+          (<tal:error-message tal:replace="view/mirror_status_message">Error 1</tal:error-message>)
+        </tal:has-error-message>
+
+        <tal:no-error-message tal:condition="not:branch/mirror_status_message">
+          The cause of the error is not available.
+        </tal:no-error-message>
+
+        <tal:mirror-scheduled tal:condition="not:view/mirror_disabled">
+          Launchpad will try again
+          <tal:mirror-in-future tal:condition="not:view/in_mirror_queue">
+            <span tal:attributes="title branch/next_mirror_time/fmt:datetime"
+                  tal:content="branch/next_mirror_time/fmt:approximatedate" />.
+            <tal:owner condition="branch/required:launchpad.Edit">
+              If you have fixed the problem, please ask Launchpad to try again.
+
+              <div metal:use-macro="branch/@@launchpad_form/form" />
+            </tal:owner>
+          </tal:mirror-in-future>
+          <tal:mirror-in-past tal:condition="view/in_mirror_queue">
+            shortly.
+          </tal:mirror-in-past>
+        </tal:mirror-scheduled>
+
+        <tal:mirror-disabled tal:condition="view/mirror_disabled">
+          <tal:owner condition="branch/required:launchpad.Edit">
+            If you have fixed the problem, please ask Launchpad to try again.
+            <div metal:use-macro="branch/@@launchpad_form/form" />
+          </tal:owner>
+        </tal:mirror-disabled>
+
+      </tal:detailed-error-message>
+
+      <tal:summary-error-message
+          condition="not: view/show_detailed_error_message">
+        <tal:mirrored-yet tal:condition="branch/last_mirrored">
+          This branch may be out of date, because Launchpad has not been
+          able to access it since
+          <span tal:attributes="title branch/last_mirrored/fmt:datetime"
+                tal:content="branch/last_mirrored/fmt:approximatedate" />.
+        </tal:mirrored-yet>
+        <tal:not-mirrored-yet tal:condition="not:branch/last_mirrored">
+          This branch has not been mirrored, as Launchpad has been unable to
+          access it.
+        </tal:not-mirrored-yet>
+      </tal:summary-error-message>
+    </div>
+
+    <tal:comment condition="nothing">
+      <!-- Style attribute is evil, but bold text makes the mirror error
+           difficult to read. Checked with mpt about that. -->
+    </tal:comment>
+    <p tal:condition="view/mirror_of_ssh" id="mirror-of-ssh"
+       class="warning message" style="font-weight: normal">
+      Launchpad cannot mirror this branch because its URL uses sftp or bzr+ssh.
+    </p>
+  </tal:mirrored-branch>
+
+  <tal:hosted-branch tal:condition="branch/branch_type/enumvalue:HOSTED">
+    <tal:comment condition="nothing">
+      <!-- If a hosted branch has a mirror error, then something has gone
+           wrong getting the revisions from the quarantine area into the
+           hosted area, so make the error message visible. -->
+    </tal:comment>
+    <div id="mirror-failure"
+         class="warning message" style="font-weight: normal"
+         tal:condition="branch/mirror_status_message"
+         tal:content="branch/mirror_status_message">
+    </div>
+    <div id="upgrade-pending"
+         class="warning message" style="font-weight: normal"
+         tal:condition="branch/upgrade_pending">
+         An upgrade of this branch is in progress.
+    </div>
+
+  </tal:hosted-branch>
+
+</div>

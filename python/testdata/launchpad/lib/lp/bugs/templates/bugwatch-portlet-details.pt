@@ -1,0 +1,82 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  class="portlet">
+  <h2>Bug watch details</h2>
+    <div class="two-column-list">
+      <dl class="bugwatch-data">
+        <dt>Tracker:</dt>
+        <dd>
+          <a tal:replace="structure context/bugtracker/fmt:link"/>
+        </dd>
+      </dl>
+      <dl class="bugwatch-data">
+        <dt>Remote bug ID:</dt>
+        <dd>
+          <a tal:attributes="href context/url">
+            <span tal:replace="context/remotebug">6642</span>
+          </a>
+        </dd>
+      </dl>
+      <dl class="bugwatch-data">
+        <dt>Last status:</dt>
+        <dd>
+          <span tal:condition="not: context/remotestatus">
+              None recorded
+          </span>
+          <span tal:replace="context/remotestatus">6642</span>
+        </dd>
+      </dl>
+      <dl class="bugwatch-data">
+        <dt>Changed:</dt>
+        <dd>
+          <span
+            tal:attributes="title context/lastchanged/fmt:datetime"
+            tal:content="context/lastchanged/fmt:approximatedate">
+            12 Jan 2004
+           </span>
+        </dd>
+      </dl>
+      <dl class="bugwatch-data" id="bugwatch-lastchecked">
+        <dt>Checked:</dt>
+        <dd>
+          <span
+            tal:attributes="title context/lastchecked/fmt:datetime"
+            tal:content="context/lastchecked/fmt:approximatedate">
+            13 Jan 2004
+           </span>
+        </dd>
+      </dl>
+      <dl class="bugwatch-data" id="bugwatch-next_check">
+        <dt>Next check:</dt>
+        <dd>
+          <span
+            tal:condition="context/next_check"
+            tal:content="context/next_check/fmt:datetime">
+            13 Jan 2004
+           </span>
+          <span
+            tal:condition="not: context/next_check">
+            Not yet scheduled
+           </span>
+        </dd>
+      </dl>
+      <dl class="bugwatch-data">
+        <dt>Created:</dt>
+        <dd>
+          <span
+            tal:attributes="title context/datecreated/fmt:datetime"
+            tal:content="context/datecreated/fmt:approximatedate">
+            15 Jan 2003
+           </span>
+        </dd>
+      </dl>
+      <dl class="bugwatch-data">
+        <dt>Created by:</dt>
+        <dd>
+          <a tal:replace="structure context/owner/fmt:link" />
+        </dd>
+      </dl>
+    </div>
+</div>

@@ -1,0 +1,17 @@
+      <li>
+
+        <bz:bug rdf:about="http://bugzilla.gnome.org/show_bug.cgi?id=%(bug_id)s">
+
+          <bz:id nc:parseType="Integer">%(bug_id)s</bz:id>
+
+          <bz:bug_severity>%(severity)s</bz:bug_severity>
+          <bz:priority>%(priority)s</bz:priority>
+          <bz:op_sys>NOT USED</bz:op_sys>
+          <bz:product>NOTUSED</bz:product>
+          <bz:bug_status>%(status)s</bz:bug_status>
+          <bz:resolution>%(resolution)s</bz:resolution>
+          <bz:short_short_desc>NOT USED</bz:short_short_desc>
+
+        </bz:bug>
+
+      </li>

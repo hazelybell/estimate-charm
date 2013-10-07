@@ -1,0 +1,19 @@
+Format: 1.7
+Date: Thu, 08 Feb 2007 12:56:11 -0200
+Source: foo
+Binary: foo
+Architecture: source
+Version: 2.9-4
+Distribution: breezy-proposed
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Celso Providelo <celso.providelo@canonical.com>
+Description: 
+ foo        - Stuff for testing
+Changes: 
+ foo (2.9-4) breezy-proposed; urgency=low
+ .
+   * bumping version higher for proposed
+Files: 
+ 70ad88e71faaa19ac259d4bc77ff869f 275 devel optional foo_2.9-4.dsc
+ 1195b0288fff5031a0782651d19400ca 730 devel optional foo_2.9-4.diff.gz

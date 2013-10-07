@@ -1,0 +1,9 @@
+Your question #%(question_id)s on %(target_name)s changed:
+%(question_url)s
+
+%(body)s
+
+-- 
+To answer this request for more information, you can either reply to
+this email or enter your reply at the following page:
+%(question_url)s

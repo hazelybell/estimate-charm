@@ -1,0 +1,34 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  metal:use-macro="view/macro:page/main_only"
+>
+
+<body>
+
+<div metal:fill-slot="main">
+
+  <div tal:condition="not: context/productseries"
+       class="error">
+    This upstream association was deleted already.
+  </div>
+  <div tal:condition="context/productseries">
+    <div metal:use-macro="context/@@launchpad_form/form">
+      <div metal:fill-slot="extra_info">
+        <p>
+          Do you want to remove the upstream link to
+          <a tal:replace="structure context/productseries/fmt:link"/>?
+        </p>
+        <p>
+        Links from distribution packages to upstream project series let
+        distribution and upstream maintainers share bugs, patches, and
+        translations efficiently.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

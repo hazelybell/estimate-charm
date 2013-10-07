@@ -1,0 +1,23 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+
+<body>
+
+  <h1 metal:fill-slot="heading"
+      tal:define="branch context/branch_merge_proposal/source_branch">
+    Code review comment for <tal:source content="branch/bzr_identity"/>
+  </h1>
+
+  <div metal:fill-slot="main">
+
+    <tal:content replace="structure view/comment/@@+render"/>
+    <p>&laquo;&nbsp;<a href="#" tal:attributes="href context/branch_merge_proposal/fmt:url">Back to merge
+    proposal</a></p>
+  </div>
+</body>
+</html>

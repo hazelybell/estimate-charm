@@ -1,0 +1,25 @@
+Format: 1.8
+Date: Thu, 15 Apr 2009 15:14:09 +0100
+Source: badhash
+Binary: badhash-bin
+Architecture: source
+Version: 1.0-1
+Distribution: hoary
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Celso Providelo <cprov@canonical.com>
+Description: 
+ badhash-bin - Stuff for testing
+Changes: 
+ badhash (1.0-1) hoary; urgency=low
+ .
+   * Testing bad hashes in the DSC.
+Checksums-Sha1: 
+ fcbb6549b6d85d3011706e2c6f8950914fc87867 426 badhash_1.0-1.dsc
+ e7ba6a0bf1f18fd4e9c5bc98d68e4b15278545a0 743 badhash_1.0-1.tar.gz
+Checksums-Sha256: 
+ 4fe14f7e87c85825151832a1efa9c5308ec4d1bbf47742083ef6c11f865b72c3 426 badhash_1.0-1.dsc
+ a29ec2370df83193c3fb2cc9e1287dbfe9feba04108ccfa490bbe20ea66f3d08 743 badhash_1.0-1.tar.gz
+Files: 
+ d336c49d4d16225b7108f7cf91d904b2 426 devel optional badhash_1.0-1.dsc
+ 91cf79aaaf959dbc9d77588e98509784 743 devel optional badhash_1.0-1.tar.gz

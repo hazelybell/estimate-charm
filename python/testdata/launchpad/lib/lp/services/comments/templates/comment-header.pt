@@ -1,0 +1,9 @@
+<tal:root
+   xmlns:tal="http://xml.zope.org/namespaces/tal"
+   xmlns:metal="http://xml.zope.org/namespaces/metal"
+   omit-tag="">
+
+  <tal:author replace="structure context/comment_author/fmt:link-display-name-id"/>
+  <tal:has-body condition="context/has_body">wrote</tal:has-body>
+  <tal:date replace="context/comment_date/fmt:displaydate" />
+</tal:root>

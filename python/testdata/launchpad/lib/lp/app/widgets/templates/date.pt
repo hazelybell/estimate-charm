@@ -1,0 +1,15 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+<input size="10" type="text" class="yui2-calendar"
+       tal:attributes="name view/name; id view/name;
+                       value view/formvalue;
+                       disabled view/disabled_flag" />
+<tal:daterange condition="view/daterange">
+  <span class="hidden"
+        tal:attributes="id string:${view/name}-daterange"
+        tal:content="view/daterange" />
+</tal:daterange>
+</tal:root>

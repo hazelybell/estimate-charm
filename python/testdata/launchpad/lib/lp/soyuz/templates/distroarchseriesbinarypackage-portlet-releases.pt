@@ -1,0 +1,18 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  class="portlet" id="portlet-releases">
+  <h2>Package releases</h2>
+    <ul>
+      <li tal:repeat="release context/releases">
+        <a tal:attributes="href release/fmt:url"
+           tal:content="release/version">2.4.55-2</a>
+      </li>
+    </ul>
+    <p tal:condition="not: context/releases">
+      <i>No releases for <span
+      tal:replace="context/displayname">displayname</span> 
+      have yet been published.</i>
+    </p>
+</div>

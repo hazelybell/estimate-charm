@@ -1,0 +1,260 @@
+= DistroArchSeries Pages =
+
+DistroArchSeries entity represents a distribution series for a
+specific architecture.
+
+
+== DistroArchSeries Index ==
+
+The distroarchseries is reachable following the distribution ->
+distroseries chain. We encode the DistroArchSeries details in the list
+presented in the DistroSeries page. See further details of this
+feature in 'DistroArchSeries Actions'.
+
+    >>> anon_browser.open('http://launchpad.dev/ubuntu/')
+    >>> anon_browser.getLink('4.10').click()
+    >>> anon_browser.getLink('i386').click()
+
+    >>> print anon_browser.title
+    i386 : Warty (4.10) : Ubuntu
+
+We present only minimal information in this page, its main feature is
+to allow binary package searching.
+
+    >>> print extract_text(find_main_content(anon_browser.contents))
+    Ubuntu Warty for i386
+    ...
+    Search binary packages
+    This archive contains 5 software packages.
+    Details for Ubuntu Warty i386
+    Architecture tag: i386
+    Processor: Intel 386
+    Port registrant: Mark Shuttleworth
+    5 binary packages
+
+
+== Searching BinaryPackages ==
+
+Users can find binary packages of interest using the search form on
+the DistroArchSeries index page.
+
+This search looks up binary packages by name, summary and description,
+considering partial string matches as well (fti).
+
+    >>> anon_browser.getControl(name="text").value = "firefox"
+    >>> anon_browser.getControl("Search Packages").click()
+    >>> anon_browser.url
+    'http://launchpad.dev/ubuntu/warty/i386/+index?text=firefox'
+
+Searching for "firefox" finds several binary packages. Each search
+result is displayed as the binary package name followed by the binary
+package summary.
+
+More details are available by clicking on the binary package name.
+    >>> print extract_text(
+    ...     find_tag_by_id(anon_browser.contents, 'search-results'))
+    1 &rarr; 3 of 3 results
+    First &bull; Previous &bull; Next &bull; Last
+    mozilla-firefox: Mozilla Firefox Web Browser
+    mozilla-firefox-data: Mozilla Firefox Data
+    mozilla-firefox: ff from iceweasel
+    1 &rarr; 3 of 3 results
+    First &bull; Previous &bull; Next &bull; Last
+
+A search may yield no result. In this case, we describe the search
+that was done, and explain that no matches were found.
+
+    >>> anon_browser.getControl(name="text").value = "biscoito"
+    >>> anon_browser.getControl('Search', index=0).click()
+    >>> print extract_text(
+    ...     find_tag_by_id(anon_browser.contents, 'search-results'))
+    No packages matching 'biscoito' are published in Ubuntu Warty i386.
+
+
+== DistroArchseries Actions ==
+
+All users can browse to the builds page from the DistroArchSeries
+page. The builds page is described in 23-builds-page.txt.
+
+    >>> print extract_text(
+    ...     find_tag_by_id(anon_browser.contents, 'global-actions'))
+    Show builds
+
+Only administrators can edit ('administer', in fact) the
+distroarchseries details.
+
+    >>> admin_browser.open("http://launchpad.dev/ubuntu/warty/i386/")
+    >>> print extract_text(
+    ...     find_tag_by_id(admin_browser.contents, 'global-actions'))
+    Administer
+    Show builds
+
+Non privileged access to the admin page results in a 'Unauthorized'
+error.
+
+    >>> user_browser.open("http://launchpad.dev/ubuntu/warty/i386/+admin")
+    Traceback (most recent call last):
+    ...
+    Unauthorized...
+
+Accessing the DistroArchSeries administration interface.
+
+    >>> admin_browser.getLink('Administer').click()
+
+    >>> admin_browser.getControl("Architecture Tag").value
+    'i386'
+    >>> admin_browser.getControl("Official Support").selected
+    True
+    >>> admin_browser.getControl("PPA support available").selected
+    True
+
+The page presents a cancellation link that returns the user back to the
+DistroArchSeries page if clicked:
+
+    >>> print admin_browser.getLink("Cancel").url
+    http://launchpad.dev/ubuntu/warty/i386
+
+Removing the PPA support for this DistroArchSeries.
+
+    >>> admin_browser.getControl("PPA support available").selected = False
+
+Clicking the "Change" button makes the change and takes the user back to the
+DistroArchSeries page.
+
+    >>> admin_browser.getControl("Change").click()
+    >>> print admin_browser.url
+    http://launchpad.dev/ubuntu/warty/i386
+
+There's also a notification message announcing the success of the change:
+
+    >>> print_feedback_messages(admin_browser.contents)
+    Successfully updated
+
+Navigating back to the admin page shows the change was made:
+
+    >>> admin_browser.getLink("Administer").click()
+
+    >>> admin_browser.getControl("Architecture Tag").value
+    'i386'
+    >>> admin_browser.getControl("Official Support").selected
+    True
+    >>> admin_browser.getControl("PPA support available").selected
+    False
+
+We always present a warning in this form indicating that changes may
+have huge impacts in the distribution management, thus should be
+planned and done carefully.
+
+    >>> for warning in find_tags_by_class(
+    ...     admin_browser.contents, 'exception'):
+    ...     print extract_text(warning)
+    Changing the architecture tag will use large amounts of archive
+    disk space, and may affect many people. Please be very careful.
+
+This change also affects the way distroarchseries are listed in the
+distroseries page. We will use a small helper function to extract the
+current distroseries architecture list.
+
+    >>> def check_arch_list(distroseries='warty'):
+    ...     anon_browser.open("http://launchpad.dev/ubuntu/%s" % distroseries)
+    ...     print extract_text(find_tag_by_id(
+    ...         anon_browser.contents, 'portlet-architectures-list'))
+
+Since we disabled ppa-support for warty/i386, it's now presented as
+'official' only.
+
+    >>> check_arch_list()
+    i386
+    hppa (unofficial)
+
+Re-enabling the PPA support on warty/i386 has immediate effects in the
+way this distroarchseries is presented.
+
+    >>> admin_browser.getControl("PPA support available").selected = True
+    >>> admin_browser.getControl("Change").click()
+
+    >>> check_arch_list()
+    i386
+    hppa (unofficial)
+
+The same effect is observed when we make warty/i386 unofficial.
+
+    >>> admin_browser.getLink("Administer").click()
+    >>> admin_browser.getControl("Official Support").selected = False
+    >>> admin_browser.getControl("Change").click()
+
+    >>> check_arch_list()
+    hppa (unofficial)
+    i386 (unofficial)
+
+
+== Creating a new DistroArchSeries ==
+
+Users with administrative privileges on a DistroSeries can open new
+architectures in this DistroSeries.
+
+    >>> admin_browser.open("http://launchpad.dev/ubuntu/hoary")
+    >>> admin_browser.getLink("Add architecture").click()
+    >>> print admin_browser.title
+    Add a port of The Hoary Hedgehog...
+
+Ubuntu hoary already has i386 & hppa distroarchseries and should not
+allow duplications.
+
+    >>> check_arch_list(distroseries='hoary')
+    i386
+    hppa
+    (unofficial)
+
+    >>> admin_browser.getControl("Architecture Tag").value = 'i386'
+    >>> admin_browser.getControl("Processor:").value = ['386']
+    >>> admin_browser.getControl("Official Support").selected = True
+    >>> admin_browser.getControl("PPA support available").selected = True
+
+XXX cprov 20071213: we should return a proper error page on attempts
+to open an already installed architecture instead of a
+traceback. Although It's not a big problem because this form is very
+restricted and rarely used.
+
+    admin_browser.getControl("Continue").click()
+    Traceback (most recent call last):
+    ...
+    RetryPsycopgIntegrityError: ERROR:  duplicate key violates unique
+    constraint "distroarchseries__architecturetag__distroseries__key"
+    ...
+
+XXX cprov 20071215: test backed out due to failure in PQM:
+{{{
+...lib/zope/publisher/http.py", line 833, in consumeBody
+ return ''.join(self._result.body)
+AttributeError: _result
+...
+}}}
+I will address it one 1.1.12 is gone.
+
+An administrator can open new distinct architecture, for instance,
+'amd64'.
+
+    >>> admin_browser.open("http://launchpad.dev/ubuntu/hoary")
+    >>> admin_browser.getLink("Add architecture").click()
+
+    >>> admin_browser.getControl("Architecture Tag").value = 'amd64'
+    >>> admin_browser.getControl("Processor:").value = ['amd64']
+    >>> admin_browser.getControl("Official Support").selected = True
+    >>> admin_browser.getControl("PPA support available").selected = True
+    >>> admin_browser.getControl("Continue").click()
+
+When the new architecture has been created, it is displayed to the
+administrator.
+
+    >>> print admin_browser.title
+    amd64 : Hoary (5.04) : Ubuntu
+
+And other users can see the just-created architecture listed in the
+distroseries page.
+
+    >>> check_arch_list(distroseries='hoary')
+    amd64
+    i386
+    hppa
+    (unofficial)

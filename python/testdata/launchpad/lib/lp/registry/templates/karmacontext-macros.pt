@@ -1,0 +1,30 @@
+<metal:top-contributors
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  define-macro="top-contributors-table-body">
+  <tal:comment replace="nothing">
+  This macro expects the following variables defined:
+      :contributors: A list of KarmaContextContributors to be listed
+  </tal:comment>
+
+  <tr tal:repeat="contributor contributors">
+    <tal:block
+      define="person contributor/person; karma contributor/karmavalue">
+    <td><a tal:replace="structure person/fmt:link">Guilherme Salgado</a>
+    </td>
+    <td style="text-align: right">
+      <span tal:content="karma"
+            style="margin-right: 50%">
+        500
+      </span>
+    </td>
+    <td style="text-align: right">
+      <a tal:attributes="href string:${person/fmt:url}/+karma"
+         tal:content="person/karma"
+         style="margin-right: 50%">50000</a>
+    </td>
+    </tal:block>
+  </tr>
+
+</metal:top-contributors>

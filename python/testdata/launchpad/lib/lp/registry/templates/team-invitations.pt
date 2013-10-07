@@ -1,0 +1,57 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+  >
+  <body>
+    <div metal:fill-slot="main">
+      <tal:open-invitations condition="context/open_membership_invitations">
+
+        <p><tal:team tal:replace="context/displayname">My Team</tal:team> has
+        been invited to become a member of the following other teams.</p>
+
+        <table class="listing sortable" id="invitations">
+          <thead>
+            <tr>
+              <th>Sent by</th>
+              <th>On behalf of</th>
+              <th>&nbsp;</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr tal:repeat="membership context/open_membership_invitations">
+              <tal:block tal:define="team membership/team">
+              <td>
+                <a tal:attributes="href membership/proposed_by/fmt:url"
+                   tal:content="membership/proposed_by/displayname"
+                   >Proponent</a>
+              </td>
+              <td>
+                <a tal:attributes="href team/fmt:url"
+                   tal:content="team/displayname">Team</a>
+              </td>
+              <td>
+                <a tal:attributes="
+                   href string:${context/fmt:url}/+invitation/${team/name}"
+                   ><img src="/@@/edit"
+                         title="Accept or decline this invitation" /></a>
+              </td>
+              </tal:block>
+            </tr>
+          </tbody>
+        </table>
+      </tal:open-invitations>
+
+      <tal:no-open-invitations
+        condition="not: context/open_membership_invitations">
+        <p><tal:team tal:replace="context/displayname">My Team</tal:team> has
+        no open invitations for membership in another team.</p>
+      </tal:no-open-invitations>
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,29 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+  <p tal:condition="context/language_pack_admin">
+    Language packs are administered by
+    <span tal:replace="structure
+                       context/language_pack_admin/fmt:link"
+                    >Mr. No
+    </span>.
+    <tal:admin
+       condition="context/required:launchpad.TranslationsAdmin">
+      <a tal:attributes="
+           href context/fmt:url:translations/+select-language-pack-admin"
+         class="edit sprite"></a>
+    </tal:admin>
+  </p>
+  <tal:admin
+     condition="context/required:launchpad.TranslationsAdmin">
+    <p tal:condition="not:context/language_pack_admin">
+      <a tal:attributes="
+           href
+           context/fmt:url:translations/+select-language-pack-admin"
+         class="edit sprite">Set language pack administrator</a>
+    </p>
+  </tal:admin>
+</tal:root>

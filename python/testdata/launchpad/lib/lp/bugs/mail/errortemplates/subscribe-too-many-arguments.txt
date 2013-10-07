@@ -1,0 +1,12 @@
+The 'subscribe' command expects at most one argument.
+
+For example, to subscribe yourself:
+
+    subscribe
+
+To subscribe someone else:
+
+    subscribe foo
+
+'foo' can be either the person's Launchpad name or the person's email
+address.

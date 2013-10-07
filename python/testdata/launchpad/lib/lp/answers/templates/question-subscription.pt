@@ -1,0 +1,47 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<body>
+
+<div metal:fill-slot="main">
+
+  <p id="subscribe"
+    tal:condition="not: view/subscription">
+    Subscribing to a question makes it show up on
+    <a tal:attributes="href view/user/menu:navigation/subscribed/fmt:url"
+    >your subscribed questions page</a>. You will receive email notifications
+    about updates to this question.
+  </p>
+
+  <p id="unsubscribe" 
+    tal:condition="view/subscription">
+    Unsubscribing from this question will stop email notifications
+    about updates to this question.
+  </p>
+
+  <form action="."
+        tal:attributes="action request/URL"
+        method="post">
+
+    <div class="actions">
+      <input tal:condition="not: view/subscription"
+             type="submit"
+             name="subscribe"
+             value="Subscribe" />
+      <input tal:condition="view/subscription"
+             type="submit"
+             name="subscribe"
+             value="Unsubscribe" />
+    </div>
+  </form>
+
+</div>
+
+</body>
+</html>

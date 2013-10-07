@@ -1,0 +1,55 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xml:lang="en"
+  lang="en"
+  i18n:domain="launchpad">
+
+<head>
+    <title tal:content="view/title">Feed Title</title>
+</head>
+
+<body>
+    <table style="border: 1px dotted black">
+    <thead>
+    <tr><th colspan="6" style="background: lightgray"
+            tal:content="view/title">
+        My Title</th>
+    </tr>
+    </thead>
+    <tbody>
+    <div tal:omit-tag="python:True" tal:repeat="bug view/getPublicRawItems">
+      <tr tal:repeat="bugtask bug/bugtasks">
+        <td class="icon right">
+          <img src="/@@/bug"
+            tal:replace="structure bugtask/image:icon" />
+        </td>
+        <td class="amount">
+          <a tal:attributes="href bugtask/fmt:url"
+            tal:content="bugtask/bug/id"
+            tal:condition="view/show_column/id|nothing">42</a>
+        </td>
+        <td>
+          <a href="#"
+             tal:content="bugtask/bug/title"
+             tal:attributes="href bugtask/fmt:url"
+            tal:condition="view/show_column/title|nothing">
+            drop-down list in search bar disappears when using blah blah blah
+          </a>
+        </td>
+        <td tal:content="bugtask/bugtargetdisplayname"
+            tal:condition="view/show_column/bugtargetdisplayname|nothing">
+          mozilla-firefox (Ubuntu)</td>
+        <td tal:content="bugtask/importance/title"
+            tal:attributes="class string:importance${bugtask/importance/name}"
+            tal:condition="view/show_column/importance|nothing">
+          Critical</td>
+        <td tal:content="bugtask/status/title"
+            tal:attributes="class string:status${bugtask/status/name}"
+            tal:condition="view/show_column/status|nothing">
+          Confirmed</td>
+      </tr>
+    </div>
+    </tbody>
+  </table>
+</body>
+</html>

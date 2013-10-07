@@ -1,0 +1,10 @@
+Your question #%(question_id)s on %(target_name)s changed:
+%(question_url)s
+
+%(body)s
+
+-- 
+If you think that this rejection was a mistake, you can post a comment
+explaining your point of view either by replying to this email or at
+the following page:
+%(question_url)s

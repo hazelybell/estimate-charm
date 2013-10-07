@@ -1,0 +1,16 @@
+Hello %(importer)s,
+
+On %(dateimport)s (%(elapsedtime)s), you uploaded a file with %(language)s translations for %(template)s in Launchpad.
+
+We were unable to import your translations because you did not update the timestamp in its header to state when you added your translations.
+
+%(error)s
+
+To fix this problem, please upload the file again, but with the 'PO-Revision-Date' field updated.
+
+For your convenience, you can get the file you uploaded at:
+%(file_link)s
+
+Thank you,
+
+The Launchpad team

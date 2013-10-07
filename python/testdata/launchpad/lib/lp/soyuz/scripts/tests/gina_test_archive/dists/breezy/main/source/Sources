@@ -1,0 +1,161 @@
+Package: archive-copier
+Binary: archive-copier
+Version: 0.3.6
+Section: misc
+Maintainer: Colin Watson <cjwatson@ubuntu.com>
+Build-Depends: debhelper (>= 4.2)
+Architecture: any
+Standards-Version: 3.6.2
+Format: 1.0
+Directory: pool/main/a/archive-copier
+Files:
+ 3b6c16962308a4b8b753ec8d5b289506 510 archive-copier_0.3.6.dsc
+ 6ca2e13475a9aa0a694b85330d905dbd 19598 archive-copier_0.3.6.tar.gz
+
+Package: db1-compat
+Binary: libdb1-compat
+Version: 2.1.3-7
+Priority: required
+Section: oldlibs
+Maintainer: Colin Watson <cjwatson@ubuntu.com>
+Build-Depends: debhelper (>= 3.4.4)
+Architecture: any
+Standards-Version: 3.5.6
+Format: 1.0
+Directory: pool/main/d/db1-compat
+Files:
+ f341a9317c3333f14fa170fe97d84b36 640 db1-compat_2.1.3-7.dsc
+ e571c8c34688d272ec376cedb311b7b4 67763 db1-compat_2.1.3.orig.tar.gz
+ 5654414826d07d3a07f7f56137020e92 5500 db1-compat_2.1.3-7.diff.gz
+
+Package: util-linux
+Binary: bsdutils, util-linux, fdisk-udeb, util-linux-locales, mount
+Version: 2.12p-6ubuntu5
+Priority: required
+Section: base
+Maintainer: LaMont Jones <lamont@debian.org>
+Build-Depends: libncurses5-dev, libslang2-dev (>=2.0.4-1), gettext, zlib1g-dev, libblkid-dev, uuid-dev, dpatch
+Architecture: any
+Standards-Version: 3.5.6.0
+Format: 1.0
+Directory: pool/main/u/util-linux
+Files:
+ df9f1869e12f73444fe22efc6882d7ec 714 util-linux_2.12p-6ubuntu5.dsc
+ d47e820f6880c21c8b4c0c7e8a7376cc 2001658 util-linux_2.12p.orig.tar.gz
+ af15119029d0344f0a7f4a40ecf6a866 79018 util-linux_2.12p-6ubuntu5.diff.gz
+
+Package: mkvmlinuz
+Binary: mkvmlinuz
+Version: 14ubuntu1
+Priority: optional
+Section: devel
+Maintainer: Debian Kernel Team <debian-kernel@lists.debian.org>
+Build-Depends: docbook-to-man, debhelper (>= 4.0.0)
+Architecture: powerpc
+Standards-Version: 3.6.0
+Format: 1.0
+Directory: pool/main/m/mkvmlinuz
+Files:
+ 47038a25ae8045c54905ef6b4e7b010e 621 mkvmlinuz_14ubuntu1.dsc
+ 8dd181a50ffb84c42b93fd27ab91ffe5 9076 mkvmlinuz_14ubuntu1.tar.gz
+Uploaders: Sven Luther <luther@debian.org>, Jens Schmalzing <jensen@debian.org>
+
+Package: python-pam
+Binary: python-pam, python2.3-pam, python2.4-pam
+Version: 0.4.2-10.1ubuntu3
+Priority: optional
+Section: python
+Maintainer: Dima Barsky <dima@debian.org>
+Build-Depends: debhelper (>> 4.2.28), python2.4-dev, python2.3-dev, python (>= 2.4), libpam0g-dev
+Architecture: any
+Standards-Version: 3.6.0
+Format: 1.0
+Directory: pool/main/p/python-pam
+Files:
+ 26c077c02e697075b9357d8c0e2a5844 611 python-pam_0.4.2-10.1ubuntu3.dsc
+ dd7c355da0edc09b306f8fd33e756be3 15064 python-pam_0.4.2-10.1ubuntu3.tar.gz
+
+Package: python-sqlite
+Binary: python2.3-sqlite, python2.4-sqlite, python-sqlite
+Version: 1.0.1-2ubuntu1
+Priority: optional
+Section: python
+Maintainer: Joel Rosdahl <joel@debian.org>
+Build-Depends: debhelper (>> 4.2.18), libsqlite0-dev (>= 2.5.6), python2.3-dev, python2.4-dev, python
+Architecture: any
+Standards-Version: 3.6.1
+Format: 1.0
+Directory: pool/main/p/python-sqlite
+Files:
+ aca3c140add94cda912f71c70dacc754 697 python-sqlite_1.0.1-2ubuntu1.dsc
+ 4797b5ea7a3d96b87333e6b5af7b9979 41099 python-sqlite_1.0.1.orig.tar.gz
+ 358fd0ee2534e4ef9fa451b5d5222c20 1689 python-sqlite_1.0.1-2ubuntu1.diff.gz
+
+Package: ed
+Binary: ed
+Version: 0.2-20
+Priority: standard
+Section: editors
+Maintainer: James Troup <james@nocrew.org>
+Build-Depends: dpatch
+Architecture: any
+Standards-Version: 3.5.8.0
+Format: 1.0
+Directory: pool/main/e/ed
+Files:
+ 5963369d8874785077ca0b8773167ad0 530 ed_0.2-20.dsc
+ ddd57463774cae9b50e70cd51221281b 185913 ed_0.2.orig.tar.gz
+ f9e1e5f13725f581919e9bfd62272a05 8506 ed_0.2-20.diff.gz
+
+Package: gcc-defaults
+Binary: gcj, chill, gpc, gfortran, cpp-doc, gcc, gobjc, cpp, gcc-doc, libgcj-dev, g++, g77-doc, gfortran-doc, g77, gij, gpc-doc
+Version: 1.28
+Priority: optional
+Section: devel
+Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+Build-Depends: m4, debhelper (>= 4.2), dpkg-dev (>= 1.13.9)
+Architecture: any
+Standards-Version: 3.6.2
+Format: 1.0
+Directory: pool/main/g/gcc-defaults
+Files:
+ 584581fc9c9a03814c86e70dcbc5a9e7 731 gcc-defaults_1.28.dsc
+ 119ccef301db30fcecde67acc6b6f512 35015 gcc-defaults_1.28.tar.gz
+Uploaders: Matthias Klose <doko@debian.org>, Ryan Murray <rmurray@debian.org>
+
+Package: x11proto-damage
+Binary: x11proto-damage-dev
+Version: 6.8.99.7-2
+Priority: optional
+Section: x11
+Maintainer: Daniel Stone <daniel.stone@ubuntu.com>
+Build-Depends-Indep: debhelper (>= 4.0.0)
+Architecture: all
+Standards-Version: 3.6.1.0
+Format: 1.0
+Directory: pool/main/x/x11proto-damage
+Files:
+ 559c0542e5bfe3fcb7422870a348f955 618 x11proto-damage_6.8.99.7-2.dsc
+ 7947f81d47c3ccdadf05d5e4a120b098 41936 x11proto-damage_6.8.99.7.orig.tar.gz
+ a4e78902d591d87ab864cedc1e83278d 2201 x11proto-damage_6.8.99.7-2.diff.gz
+
+Package: bar
+Binary: bar
+Version: 1.0-1
+Priority: optional
+Section: misc
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Architecture: all
+Standards-Version: 3.6.2
+Format: 3.0 (quilt)
+Directory: pool/main/b/bar
+Files: 
+ 662977e76501561c902c34bf94a2054d 1115 bar_1.0-1.dsc
+ eed105761436486f7eebaa8c017bc59a 178 bar_1.0.orig-comp1.tar.gz
+ 0a30b50fa846e75261808ee1f41d1cbe 156 bar_1.0.orig-comp2.tar.bz2
+ fc1464e5985b962a042d5354452f361d 164 bar_1.0.orig.tar.gz
+ e68110184d4d9e7afd81520cc490b396 737 bar_1.0-1.debian.tar.bz2
+
+Bogus, bogus, bogus
+ain't invalid stanza's neat?
+

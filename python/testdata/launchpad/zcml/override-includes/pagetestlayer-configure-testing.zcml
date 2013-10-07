@@ -1,0 +1,15 @@
+<!-- Copyright 2009 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure xmlns="http://namespaces.zope.org/zope" >
+
+  <!-- When running the test suite, apply PageTestLayer as the default
+       skin. -->
+  <adapter
+      for="zope.publisher.interfaces.browser.IBrowserRequest"
+      provides="zope.publisher.interfaces.browser.IDefaultSkin"
+      factory="lp.layers.PageTestLayer"
+      />
+
+</configure>

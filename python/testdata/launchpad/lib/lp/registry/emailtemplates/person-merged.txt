@@ -1,0 +1,15 @@
+
+The Launchpad account named '%(dupename)s' was merged into the account
+named '%(person)s'. You can confirm the merged email addresses to
+associate them with your account. Merged email addresses are unsubscribed
+from all Launchpad mailing lists during the merge. All team memberships
+for the merged account were also transferred to your account, and
+those team may have mailing lists.
+
+You can review and update your email and subscription settings at:
+
+    https://launchpad.net/~%(person)s/+editemails
+
+Thank you,
+
+The Launchpad team

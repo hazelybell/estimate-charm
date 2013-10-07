@@ -1,0 +1,99 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Origin: Ubuntu/breezy
+Format: 1.7
+Date: Mon,  17 Oct 2005 13:22:27 +0100
+Source: etherwake
+Binary: etherwake
+Architecture: source
+Version: 1.08-1
+Distribution: breezy-autotest
+Urgency: low
+Maintainer: Alain Schroeder <alain@debian.org>
+Changed-By: Ubuntu Archive Auto-Sync <katie@rockhopper.ubuntu.com>
+Description: 
+ etherwake  - A little tool to send magic Wake-on-LAN packets
+Closes: 95946 111681 124604 135420 171051 179290 185134 194909
+Changes: 
+ etherwake (1.08-1) unstable; urgency=low
+ .
+   * New Upstream.
+     * Beautified Help Texts.
+     * Cleans (PF_INET,SOCK_PACKET) problems (Closes: #171051)
+   * Renamed ether-wake.8 to etherwake.8 (Closes: #185134)
+   * Revisioned the manpage (Closes: #179290)
+   * Cleaned my helptext from multiline strings, Thanks to Daniel Schepler
+     <schepler@math.berkeley.edu> (Closes: #194909)
+   * Upped Standart Version to 3.5.10.0
+ .
+ etherwake (1.06-2) unstable; urgency=low
+ .
+   * Reamped description to explain what WOL is (Closes: #135420).
+   * Reamped manpage a bit.
+   * Upped Standart Version to 3.5.6.0.
+ .
+ etherwake (1.06-1) unstable; urgency=low
+ .
+   * New Upstream.
+ .
+ etherwake (1.05-6) unstable; urgency=low
+ .
+   * Fix etherwake to use sockets correctly - removes "uses obsolete
+     (PF_INET,SOCK_PACKET)" message. (Closes: #111681)
+ .
+ etherwake (1.05-5) unstable; urgency=low
+ .
+   * Improve description again. (Closes: #124604)
+ .
+ etherwake (1.05-4) unstable; urgency=low
+ .
+   * Removed more typos in description. (Again thanks to Carlos Valdivia
+     Yagüe)
+  
+ etherwake (1.05-3) unstable; urgency=low
+ .
+   * Removed typo in description. (Closes: #95946)
+ .
+ etherwake (1.05-2) unstable; urgency=low
+ .
+   * Upload with diff. It was incidentally uploaded as a native 
+     Debian package.
+   * Fixed issues with new libc. The old sys/socket.h did not include
+     bits/uio.h, which it does now. This unfortunately causes that
+     ether-wake wasn´t build anymore. I just commented specific part as
+     a quick fix for now. It seems that everything works even with the old
+     libc, closes #87014.
+ .
+ etherwake (1.05-1) unstable; urgency=low
+ .
+   * New upstream (help was added).
+   * Modified manpage to reflect upstream changes.
+   * Changed binary name to original.
+ .
+ etherwake (1.03-1) unstable; urgency=low
+ .
+   * Added a manpage.
+   * Added a Makefile.
+   * Initial Release.
+Files: 
+ f13711c5b8261fbb77b43ae0e8ba9360 566 net optional etherwake_1.08-1.dsc
+ c2dc10f98bac012b900fd0b46721fc80 4455 net optional etherwake_1.08.orig.tar.gz
+ 95c1e89e3ad7bc8740793bdf7aeb7334 4145 net optional etherwake_1.08-1.diff.gz
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.2.5 (GNU/Linux)
+
+iQIVAwUBQ1OXg0FaEsrC8wI0AQLEVRAAiQxw2YT+V6bhdqDmyMM7ASAKIkWrMxNZ
+/OUujU2bQeAYuBwKQw4/tpi4vgBu61XMmFZow+m3VDghNn0hWT4ax1uLLHGwsDWd
+/u34++BuEZ9HfbxQtU/Pn1zmcUVMJ3teEDJQ9CH67rjk/xkPmshuqdyDLPW0o7U3
+RY1JZorz2CbhN17GjAA9os+VN2H9utNN6QxwuJafQV+8orMQMU8HM5F+yrXK1346
+l++MIgc9a6/j2SpJWkQh7y5yXCYNjB3V7nxydBd568U4aglFfuiImW3XvW0FJJdG
+TcmEgYbtFc6fdk5vA4OTvqRtgTNQ7I9rJcGorCCHTF1kMaX10+MrCY1kXpSPQAXH
+Rv6i4++IzjU3+7YK9QOSCaIkjPYfzd4AfsiKCuLe63umUA+62oEJgAQVmQvNYxHY
+AW1Or5qZn5o86758qiIDlz4vTKN/0ud0Pzrvini1lDpsEBClg/Vs9Q6O2ETegaVD
+XSnqy8OLmNqXfM23JVZuXMckGHJkM0KYWb47jkB/gKEtf6tn8EMO8J8Q5rUvp4PE
+czPjEBWwXMxjPtoQQJr3SInTaJ02EKoin//ezj9ETHBwkJW1A/DLO0sJ5fDL4Bva
+M5H5/dQrHBAWngD/vi4sP1hs0kOX8bICSdEHYVDGnjGhF8GOX+6Wz6cglcypD8qD
+Chl7UTQIECc=
+=mh56
+-----END PGP SIGNATURE-----

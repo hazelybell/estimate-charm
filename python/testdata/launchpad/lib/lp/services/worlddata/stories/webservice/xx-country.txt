@@ -1,0 +1,69 @@
+= Countries =
+
+At the top level we provide the collection of all countries.
+
+    >>> countries = webservice.get("/+countries").jsonBody()
+    >>> for entry in countries['entries']:
+    ...     print entry['self_link']
+    http://.../+countries/AD
+    http://.../+countries/AE
+    http://.../+countries/AF
+    http://.../+countries/AG
+    http://.../+countries/AI
+
+And for every country we publish most of its attributes.
+
+    >>> from lazr.restful.testing.webservice import pprint_entry
+    >>> country = countries['entries'][0]
+    >>> andorra = webservice.get(country['self_link']).jsonBody()
+    >>> pprint_entry(andorra)
+    description: None
+    iso3166code2: u'AD'
+    iso3166code3: u'AND'
+    name: u'Andorra'
+    resource_type_link: u'http://.../#country'
+    self_link: u'http://.../+countries/AD'
+    title: u'Principality of Andorra'
+
+Make sure that invalid countries return 404s and not OOPSes.
+
+    >>> bogus_country = "http://api.launchpad.dev/beta/+countries/bogus"
+    >>> print webservice.get(bogus_country)
+    HTTP/1.1 404 Not Found
+    ...
+    Object: ..., name: u'bogus'
+
+== Country Custom Operations ==
+
+"getByName" returns a country for the given name.
+
+    >>> uk = webservice.named_get(
+    ...     '/+countries', 'getByName',
+    ...     name='United Kingdom').jsonBody()
+    >>> print uk['self_link']
+    http://.../+countries/GB
+
+Ensure that unknown/non-existent countries return a None and not an OOPS:
+
+    >>> bogus_country_by_name = webservice.named_get(
+    ...     '/+countries', 'getByName',
+    ...     name='Klingon Land').jsonBody()
+    >>> print bogus_country_by_name
+    None
+
+
+"getByCode" returns a country for the given code.
+
+    >>> au = webservice.named_get(
+    ...     '/+countries', 'getByCode',
+    ...     code='AU').jsonBody()
+    >>> print au['self_link']
+    http://.../+countries/AU
+
+Ensure that unknown/non-existent country codes return a None and not an OOPS:
+
+    >>> bogus_country_by_code = webservice.named_get(
+    ...     '/+countries', 'getByCode',
+    ...     code='TEST').jsonBody()
+    >>> print bogus_country_by_code
+    None

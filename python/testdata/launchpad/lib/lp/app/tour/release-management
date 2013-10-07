@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <meta content="Launchpad is a supermarket of free software projects. As a project owner, you can tell the world everything they need to know about your work: where you track bugs, where you host your code, who&rsquo;s involved, the details of your release plans and more. Free software community members and other projects can use Launchpad to either directly learn information about your project or use Launchpad&rsquo;s extensive search to discover your work." name="description"/>
+    <meta content="canonical, launchpad, tour" name="keywords"/>
+    <meta content="en-US" name="language"/>
+    <title>Launchpad tour</title>
+    <style media="all" type="text/css">
+        @import "launchpad-tour.css";
+    </style>
+    <script type="text/javascript" src="jquery-1.2.6.pack.js"></script>
+    <script type="text/javascript" src="launchpad-tour.js"></script>
+    <script type="text/javascript" src="selector.js"></script>
+</head>
+<body>
+    <div id="container">
+        <p class="page-number">10 of 11</p>
+        <ul id="navigation-drop-down">
+            <li class="button-next"><a id="btnNext" href="join-launchpad" taborder="1" accesskey="1" title="Read about commercial subscriptions and free access to Launchpad">Next</a></li>
+            <li class="home"><a href="index" accesskey="2">Launchpad tour home</a></li>
+            <li><a href="bugs" accesskey="3">Cross-project bug tracking</a></li>
+            <li><a href="branch-hosting-tracking" accesskey="4">Code hosting and review</a></li>
+            <li><a href="translation" accesskey="5">Web-based translation</a></li>
+            <li><a href="community" accesskey="6">Community building</a></li>
+            <li><a href="ppa" accesskey="7">Software distribution</a></li>
+            <li><a href="community-support" accesskey="8">Community support</a></li>
+            <li><a href="api" accesskey="9">Beta: web services API</a></li>
+            <li><a href="feature-tracking" accesskey="a">Light-weight specifications</a></li>
+            <li class="current"><a href="release-management" accesskey="b">Release management</a></li>
+            <li><a href="join-launchpad" accesskey="c">Join Launchpad!</a></li>                        
+        </ul>
+        <div id="page-intro-top"></div>
+        <div id="page-intro">
+            <h1>Project and release management</h1>
+            <p>
+                <img src="images/rm/main-image.jpg" alt="Collaborate with free software communities." />
+            </p>
+            <p class="intro-text">
+                <strong>Launchpad is a supermarket of free software projects.</strong> As a project
+owner, you can tell the world everything they need to know about your
+work: where you track bugs, where you host your code, who&rsquo;s involved,
+the details of your release plans and more. 
+<br /><br />
+Free software community members and other projects can use Launchpad 
+to either directly learn information about your project or use
+Launchpad&rsquo;s extensive search to discover your work.
+            </p>
+            <div id="link-holder"><a href="https://launchpad.net/projects/+new">Add your project to Launchpad &gt;</a></div>
+        </div>
+        <div id="page-intro-bottom"></div>
+        <ul id="secondary-navigation">
+            <li class="button-prev">
+                <a title="Back to the spec tracking page" href="feature-tracking" accesskey="d" tabindex="2">Back</a>
+            </li>        
+            <li class="button-next">
+                <a href="join-launchpad" title="Read about commercial subscriptions and free access to Launchpad" accesskey="e" tabindex="3">Next</a>
+            </li>
+        </ul>
+        <div id="further-information">
+            <div class="furthur-information-block">
+                <div class="furthur-information-block-top"></div>
+                <div class="furthur-information-block-mid">
+                    <div class="block">
+                        <h3>Lines of development</h3>
+                        <h4>Most free software projects have several concurrent lines of development, such as the current stable release, an older but still supported release and a trunk into which new work is committed.</h4>
+                        <p class="screen-holder">
+                            <img src="images/rm/1.png" alt="Lines of development" />                        </p>
+                        <p>
+                            
+Launchpad calls these <em>series</em> and helps you to organise your work &mdash; code, translations, bug reports and so on &mdash; around them. Through series, your community can work in parallel on different major releases of your software.<br /><br />
+                            By targeting <a href="bugs" accesskey="e" tabindex="3">bug reports</a> and <a href="feature-tracking" accesskey="f" tabindex="4">chunks of work</a> to future releases, trusted members of your community can help you to create a light-weight roadmap for the future of your project.
+                        </p>
+                    </div>
+                    <div class="block odd">
+                        <h3>Publishing your software</h3>
+                        <h4>Once you&rsquo;re ready to publish, you can both publicise and distribute your releases using Launchpad.</h4>
+                        <p class="screen-holder">
+                            <img src="images/rm/2.png" alt="Publishing your software"  />                        </p>
+                        <p>
+                            Launchpad helps you to get your software to Ubuntu users, through <a href="ppa" accesskey="g" tabindex="5">Debian-style packages</a>, and as direct binary downloads from your project&rsquo;s Launchpad home page.
+                        </p>
+                    </div>
+                    
+                    <div class="clear"></div>
+                </div>
+                <div class="furthur-information-block-bot"></div>
+            </div>
+         
+        </div>
+        <ul id="footer-navigation">
+            <li class="button-prev">
+                <a title="Back to the spec tracking page" href="feature-tracking" accesskey="f" tabindex="4">Back</a>
+            </li> 
+            <li class="button-next">
+                <a href="join-launchpad" title="Read about commercial subscriptions and free access to Launchpad" accesskey="g" tabindex="5" title="Read about commercial subscriptions and free access to Launchpad">Next</a>
+            </li>
+             <li class="copyright">
+                &copy; 2004-2013 Canonical Ltd. <a href="https://help.launchpad.net/Legal" accesskey="h" tabindex="6">Terms of Use</a> &#58; <a href="https://help.launchpad.net/Feedback" accesskey="i" tabindex="7">Feedback</a> &#58; <a href="https://answers.launchpad.net/launchpad-project/+faqs" accesskey="j" tabindex="8">FAQ</a>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

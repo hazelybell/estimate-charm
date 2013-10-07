@@ -1,0 +1,216 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+<body>
+  <div class="top-portlet" metal:fill-slot="main" tal:define="token view/token">
+    <tal:no-token condition="not:token">
+      <h2>Unable to identify application</h2>
+      <p>
+        The information provided by the remote application was incorrect or
+        incomplete. Because of that we were unable to identify the
+        application which would access Launchpad on your behalf.
+      </p>
+
+      <p>
+        You may have already authorized this application.
+      </p>
+
+    </tal:no-token>
+
+    <tal:has-token condition="token">
+      <tal:token-not-reviewed condition="not:token/is_reviewed">
+        <div metal:use-macro="context/@@launchpad_form/form">
+          <div metal:fill-slot="extra_top">
+
+           <tal:desktop-integration-token condition="token/consumer/is_integrated_desktop">
+             <h2>Confirm Computer Access</h2>
+             <p>The
+               <tal:desktop replace="structure
+               token/consumer/integrated_desktop_type" />
+             computer called
+             <strong tal:content="token/consumer/integrated_desktop_name">hostname</strong>
+             wants access to your Launchpad account. If you allow this,
+             every application running
+             on <strong tal:content="token/consumer/integrated_desktop_name">hostname</strong>
+             will have read-write access to your Launchpad account,
+             including to your private data.</p>
+
+             <p>If you're using a public computer, if
+             <strong tal:content="token/consumer/integrated_desktop_name">hostname</strong>
+             is not the computer you're using right now, or if
+             something just doesn't feel right about this situation,
+             you should choose "Do Not Allow
+             '<tal:hostname replace="structure
+               token/consumer/integrated_desktop_name" />' to Access
+             my Launchpad Account", or close this window now. You can
+             always try again later.</p>
+
+             <p>Even if you decide to give
+             <strong tal:content="token/consumer/integrated_desktop_name">hostname</strong>
+             access to your Launchpad account, you can change your
+             mind later.</p>
+
+             <p>
+               Allow <strong tal:content="token/consumer/integrated_desktop_name">hostname</strong>
+               to access my Launchpad account:
+             </p>
+             <p class="subordinate">
+               <tal:actions
+                  repeat="action view/visible_desktop_integration_actions">
+                 <input tal:replace="structure action/render" />
+               </tal:actions>
+             </p>
+
+            <p>or</p>
+            <p class="subordinate">
+              <input
+                 tal:replace="structure view/unauthorized_action/render" />
+            </p>
+
+            <input type="hidden" name="allow_permission"
+              value="DESKTOP_INTEGRATION" />
+
+           </tal:desktop-integration-token>
+
+           <tal:web-integration-token condition="not:token/consumer/is_integrated_desktop">
+             <h2>Integrating
+               <tal:hostname replace="structure token/consumer/key" />
+               into your Launchpad account</h2>
+
+             <p>The application identified as
+               <strong tal:content="token/consumer/key">consumer</strong>
+               wants to access
+               <tal:has-context condition="view/token_context">
+                 things related to
+                 <strong tal:content="view/token_context/title">Context</strong>
+                 in
+               </tal:has-context>
+               Launchpad on your behalf. What level of access
+               do you want to grant?</p>
+
+            <table>
+              <tr tal:repeat="action view/visible_actions">
+                <td style="text-align: right">
+                  <tal:action replace="structure action/render" />
+                  <input type="hidden" name="allow_permission"
+                   tal:attributes="value action/permission/name" />
+                </td>
+
+                <td>
+                  <span class="lesser"
+                    tal:content="action/permission/description" />
+                </td>
+              </tr>
+            </table>
+           </tal:web-integration-token>
+          </div>
+
+          <div metal:fill-slot="extra_bottom">
+            <input type="hidden" name="oauth_token"
+                   tal:condition="request/form/oauth_token|nothing"
+                   tal:attributes="value request/form/oauth_token" />
+
+            <input type="hidden" name="oauth_callback"
+                   tal:condition="request/form/oauth_callback|nothing"
+                   tal:attributes="value request/form/oauth_callback" />
+            <input type="hidden" name="lp.context"
+                   tal:condition="request/form/lp.context|nothing"
+                   tal:attributes="value request/form/lp.context" />
+          </div>
+
+          <div metal:fill-slot="buttons" />
+        </div>
+      </tal:token-not-reviewed>
+
+      <tal:token-reviewed condition="token/is_reviewed">
+
+        <tal:desktop-integration
+           condition="view/token/consumer/is_integrated_desktop">
+
+          <tal:unauthorized
+             condition="view/token/permission/enumvalue:UNAUTHORIZED">
+            <h2>You decided against desktop integration</h2>
+
+            <p>
+              You decided not to give
+              <strong
+                 tal:content="view/token/consumer/integrated_desktop_name">hostname</strong>
+              access to your Launchpad account. You can always change your
+              mind later.
+            </p>
+          </tal:unauthorized>
+
+          <tal:authorized
+             condition="not:view/token/permission/enumvalue:UNAUTHORIZED">
+            <h2>Almost finished ...</h2>
+
+            <p>
+              The
+              <tal:desktop
+                 replace="structure view/token/consumer/integrated_desktop_type" />
+              computer called
+              <strong
+                 tal:content="view/token/consumer/integrated_desktop_name">hostname</strong>
+              now has access to your Launchpad account. Within a few
+              seconds, you should be able to start using its Launchpad
+              integration features.
+            </p>
+
+            <p tal:condition="view/token/date_expires">
+              The integration you just authorized will expire
+              <tal:date
+                 replace="structure view/token/date_expires/fmt:approximatedate" />.
+              At that time, you'll have to re-authorize
+              <strong
+                 tal:content="view/token/consumer/integrated_desktop_name">hostname</strong>,
+              if you want to keep using its Launchpad integration features.
+            </p>
+
+          </tal:authorized>
+        </tal:desktop-integration>
+
+        <tal:application-integration
+           condition="not:view/token/consumer/is_integrated_desktop">
+
+          <tal:unauthorized
+             condition="view/token/permission/enumvalue:UNAUTHORIZED">
+            <h2>Access not granted to application</h2>
+            <p>
+              The application identified as
+              <strong tal:content="view/token/consumer/key">key</strong> has not
+              been given access to your protected resources on Launchpad.
+            </p>
+          </tal:unauthorized>
+
+          <tal:authorized
+             condition="not:view/token/permission/enumvalue:UNAUTHORIZED">
+            <h2>Almost finished ...</h2>
+            <p>
+              To finish authorizing the application identified as
+              <strong tal:content="view/token/consumer/key">key</strong>
+              to access Launchpad on your behalf you should go back to
+              the application window in which you started the process
+              and inform it that you have done your part of the
+              process.
+            </p>
+          </tal:authorized>
+
+        </tal:application-integration>
+
+      </tal:token-reviewed>
+    </tal:has-token>
+
+    <p>
+      See all <a tal:attributes="href string:${view/user/fmt:url}/+oauth-tokens"
+        >applications authorized</a> to access Launchpad on your behalf.
+    </p>
+  </div>
+
+</body>
+</html>
+

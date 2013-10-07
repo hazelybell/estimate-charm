@@ -1,0 +1,52 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+  <body>
+    <div class="top-portlet" metal:fill-slot="main">
+      <h1>Page gone</h1>
+
+      <p>There&#8217;s no page with this address in Launchpad.</p>
+
+      <p tal:condition="view/referrer">
+        If this is blocking your work, let us know by asking a question at
+        <a tal:condition="not: view/user|nothing"
+            href="/feedback">Launchpad Support</a>
+        <a tal:condition="view/user|nothing"
+          href="/support">Launchpad Support</a>.
+        Otherwise, complain to the maintainers of the page that linked here.
+      </p>
+
+      <p tal:condition="not:view/referrer">
+        Check that you entered the address correctly, or search for it:
+      </p>
+
+      <form method="get" accept-charset="UTF-8" style="margin: 1em 0 1em 0"
+        tal:attributes="action string:${rooturl}+search">
+        <img src="/@@/search.png" />
+        <input id="text" type="text" name="field.text" size="50" />
+        <input type="submit" value="Search Launchpad" />
+      </form>
+
+      <div style="margin-bottom: 1em;">
+        <tal:replace tal:replace="structure view/maybeShowTraceback" />
+      </div>
+
+      <ul>
+        <li tal:condition="view/layer_help"
+            tal:content="structure view/layer_help" />
+        <li tal:condition="view/referrer">
+          <a tal:attributes="href view/referrer"
+          >Return to the page you came from</a>
+        </li>
+        <li>
+          <a tal:attributes="href modules/lp.services.webapp.vhosts/allvhosts/configs/mainsite/rooturl"
+          >Return to the Launchpad front page</a>
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>

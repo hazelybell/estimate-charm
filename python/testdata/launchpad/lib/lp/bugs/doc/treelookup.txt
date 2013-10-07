@@ -1,0 +1,204 @@
+= Doing lookups in a tree =
+
+  >>> from lp.bugs.adapters.treelookup import (
+  ...     LookupBranch, LookupTree)
+
+`LookupTree` encapsulates a simple tree structure that can be used to
+do lookups using one or more keys.
+
+A tree contains multiple branches. To find something in a tree, one or
+more keys are passed in. The second and subsequent keys are used if a
+branch off the tree leads to another tree... which breaks the analogy
+somewhat, but you get the picture :)
+
+For a given key, each branch in the tree is checked, in order, to see
+if it contains that key. If it does, the branch result is looked
+at.
+
+If the result is a tree, it is searched in the same way, but using the
+next key that was originally passed in.
+
+If the result is any other object, it is returned as the result of the
+search.
+
+Two things arise from this:
+
+ * There can be more than one path through the tree to the same
+   result.
+
+ * A search of the tree may return a result without consuming all of
+   the given keys.
+
+It is also possible to specify a default branch. This is done by
+creating a branch with no keys. This must be the last branch in the
+tree, because it would not make sense for it to appear in any other
+position.
+
+
+== Creation ==
+
+  >>> tree = LookupTree(
+  ...     ('Snack', LookupTree(
+  ...             ('Mars Bar', 'Snickers', 'Bad'),
+  ...             ('Apple', 'Banana', 'Good'))),
+  ...     LookupBranch('Lunch', 'Dinner', LookupTree(
+  ...             ('Fish and chips', "Penne all'arrabbiata", 'Nice'),
+  ...             ('Raw liver', 'Not so nice'))),
+  ...     ('Make up your mind!',),
+  ...     )
+
+Behind the scenes, `LookupTree` promotes plain tuples (or any
+iterable) into `LookupBranch` instances. This means that the last
+member of the tuple is the result of the branch. All the other members
+are keys.
+
+Tuples/branches without keys are default choices. They must come
+last. It doesn't make sense for a default to appear in any other
+position, because it would completely obscure the subsequent branches
+in the tree. Hence, attempting to specify a default branch before the
+last position is treated as an error.
+
+  >>> broken_tree = LookupTree(
+  ...     ('Free agents',),
+  ...     ('Alice', 'Bob', 'Allies of Schneier'))
+  Traceback (most recent call last):
+  ...
+  TypeError: Default branch must be last.
+
+To help when constructing more complex trees, an existing `LookupTree`
+instance can be passed in when constructing a new one. Its branches
+are copied into the new `LookupTree` at that point.
+
+  >>> breakfast_tree = LookupTree(
+  ...     ('Breakfast', 'Corn flakes'),
+  ...     tree,
+  ...     )
+
+  >>> len(tree.branches)
+  3
+  >>> len(breakfast_tree.branches)
+  4
+
+Although it should not happen in regular operation (because
+`LookupTree.__init__` ensures all arguments are `LookupBranch`
+instances), `LookupTree._verify` also checks that every branch is a
+`LookupBranch`.
+
+  >>> invalid_tree = LookupTree(tree)
+  >>> invalid_tree.branches = invalid_tree.branches + ('Greenland',)
+  >>> invalid_tree._verify()
+  Traceback (most recent call last):
+  ...
+  TypeError: Not a LookupBranch: 'Greenland'
+
+
+== Searching ==
+
+Just call `tree.find`.
+
+  >>> tree.find('Snack', 'Banana')
+  'Good'
+
+If you specify more keys than you need to reach a leaf, you still get
+the result.
+
+  >>> tree.find('Snack', 'Banana', 'Big', 'Yellow', 'Taxi')
+  'Good'
+
+But an exception is raised if it does not reach a leaf.
+
+  >>> tree.find('Snack')
+  Traceback (most recent call last):
+  ...
+  KeyError: 'Snack'
+
+
+== Development ==
+
+`LookupTree` makes development easy, because `describe` gives a
+complete description of the tree you've created.
+
+  >>> print tree.describe()
+  tree(
+      branch(Snack => tree(
+          branch('Mars Bar', Snickers => 'Bad')
+          branch(Apple, Banana => 'Good')
+          ))
+      branch(Lunch, Dinner => tree(
+          branch('Fish and chips', "Penne all'arrabbiata" => 'Nice')
+          branch('Raw liver' => 'Not so nice')
+          ))
+      branch(* => 'Make up your mind!')
+      )
+
+We can also see that the result of constructing a new lookup using an
+existing one is the same as if we had constructed it independently.
+
+  >>> print breakfast_tree.describe()
+  tree(
+      branch(Breakfast => 'Corn flakes')
+      branch(Snack => tree(
+          branch('Mars Bar', Snickers => 'Bad')
+          branch(Apple, Banana => 'Good')
+          ))
+      branch(Lunch, Dinner => tree(
+          branch('Fish and chips', "Penne all'arrabbiata" => 'Nice')
+          branch('Raw liver' => 'Not so nice')
+          ))
+      branch(* => 'Make up your mind!')
+      )
+
+Simple keys are shown without quotes, to aid readability, and default
+branches are shown with '*' as the key.
+
+
+== Pruning ==
+
+During tree creation, branches which have keys that already appear in
+earlier branches are cloned and have those already seen keys
+pruned. If all keys are removed from a branch it is discarded.
+
+The third branch in the following tree is discarded because 'Snack'
+already appears as a key in the first branch. The fourth branch is
+cloned then modified to remove the 'Lunch' key which already appeared
+in the second branch. The default branch is left unchanged; only
+branches with keys are candidates for being discarded.
+
+  >>> pruned_tree = LookupTree(
+  ...     ('Snack', 'Crisps'),
+  ...     ('Lunch', 'Bread'),
+  ...     ('Snack', 'Mars Bar'),
+  ...     ('Lunch', 'Dinner', 'Soup'),
+  ...     ('Eat more fruit and veg',),
+  ...     )
+  >>> print pruned_tree.describe()
+  tree(
+      branch(Snack => 'Crisps')
+      branch(Lunch => 'Bread')
+      branch(Dinner => 'Soup')
+      branch(* => 'Eat more fruit and veg')
+      )
+
+
+== Documentation ==
+
+You can discover the minimum and maximum depth of a tree.
+
+  >>> tree.min_depth
+  1
+  >>> tree.max_depth
+  2
+
+`LookupTree` has a `flatten` method that may be useful when generating
+documentation. It yields tuples of keys that represent paths to
+leaves.
+
+  >>> for elems in tree.flatten():
+  ...     path, result = elems[:-1], elems[-1]
+  ...     print ' => '.join(
+  ...         [repr(node.keys) for node in path] + [repr(result)])
+  ('Snack',) => ('Mars Bar', 'Snickers') => 'Bad'
+  ('Snack',) => ('Apple', 'Banana') => 'Good'
+  ('Lunch', 'Dinner') => ('Fish and chips', "Penne all'arrabbiata") => 'Nice'
+  ('Lunch', 'Dinner') => ('Raw liver',) => 'Not so nice'
+  () => 'Make up your mind!'

@@ -1,0 +1,26 @@
+Subject: Bug#237001: evolution mail crashes on opening an email with a TIFF attachment
+Reply-To: Teun Vink <teun@tux.office.luna.net>, 237001@bugs.debian.org
+Resent-From: Teun Vink <teun@tux.office.luna.net>
+Resent-To: debian-bugs-dist@lists.debian.org
+Resent-CC: Takuo KITAME <kitame@debian.org>
+Resent-Date: Tue, 09 Mar 2004 08:18:04 UTC
+Resent-Message-ID: <handler.237001.B.10788200765412@bugs.debian.org>
+Resent-Sender: owner@bugs.debian.org
+X-Debian-PR-Message: report 237001
+X-Debian-PR-Package: evolution
+X-Debian-PR-Keywords: 
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+From: Teun Vink <teun@tux.office.luna.net>
+To: Debian Bug Tracking System <submit@bugs.debian.org>
+X-Mailer: reportbug 2.50
+Message-Id: <thisllneverwork.98BF411EE67@tux>
+Delivered-To: submit@bugs.debian.org
+X-Spam-Checker-Version: SpamAssassin 2.60-bugs.debian.org_2004_03_08 
+	(1.212-2003-09-23-exp) on spohr.debian.org
+X-Spam-Status: No, hits=-5.0 required=4.0 tests=HAS_PACKAGE autolearn=no 
+	version=2.60-bugs.debian.org_2004_03_08
+X-Spam-Level: 
+
+Things happen.

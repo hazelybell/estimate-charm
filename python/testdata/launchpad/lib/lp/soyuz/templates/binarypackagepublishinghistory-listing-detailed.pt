@@ -1,0 +1,37 @@
+<div class="boardComment">
+
+  <tal:XXX condition="nothing">
+    # XXX: cprov 20071018 bug=153885
+    # The template should be kept in sync with its respective source
+    # replacement (sourcepackagepublishinghistory-listing-detailed.pt).
+    # In the future we should be able to refactor both in a single
+    # template macro, see bug #153885.
+  </tal:XXX>
+
+  <div class="boardCommentDetails">
+    <strong>
+      <a tal:content="context/distroarchseriesbinarypackagerelease/version"
+         tal:attributes="href context/distroarchseriesbinarypackagerelease/fmt:url"
+      >2.0.39</a>
+    </strong>
+    <table>
+      <tbody>
+        <tr>
+         <td>
+           <strong tal:content="context/status/name">PUBLISHED</strong>:
+           <a tal:attributes="href context/distroarchseries/fmt:url"
+              tal:content="context/distroarchseries/displayname">warty i386</a>
+           pocket <strong tal:content="context/pocket/title">Release</strong>
+           in component <strong tal:content="context/component/name">main</strong>
+           and section <strong tal:content="context/section/name">x11</strong>
+         </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="boardCommentBody">
+     <tal:block replace="structure context/@@+record-details" />
+  </div>
+
+</div>

@@ -1,0 +1,39 @@
+/* Copyright (c) 2009, Canonical Ltd. All rights reserved. */
+
+/* blocking-div appears above everything else. */
+.blocking-div {
+    z-index: 999;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    position: absolute;
+    border: none;
+    top: 0px;
+    left: 0px;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    }
+
+/* overlay appears above blocking-div. */
+.yui3-pretty-overlay {
+    background-color: #fff;
+    z-index: 1000;
+    text-align: left;
+    border-radius: 5px;
+    -webkit-box-shadow: 0px 0px 20px 10px #aaa;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=15, Direction=0, Color='#aaaaaa'), progid:DXImageTransform.Microsoft.Shadow(Strength=15, Direction=90, Color='#aaaaaa'), progid:DXImageTransform.Microsoft.Shadow(Strength=15, Direction=180, Color='#aaaaaa'), progid:DXImageTransform.Microsoft.Shadow(Strength=15, Direction=270, Color='#aaaaaa')";
+    box-shadow: 0px 0px 20px 10px #aaa;
+    }
+
+/* Ensure that td has no border (YUI base css adds one). */
+.yui3-pretty-overlay td {
+    border-width: 0;
+    padding: 0;
+    }
+
+/* Hide the overlay if you use PrettyOverlay directly; if you subclass,
+   you have to do this yourself with your own class yui3-yourclass-hidden. */
+.yui3-pretty-overlay-hidden {
+    visibility: hidden;
+    }

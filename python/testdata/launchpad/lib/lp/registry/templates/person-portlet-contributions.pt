@@ -1,0 +1,34 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+  <div
+    class="portlet"
+    tal:define="contributions view/contributions"
+    tal:condition="contributions">
+    <h2>
+      <span class="see-all">
+        <a tal:attributes="href context/menu:overview/karma/url"
+          >Recent activities</a>
+      </span>
+      Most active in
+    </h2>
+    <table class="contributions" id="contributions">
+      <tbody>
+        <tal:contributions repeat="contribution contributions">
+        <tr tal:define="project contribution/project;
+                        project_categories contribution/categories">
+          <th>
+            <a tal:replace="structure project/fmt:link">Project</a>
+          </th>
+          <td tal:repeat="category view/contributed_categories">
+            <tal:icon condition="python: category in project_categories"
+                      replace="structure category/image:icon" />
+          </td>
+        </tr>
+        </tal:contributions>
+      </tbody>
+    </table>
+  </div>
+</tal:root>

@@ -1,0 +1,12 @@
+Hi,
+
+%(requester_name)s tried to claim the Launchpad
+team named %(profile_name)s (which is
+associated with %(email)s).
+
+To finish claiming that team, making %(requester_name)s
+its owner, just follow the link below.
+
+    %(token_url)s
+
+The Launchpad Team

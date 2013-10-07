@@ -1,0 +1,79 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+<body>
+
+  <h1 metal:fill-slot="heading">
+    Delete branch
+  </h1>
+
+  <div metal:fill-slot="main">
+
+  <tal:has-stacked-branches condition="view/stacked_branches_count">
+    This branch cannot be deleted as it has
+    <em><tal:count replace="view/stacked_branches_count"/></em>
+    <tal:text replace="view/stacked_branches_text">branches</tal:text>
+    sharing revisions.
+  </tal:has-stacked-branches>
+
+  <tal:has-no-stacked-branches condition="not: view/stacked_branches_count">
+
+  <tal:deletelist condition="view/branch_deletion_actions/delete">
+    The following items must be <em>deleted</em>:
+    <ul id="deletion-items">
+      <tal:actions repeat="row view/branch_deletion_actions/delete">
+        <li>
+          <img src="/@@/no" title="Insufficient privileges"
+               tal:condition="not:row/allowed"/>
+              <tal:item tal:content="structure row/item/fmt:link" />
+              (<tal:reason tal:content="row/reason" />)
+        </li>
+      </tal:actions>
+    </ul>
+  </tal:deletelist>
+  <tal:breaklist condition="view/branch_deletion_actions/break_link">
+    <div>The following links will be <em>broken</em>:</div>
+    <ul>
+      <tal:actions repeat="row view/branch_deletion_actions/break_link">
+        <li>
+          <img src="/@@/no" title="Insufficient privileges"
+               tal:condition="not:row/allowed"/>
+              <tal:item tal:content="structure row/item/fmt:link" />
+              (<tal:reason tal:content="row/reason" />)
+        </li>
+      </tal:actions>
+    </ul>
+  </tal:breaklist>
+  <tal:alterlist condition="view/branch_deletion_actions/alter">
+    <div>The following items will be <em>updated</em>:</div>
+    <ul>
+      <tal:actions repeat="row view/branch_deletion_actions/alter">
+        <li>
+          <img src="/@@/no" title="Insufficient privileges"
+               tal:condition="not:row/allowed"/>
+              <tal:item tal:content="structure row/item/fmt:link" />
+              (<tal:reason tal:content="row/reason" />)
+        </li>
+      </tal:actions>
+    </ul>
+  </tal:alterlist>
+  <p tal:condition="view/all_permitted">
+      Branch deletion is permanent.
+  </p>
+  <p tal:condition="not:view/all_permitted">
+      You do not have permission make all the changes required to delete this
+      Branch.
+  </p>
+
+  <div metal:use-macro="context/@@launchpad_form/form">
+  </div>
+
+  </tal:has-no-stacked-branches>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+<body>
+  <div metal:fill-slot="main">
+    <p id="no-candidates" tal:condition="not: view/candidate_teams">
+      None of the teams you administer can be added to this team.
+    </p>
+
+    <div id="candidates" condition="view/candidate_teams">
+      <tal:can-propose
+        condition="not:context/membership_policy/enumvalue:RESTRICTED">
+        <div metal:use-macro="context/@@launchpad_form/form">
+          <p metal:fill-slot="extra_info"
+             tal:condition="context/membership_policy/enumvalue:MODERATED">
+             This is a moderated team, so one of its administrators will have
+             to review any memberships you propose.
+          </p>
+        </div>
+      </tal:can-propose>
+
+      <div tal:condition="context/membership_policy/enumvalue:RESTRICTED">
+        <h1>This is a restricted team</h1>
+        <p>New members can not be proposed&mdash;they can only be added by one
+        of the team's administrators.</p>
+      </div>
+    </div>
+
+  </div>
+
+  </body>
+</html>

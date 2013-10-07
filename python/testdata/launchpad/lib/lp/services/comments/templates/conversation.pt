@@ -1,0 +1,9 @@
+<tal:root
+   xmlns:tal="http://xml.zope.org/namespaces/tal"
+   xmlns:metal="http://xml.zope.org/namespaces/metal"
+   omit-tag="">
+<tal:comments
+    repeat="comment context/comments">
+  <tal:comment replace="structure comment/@@+render"/>
+</tal:comments>
+</tal:root>

@@ -1,0 +1,16 @@
+<div
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    class="portlet" id="portlet-questions"
+    tal:condition="context/questions">
+  <h2>Related questions</h2>
+  <ul>
+    <li tal:repeat="question context/questions" class="question-row">
+      <span tal:content="question/target/displayname"
+            tal:attributes="class question/image:sprite_css">Ubuntu</span>:
+      <a tal:attributes="href question/fmt:url"
+         tal:content="question/title">question title here</a>
+    </li>
+  </ul>
+</div>

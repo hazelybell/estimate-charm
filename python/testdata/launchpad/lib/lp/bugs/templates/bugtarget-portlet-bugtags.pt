@@ -1,0 +1,26 @@
+<div xmlns:tal="http://xml.zope.org/namespaces/tal"
+     xmlns:metal="http://xml.zope.org/namespaces/metal"
+     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+     class="portlet" id="portlet-tags">
+  <div id="tags-portlet-spinner"
+       class="hidden centered">
+    <img src="/@@/spinner" />
+  </div>
+  <a id="tags-content-link"
+     tal:attributes="href context/fmt:url/+bugtarget-portlet-tags-content"></a>
+  <script type="text/javascript">
+    LPJS.use('lp.bugs.bugtask.taglist', function(Y) {
+      Y.on('domready', function() {
+        Y.lp.bugs.bugtask.taglist.setup_taglist();
+      });
+    });
+  </script>
+  <a href="" id="show-more-tags-link" class="js-action hidden">Show more tags&hellip;</a>
+  <a href="" id="show-fewer-tags-link" class="js-action hidden">Show fewer tags&hellip;</a>
+  <div class="breaker"></div>
+  <a class="sprite edit"
+     tal:condition="view/show_manage_tags_link"
+     tal:attributes="href context/fmt:url/+manage-official-tags">
+    Edit official tags
+  </a>
+</div>

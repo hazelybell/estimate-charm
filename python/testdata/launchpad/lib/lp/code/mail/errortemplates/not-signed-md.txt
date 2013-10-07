@@ -1,0 +1,1 @@
+All emails to %(context)s must be signed with your OpenPGP key.

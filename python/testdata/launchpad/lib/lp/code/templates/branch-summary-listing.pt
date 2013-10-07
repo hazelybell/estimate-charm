@@ -1,0 +1,21 @@
+<li xmlns:tal="http://xml.zope.org/namespaces/tal">
+  <div>
+    <a tal:attributes="href context/fmt:url"
+       tal:content="context/bzr_identity"
+       class="sprite branch" >Mozilla Thunderbird 0.9.1</a>
+    <tal:person-link condition="view/show_person_link">
+      - <a tal:replace="structure context/owner/fmt:link:code/+ownedbranches" />
+    </tal:person-link>
+    <tal:product-link condition="view/show_product_link">
+      - <a tal:attributes="href context/product/fmt:url:code/+branches"
+         tal:content="context/product/displayname"
+         class="sprite product">Project</a>
+    </tal:product-link>
+  </div>
+  <div>
+    <tal:revisions condition="context/revision_count">
+      <span tal:replace="context/revision_count">35</span> revisions,
+      <span tal:replace="view/recent_revision_count">31</span> in the past month.<br />
+    </tal:revisions>
+  </div>
+</li>

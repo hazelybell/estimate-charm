@@ -1,0 +1,134 @@
+/******************************************************************************
+   Side portlets
+*/
+.side {
+    padding: 0.5em;
+    }
+.side .portlet {
+    margin: 0 0 1em 0;
+    padding: 0.5em;
+    background: #fbfbfb;
+    border: 1px solid #dedede;
+    border-radius: 5px;
+    }
+.side h2 {
+    font-size: 16px;
+    line-height: 20px;
+    }
+.side h3 {
+    font-size: 14px;
+    line-height: 18px;
+    }
+.side div.breaker,
+.side li.breaker {
+    margin: 8px 0;
+    border-top: 1px solid #e3e3e3;
+    }
+
+/******************************************************************************
+ Downloads portlet
+*/
+.downloads li {
+    margin: 0;
+    padding: 2px 0 0;
+    font-weight: bold;
+    }
+.downloads li a {
+    display: block;
+    margin: 0;
+    border: 1px solid #4f843c;
+    border-radius: 5px;
+    background: #4f843c url(/@@/bg-project-downloads.png) center right no-repeat;
+    padding: 6%;
+    padding-right: 40px;
+    color: #fff;
+    }
+.downloads .version,
+.downloads .released {
+    background: #d3e3c7;
+    padding: 0.2em 1em;
+    }
+.downloads .version {
+    border-radius: 5px 5px 0 0;
+    }
+.downloads .released {
+    margin: .3em 0 .5em 0;
+    border-radius: 0 0 5px 5px;
+    }
+.downloads .alternate {
+    padding: 0 0 0 1em;
+    }
+
+/******************************************************************************
+ Involvement portlet
+*/
+.involvement li {
+    border-top: 1px solid #d0d0d0;
+    padding: 0;
+    font-weight: bold;
+    }
+.involvement li.first,
+.involvement li.single {
+    border-top: none;
+    }
+.involvement a {
+    display: block;
+    padding: 0.3em;
+    }
+.involvement li.disabled {
+    color: #cccccc;
+    }
+.involvement-service-links li.disabled img,
+.involvement-service-links li.disabled span {
+    margin-bottom: 0;
+    }
+.involvement-service-links li.disabled table {
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+    }
+.involvement a.bugs, .involvement a.answers,
+.involvement a.translations, .involvement a.code, .involvement a.blueprints {
+    background: url(/@@/answers-arrow-right.png) right center no-repeat;
+    }
+.involvement a:hover {
+    text-decoration: none;
+    background-color: #eee;
+    }
+
+/******************************************************************************
+ Announcements portlet
+*/
+.announcements li {
+    margin-bottom: 0.5em;
+    /* Some announcements have long strings of characters as section headers
+     * and such.  Since they don't have whitespace they can't wrap, so they
+     * would break out of their container if we didn't clip them here. */
+    overflow: hidden;
+    }
+.announcements li strong,
+.announcements li a {
+    font-weight: bold;
+    }
+.latest-announcement {
+    padding: 0.5em;
+    background: #dfe5f6;
+    border-top: 1px solid #d0d0d0;
+    border-bottom: 1px solid #d0d0d0;
+    }
+.announcement .registered {
+    margin-top: -2px;
+    }
+
+/******************************************************************************
+ Data list portlet
+*/
+.side ul.data-list li {
+    padding-bottom: 0;
+    }
+.side ul.data-list span.count {
+    display: inline-block;
+    min-width: 3em;
+    text-align: right;
+    padding-right: 0.25em;
+    }
+

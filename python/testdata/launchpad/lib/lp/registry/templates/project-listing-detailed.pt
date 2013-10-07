@@ -1,0 +1,18 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<a tal:replace="structure context/fmt:link" />
+<tal:review tal:condition="context/required:launchpad.Moderate">
+  (<a tal:attributes="href context/fmt:url/+review">Review</a>)
+</tal:review>
+
+<div style="margin-left: 25px;">
+  <div tal:content="context/summary" tal:condition="context/summary">
+      Summary Goes Here
+  </div>
+</div>
+<br />
+</tal:root>

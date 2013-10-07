@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<!--
+Copyright 2012-2013 Canonical Ltd.  This software is licensed under the
+GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<html>
+  <head>
+      <title>Test milestoneoverlay</title>
+
+      <!-- YUI and test setup -->
+      <script type="text/javascript"
+              src="../../../../../build/js/yui/yui/yui.js">
+      </script>
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/console/assets/console-core.css" />
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/test-console/assets/skins/sam/test-console.css" />
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/test/assets/skins/sam/test.css" />
+
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/testing/testrunner.js"></script>
+
+      <link rel="stylesheet" href="../../../app/javascript/testing/test.css" />
+
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/calendar.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/client.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/errors.js"></script>
+
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/anim/anim.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/effects/effects.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/formoverlay/formoverlay.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/inlinehelp/inlinehelp.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/overlay/overlay.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/extras/extras.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/testing/mockio.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/bugs/bug_tags_entry.js"></script>
+
+      <!-- The module under test. -->
+      <script type="text/javascript" src="../milestoneoverlay.js"></script>
+
+      <!-- Any css assert for this module. -->
+      <!-- <link rel="stylesheet" href="../assets/milestoneoverlay-core.css" /> -->
+
+      <!-- The test suite. -->
+      <script type="text/javascript" src="test_milestone_creation_failures.js"></script>
+
+    </head>
+    <body class="yui3-skin-sam">
+        <ul id="suites">
+            <!-- <li>lp.large_indicator.test</li> -->
+            <li>lp.milestoneoverlay.test</li>
+        </ul>
+        <div id="request-notifications"></div>
+    </body>
+</html>

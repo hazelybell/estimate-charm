@@ -1,0 +1,459 @@
+= Submissions to the hardware database =
+
+Submissions to the hardware database are done at the following URL:
+
+    >>> browser.open('http://launchpad.dev/+hwdb/+submit')
+
+All form fields must be filled with valid values.
+
+    >>> from StringIO import StringIO
+    >>> submit_data = {
+    ...     'Date Created:': '2007-01-01',
+    ...     'Format Version:': ['VERSION_1'],
+    ...     'Unique Submission Key:': 'unique-id-1',
+    ...     'Email address:': 'test@canonical.com',
+    ...     'Distribution:': 'ubuntu',
+    ...     'Distribution Release:': '5.04',
+    ...     'Processor Architecture:': 'i386',
+    ...     'System name:': 'Fujitsu_CY26',
+    ... }
+    >>> submit_data_checkboxes = {
+    ...     'Private Submission': False,
+    ...     'Contactable': False,
+    ... }
+    >>> submit_file = StringIO('some data')
+    >>> def fill_form(
+    ...     browser, submit_data, submit_data_checkboxes, filedata, filename):
+    ...     for label in submit_data.keys():
+    ...         control = browser.getControl(label)
+    ...         control.value = submit_data[label]
+    ...     for label in submit_data_checkboxes.keys():
+    ...         control = browser.getControl(label)
+    ...         control.selected = submit_data_checkboxes[label]
+    ...     if filedata is not None:
+    ...         filedata.seek(0)
+    ...         control = browser.getControl('Submission data:')
+    ...         control.add_file(filedata, 'text/plain', filename)
+    >>> fill_form(
+    ...     browser, submit_data, submit_data_checkboxes, submit_file,
+    ...     'test.txt')
+    >>> browser.getControl('Upload').click()
+
+For easy error checks by the HWDB client, an extra header is added, if the
+data has successfully been uploaded.
+
+    >>> print browser.headers
+    Status: 200 Ok
+    Content-Length: ...
+    Content-Type: text/html;charset=utf-8
+    ...
+    Vary: ...
+    ...
+    X-Launchpad-Hwdb-Submission: OK data stored
+    ...
+
+Human users get a message too.
+
+    >>> for tag in find_tags_by_class(
+    ...     browser.contents, 'informational message'):
+    ...     print tag
+    <div class="informational message">Thank you for your submission.</div>
+
+If fields are not set, the response contains a header explaining this
+error.
+
+    >>> submit_data['Unique Submission Key:'] = 'unique-id-2'
+    >>> for field in ('Date Created:', 'Distribution Release:',
+    ...               'Distribution:', 'Email address:',
+    ...               'Processor Architecture:', 'System name:',
+    ...               'Unique Submission Key:'):
+    ...     wrong_data = submit_data.copy()
+    ...     del wrong_data[field]
+    ...     browser.open('http://launchpad.dev/+hwdb/+submit')
+    ...     fill_form(
+    ...         browser, wrong_data, submit_data_checkboxes, submit_file,
+    ...         'test.txt')
+    ...     browser.getControl('Upload').click()
+    ...     print "--- missing field", field
+    ...     print browser.headers
+    --- missing field Date Created:
+    Status: 200 Ok
+    ...
+    X-Launchpad-Hwdb-Submission: Error in field 'date_created' - Required input is missing.
+    ...
+    --- missing field Distribution Release:
+    Status: 200 Ok
+    ...
+    X-Launchpad-Hwdb-Submission: Error in field 'distroseries' - Required input is missing.
+    ...
+    --- missing field Distribution:
+    Status: 200 Ok
+    ...
+    X-Launchpad-Hwdb-Submission: Error in field 'distribution' - Required input is missing.
+    ...
+    --- missing field Email address:
+    Status: 200 Ok
+    ...
+    X-Launchpad-Hwdb-Submission: Error in field 'emailaddress' - Required input is missing.
+    ...
+    --- missing field Processor Architecture:
+    Status: 200 Ok
+    ...
+    X-Launchpad-Hwdb-Submission: Error in field 'architecture' - Required input is missing.
+    ...
+    --- missing field System name:
+    Status: 200 Ok
+    ...
+    X-Launchpad-Hwdb-Submission: Error in field 'system' - Required input is missing.
+    ...
+    --- missing field Unique Submission Key:
+    Status: 200 Ok
+    ...
+    X-Launchpad-Hwdb-Submission: Error in field 'submission_key' - Required input is missing.
+    ...
+
+The file with the test data must also be provided.
+
+    >>> browser.open('http://launchpad.dev/+hwdb/+submit')
+    >>> fill_form(
+    ...     browser, wrong_data, submit_data_checkboxes, None, 'test.txt')
+    >>> browser.getControl('Upload').click()
+    >>> print browser.headers
+    Status: 200 Ok
+    ...
+    X-Launchpad-Hwdb-Submission: Error in field 'submission_data' - Required input is missing.
+    ...
+
+If a submission uses an already existing submission key, the submission
+is rejected and an explaining header is added to the response.
+
+    >>> wrong_data = submit_data.copy()
+    >>> wrong_data['Unique Submission Key:'] = 'unique-id-1'
+    >>> browser.open('http://launchpad.dev/+hwdb/+submit')
+    >>> fill_form(
+    ...     browser, wrong_data, submit_data_checkboxes, submit_file,
+    ...     'test.txt')
+    >>> browser.getControl('Upload').click()
+    >>> print browser.headers
+    Status: 200 Ok
+    ...
+    X-Launchpad-Hwdb-Submission: Error in field 'submission_key' - Submission key already exists.
+    ...
+
+The field "Date Created" must contain a valid timestamp.
+
+    >>> wrong_data = submit_data.copy()
+    >>> wrong_data['Date Created:'] = 'no timestamp'
+    >>> browser.open('http://launchpad.dev/+hwdb/+submit')
+    >>> fill_form(
+    ...     browser, wrong_data, submit_data_checkboxes, submit_file,
+    ...     'test.txt')
+    >>> browser.getControl('Upload').click()
+    >>> print browser.headers
+    Status: 200 Ok
+    ...
+    X-Launchpad-Hwdb-Submission: Error in field 'date_created' - Invalid datetime data
+    ...
+
+The field "Submission Key" may contain only ASCII characters.
+
+    >>> wrong_data = submit_data.copy()
+    >>> wrong_data['Unique Submission Key:'] = u'wrong id \xc0'.encode('utf8')
+    >>> browser.open('http://launchpad.dev/+hwdb/+submit')
+    >>> fill_form(
+    ...     browser, wrong_data, submit_data_checkboxes, submit_file,
+    ...     'test.txt')
+    >>> browser.getControl('Upload').click()
+    >>> print browser.headers
+    Status: 200 Ok
+    ...
+    X-Launchpad-Hwdb-Submission: Error in field 'submission_key' - Invalid textual data
+    ...
+
+The field "Email address:" musr contain a valid email address.
+
+    >>> wrong_data = submit_data.copy()
+    >>> wrong_data['Email address:'] = 'no email'
+    >>> browser.open('http://launchpad.dev/+hwdb/+submit')
+    >>> fill_form(
+    ...     browser, wrong_data, submit_data_checkboxes, submit_file,
+    ...     'test.txt')
+    >>> browser.getControl('Upload').click()
+    >>> print browser.headers
+    Status: 200 Ok
+    ...
+    X-Launchpad-Hwdb-Submission: Error in field 'emailaddress' - Invalid email address
+    ...
+
+The examples above about missing form data all used the form as
+represented in the test browser. "Required data missing" simply meant
+that a form field stayed empty, but the test broswer sent data _for_
+this field anyway. However, checkbox, the HTTP client which is normally
+used to submit the data, does _not_ first read the HTML page containing
+the form data and then POSTs (possibly empty) values for all fields of
+the form. Instead, it simply assumes that it knows which fields are
+present in the form and submits this data. Unfortunately, it sometimes
+simply omits some fields. In such a case, we return an extra header
+"Required fields not contained in POST data".
+
+    >>> from urllib import urlencode
+    >>> form_data = {
+    ...     'field.date_created': '2009-01-01',
+    ...     'field.format': 'VERSION_1',
+    ...     'field.private.used': '',
+    ...     'field.contactable.used': '',
+    ...     'field.submission_key': '123',
+    ...     'field.emailaddress': 'test@canonical.com',
+    ...     'field.distribution': 'ubuntu',
+    ...     'field.distroseries': '5.04',
+    ...     'field.architecture': 'i386',
+    ...     'field.system': 'whatever',
+    ...     'field.actions.upload': 'Upload',
+    ... }
+    >>> browser.open('http://launchpad.dev/+hwdb/+submit',
+    ...     data=urlencode(form_data))
+    >>> print browser.headers
+    Status: 200 Ok
+    ...
+    X-Launchpad-Hwdb-Submission: Error: Required fields not contained in
+    POST data: submission_data
+    ...
+
+= Views for raw submission data. =
+
+The raw submission data is listed by submitter and by system fingerprint.
+
+== Submissions listed by person ==
+
+The pages http://launchpad.dev/~(name)/+hwdb-submissions lists the hardware
+database submissions by this person.
+
+    >>> anon_browser.open('http://launchpad.dev/~name12/+hwdb-submissions')
+    >>> [content_table] = find_tags_by_class(anon_browser.contents, 'listing')
+    >>> print extract_text(content_table)
+    System        Date submitted  Download          Raw
+    Fujitsu_CY26  ...             test.txt          ...
+    TONKA TUFFBOOK2600 ...        hwsubmission1.xml ...
+
+The 'System', 'Download' and 'Raw' columns should contain valid links for that
+submission. All links should resolve to valid pages, but the individual pages
+are tested in detail later.
+
+    >>> system_link = anon_browser.getLink('Fujitsu_CY26')
+    >>> system_link.url
+    'http://launchpad.dev/+hwdb/+fingerprint/Fujitsu_CY26'
+    >>> system_link.click()
+    >>> anon_browser.headers['status']
+    '200 Ok'
+    >>> anon_browser.goBack(1)
+
+    >>> download_link = anon_browser.getLink('test.txt')
+    >>> download_link.url
+    'http://.../test.txt'
+
+    >>> raw_link = anon_browser.getLink('text')
+    >>> raw_link.url
+    'http://launchpad.dev/+hwdb/+submission/unique-id-1'
+    >>> raw_link.click()
+    >>> anon_browser.headers['status']
+    '200 Ok'
+    >>> anon_browser.goBack(1)
+
+Submissions that are marked as private are only displayed to the
+submitter himself.
+
+    >>> browser.open('http://launchpad.dev/+hwdb/+submit')
+    >>> from StringIO import StringIO
+    >>> submit_data = {
+    ...     'Date Created:': '2007-01-01',
+    ...     'Format Version:': ['VERSION_1'],
+    ...     'Unique Submission Key:': 'unique-id-3',
+    ...     'Email address:': 'test@canonical.com',
+    ...     'Distribution:': 'ubuntu',
+    ...     'Distribution Release:': '5.04',
+    ...     'Processor Architecture:': 'i386',
+    ...     'System name:': 'Fujitsu_CY26',
+    ... }
+    >>> submit_data_checkboxes = {
+    ...     'Private Submission': True,
+    ...     'Contactable': False,
+    ... }
+    >>> submit_file = StringIO('some data')
+    >>> def fill_form(
+    ...    browser, submit_data, submit_data_checkboxes, filedata, filename):
+    ...     for label in submit_data.keys():
+    ...         control = browser.getControl(label)
+    ...         control.value = submit_data[label]
+    ...     for label in submit_data_checkboxes.keys():
+    ...         control = browser.getControl(label)
+    ...         control.selected = submit_data_checkboxes[label]
+    ...     if filedata is not None:
+    ...         filedata.seek(0)
+    ...         control = browser.getControl('Submission data:')
+    ...         control.add_file(filedata, 'text/plain', filename)
+    >>> fill_form(
+    ...     browser, submit_data, submit_data_checkboxes, submit_file,
+    ...     'test2.txt')
+    >>> browser.getControl('Upload').click()
+    >>> anon_browser.open('http://launchpad.dev/~name12/+hwdb-submissions')
+    >>> [content_table] = find_tags_by_class(anon_browser.contents, 'listing')
+    >>> print extract_text(content_table)
+    System        Date submitted  Download          Raw
+    Fujitsu_CY26  ...             test.txt          ...
+    TONKA TUFFBOOK2600 ...        hwsubmission1.xml ...
+
+    >>> import transaction
+    >>> transaction.commit()
+
+The owner of a submission sees a complete lists of his own submissions.
+He also gets an additional column in the listing, showing the "private"
+status of each submission.
+
+    >>> browser = setupBrowser(auth='Basic test@canonical.com:test')
+    >>> browser.open('http://launchpad.dev/~name12/+hwdb-submissions')
+    >>> [content_table] = find_tags_by_class(browser.contents, 'listing')
+    >>> print extract_text(content_table)
+    System        Date submitted  Download          Private     Raw
+    Fujitsu_CY26  ...             test2.txt           yes       ...
+    Fujitsu_CY26  ...             test.txt             no       ...
+    TONKA TUFFBOOK2600 ...        hwsubmission1.xml    no       ...
+
+If a person has not submitted any hardware data, an according message is
+displayed.
+
+    >>> anon_browser.open('http://launchpad.dev/~name16/+hwdb-submissions')
+    >>> print extract_text(find_main_content(anon_browser.contents))
+    Hardware submissions for Foo Bar...
+    Foo Bar has posted no submissions.
+
+Submissions that are marked as private and owned by a team are only
+visible for members of the team and admins.
+
+    >>> browser.open('http://launchpad.dev/+hwdb/+submit')
+    >>> team_submit_data = {
+    ...     'Date Created:': '2007-01-01',
+    ...     'Format Version:': ['VERSION_1'],
+    ...     'Unique Submission Key:': 'unique-id-3a',
+    ...     'Email address:': 'support@ubuntu.com',
+    ...     'Distribution:': 'ubuntu',
+    ...     'Distribution Release:': '5.04',
+    ...     'Processor Architecture:': 'i386',
+    ...     'System name:': 'Black Box 42',
+    ... }
+    >>> team_submit_data_checkboxes = {
+    ...     'Private Submission': True,
+    ...     'Contactable': False,
+    ... }
+    >>> submit_file = StringIO('some data')
+    >>> fill_form(
+    ...     browser, team_submit_data, team_submit_data_checkboxes,
+    ...     submit_file, 'teamtest.txt')
+    >>> browser.getControl('Upload').click()
+    >>> anon_browser.open(
+    ...     'http://launchpad.dev/~ubuntu-team/+hwdb-submissions')
+    >>> print extract_text(find_main_content(anon_browser.contents))
+    Hardware submissions for ...Ubuntu Team...
+    Ubuntu Team has posted no submissions.
+
+    >>> browser = setupBrowser(auth='Basic celso.providelo@canonical.com:test')
+    >>> browser.open('http://launchpad.dev/~ubuntu-team/+hwdb-submissions')
+    >>> [content_table] = find_tags_by_class(browser.contents, 'listing')
+    >>> print extract_text(content_table)
+    System        Date submitted  Download          Raw
+    Black Box 42  ...             teamtest.txt      ...
+
+    >>> import transaction
+    >>> transaction.commit()
+
+== Viewing individual submissions ==
+
+Individual submissions can be rendered in an RFC-822-formatted file.
+
+    >>> browser.open(
+    ...     'http://launchpad.dev/+hwdb/+submission/unique-id-1/+text')
+    >>> print browser.contents
+    Date-Created: 2007-01-01 00:00:00+00:00
+    Date-Submitted: ...
+    Format: VERSION_1
+    Distribution: ubuntu
+    Distribution-Series: 5.04
+    Architecture: i386
+    System: Fujitsu_CY26
+    Submission URL: http://.../test.txt
+
+Private submissions can't be viewed anonymously:
+
+    >>> anon_browser.open(
+    ...     'http://launchpad.dev/+hwdb/+submission/unique-id-3a/+text')
+    Traceback (most recent call last):
+    ...
+    NotFound: ...
+
+But they can with the right permissions.
+
+    >>> browser = setupBrowser(auth='Basic celso.providelo@canonical.com:test')
+    >>> browser.open(
+    ...     'http://launchpad.dev/+hwdb/+submission/unique-id-3a/+text')
+    >>> print browser.contents
+    Date-Created: 2007-01-01 00:00:00+00:00
+    Date-Submitted: ...
+    Format: VERSION_1
+    Distribution: ubuntu
+    Distribution-Series: 5.04
+    Architecture: i386
+    System: Black Box 42
+    Submission URL: http://.../teamtest.txt
+
+
+== Submissions listed by fingerprint ==
+
+The pages http://launchpad.dev/+hwdb/+fingerprint/(fingerprint) list
+all submissions for a fingerprint/system name.
+
+    >>> anon_browser.open(
+    ...     'http://launchpad.dev/+hwdb/+fingerprint/Fujitsu_CY26')
+    >>> [content_table] = find_tags_by_class(anon_browser.contents, 'listing')
+    >>> print extract_text(content_table)
+    Date submitted     Submitted by    Download     Raw
+    ...                     n/a        test.txt     ...
+
+The owner is only displayed, if the page is viewed by the owner, or if
+the field "contactable" of this submission is "True" and the "Private"
+is False.
+
+    >>> submit_data_checkboxes['Private Submission'] = False
+    >>> submit_data_checkboxes['Contactable'] = True
+    >>> submit_data['Unique Submission Key:'] = 'unique-id-4'
+    >>> browser.open('http://launchpad.dev/+hwdb/+submit')
+    >>> fill_form(
+    ...     browser, submit_data, submit_data_checkboxes, submit_file,
+    ...     'test3.txt')
+    >>> browser.getControl('Upload').click()
+    >>> anon_browser.open(
+    ...     'http://launchpad.dev/+hwdb/+fingerprint/Fujitsu_CY26')
+    >>> [content_table] = find_tags_by_class(anon_browser.contents, 'listing')
+    >>> print extract_text(content_table)
+    Date submitted     Submitted by            Download     Raw
+    ...                Sample Person (name12)  test3.txt    ...
+    ...                    n/a                 test.txt     ...
+
+Private submissions are only displayed for the owner.
+
+    >>> browser = setupBrowser(auth='Basic test@canonical.com:test')
+    >>> browser.open(
+    ...     'http://launchpad.dev/+hwdb/+fingerprint/Fujitsu_CY26')
+    >>> [content_table] = find_tags_by_class(browser.contents, 'listing')
+    >>> print extract_text(content_table)
+    Date submitted     Submitted by              Download        Raw
+    ...                Sample Person (name12)    test3.txt       ...
+    ...                Sample Person (name12)    test2.txt       ...
+    ...                Sample Person (name12)    test.txt        ...
+
+A page for an unknown fingerprint displays an according message.
+
+    >>> anon_browser.open(
+    ...     'http://launchpad.dev/+hwdb/+fingerprint/unknownfingerprint')
+    >>> print extract_text(find_main_content(anon_browser.contents))
+    Hardware Database submissions for a fingerprint
+    Submissions for system: unknownfingerprint
+    There are no submissions for this system.

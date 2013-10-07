@@ -1,0 +1,115 @@
+The lp.services.webapp.adapter code constrains the amount of time that
+a request can take.
+
+The document webapp/ftests/test_adapter.txt shows its
+behavior in detail.  This document shows the behavior within the context of a
+page test.
+
+In particular, this demonstration shows not only that the main view will raise
+a TimeoutError on database use, but that a view on the exception that itself
+accesses the database has a fresh start--it is not polluted by the main view's
+TimeoutError.
+
+It further shows that the OOPS correctly includes the SQL statements that
+timed out.
+
+First we create a view that will provoke a TimeoutError, a view for the
+exception, and a time machine.
+
+    >>> from zope.publisher.browser import BrowserView
+    >>> from zope.testbrowser.testing import Browser
+    >>> from textwrap import dedent
+    >>> from zope.publisher.interfaces.browser import (
+    ...     IBrowserRequest, IBrowserView, IBrowserPublisher)
+    >>> from zope.interface import Interface, implements
+    >>> from zope.security.checker import CheckerPublic, MultiChecker
+    >>> import zope.component
+    >>> import lp.services.webapp.adapter
+    >>> from lp.services.webapp.interfaces import (
+    ...     IStoreSelector, MAIN_STORE, MASTER_FLAVOR)
+    >>> from lp.services.config import config
+    >>> from storm.exceptions import TimeoutError
+    >>> config.push('set_timeout', dedent('''
+    ...     [database]
+    ...     db_statement_timeout = 5000
+    ...     '''))
+    >>> _now = 0
+    >>> def fake_time():
+    ...     return float(_now)
+    >>> def time_travel(delta):
+    ...     global _now
+    ...     _now += delta
+    >>> lp.services.webapp.adapter.time = fake_time # Monkey patch
+    >>> class DoomedView(BrowserView):
+    ...     implements(IBrowserPublisher)
+    ...     __Security_checker__ = MultiChecker((
+    ...         (IBrowserView, CheckerPublic),
+    ...         (IBrowserPublisher, CheckerPublic),
+    ...         (('__call__',), CheckerPublic)))
+    ...     def browserDefault(self, request):
+    ...         return self, None
+    ...     def __call__(self):
+    ...         store = zope.component.getUtility(IStoreSelector).get(
+    ...             MAIN_STORE, MASTER_FLAVOR)
+    ...         time_travel(config.database.db_statement_timeout +
+    ...                     config.database.db_statement_timeout_precision)
+    ...         store.execute('SELECT TRUE', noresult=True)
+    ...
+    >>> timeout_in_exception_view = None
+    >>> class DoomedExceptionView(DoomedView):
+    ...     def __call__(self):
+    ...         global timeout_in_exception_view
+    ...         store = zope.component.getUtility(IStoreSelector).get(
+    ...             MAIN_STORE, MASTER_FLAVOR)
+    ...         try:
+    ...             store.execute('SELECT TRUE', noresult=True)
+    ...         except TimeoutError:
+    ...             timeout_in_exception_view = True
+    ...             raise
+    ...         else:
+    ...             timeout_in_exception_view = False
+    ...
+    >>> sm = zope.component.getSiteManager()
+    >>> sm.registerAdapter(
+    ...     DoomedView, required=(Interface, IBrowserRequest),
+    ...     provided=IBrowserView, name='doom_test')
+    >>> sm.registerAdapter(
+    ...     DoomedExceptionView, required=(TimeoutError, IBrowserRequest),
+    ...     provided=IBrowserView, name='index.html')
+
+Now we actually demonstrate the behavior.  The view did raise a TimeoutError.
+
+    >>> from lp.testing.fixture import CaptureOops
+    >>> capture = CaptureOops()
+    >>> capture.setUp()
+    >>> browser = Browser()
+    >>> browser.handleErrors = False
+    >>> browser.open('http://launchpad.dev/doom_test')
+    Traceback (most recent call last):
+    ...
+    TimeoutError...
+
+The exception view did not.
+
+    >>> print timeout_in_exception_view
+    False
+
+The OOPS has the SQL from the main view.
+
+    >>> print capture.oopses[0]['timeline']
+    [(0, 0, 'SELECT ... FROM ... WHERE ...'), ...]
+
+All that's left is to clean up after ourselves.
+
+    >>> capture.cleanUp()
+    >>> sm.unregisterAdapter(
+    ...     DoomedView, required=(Interface, IBrowserRequest),
+    ...     provided=IBrowserView, name='doom_test')
+    True
+    >>> sm.unregisterAdapter(
+    ...     DoomedExceptionView, required=(TimeoutError, IBrowserRequest),
+    ...     provided=IBrowserView, name='index.html')
+    True
+    >>> ignore = config.pop('set_timeout')
+    >>> import time
+    >>> lp.services.webapp.adapter.time = time.time

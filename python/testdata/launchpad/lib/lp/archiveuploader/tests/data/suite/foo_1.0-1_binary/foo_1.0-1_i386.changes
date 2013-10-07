@@ -1,0 +1,29 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Format: 1.7
+Date: Thu, 16 Feb 2006 15:34:09 +0000
+Source: foo
+Binary: foo
+Architecture: i386
+Version: 1.0-1
+Distribution: breezy
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Daniel Silverstone <daniel.silverstone@canonical.com>
+Description: 
+ foo        - Stuff for testing
+Changes: 
+ foo (1.0-1) breezy; urgency=low
+ .
+   * Initial version
+Files: 
+ c8a42455a2cacde85c5ed24e44fc67aa 654 devel optional foo_1.0-1_i386.deb
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.3 (GNU/Linux)
+
+iD8DBQFFt79vjn63CGxkqMURAm96AJ9VuuLXSbeScA5fB9GEXwr55u0XkwCdFQBA
+oLLrRsT1BMSzRw9L634D/uU=
+=IJrR
+-----END PGP SIGNATURE-----

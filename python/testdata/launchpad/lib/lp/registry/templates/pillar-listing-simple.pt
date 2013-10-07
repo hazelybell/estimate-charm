@@ -1,0 +1,14 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+<tr>
+  <td>
+    <div tal:content="structure context/fmt:link" />
+    <div style="max-width: 60em;" >
+      <tal:summary replace="context/summary/fmt:shorten/240" />
+    </div><br/>
+  </td>
+</tr>
+</tal:root>

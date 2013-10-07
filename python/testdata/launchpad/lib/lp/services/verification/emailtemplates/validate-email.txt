@@ -1,0 +1,21 @@
+
+Hello
+
+We received a request from %(requester)s using email address
+%(requesteremail)s, trying to validate the email address
+%(toaddress)s for use in Launchpad.
+
+If you made this request, please click on the link below
+and complete the process to add %(toaddress)s
+to your existing Launchpad account.
+
+    %(token_url)s
+
+If you did not make this request, please ignore this message
+or report it as a possible attempt at a security attack on
+your data.
+
+Thank you,
+
+The Launchpad team
+

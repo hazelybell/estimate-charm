@@ -1,0 +1,29 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  class="portlet" id="portlet-bugfilters">
+  <a id="bugtarget-bugfilters-link"
+     tal:attributes="href context/fmt:url/+bugtarget-portlet-bugfilters-stats">
+  </a>
+  <div
+    id="bugfilters-portlet-content"
+    tal:content="structure context/@@+bugtarget-portlet-bugfilters-info" />
+  <script type="text/javascript">
+    LPJS.use('io-base', 'node', function(Y) {
+        Y.on('domready', function() {
+            var url = Y.one('#bugtarget-bugfilters-link').getAttribute('href');
+            var handlers = {
+                success: function(transactionid, response, arguments) {
+                    Y.one('#bugfilters-portlet-content').set(
+                        'innerHTML', response.responseText);
+                },
+                failure: function() {
+                    Y.one('#bugfilters-portlet-content').set('innerHTML', '');
+                }
+            };
+            var request = Y.io(url, {on: handlers});
+        });
+    });
+  </script>
+</div>

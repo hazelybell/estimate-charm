@@ -1,0 +1,15 @@
+<tal:root
+   xmlns:tal="http://xml.zope.org/namespaces/tal"
+   xmlns:metal="http://xml.zope.org/namespaces/metal"
+   omit-tag="">
+
+  <strong>review:</strong>
+  <span tal:attributes="class string:vote${context/vote/name}"
+                tal:content="context/vote/title">
+    Approve
+  </span>
+  <tal:vote-tags condition="context/vote_tag">
+    (<tal:tag replace="context/vote_tag"/>)
+  </tal:vote-tags>
+
+</tal:root>

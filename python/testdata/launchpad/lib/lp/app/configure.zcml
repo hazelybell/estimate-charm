@@ -1,0 +1,88 @@
+<!-- Copyright 2009-2011 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="launchpad">
+    <include package=".browser"/>
+    <include package="lp.app.validators" />
+    <include package="lp.app.widgets" />
+
+    <class class="lazr.lifecycle.event.ObjectCreatedEvent">
+      <allow interface="lazr.lifecycle.interfaces.IObjectCreatedEvent" />
+    </class>
+
+    <class class="lazr.lifecycle.event.ObjectDeletedEvent">
+      <allow interface="lazr.lifecycle.interfaces.IObjectDeletedEvent" />
+    </class>
+
+    <class class="lazr.lifecycle.event.ObjectModifiedEvent">
+      <allow interface="lazr.lifecycle.interfaces.IObjectModifiedEvent" />
+    </class>
+
+    <class class="zope.schema.vocabulary.SimpleVocabulary">
+      <allow interface="zope.schema.interfaces.IVocabularyTokenized"/>
+    </class>
+
+    <class class="zope.schema.vocabulary.SimpleTerm">
+      <allow interface="zope.schema.interfaces.ITitledTokenizedTerm"/>
+    </class>
+
+    <utility
+        factory="lp.app.utilities.celebrities.LaunchpadCelebrities"
+        provides="lp.app.interfaces.launchpad.ILaunchpadCelebrities">
+    </utility>
+
+    <!-- Configuration related to datetime classes in Launchpad. -->
+    <adapter
+        for="lp.app.interfaces.launchpad.IHasDateCreated"
+        provides="lp.app.interfaces.launchpad.IAging"
+        factory="lp.app.model.cdatetime.AgingAdapter" />
+
+    <adapter
+        provides="lp.app.interfaces.launchpad.IPrivacy"
+        for="Exception"
+        factory="lp.app.model.launchpad.ExceptionPrivacy"
+        permission="zope.Public"
+        />
+
+    <adapter
+        provides="lp.services.privacy.interfaces.IObjectPrivacy"
+        for="zope.interface.Interface"
+        factory="lp.services.privacy.adapters.ObjectPrivacy"
+        permission="zope.Public"
+        />
+
+    <adapter
+        provides="lp.app.browser.badge.IHasBadges"
+        for="zope.interface.Interface"
+        factory="lp.app.browser.badge.HasBadgeBase"
+        permission="zope.Public"
+        />
+
+    <!-- Services Infrastructure -->
+    <include
+        package="lp.registry.services"/>
+    <securedutility
+        class="lp.app.services.ServiceFactory"
+        provides="lp.app.interfaces.services.IServiceFactory">
+        <allow
+            interface="lp.app.interfaces.services.IServiceFactory"/>
+        <allow
+            interface="zope.publisher.interfaces.IPublishTraverse"/>
+        <allow
+            interface="zope.publisher.interfaces.browser.IBrowserPublisher"/>
+    </securedutility>
+    <securedutility
+        class="lp.services.webservice.services.ServicesLink"
+        provides="lp.services.webservice.services.IServicesLink">
+        <allow
+            interface="lazr.restful.interfaces.ITopLevelEntryLink"/>
+        <allow
+            interface="lp.services.webapp.interfaces.ICanonicalUrlData"/>
+    </securedutility>
+
+</configure>

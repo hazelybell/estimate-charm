@@ -1,0 +1,59 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad">
+
+  <body>
+
+    <tal:side metal:fill-slot="side">
+      <tal:menu replace="structure context/@@+global-actions" />
+    </tal:side>
+
+    <div metal:fill-slot="main" class="main-portlet">
+      <p>
+        There are two kinds of blacklisted names:
+      </p>
+      <ul class="bulleted">
+        <li>
+          Organisational blackisted names have an administering team
+          that is permitted to use the name for projects and teams.
+         </li>
+        <li>
+          Application blackisted names cannot have an administering team.
+          No one can to override them.
+         </li>
+      </ul>
+      <table id="blacklist" class="listing sortable">
+        <thead>
+          <th>Regular Expression</th>
+          <th>Admin</th>
+          <th>Comment</th>
+        </thead>
+        <tbody>
+          <tr tal:repeat="item context/getAll">
+            <td>
+              <tt tal:content="item/regexp"/>
+              <tal:link replace="
+                structure
+                item/menu:overview/edit_blacklist_expression/fmt:icon"/>
+            </td>
+            <td>
+              <a
+                tal:condition="item/admin"
+                tal:replace="structure item/admin/fmt:link" />
+              <tal:none condition="not: item/admin">&mdash;</tal:none>
+            </td>
+            <td tal:content="item/comment"/>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </body>
+</html>

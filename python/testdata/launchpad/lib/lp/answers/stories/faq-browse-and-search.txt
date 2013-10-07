@@ -1,0 +1,191 @@
+= Browsing and Searching FAQs =
+
+== No FAQs ==
+
+Miss Piggy decided to give Kubuntu a try based on the recommendations of
+Kermit. She wants to watch the wedding scene of The Muppets Take
+Manhattan but is unable to play the DVD. She goes to the Kubuntu support
+page on Launchpad to try to get some help. She clicks the
+'All FAQs' link to obtain the list of common questions hoping to
+find her problem there (surely playing a DVD must be common thing to do
+with a computer these days).
+
+    >>> # Kubuntu must enable answers to access questions.
+    >>> from zope.component import getUtility
+    >>> from lp.app.enums import ServiceUsage
+    >>> from lp.registry.interfaces.distribution import IDistributionSet
+
+    >>> login('admin@canonical.com')
+    >>> getUtility(IDistributionSet)['kubuntu'].answers_usage = (
+    ...     ServiceUsage.LAUNCHPAD)
+    >>> transaction.commit()
+    >>> logout()
+
+    >>> browser.open('http://answers.launchpad.dev/kubuntu')
+    >>> browser.getLink('All FAQs').click()
+
+Unfortunately, it seems that nobody has problems or questions about
+Kubuntu:
+
+    >>> print browser.url
+    http://answers.launchpad.dev/kubuntu/+faqs
+    >>> print browser.title
+    FAQs for Kubuntu : Questions : Kubuntu
+
+    >>> print extract_text(find_main_content(browser.contents).find('p'))
+    There are no FAQs for Kubuntu.
+
+
+== Browsing FAQs ==
+
+She learns through Fozzie Bear that support for Kubuntu is really
+happening on the Ubuntu project.
+
+    >>> browser.open('http://answers.launchpad.dev/ubuntu')
+    >>> browser.getLink('All FAQs').click()
+    >>> print browser.title
+    FAQs for Ubuntu : Questions : Ubuntu
+
+She sees a listing of the current FAQs about Ubuntu:
+
+    >>> print extract_text(find_tag_by_id(browser.contents, 'faqs-listing'))
+    How can I play MP3/Divx/DVDs/Quicktime/Realmedia files or view
+        Flash/Java web pages
+    How can I customize my desktop?
+    How can I make VOIP calls?
+    How to obtain a fixed hostname with a dynamic IP
+    Dial-up Modem Networking Configuration
+
+There is a 'Next' link to see the second batch of results:
+
+    >>> browser.getLink('Next').click()
+    >>> print browser.title
+    FAQs for Ubuntu : Questions : Ubuntu
+    >>> print extract_text(find_tag_by_id(browser.contents, 'faqs-listing'))
+    Wireless Networking Documentation
+
+Going back to the first page, she realises that when she leaves the
+mouse over a FAQ title, the beginning of the FAQ's content appears in
+a pop-up:
+
+    >>> import re
+    >>> browser.getLink('First').click()
+    >>> faq_link = find_main_content(browser.contents).find(
+    ...     'a', text=re.compile('How can I play MP3/Divx/DVDs'))
+    >>> print faq_link.findParent('li')['title']
+    Playing many common formats such as DVIX, MP3, DVD, or Flash ...
+
+She clicks on FAQ's title to display the complete FAQ content:
+
+    >>> from lp.services.helpers import backslashreplace
+
+    >>> browser.getLink('How can I play MP3/Divx').click()
+    >>> print backslashreplace(browser.title)
+    FAQ #6 : Questions : Ubuntu
+    >>> print browser.url
+    http://answers.launchpad.dev/ubuntu/+faq/6
+
+The FAQ page has a link back to the FAQ listing:
+
+    >>> browser.getLink('List all FAQs').click()
+    >>> print browser.title
+    FAQs for Ubuntu : Questions : Ubuntu
+    >>> print browser.url
+    http://answers.launchpad.dev/ubuntu/+faqs
+
+
+== Searching FAQs ==
+
+All FAQs listing have a search box at the top, where the user can
+enter keywords that be used to filter the displayed FAQs.
+
+    >>> browser.getControl(name='field.search_text').value = 'crash on boot'
+    >>> browser.getControl('Search', index=0).click()
+    >>> print backslashreplace(browser.title)
+    FAQs matching \u201ccrash on boot\u201d for Ubuntu : Questions : Ubuntu
+
+When no matches are found, a simple message is displayed:
+
+    >>> message = find_main_content(browser.contents).find('p')
+    >>> print extract_text(message).encode('ascii', 'backslashreplace')
+    There are no FAQs for Ubuntu matching \u201ccrash on boot\u201d.
+
+Otherwise, the listing only contains the matching FAQs.
+
+    >>> browser.getControl(name='field.search_text').value = 'wifi'
+    >>> browser.getControl('Search', index=0).click()
+
+    >>> print extract_text(find_tag_by_id(browser.contents, 'faqs-listing'))
+    Wireless Networking Documentation
+
+When searching for FAQs, a link to the questions matching the same
+keywords is displayed. (The link is only displayed when there are
+matches.)
+
+    >>> browser.getControl(name='field.search_text').value = 'plugin'
+    >>> browser.getControl('Search', index=0).click()
+
+    >>> message = find_main_content(browser.contents).find('p')
+    >>> print extract_text(message)
+    You can also consult the list of 1 question(s)
+        matching &ldquo;plugin&rdquo;.
+
+Following the link will show the questions results:
+
+    >>> browser.getLink('1 question(s)').click()
+    >>> print browser.title
+    Questions : Ubuntu
+
+    >>> questions = find_tag_by_id(browser.contents, 'question-listing')
+    >>> for question in questions.findAll('td', 'questionTITLE'):
+    ...     print question.first('a').renderContents()
+    Installation of Java Runtime Environment for Mozilla
+
+On the question page, there is also a link to consult the FAQs matching
+the same keywords.
+
+    >>> message = find_tag_by_id(browser.contents, 'found-matching-faqs')
+    >>> print extract_text(message)
+    You can also consult the list of 1 FAQ(s)
+        matching &ldquo;plugin&rdquo;.
+
+Following the link will show the questions results:
+
+    >>> browser.getLink('1 FAQ(s)').click()
+    >>> print backslashreplace(browser.title)
+    FAQs matching \u201cplugin\u201d for Ubuntu : Questions : Ubuntu
+
+    >>> print extract_text(find_tag_by_id(browser.contents, 'faqs-listing'))
+    How can I play MP3/Divx/DVDs/Quicktime/Realmedia files or view
+        Flash/Java web pages
+
+
+== Distribution Source Packages and FAQs ==
+
+Altough distribution source packages aren't directly associated with
+FAQs. The 'All FAQs' link that appears in that context links to the
+distribution FAQs.
+
+    >>> browser.open('http://answers.launchpad.dev/ubuntu/'
+    ...              '+source/mozilla-firefox')
+    >>> browser.getLink('All FAQs').click()
+    >>> print browser.title
+    FAQs for Ubuntu : Questions : Ubuntu
+    >>> print browser.url
+    http://answers.launchpad.dev/ubuntu/+faqs
+
+
+== Accessing an FAQ directly ==
+
+Asking for a non-existent FAQ or an invalid ID will raise a 404 error.
+
+    >>> anon_browser.open('http://answers.launchpad.dev/ubuntu/+faq/171717')
+    Traceback (most recent call last):
+      ...
+    NotFound: ...
+
+    >>> anon_browser.open('http://answers.launchpad.dev/ubuntu/+faq/bad')
+    Traceback (most recent call last):
+      ...
+    NotFound: ...
+

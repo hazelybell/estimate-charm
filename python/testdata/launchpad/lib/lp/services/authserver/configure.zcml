@@ -1,0 +1,26 @@
+<!-- Copyright 2009-2011 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+  xmlns="http://namespaces.zope.org/zope"
+  xmlns:browser="http://namespaces.zope.org/browser"
+  xmlns:xmlrpc="http://namespaces.zope.org/xmlrpc"
+  >
+
+  <securedutility
+    class="lp.services.authserver.xmlrpc.AuthServerApplication"
+    provides="lp.services.authserver.interfaces.IAuthServerApplication">
+    <allow
+      interface="lp.services.authserver.interfaces.IAuthServerApplication"/>
+  </securedutility>
+
+  <xmlrpc:view
+    for="lp.services.authserver.interfaces.IAuthServerApplication"
+    interface="lp.services.authserver.interfaces.IAuthServer"
+    class="lp.services.authserver.xmlrpc.AuthServerAPIView"
+    permission="zope.Public"
+    />
+
+</configure>
+

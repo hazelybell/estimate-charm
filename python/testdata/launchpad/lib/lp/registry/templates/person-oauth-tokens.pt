@@ -1,0 +1,79 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+
+<body>
+  <div metal:fill-slot="main">
+    <p>These applications have been authorized to access Launchpad on your
+    behalf.  If you revoke an authorization, that application will not be
+    allowed to do anything in Launchpad on your behalf.
+    </p>
+
+    <div id="tokens">
+      <h2>Claimed tokens:</h2>
+      <span tal:condition="not: view/access_tokens">None</span>
+      <ul>
+        <li tal:repeat="token view/access_tokens"
+            tal:define="token_type string:access_token">
+          <metal:revoke-token-macro
+            use-macro="template/macros/revoke-token-macro" />
+        </li>
+      </ul>
+
+      <h2>Unclaimed tokens:</h2>
+      <span tal:condition="not: view/request_tokens">None</span>
+      <ul>
+        <li tal:repeat="token view/request_tokens"
+            tal:define="token_type string:request_token">
+          <metal:revoke-token-macro
+            use-macro="template/macros/revoke-token-macro" />
+        </li>
+      </ul>
+    </div>
+  </div>
+
+<metal:macros fill-slot="bogus">
+  <metal:revoke-token-macro define-macro="revoke-token-macro">
+    <tal:comment replace="nothing">
+      This macro expects the following variables to be defined:
+
+      :token: Either an OAuthAccessToken or OAuthRequestToken object.
+      :token_type: A string set to either "access_token" or "request_token".
+    </tal:comment>
+    <form method="post">
+      Application name:
+      <label tal:content="token/consumer/key">Consumer</label>
+      <p>Authorized,
+        <tal:date-reviewed
+            content="token/date_created/fmt:approximatedate" />,
+        to
+        <tal:permission content="token/permission/title/lower" />
+        <tal:has-context condition="token/context">
+          related to <strong tal:content="token/context/title" />
+        </tal:has-context>
+      </p>
+      <p tal:condition="python: token_type == 'request_token'">
+        Must be claimed before
+        <tal:date content="token/date_expires/fmt:date" />
+      </p>
+      <input tal:attributes="value token/consumer/key" type="hidden"
+              name="consumer_key" />
+      <input tal:attributes="value token/key" type="hidden"
+              name="token_key" />
+      <input tal:attributes="value token_type" type="hidden"
+              name="token_type" />
+      <input type="submit" name="revoke" value="Revoke Authorization" />
+      <br />
+      <br />
+    </form>
+  </metal:revoke-token-macro>
+</metal:macros>
+
+</body>
+</html>

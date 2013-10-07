@@ -1,0 +1,434 @@
+Archive signing
+===============
+
+`IArchive ` objects may be signed using its a IGPGKey pointed by its
+'signing_key' attribute.
+
+PPAs are created (activated, in production jargon) without a defined
+'signing_key'. A GPG key will be generated later by a auxiliary script
+and attached to the corresponding `IArchive`.
+
+The secret part of the key will be stored in the path pointed by
+`config.personalpackagearchive.signing_keys_root`, named by their
+fingerprint. E.g.: ABCDEF0123456789ABCDDCBA0000111112345678.key
+
+Once the signing key is available, the subsequent publications will
+result in a signed repository.
+
+The signed repository will contained a detached signature of the
+top-level 'Release' file, named 'Release.gpg' and a ASCII-armoded
+export of the public GPG key (name 'key.gpg')
+
+We will set up and use the test-keyserver.
+
+    >>> from lp.testing.keyserver import KeyServerTac
+    >>> tac = KeyServerTac()
+    >>> tac.setUp()
+
+
+Querying 'pending signing key' PPAs
+-----------------------------------
+
+`IArchiveSet.getPPAsPendingSigningKey` allows call-sites to query for
+PPA pending signing key generation.
+
+    >>> from lp.registry.interfaces.person import IPersonSet
+    >>> from lp.soyuz.interfaces.archive import IArchiveSet
+
+Only PPAs with at least one source publication are considered.
+
+    >>> archive_set = getUtility(IArchiveSet)
+    >>> for ppa in archive_set.getPPAsPendingSigningKey():
+    ...     print ppa.displayname
+    PPA for Celso Providelo
+    PPA for Mark Shuttleworth
+
+The PPA for 'No Privileges' user exists, is enabled and has no
+signing, but it also does not contain any source publications, that's
+why it's skipped in the getPPAsPendingSigningKey() results.
+
+    >>> cprov = getUtility(IPersonSet).getByName('cprov')
+    >>> no_priv = getUtility(IPersonSet).getByName('no-priv')
+
+    >>> print no_priv.archive.displayname
+    PPA for No Privileges Person
+
+    >>> no_priv.archive.enabled
+    True
+
+    >>> print no_priv.archive.signing_key
+    None
+
+    >>> no_priv.archive.number_of_sources
+    0
+
+'No Privileges' PPA will be considered for signing_key creation when
+we copy an arbitrary source into it.
+
+    >>> a_source = cprov.archive.getPublishedSources().first()
+    >>> copied_sources = a_source.copyTo(
+    ...     a_source.distroseries, a_source.pocket, no_priv.archive)
+
+    >>> for ppa in archive_set.getPPAsPendingSigningKey():
+    ...     print ppa.displayname
+    PPA for Celso Providelo
+    PPA for Mark Shuttleworth
+    PPA for No Privileges Person
+
+Disabled PPAs are excluded from the 'PendingSigningKey' pool:
+
+    >>> no_priv.archive.disable()
+
+    >>> for ppa in archive_set.getPPAsPendingSigningKey():
+    ...     print ppa.displayname
+    PPA for Celso Providelo
+    PPA for Mark Shuttleworth
+
+Indeed, Marks's PPA does not have a defined 'signing_key'.
+
+    >>> mark = getUtility(IPersonSet).getByName('mark')
+    >>> print mark.archive.signing_key
+    None
+
+    >>> print mark.archive.signing_key_fingerprint
+    None
+
+We will select the only available IGPGKey from the sampledata.
+
+    >>> foo_bar = getUtility(IPersonSet).getByName('name16')
+    >>> [a_key] = foo_bar.gpg_keys
+    >>> print a_key.displayname
+    1024D/12345678
+
+And use it as the Mark's PPA signing key.
+
+    >>> mark.archive.signing_key = a_key
+
+    >>> print mark.archive.signing_key_fingerprint
+    ABCDEF0123456789ABCDDCBA0000111112345678
+
+It will exclude Mark's PPA from the 'PendingSigningKey' pool as well.
+
+    >>> for ppa in archive_set.getPPAsPendingSigningKey():
+    ...     print ppa.displayname
+    PPA for Celso Providelo
+
+
+Generating a PPA signing key
+----------------------------
+
+As mentioned above, generated signing_keys will be stored in a
+location defined by the system configuration.
+
+    >>> from lp.services.config import config
+    >>> print config.personalpackagearchive.signing_keys_root
+    /var/tmp/ppa-signing-keys.test
+
+In order to manipulate 'signing_keys' securily the target archive
+object has to be adapted to `IArchiveSigningKey`.
+
+    >>> from lp.archivepublisher.interfaces.archivesigningkey import (
+    ...     IArchiveSigningKey)
+
+We will adapt Celso's PPA after modifing its distribution to allow
+proper publish configuration based on the sampledata.
+
+    >>> cprov = getUtility(IPersonSet).getByName('cprov')
+
+    >>> from lp.registry.interfaces.distribution import (
+    ...     IDistributionSet)
+    >>> cprov.archive.distribution = getUtility(
+    ...     IDistributionSet).getByName('ubuntutest')
+
+    >>> archive_signing_key = IArchiveSigningKey(cprov.archive)
+
+Once adapted `IArchiveSigningKey` is properly implemented.
+
+    >>> from zope.interface.verify import verifyObject
+    >>> verifyObject(IArchiveSigningKey, archive_signing_key)
+    True
+
+`IArchiveSigningKey` object contain the corresponding IArchive
+object.
+
+    >>> print archive_signing_key.archive.displayname
+    PPA for Celso Providelo
+
+It also implements exportSecretKey() which receive a `PymeKey` and
+export it in the appropriate location.
+
+We will create MockKey objects implementing only the methods required
+to test the export funtions
+
+    >>> class MockKey:
+    ...     def __init__(self, secret):
+    ...         self.secret = secret
+    ...         self.fingerprint = 'fpr'
+    ...     def export(self):
+    ...         return "Secret %s" % self.secret
+
+exportSecretKey() raises an error if given a public key.
+
+    >>> archive_signing_key.exportSecretKey(MockKey(False))
+    Traceback (most recent call last):
+    ...
+    AssertionError: Only secret keys should be exported.
+
+Now, if given the right type of key, it will result in a exported key
+in the expected path.
+
+    >>> mock_key = MockKey(True)
+    >>> archive_signing_key.exportSecretKey(mock_key)
+    >>> print open(
+    ...     archive_signing_key.getPathForSecretKey(mock_key)).read()
+    Secret True
+
+At this point we can use the `IArchiveSigningKey` to generate and
+assign a real signing_key, although this procedure depends heavily on
+machine entropy and ends up being very slow in our test machine.
+
+    ### archive_signing_key.generateSigningKey()
+
+We will use a pre-existing key in our tree which is virtually
+identical to the one that would be generated. The key will be 'set' by
+using a method `IArchiveSigningKey` skips the key generation but uses
+exactly the same procedure for setting the signing_key information.
+
+    >>> import os
+    >>> from lp.testing.gpgkeys import gpgkeysdir
+    >>> key_path = os.path.join(gpgkeysdir, 'ppa-sample@canonical.com.sec')
+    >>> archive_signing_key.setSigningKey(key_path)
+
+The assigned key is a sign-only, password-less 1024-RSA GPG key owner
+by the 'PPA key guard' celebrity and represented by a IGPGKey record.
+
+    >>> signing_key = archive_signing_key.archive.signing_key
+
+    >>> from lp.registry.interfaces.gpg import IGPGKey
+    >>> verifyObject(IGPGKey, signing_key)
+    True
+
+    >>> print signing_key.owner.name
+    ppa-key-guard
+
+    >>> print signing_key.algorithm.description
+    RSA
+
+    >>> print signing_key.keysize
+    1024
+
+    >>> print signing_key.active
+    True
+
+    >>> print signing_key.can_encrypt
+    False
+
+The generated key UID follows the "Launchpad PPA for %(person.displayname)s"
+format.
+
+    >>> from lp.services.gpg.interfaces import IGPGHandler
+    >>> gpghandler = getUtility(IGPGHandler)
+
+    >>> retrieved_key = gpghandler.retrieveKey(
+    ...    signing_key.fingerprint)
+
+    >>> [uid] = retrieved_key.uids
+    >>> uid.name
+    u'Launchpad PPA for Celso \xe1\xe9\xed\xf3\xfa Providelo'
+
+The secret key is securily stored in the designed configuration
+path. So only the IGPGHandler itself can access it.
+
+    >>> print open(
+    ...     archive_signing_key.getPathForSecretKey(signing_key)).read()
+    -----BEGIN PGP PRIVATE KEY BLOCK-----
+    ...
+    -----END PGP PRIVATE KEY BLOCK-----
+    <BLANKLINE>
+
+If called against a PPA which already has a 'signing_key'
+`generateSigningKey` will raise an error.
+
+    >>> archive_signing_key.generateSigningKey()
+    Traceback (most recent call last):
+    ...
+    AssertionError: Cannot override signing_keys.
+
+Let's reset the gpg local key ring, so we can check that the public
+key is available in the keyserver.
+
+    >>> gpghandler.resetLocalState()
+
+    >>> retrieved_key = gpghandler.retrieveKey(
+    ...    signing_key.fingerprint)
+    >>> retrieved_key.fingerprint == signing_key.fingerprint
+    True
+
+As documented in archive.txt, when a named-ppa is created it is
+already configured to used the same signing-key created for the
+default PPA. We will create a named-ppa for Celso.
+
+    >>> from lp.soyuz.enums import ArchivePurpose
+    >>> named_ppa = getUtility(IArchiveSet).new(
+    ...     owner=cprov, purpose=ArchivePurpose.PPA, name='boing')
+
+As expected it will use the same key used in Celso's default PPA.
+
+    >>> print cprov.archive.signing_key.fingerprint
+    0D57E99656BEFB0897606EE9A022DD1F5001B46D
+
+    >>> print named_ppa.signing_key.fingerprint
+    0D57E99656BEFB0897606EE9A022DD1F5001B46D
+
+We will reset the signing key of the just created named PPA,
+simulating the situation when a the default PPA and a named-ppas get
+created within the same cycle of the key-generator process.
+
+    >>> login('foo.bar@canonical.com')
+    >>> named_ppa.signing_key = None
+    >>> login(ANONYMOUS)
+
+    >>> print named_ppa.signing_key
+    None
+
+Default PPAs are always created first and thus get their keys generated
+before the named-ppa for the same owner. We submit the named-ppa to
+the key generation procedure, as it would be normally in production.
+
+    >>> named_ppa_signing_key = IArchiveSigningKey(named_ppa)
+    >>> named_ppa_signing_key.generateSigningKey()
+
+Instead of generating a new key, the signing key from the default ppa
+(Celso's default PPA) gets reused.
+
+    >>> print cprov.archive.signing_key.fingerprint
+    0D57E99656BEFB0897606EE9A022DD1F5001B46D
+
+    >>> print named_ppa.signing_key.fingerprint
+    0D57E99656BEFB0897606EE9A022DD1F5001B46D
+
+We will reset the signing-keys for both PPA of Celso.
+
+    >>> login('foo.bar@canonical.com')
+    >>> cprov.archive.signing_key = None
+    >>> named_ppa.signing_key = None
+    >>> login(ANONYMOUS)
+
+    >>> print cprov.archive.signing_key
+    None
+
+    >>> print named_ppa.signing_key
+    None
+
+Then modify the GPGHandler utility to return a sampledata key instead
+of generating a new one, mainly for running the test faster and for
+printing the context the key is generated.
+
+    >>> def mock_key_generator(name):
+    ...     print 'Generating:', name
+    ...     key_path = os.path.join(gpgkeysdir, 'sign.only@canonical.com.sec')
+    ...     return gpghandler.importSecretKey(open(key_path).read())
+
+    >>> from zope.security.proxy import removeSecurityProxy
+    >>> naked_gpghandler = removeSecurityProxy(gpghandler)
+    >>> real_key_generator = naked_gpghandler.generateKey
+    >>> naked_gpghandler.generateKey = mock_key_generator
+
+When the signing key for the named-ppa is requested, it is generated
+in the default PPA context then propagated to the named-ppa. The key is
+named after the user, even if the default PPA name is something different.
+
+    >>> cprov.displayname = "Not Celso Providelo"
+    >>> named_ppa_signing_key = IArchiveSigningKey(named_ppa)
+    >>> named_ppa_signing_key.generateSigningKey()
+    Generating: Launchpad PPA for Not Celso Providelo
+
+    >>> print cprov.archive.signing_key.fingerprint
+    447DBF38C4F9C4ED752246B77D88913717B05A8F
+
+    >>> print named_ppa.signing_key.fingerprint
+    447DBF38C4F9C4ED752246B77D88913717B05A8F
+
+Restore the original functionality of GPGHandler.
+
+    >>> naked_gpghandler.generateKey = real_key_generator
+
+
+Signing PPA repository
+----------------------
+
+`IArchiveSigningKey.signRepository` can be user to sign repositories
+for archive which already contains a 'signing_key'.
+
+Celso's default PPA will uses the testing signing key.
+
+    >>> login('foo.bar@canonical.com')
+    >>> cprov.archive.signing_key = signing_key
+    >>> login(ANONYMOUS)
+
+When signing repositores we assert they contain the right format and
+the expected file.
+
+    >>> test_suite = 'hoary'
+    >>> archive_signing_key.signRepository(test_suite)
+    Traceback (most recent call last):
+    ...
+    AssertionError: Release file doesn't exist in the repository:
+    /var/tmp/ppa.test/cprov/ppa/ubuntutest/dists/hoary/Release
+
+It produces a detached signature for the repository Release current
+file contents.
+
+    >>> from lp.archivepublisher.config import getPubConfig
+    >>> archive_root = getPubConfig(cprov.archive).archiveroot
+
+    >>> suite_path = os.path.join(archive_root, 'dists', test_suite)
+    >>> os.makedirs(suite_path)
+    >>> release_path = os.path.join(suite_path, 'Release')
+
+    >>> release_file = open(release_path, 'w')
+    >>> release_file.write('This is a fake release file.')
+    >>> release_file.close()
+
+    >>> archive_signing_key.signRepository(test_suite)
+
+    >>> print open(release_path + '.gpg').read()
+    -----BEGIN PGP SIGNATURE-----
+    ...
+    -----END PGP SIGNATURE-----
+    <BLANKLINE>
+
+The signature can be verified by retrieving the public key from the
+keyserver.
+
+    >>> gpghandler.resetLocalState()
+
+    >>> retrieved_key = gpghandler.retrieveKey(
+    ...    signing_key.fingerprint)
+
+    >>> signature = gpghandler.getVerifiedSignature(
+    ...     content=open(release_path).read(),
+    ...     signature=open(release_path + '.gpg').read())
+
+    >>> expected_fingerprint = (
+    ...     archive_signing_key.archive.signing_key.fingerprint)
+    >>> signature.fingerprint == expected_fingerprint
+    True
+
+Finally, if we try to sign a repository for which the archive doesn't
+have a 'signing_key' set,  it raises an error.
+
+    >>> cprov.archive.signing_key = None
+
+    >>> archive_signing_key.signRepository(test_suite)
+    Traceback (most recent call last):
+    ...
+    AssertionError: No signing key available for PPA for Celso Providelo
+
+We'll purge 'signing_keys_root' and the PPA repository root so that
+other tests don't choke on it, and shut down the server.
+
+    >>> import shutil
+    >>> shutil.rmtree(config.personalpackagearchive.signing_keys_root)
+    >>> shutil.rmtree(config.personalpackagearchive.root)
+    >>> tac.tearDown()

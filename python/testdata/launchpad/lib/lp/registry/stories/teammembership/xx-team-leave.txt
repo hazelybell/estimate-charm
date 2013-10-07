@@ -1,0 +1,88 @@
+== Leaving the team ==
+
+Foo Bar decided to leave the 'ubuntu-team'. He visits the home page
+and chooses the "Leave" link. He confirm that wants to leave the team
+by choosing the 'Leave' button.
+
+    >>> admin_browser.open('http://launchpad.dev/~ubuntu-team')
+    >>> admin_browser.title
+    'Ubuntu Team in Launchpad'
+
+    >>> admin_browser.getLink('Leave').click()
+    >>> admin_browser.title
+    'Leave Ubuntu Team...
+    >>> content = find_main_content(admin_browser.contents)
+    >>> print content.p
+    <p>Are you sure you want to leave this team?</p>
+    >>> admin_browser.getControl('Leave').click()
+
+Foo Bar is redirect to the team page after he leaves.
+
+    >>> admin_browser.title
+    'Ubuntu Team in Launchpad'
+    >>> admin_browser.getLink('Join').url
+    'http://launchpad.dev/~ubuntu-team/+join'
+
+
+== Leaving a private team ==
+
+When someone leaves a private team, they are no longer able to see the team so
+are redirected to their personal Launchpad homepage with a suitable message.
+
+    >>> browser = setupBrowser(auth='Basic member@canonical.com:test')
+    >>> browser.open('http://launchpad.dev/~myteam')
+    >>> browser.title
+    'My Team in Launchpad'
+
+    >>> browser.getLink('Leave').click()
+    >>> browser.title
+    'Leave My Team...
+
+    >>> browser.getControl('Leave').click()
+
+User is redirect to their homepage page after leaving.
+
+    >>> browser.url
+    'http://launchpad.dev/~member'
+
+    >>> print extract_text(
+    ...     first_tag_by_class(browser.contents, 'informational message'))
+    You are no longer a member of private team...
+
+== Team overview page quick-links ==
+
+A member of a team can quickly leave a team by using the links on the
+team's overview page.
+
+    >>> browser = setupBrowser(auth='Basic carlos@canonical.com:test')
+    >>> browser.open('http://launchpad.dev/~admins')
+    >>> print extract_text(
+    ...     find_tag_by_id(browser.contents, 'your-involvement'))
+    You are a member of this team...
+    >>> browser.getLink('Leave the Team').click()
+    >>> browser.title
+    'Leave Launchpad Administrators...
+    >>> browser.getControl('Leave').click()
+    >>> print browser.title
+    Launchpad Administrators in Launchpad
+
+    # The 'Leave' link should be gone.
+    >>> browser.getLink('Leave the Team')
+    Traceback (most recent call last):
+    ...
+    LinkNotFoundError
+
+    # And the 'Join' link should have returned.
+    >>> browser.getLink('Join the team')
+    <Link ...>
+
+Team owners do not have the option to leave.
+
+    >>> browser.open('http://launchpad.dev/~testing-spanish-team')
+    >>> print extract_text(
+    ...     find_tag_by_id(browser.contents, 'your-involvement'))
+    You are the owner of this team...
+    >>> browser.getLink('Leave the Team')
+    Traceback (most recent call last):
+    ...
+    LinkNotFoundError

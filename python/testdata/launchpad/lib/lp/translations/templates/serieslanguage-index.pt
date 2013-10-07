@@ -1,0 +1,199 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  metal:use-macro="view/macro:page/main_only"
+>
+
+<body>
+
+<div metal:fill-slot="main">
+  <tal:block condition="not:view/pofiles">
+    <div class="documentDescription">
+      There are no programs available to be translated.
+    </div>
+  </tal:block>
+
+  <tal:block condition="view/pofiles">
+    <div class="top-portlet">
+      <div id="group-team-info">
+        <tal:with_group condition="view/translation_group">
+          <p tal:condition="view/translation_team">
+            These
+            <tal:product replace="structure
+              view/parent/fmt:link">Evolution</tal:product>
+            translations are managed by
+            <tal:team replace="structure
+                               view/translation_team/translator/fmt:link">
+              Serbian translators</tal:team>.
+          </p>
+
+          <p tal:condition="not:view/translation_team">
+            There is no team to manage
+            <tal:product replace="structure
+              view/parent/fmt:link">Evolution</tal:product>
+            translations to
+            <a tal:attributes="href context/language/fmt:url"
+               tal:content="context/language/englishname">Serbian</a>.
+            To set one up, please get in touch with
+            <a tal:replace="structure view/translation_group/owner/fmt:link"
+               >Launchpad Translators</a>.
+          </p>
+        </tal:with_group>
+        <tal:without_group condition="not: view/translation_group">
+          <p>
+            There is no translation group to manage
+            <tal:product replace="structure
+              view/parent/fmt:link">Evolution</tal:product>
+            translations.
+          </p>
+        </tal:without_group>
+      </div>
+      <p id="translation-access-level">
+        <span 
+          tal:condition="view/translation_group"
+          tal:replace="structure view/access_level_description">
+            You can add suggestions for these translations.
+        </span>
+        Templates which are more important to translate are listed first.
+      </p>
+    </div>
+
+    <div style="max-width:840px;">
+    <tal:navigation replace="structure view/batchnav/@@+navigation-links-upper" />
+
+    <table class="listing sortable translation-stats">
+      <thead>
+        <tr>
+          <th>Template Name</th>
+          <th>Length</th>
+          <th>Status</th>
+          <th>Untranslated</th>
+          <th>Need review</th>
+          <th>Changed</th>
+          <th>Last Edited</th>
+          <th>By</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr tal:repeat="entry view/pofiles"
+            tal:attributes="id string:${entry/potemplate/name}">
+          <td class="template-name">
+            <a tal:attributes="href string:${entry/fmt:url}/+translate"
+               tal:content="entry/potemplate/name">
+               apache2-dev
+            </a>
+          </td>
+          <td tal:content="entry/potemplate/messageCount">87</td>
+          <td>
+            <tal:comment condition="nothing">
+              This text is used for the sorting.
+            </tal:comment>
+            <span class="sortkey" tal:content="entry/translatedPercentage"/>
+            <span style="white-space: nowrap"
+                  tal:content="structure entry/@@+barchart" />
+          </td>
+          <td>
+            <span class="sortkey"
+              tal:content="entry/untranslatedCount">
+              0
+            </span>
+            <a tal:attributes="href string:${entry/fmt:url}/+translate?show=untranslated"
+              tal:condition="entry/untranslatedCount"
+              tal:content="entry/untranslatedCount"
+              >
+              0
+            </a>
+            <tal:count tal:condition="not: entry/untranslatedCount">
+                &mdash;
+            </tal:count>
+          </td>
+          <td>
+            <span class="sortkey"
+              tal:content="entry/unreviewedCount">
+              0
+            </span>
+            <a tal:attributes="href string:${entry/fmt:url}/+translate?show=new_suggestions"
+              tal:condition="entry/unreviewedCount"
+              tal:content="entry/unreviewedCount"
+              >
+              0
+            </a>
+            <tal:count tal:condition="not: entry/unreviewedCount">
+                &mdash;
+            </tal:count>
+          </td>
+          <td>
+            <span class="sortkey"
+              tal:content="entry/updatesCount">
+              0
+            </span>
+            <a tal:attributes="href string:${entry/fmt:url}/+translate?show=changed_in_ubuntu"
+              tal:condition="entry/updatesCount"
+              tal:content="entry/updatesCount"
+              >
+              0
+            </a>
+            <tal:count condition="not: entry/updatesCount">
+                &mdash;
+            </tal:count>
+          </td>
+          <td tal:attributes="id string:${entry/potemplate/name}-time">
+            <span class="sortkey"
+              tal:condition="entry/date_changed"
+              tal:content="
+                entry/date_changed/fmt:datetime">
+              time sort key
+            </span>
+            <span
+              tal:condition="entry/date_changed"
+              tal:attributes="
+                title entry/date_changed/fmt:datetime"
+              tal:content="
+                entry/date_changed/fmt:approximatedate"
+              >
+              2007-02-10
+            </span>
+            <tal:block condition="not: entry/date_changed">
+                &mdash;
+            </tal:block>
+          </td>
+          <td tal:attributes="id string:${entry/potemplate/name}-person">
+            <tal:block condition="entry/lasttranslator">
+              <a tal:condition="entry/lasttranslator"
+                 tal:attributes="href entry/lasttranslator/fmt:url"
+                 tal:content="entry/lasttranslator/displayname/fmt:shorten/25"></a>
+            </tal:block>
+            <tal:block condition="not: entry/lasttranslator">
+                &mdash;
+            </tal:block>
+          </td>
+        </tr>
+        <tfoot>
+          <tr>
+            <th>Overall statistics:</th>
+            <td><span tal:replace="context/messageCount">N</span></td>
+            <td>
+              <span style="white-space: nowrap"
+                    tal:content="structure context/@@+barchart">--</span>
+            </td>
+            <td><span tal:replace="context/untranslatedCount">N</span></td>
+            <td><span tal:replace="context/unreviewedCount">N</span></td>
+            <td><span tal:replace="context/updatesCount">N</span></td>
+            <td colspan="2"></td>
+          </tr>
+        </tfoot>
+      </tbody>
+    </table>
+    <tal:navigation replace="structure view/batchnav/@@+navigation-links-lower" />
+
+    <div class="translations-legend">
+      <div tal:replace="structure context/@@+rosetta-status-legend" />
+    </div>
+    </div><!-- max-width -->
+  </tal:block>
+
+</div>
+
+</body>
+</html>

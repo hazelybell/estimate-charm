@@ -1,0 +1,27 @@
+table.sharing td {
+    padding: 2px 0 2px 0;
+    margin: 0;
+    }
+
+table.sharing ul {
+    margin-top: 3px;
+    }
+
+table.sharing ul.horizontal li {
+    display: inline;
+    list-style-type: none;
+    padding-right: 10px;
+    }
+
+table.sharing ul.horizontal li div {
+    display: inline;
+    border-radius: 5px;
+    background-color: #dcdcdc;
+    padding: 3px;
+    width: auto;
+    overflow: hidden;
+    }
+
+table.sharing tr.spacebefore > td {
+    padding-top: 1em;
+    }

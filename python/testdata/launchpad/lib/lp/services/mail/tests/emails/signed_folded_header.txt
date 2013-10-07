@@ -1,0 +1,48 @@
+Date: Wed, 13 Apr 2005 19:18:42 -0400
+From: Sample Person <test@canonical.com>
+To: someone@somhost
+Subject: Signed Email
+Message-ID: <20050413231842.GB16989@localhost.localdomain>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="8NvZYKFJsRX2Djef"
+Content-Disposition: inline
+Status: RO
+
+
+--8NvZYKFJsRX2Djef
+Content-Type: multipart/mixed;
+ boundary="--------------------EuxKj2iCbKjpUGkD"
+Content-Disposition: inline
+
+
+----------------------EuxKj2iCbKjpUGkD
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Some signed content.
+
+----------------------EuxKj2iCbKjpUGkD
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename="test.txt"
+
+A signed attachment.
+
+----------------------EuxKj2iCbKjpUGkD--
+
+--8NvZYKFJsRX2Djef
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.1 (GNU/Linux)
+
+iD8DBQBDoAFKuiuTid/SBUMRAvzNAKCPHJgldGMFXh5SvKEufqB8N6IkoACdEu+8
+Go2JWmGWaY8Nqquwk/Tr0pU=
+=OhN7
+-----END PGP SIGNATURE-----
+
+--8NvZYKFJsRX2Djef--
+
+

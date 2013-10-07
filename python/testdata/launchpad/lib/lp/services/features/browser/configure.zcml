@@ -1,0 +1,44 @@
+<!-- Copyright 2010 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:xmlrpc="http://namespaces.zope.org/xmlrpc"
+    i18n_domain="launchpad">
+
+    <!-- View or edit all feature rules.
+
+     Readonly access is guarded by launchpad.Edit on ILaunchpadRoot, which
+     limits it to ~admins + ~registry, which are all trusted users.  Write
+     access is for admins only.
+    -->
+    <browser:page
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        class="lp.services.features.browser.edit.FeatureControlView"
+        name="+feature-rules"
+        permission="launchpad.Edit"
+        template="../templates/feature-rules.pt"/>
+
+    <!-- View documentary info about the available feature flags.
+
+     Access is guarded by launchpad.Edit on ILaunchpadRoot, just like
+     +feature-rules.
+    -->
+    <browser:page
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        class="lp.services.features.browser.info.FeatureInfoView"
+        name="+feature-info"
+        permission="launchpad.Edit"
+        template="../templates/feature-info.pt"/>
+
+    <browser:page
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        class="lp.services.features.browser.changelog.FeatureChangeLogView"
+        name="+feature-changelog"
+        permission="launchpad.Edit"
+        template="../templates/feature-changelog.pt"/>
+
+</configure>

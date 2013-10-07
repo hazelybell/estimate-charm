@@ -1,0 +1,16 @@
+<tal:button-form
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+
+  <form action="."
+        tal:attributes="action view/action_url;
+                        style view/form_style|nothing"
+        name="launchpadform"
+        method="post"
+        enctype="multipart/form-data"
+        accept-charset="UTF-8">
+      <input tal:repeat="action view/actions"
+             tal:replace="structure action/render"/>
+  </form>
+</tal:button-form>

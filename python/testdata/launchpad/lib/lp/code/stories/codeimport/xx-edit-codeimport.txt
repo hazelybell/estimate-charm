@@ -1,0 +1,158 @@
+= Editing code import details =
+
+Not everyone can edit code import details, these stories show what it's like
+to edit a code import if you are the owner of the code import branch.
+
+The code import details are displayed on the main branch page for imported
+branches. If the logged-in user is allowed to edit the code import then they
+can see a link to edit the details.
+
+    >>> from lp.testing import ANONYMOUS, login, logout
+    >>> from lp.services.webapp import canonical_url
+
+    >>> login(ANONYMOUS)
+    >>> registrant = factory.makePerson()
+    >>> svn_import = factory.makeProductCodeImport(
+    ...     svn_branch_url='svn://svn.example.com/fooix/trunk',
+    ...     registrant=registrant)
+    >>> svn_import_location = str(canonical_url(svn_import.branch))
+    >>> svn_import_branch_unique_name = svn_import.branch.unique_name
+
+    >>> hosted_branch = factory.makeAnyBranch()
+    >>> hosted_branch_location = str(canonical_url(hosted_branch))
+
+    # Must remove the security proxy because IEmailAddress.email is protected.
+    >>> from zope.security.proxy import removeSecurityProxy
+    >>> email = removeSecurityProxy(registrant.preferredemail).email
+    >>> import_browser = setupBrowser(auth='Basic %s:test' % str(email))
+    >>> logout()
+
+
+== Import details on the branch page ==
+
+Imported branches have a section with the title "Import details".
+In this section the review state of the import is shown, along with
+the location of the import.
+
+People that are not VCS Imports members, nor Launchpad administrators
+do not get an Edit link.
+
+    >>> def print_import_details(browser):
+    ...     div = find_tag_by_id(
+    ...         browser.contents, 'branch-import-details').div.div
+    ...     print extract_text(div)
+    >>> anon_browser.open(svn_import_location)
+    >>> print_import_details(anon_browser)
+    Import Status: Reviewed
+    This branch is an import of the Subversion branch
+    from svn://svn.example.com/fooix/trunk.
+    The next import is scheduled to run
+    as soon as possible.
+
+Because it's an svn:// URL, it doesn't get linkified:
+
+    >>> anon_browser.getLink("svn://svn.example.com/fooix/trunk")
+    Traceback (most recent call last):
+    ...
+    LinkNotFoundError
+
+
+== Not authorized versus 404 ==
+
+If the user attempts to hack the URL to edit the import details,
+they will get a not authorised page if the branch has a code import,
+and a 404 if the branch doesn't have an import.
+
+    >>> anon_browser.open(svn_import_location + '/+edit-import')
+    Traceback (most recent call last):
+    Unauthorized: (... 'launchpad.Edit')
+
+    >>> admin_browser.open(hosted_branch_location + '/+edit-import')
+    Traceback (most recent call last):
+    NotFoundError
+
+
+== Editing details ==
+
+    >>> import_browser.open(svn_import_location)
+    >>> import_browser.getLink('Edit import source or review import')
+    Traceback (most recent call last):
+    LinkNotFoundError
+
+
+== Import details for a import that has been imported successfully ==
+
+If a branch has been successfully imported in the past, then the date
+that it was last successful is shown, as well as when the next import
+will be run -- which is, by default for Subversion, six hours after the
+last import completed, and so in this case in about three hours.
+
+We log in as "david.allouche" since he has super-user privileges for code
+imports.
+
+    >>> login('david.allouche@canonical.com')
+    >>> from lp.code.tests.codeimporthelpers import (
+    ...     make_finished_import, get_import_for_branch_name)
+    >>> from datetime import datetime
+    >>> import pytz
+    >>> date_finished = datetime(2007, 9, 10, 12, tzinfo=pytz.UTC)
+    >>> code_import = get_import_for_branch_name(
+    ...     svn_import_branch_unique_name)
+    >>> code_import = make_finished_import(code_import, factory=factory,
+    ...                                    date_finished=date_finished)
+    >>> logout()
+
+    >>> import_browser.open(svn_import_location)
+    >>> print_import_details(import_browser)
+    Import Status: Reviewed
+    This branch is an import of the Subversion branch from
+        svn://svn.example.com/fooix/trunk.
+    The next import is scheduled to run in 5 hours.
+    Last successful import was on 2007-09-10.
+    ...
+
+
+== Requesting an import ==
+
+If an import is waiting for its next update, any logged in user can
+click a button to request an immediate import.
+
+    >>> sample_person_browser = setupBrowser(
+    ...     auth='Basic test@canonical.com:test')
+    >>> sample_person_browser.open(import_browser.url)
+    >>> sample_person_browser.getControl('Import Now')
+    <SubmitControl ...>
+
+Anonymous users cannot see this button.
+
+    >>> anon_browser.open(import_browser.url)
+    >>> anon_browser.getControl('Import Now')
+    Traceback (most recent call last):
+      ...
+    LookupError: label 'Import Now'
+
+If the logged in user clicks this button, the import will be scheduled
+to run ASAP and the fact that the import has been requested is
+displayed.
+
+    >>> sample_person_browser.getControl('Import Now').click()
+    >>> print_feedback_messages(sample_person_browser.contents)
+    Import will run as soon as possible.
+    >>> print_import_details(sample_person_browser)
+    Import Status: Reviewed
+    This branch is an import of the Subversion branch from
+        svn://svn.example.com/fooix/trunk.
+    The next import is scheduled to run as soon as possible (requested
+    by Sample Person).
+    Last successful import was on 2007-09-10.
+    ...
+
+
+== Deleting an import ==
+
+If you own the branch that has the code import, you can delete the branch.
+
+    >>> import_browser.getLink('Delete branch').click()
+    >>> import_browser.getControl('Delete').click()
+    >>> print_feedback_messages(import_browser.contents)
+    Branch ... deleted.

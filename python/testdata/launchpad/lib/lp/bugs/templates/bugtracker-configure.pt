@@ -1,0 +1,59 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+
+    <metal:block fill-slot="head_epilogue">
+        <script type="text/javascript">
+            LPJS.use('node', 'lang', function(Y) {
+                // Constrain enable_bug_expiration to the Launchpad Bugs radio input.
+                // The Launchpad bug tracker is either the first item in a product's
+                // bugtracker field, or it is a distribution's official_malone field.
+                Y.on('load', function (e) {
+                    var bug_tracker_input = Y.one('[id=field.bugtracker.0]');
+                    if (!Y.Lang.isValue(bug_tracker_input)) {
+                        bug_tracker_input = Y.one('[id=field.official_malone]');
+                    }
+                    var bug_expiration_input = Y.one('[id=field.enable_bug_expiration]');
+                    if (!Y.Lang.isValue(bug_tracker_input) ||
+                        !Y.Lang.isValue(bug_expiration_input)) {
+                        return;
+                    }
+                    // Disable enable_bug_expiration onload if Launchpad is not the
+                    // bug tracker.
+                    if (!bug_tracker_input.get('checked')) {
+                        bug_expiration_input.get('disabled') = true;
+                    }
+
+                    var constraint = function (e) {
+                        if (bug_tracker_input.get('checked')) {
+                            bug_expiration_input.set('disabled', false);
+                            bug_expiration_input.set('checked', true);
+                        } else {
+                            bug_expiration_input.set('checked', false);
+                            bug_expiration_input.set('disabled', true);
+                        }
+                    };
+
+                    var inputs = Y.all('input');
+                    inputs.each(function (input) {
+                        var name = input.get('name');
+                        if (name == 'field.bugtracker' ||
+                            name == 'field.official_malone') {
+                            input.on('click', constraint);
+                        }
+                    });
+                });
+            });
+        </script>
+    </metal:block>
+
+    <body>
+        <div metal:fill-slot="main">
+          <div metal:use-macro="context/@@launchpad_form/form" />
+        </div>
+    </body>
+</html>

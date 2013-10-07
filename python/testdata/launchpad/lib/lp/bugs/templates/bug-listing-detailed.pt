@@ -1,0 +1,13 @@
+<li xmlns:tal="http://xml.zope.org/namespaces/tal">
+    <a tal:replace="structure context/fmt:link" />
+    <br />
+    <span class="registered">in
+        <tal:per_pillar repeat="pillar context/affected_pillars">
+          <pillar tal:replace="structure pillar/fmt:link:bugs" />,
+        </tal:per_pillar>
+      reported
+      <span
+        tal:attributes="title context/datecreated/fmt:datetime"
+        tal:content="context/datecreated/fmt:displaydate">2005-10-05</span>
+    </span>
+</li>

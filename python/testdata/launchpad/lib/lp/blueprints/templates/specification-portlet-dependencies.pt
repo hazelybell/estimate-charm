@@ -1,0 +1,24 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<tal:spec_deps define="dependencies context/dependencies">
+  <div class="portlet" id="portlet-depends" tal:condition="dependencies">
+
+    <h2>Depends</h2>
+
+      <ul>
+        <li class="spec" tal:repeat="spec dependencies">
+          <a tal:attributes="href spec/fmt:url"
+             tal:content="spec/title">Spec Title Goes Here</a>
+        </li>
+        <li class="info" tal:condition="not: dependencies">
+          <i>No spec dependencies.</i>
+        </li>
+      </ul>
+
+  </div>
+</tal:spec_deps>
+</tal:root>

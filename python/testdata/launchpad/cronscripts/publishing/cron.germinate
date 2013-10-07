@@ -1,0 +1,61 @@
+#! /bin/sh
+#
+# Copyright 2009-2011 Canonical Ltd.  This software is licensed under the
+# GNU Affero General Public License version 3 (see the file LICENSE).
+
+set -e
+set -u
+
+ARCHIVEROOT=${TEST_ARCHIVEROOT:-/srv/launchpad.net/ubuntu-archive/ubuntu}
+MISCROOT=$ARCHIVEROOT/../ubuntu-misc
+LOCKROOT=$ARCHIVEROOT/..
+GERMINATEROOT=$ARCHIVEROOT/../ubuntu-germinate
+
+LAUNCHPADROOT=${TEST_LAUNCHPADROOT:-`dirname $0`/../..}
+GENERATE=$LAUNCHPADROOT/cronscripts/generate-extra-overrides.py
+MAINTAINCE_CHECK=$LAUNCHPADROOT/cronscripts/publishing/maintenance-check.py
+
+FLAVOURS="ubuntu kubuntu kubuntu-active edubuntu xubuntu mythbuntu lubuntu"
+FLAVOURS="$FLAVOURS ubuntustudio ubuntu-gnome"
+
+## Check to see if another germinate run is in progress
+
+LOCKFILE=$LOCKROOT/cron.germinate.lock
+if lockfile -! -l 43200 -r 0 "${LOCKFILE}"; then
+  echo Another cron.germinate appears to be running
+  exit 1
+fi
+
+cleanup () {
+  rm -f "$LOCKFILE"
+}
+
+trap cleanup EXIT
+
+cd $GERMINATEROOT
+
+$GENERATE -d ubuntu $FLAVOURS
+
+# Now generate the Supported extra overrides for all supported distros.
+SUITES=`$LAUNCHPADROOT/scripts/ftpmaster-tools/lp-query-distro.py supported`
+for supported_suite in $SUITES; do
+    echo -n "Running maintenance-check for $supported_suite... "
+    # The support timeframe information is stored here
+    SUPPORTED="$MISCROOT/more-extra.override.$supported_suite.main.supported"
+    # This is the target override file that contains germinate plus
+    # support info.
+    TARGET="$MISCROOT/more-extra.override.$supported_suite.main"
+    # Debug/Log information
+    LOG="_maintenance-check.$supported_suite.stderr"
+    if $MAINTAINCE_CHECK $supported_suite > $SUPPORTED 2> $LOG; then
+        # The target file may be missing on the server and the script should
+        # not fail if that is the case.
+        touch $TARGET
+        # Remove old "Supported" info from extra-overrides as it may be
+        # stale now and we replace it with fresh content below.
+        sed /"^.* Supported"/d $TARGET > ${TARGET}.new
+        cat $SUPPORTED >> ${TARGET}.new
+        mv ${TARGET}.new $TARGET
+    fi
+    echo " done"
+done

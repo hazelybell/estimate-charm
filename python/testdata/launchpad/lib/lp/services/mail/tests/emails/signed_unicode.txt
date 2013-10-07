@@ -1,0 +1,36 @@
+Date: Wed, 13 Apr 2005 19:20:48 -0400
+From: Sample Person <test@canonical.com>
+To: someone@somehost
+Subject: Signed Unicode
+Message-ID: <20050413232048.GC16989@localhost.localdomain>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="cQXOx3fnlpmgJsTP"
+Content-Disposition: inline
+Status: RO
+Content-Length: 527
+
+
+--cQXOx3fnlpmgJsTP
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Some =C5=ABnic=C3=B6de content.
+
+--cQXOx3fnlpmgJsTP
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.2.5 (GNU/Linux)
+
+iD8DBQFCXalQuiuTid/SBUMRAh18AJ93KSvwa1zGCSSxr6upLVtykeljrgCgqy44
+Rs1vmP7t8o3a8vbFYnPsxU4=
+=HMRD
+-----END PGP SIGNATURE-----
+
+--cQXOx3fnlpmgJsTP--
+
+

@@ -1,0 +1,36 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<div class="portlet" id="portlet-details">
+
+  <h2>Meeting details</h2>
+    <tal:has_home_page condition="context/home_page">
+      <img src="/@@/link" />
+      <a tal:attributes="href context/home_page">
+        External Web page
+      </a><br />
+    </tal:has_home_page>
+    <b>Registered by:</b><br />
+    <a tal:replace="structure context/owner/fmt:link" /><br />
+    <tal:has_driver condition="context/driver">
+      <b>Driver:</b><br />
+      <a tal:replace="structure context/driver/fmt:link" /><br />
+    </tal:has_driver>
+    <b>Starts:</b><br />
+    <span tal:replace="python:view.formatDateTime(context.time_starts)">
+      08:00 12 Nov 2005</span><br />
+    <b>Ends:</b><br />
+    <span tal:replace="python:view.formatDateTime(context.time_ends)">
+      08:00 12 Nov 2005</span><br />
+    <tal:tz replace="context/time_zone" /> time zone.<br />
+    <tal:has_address condition="context/address">
+      <b>Address:</b><br />
+      <span tal:replace="context/address" />
+      <br />
+    </tal:has_address>
+
+</div>
+</tal:root>

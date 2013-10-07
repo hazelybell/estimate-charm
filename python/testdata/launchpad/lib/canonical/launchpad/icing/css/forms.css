@@ -1,0 +1,457 @@
+form {
+    margin-bottom: 1em;
+    }
+form h1 {
+    margin-bottom: 1em;
+    }
+form table th, form table td {
+    padding: 2px;
+    }
+form table tbody th {
+    font-weight: bold;
+    }
+form table label {
+    font-weight: bold;
+    }
+.compound {
+    margin-bottom: .5em;
+    }
+.field.subordinate label {
+    font-weight: normal;
+    }
+fieldset {
+    border-width: 2px 0 0;
+    margin: 1em 0;
+    padding: 1em 0 0;
+    }
+label {
+    white-space: nowrap;
+    }
+input[type='image'] {
+    vertical-align: middle;
+    }
+input {
+    visibility: inherit;
+    }
+input[type=radio] {
+    margin-left: 1em;
+    }
+input.urlTextType {
+    width: 40em;
+    }
+textarea {
+    display: block;
+    width: 90%;
+    max-width: 60em;
+    padding: 2px;
+    }
+button {
+    padding: 0;
+    }
+button.overlay-close-button {
+    float: right;
+    width: 15px;
+    height: 15px;
+    display: block;
+    margin-top: 4px;
+    }
+inout[type=input] + button,
+img[src$=spinner] + button  {
+    margin-left: 6px !important;
+    }
+.selection-choices {
+    margin: 0.75em 0 0 1em
+    }
+.fieldRequired, .fieldOptional {
+    color: #999;
+    }
+.field.subordinate {
+    margin-left: 2.6em;
+    }
+.formHelp {
+    max-width: 45em;
+    margin: 0.2em 0 0.5em 0.2em;
+    color: #666;
+    }
+.subordinate[type="checkbox"] + label + .formHelp {
+    margin-left: 3.4em;
+    }
+.listbox {
+    /* a scrolling list of checkboxes or radio buttons */
+    border: 1px solid #8cacbb;
+    display: inline-block;
+    max-height: 12em;
+    overflow: auto;
+    overflow: -moz-scrollbars-vertical;
+    }
+.listbox label {
+    background-color: #f6f6f6;
+    border: solid white;
+    border-width: 0 0 1px 0;
+    display: block;
+    }
+.extra-form-buttons {
+    text-align: center;
+    padding-top: 1em;
+    }
+.extra-form-buttons button {
+    margin-right: 0.7em;
+    }
+.actions * {
+    /*
+      Action links are those that begin the process of doing something.
+      For example, "Register a branch", "Edit profile", "Link to CVE".
+      When presented inline, they are rendered by launchpad-inline-link.pt.
+
+      Action buttons are those that submit a multi-row form.
+      Often an action button will have an "or _Cancel_" link next to it.
+
+      We want 0.5em horizontal gap between links and buttons in these
+      sections. Using margin-left would cause a bad gap to the left of a
+      leftmost item. Using margin-right would cause a bad gap to the right of
+      a rightmost item. We could fix these problems with :first-child/:last-
+      child, but not in IE. So we do something a little tricky. We go ahead
+      and give each child of the actions container a right margin:
+    */
+    margin-right: 0.5em;
+    }
+.actions * * {
+    /* because ">" doesn't work in IE6 */
+    margin-right: 0;
+    }
+.actions {
+    /* Then in addition to the top/bottom margins of the actions container,
+       we give it a *negative* right margin, cancelling out that of the last
+       child. */
+    margin: 1em -0.5em 1em 0;
+    }
+table.radio-button-widget tr td {
+    /* Opera doesn't use the general tr above for the radio button table */
+    vertical-align: top;
+    }
+table.listing div.field>table {
+    /* Hack to add breathing room to bug status forms: */
+    margin-top: 0.5em;
+    }
+table.listing div.field>label,
+table.listing div.field>div>label,
+table.listing div.actions {
+    display: block;
+    margin-top: 1em;
+    }
+table.form, table.extra-options {
+    /* Many forms are laid out using tables, with appropriate spacing: */
+    /* http://launchpad.dev/firefox/+edit */
+    margin: 1em 0 inherit inherit;
+    width: 100%;
+    }
+table.form th {
+    font-weight: normal;
+    }
+table.form th, table.form td,
+table.form table.extra-options td,
+table.form table.extra-options th {
+    padding-bottom: 1em;
+    }
+table.form table.listing th,
+table.form table.listing td {
+    padding-bottom: 0.25em;
+}
+table.form td td {
+    padding-bottom: 0;
+    }
+.long td {
+    /* Long forms are composed of multiple tables and visible fieldsets */
+    padding-right: 1em;
+    }
+.long fieldset {
+    margin-top: 1em;
+    }
+.long legend {
+    color: #666;
+    font-weight: bold;
+    }
+.collapsible {
+    /* Collapsible sections
+       Some page sections are hidden by default, expanded by clicking a link.
+       see lp.js:activate_collapsibles() */
+    border: none;
+    margin: 0;
+    }
+fieldset.collapsible {
+    padding: 16px 0 0; /* "Add a comment/attachment" form in bug reports */
+    }
+.collapsible h2 {
+    margin-top: 0;
+    }
+.collapsible .collapsed {
+    display: none;
+    }
+.collapsible .expanded {
+    display: block;
+    }
+.collapsible > :first-child {
+    font-weight: normal;
+    }
+.collapsible > :first-child, .collapsible :first-child a:hover {
+    text-decoration: none;
+    }
+.collapsible > :first-child a span {
+    text-decoration: underline;
+    }
+img.collapseIcon {
+    text-decoration: none;
+    vertical-align: middle;
+    }
+.collapsible .collapsed {
+    border: none;
+    margin-bottom: 0;
+    }
+.yui3-pretty-overlay #yui3-pretty-overlay-modal h1,
+.yui3-pretty-overlay #yui3-pretty-overlay-modal h2 {
+    /* lazr is injecting presumptive markup. */
+    color: #333;
+    margin-right: 15px;
+    }
+.yui3-editable_text {
+    outline: none;
+    }
+.yui3-ieditor {
+    padding-right: 288px;
+    }
+.yui3-skin-sam .yui3-ieditor-input {
+    margin-top: 0;
+}
+h1 .yui3-ieditor-errors {
+    font-size: 12px;
+    }
+.steps h2 {
+    /* lazr is injecting presumptive markup. */
+    font-size: 12px;
+    line-height: 30px;
+    }
+.step-links {
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-left: 0.75em;
+    margin-right: 10em;
+    text-align: left;
+    }
+.step-links .prev {
+    margin-right: 0.7em;
+    }
+.lazr-multiline-edit .yui3-ieditor {
+    padding-right: 0;
+    }
+.lazr-multiline-edit .clearfix h3 {
+    /* Undo the damage done by lazr. */
+    font-family: Ubuntu, 'Bitstream Vera Sans', 'DejaVu Sans', Tahoma, sans-serif;
+    line-height: 12px;
+    }
+.widget-hd.js-action {
+    /* The js-action class is also used for non-links, for example, with
+       expand/collapse sections. */
+    color: #093;
+    cursor: pointer;
+    }
+.widget-hd.js-action:hover {
+    text-decoration: underline;
+    }
+
+.yui3-ichoicesource-content .value:hover {
+    text-decoration: underline;
+    cursor: pointer;
+    }
+
+.no-click:hover {
+    text-decoration: none !important;
+    cursor: default !important;
+    }
+    
+.yui3-buglisting-config-util a {
+    position: relative;
+    top: 3px;
+    left: 4px;
+    }
+.yui3-baseconfigutil a {
+    cursor: pointer;
+    }
+.yui3-buglisting-config-util-overlay a.close-button {
+    visibility: inherit;
+    }
+.yui3-buglisting-config-util-overlay form {
+    width: 80%;
+    }
+.yui3-buglisting-config-util-overlay div.yui3-lazr-formoverlay-actions {
+    text-align: left;
+    }
+.yui3-buglisting-config-util-overlay .reset-buglisting {
+    position: relative;
+    top: 20px;
+    left: 75px;
+    cursor: pointer;
+    }
+.error.message, .warning.message, .informational.message {
+    border: solid #666;
+    border-width: 1px 2px 2px 1px;
+    color: black;
+    margin: 1em auto 1em auto;
+    padding: 0 1em 1em 2em;
+    width: 30em;
+    }
+.error.message::before, .warning.message::before,
+.informational.message::before {
+    /* The alerts are preceded with an icon overlaying the top left corner: */
+    display: block;
+    margin: -15px 0 -6px -35px;
+    }
+.error {
+    /* Error messages are pink, with alerts having an error icon: */
+    background: #ffe4e4;
+    }
+.error.message::before {
+    content: url(/@@/error-large);
+    }
+.warning {
+    /* Warning messages are orange, with alerts having a warning icon: */
+    background: #fff59c;
+    }
+.warning.message::before {
+    content: url(/@@/warning-large);
+    }
+.informational {
+    /* Informational messages are blue-to-grey, alerts have an info icon. */
+
+    background: #d4e8ff url(/+icing/blue-fade-to-grey);
+    }
+.informational.message::before {
+    content: url(/@@/info-large);
+    }
+.informational p.last {
+    margin-bottom: 0;
+    }
+.debugging {
+    /* Debugging messages are white on grey, alerts have an info icon. */
+    background: #666;
+    color: white;
+    }
+.debugging.message::before {
+    content: url(/@@/info-large);
+    }
+.error .message {
+    /* And inside, the error message itself uses a smaller icon. */
+    background: url(/@@/error) center left no-repeat;
+    margin-bottom: 0.25em;
+    padding-left: 18px;
+    }
+table.form .error {
+    /* Form errors override this background color, because the lack of space
+       between the edge of fields and the edge of the color would look bad. */
+    background: none;
+    }
+.inline-warning {
+    /* Warning messages inlined in the page. */
+    color: red;
+    font-weight: bold;
+    }
+.sml-informational {
+    background: #d4e8ff url('/+icing/blue-fade-to-grey');
+    border: solid #666;
+    border-width: 1px 2px 2px 1px;
+    padding: 5px 5px 5px 5px;
+    width: 44em;
+    }
+.sml-informational::before {
+    content: url('/@@/info');
+    }
+.important-notice-popup {
+    padding: 1em 1em 0 1em;
+    width: auto;
+    overflow: hidden;
+    }
+.important-notice-container {
+    text-align: center;
+    width: 100%;
+    padding-bottom: 1em;
+    position: relative;
+    }
+.important-notice-balloon {
+    border-radius: 5px;
+    background-color: #ededed;
+    padding: 1em;
+    border: 1px solid #000;
+    width: auto;
+    overflow: hidden;
+    }
+.important-notice-buttons {
+    float: right;
+    }
+.important-notice-cancel-button {
+    visibility: hidden;
+    cursor: pointer;
+    }
+.important-notice {
+    padding: 0px 0px 40px 0px;
+    height: 32px;
+    overflow: hidden;
+    }
+.important-notice a {
+    font-weight: bold;
+    text-decoration: underline;
+    }
+
+
+/* ==================
+   Translations Forms
+*/
+
+/* ==== Translations hand-made forms ==== */
+
+form.translations div.fields {
+    padding: 1em;
+    }
+form.translations div.actions {
+    padding: 1em;
+    text-align: left;
+    clear: both;
+    }
+form.translations input {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    }
+form.translations select {
+    margin-left: 0.5em;
+    padding-right: 0.5em;
+    }
+form.translations label {
+    padding-left: 0.5em;
+    padding-right: 1em;
+    }
+form.translations .listbox label {
+    padding: 2px 1em 2px 2px;
+    }
+
+/* Provide top-alignment for radio boxes and longer explanations
+ * without using tables.
+ *
+ * Examples:
+ *   https://translations.launchpad.dev/evolution/trunk/+pots/evolution-2.2/es/+upload
+ *   https://translations.launchpad.dev/evolution/trunk/+pots/evolution-2.2/+export
+ */
+form.translations div.alignment .content {
+    float: left;
+    }
+form.translations div.alignment .selector {
+    margin-right: 0.5em;
+    float: left;
+    clear: both;
+    }
+form.translations div.alignment .content label {
+    padding: 0px;
+    margin: 0px;
+    font-weight: bold;
+    }
+form.translations div.alignment .secondary label {
+    font-weight: normal;
+    padding: 2px 1em 2px 2px;
+    }

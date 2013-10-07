@@ -1,0 +1,2629 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+  
+    <title>Search for bugs</title>
+
+
+<link rel="Top" href="http://bugs.freedesktop.org/">
+
+
+    
+
+    
+      <link href="fdo_adv_query_files/global_003.css" rel="stylesheet" type="text/css">
+      <link href="fdo_adv_query_files/help_002.css" rel="stylesheet" type="text/css">
+    <!--[if lte IE 7]>
+      
+      <link href="skins/standard/IE-fixes.css"
+            rel="stylesheet"
+            type="text/css">
+    <![endif]-->
+
+    
+        <link href="fdo_adv_query_files/global_003.css" rel="stylesheet" title="Classic" type="text/css">
+        <link href="fdo_adv_query_files/help_002.css" rel="stylesheet" title="Classic" type="text/css">
+      <!--[if lte IE 7]>
+      
+        <link href="skins/standard/IE-fixes.css"
+              rel="stylesheet"
+              title="Classic"
+              type="text/css">
+      <![endif]-->
+
+    
+        
+            <link href="fdo_adv_query_files/global.css" rel="alternate stylesheet" title="Dusk" type="text/css">
+            <link href="fdo_adv_query_files/help_003.css" rel="alternate stylesheet" title="Dusk" type="text/css">
+        <!--[if lte IE 7]>
+          
+          <link href="skins/contrib/Dusk/IE-fixes.css"
+                rel="alternate stylesheet"
+                title="Dusk"
+                type="text/css">
+        <![endif]-->
+
+    
+      <style type="text/css">dl.bug_changes dt {
+                 margin-top: 15px;
+               }
+      </style>
+
+    
+        <link href="fdo_adv_query_files/global_002.css" rel="stylesheet" type="text/css">
+        <link href="fdo_adv_query_files/help.css" rel="stylesheet" type="text/css">
+    <!--[if lte IE 7]>
+      
+      <link href="skins/custom/IE-fixes.css"
+            rel="stylesheet"
+            type="text/css">
+    <![endif]-->
+
+    <script src="fdo_adv_query_files/yahoo-dom-event.js" type="text/javascript"></script>
+    <script src="fdo_adv_query_files/global.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    <!--
+        YAHOO.namespace('bugzilla');
+        if (YAHOO.env.ua.gecko) {
+            YAHOO.util.Event._simpleRemove(window, "unload", 
+                                           YAHOO.util.Event._unload);
+        }
+        
+        var BUGZILLA = {
+            param: {
+                cookiepath: '\/'
+            }
+        };
+var queryform = "queryform"
+    // -->
+    </script>
+
+        <script src="fdo_adv_query_files/productform.js" type="text/javascript"></script>
+        <script src="fdo_adv_query_files/util.js" type="text/javascript"></script>
+        <script src="fdo_adv_query_files/help.js" type="text/javascript"></script>
+
+    
+
+    
+    <link rel="search" type="application/opensearchdescription+xml" title="FreeDesktop Bugzilla" href="https://bugzilla.freedesktop.org/search_plugin.cgi">
+    <link rel="shortcut icon" href="https://bugzilla.freedesktop.org/images/favicon.ico">
+  </head><body onload="doOnSelectProduct(0); enableHelp();" class="bugs-freedesktop-org">
+
+
+
+<div id="header">
+<div id="banner">
+  </div>
+
+<table id="titles" border="0" cellpadding="0" cellspacing="0">
+<tbody><tr>
+    <td id="title">
+      <p>FreeDesktop Bugzilla – Search for bugs</p>
+    </td>
+
+
+</tr>
+</tbody></table>
+<ul class="links">
+  <li><a href="https://bugzilla.freedesktop.org/">Home</a></li>
+  <li><span class="separator">| </span><a href="https://bugzilla.freedesktop.org/enter_bug.cgi">New</a></li>
+  <li><span class="separator">| </span><a href="https://bugzilla.freedesktop.org/query.cgi">Search</a></li>
+
+  <li class="form">
+    <span class="separator">| </span>
+    <form action="buglist.cgi" method="get" onsubmit="if (this.quicksearch.value == '')
+                  { alert('Please enter one or more search terms first.');
+                    return false; } return true;">
+    <input class="txt" id="quicksearch_top" name="quicksearch" type="text">
+    <input class="btn" value="Find" id="find_top" type="submit"></form></li>
+
+  <li><span class="separator">| </span><a href="https://bugzilla.freedesktop.org/report.cgi">Reports</a></li>
+
+  <li>
+      <span class="separator">| </span>
+        <a href="https://bugzilla.freedesktop.org/request.cgi">Requests</a></li>
+
+
+  <li>
+        <span class="separator">| </span>
+        <a href="https://bugzilla.freedesktop.org/docs/html/query.html" target="_blank">Help</a>
+      </li>
+    
+      <li id="new_account_container_top">
+        <span class="separator">| </span>
+        <a href="https://bugzilla.freedesktop.org/createaccount.cgi">New&nbsp;Account</a>
+      </li>
+
+    <li id="mini_login_container_top">
+  <span class="separator">| </span>
+  <a id="login_link_top" href="https://bugzilla.freedesktop.org/query.cgi?GoAheadAndLogIn=1" onclick="return show_mini_login_form('_top')">Log In</a>
+  <form action="https://bugs.freedesktop.org/query.cgi?format=advanced&amp;field0-0-0=xyzzy" method="POST" class="mini_login bz_default_hidden" id="mini_login_top" onsubmit="return check_mini_login_fields( '_top' );">
+    <input value="login" id="Bugzilla_login_top" class="bz_login bz_mini_login_help" name="Bugzilla_login" onfocus="mini_login_on_focus('_top')">
+    <input class="bz_password bz_default_hidden" id="Bugzilla_password_top" name="Bugzilla_password" type="password">
+    <input class="bz_password bz_mini_login_help" id="Bugzilla_password_dummy_top" value="password" onfocus="mini_login_on_focus('_top')" type="text">
+    <input name="GoAheadAndLogIn" value="Log in" id="log_in_top" type="submit">
+    <script type="text/javascript">
+      mini_login_constants = {
+          "login" : "login",
+          "warning" : "You must set the login and password before logging in."
+      };
+      
+      if (YAHOO.env.ua.gecko || YAHOO.env.ua.ie || YAHOO.env.ua.opera) {
+          YAHOO.util.Event.onDOMReady(function() {
+              init_mini_login_form('_top');
+          });
+      }
+      else {
+          YAHOO.util.Event.on(window, 'load', function () {
+              window.setTimeout(function() {
+                  init_mini_login_form('_top');
+              }, 200);
+          });
+    }
+    </script>
+    <a href="#" onclick="return hide_mini_login_form('_top')">[x]</a>
+  </form>
+</li>
+<li id="forgot_container_top">
+  <span class="separator">| </span>
+  <a id="forgot_link_top" href="https://bugzilla.freedesktop.org/query.cgi?GoAheadAndLogIn=1#forgot" onclick="return show_forgot_form('_top')">Forgot Password</a>
+  <form action="token.cgi" method="post" id="forgot_form_top" class="mini_forgot bz_default_hidden">
+    <label>Login: <input name="loginname" size="20" type="text"></label>
+    <input id="forgot_button_top" value="Reset Password" type="submit">
+    <input name="a" value="reqpw" type="hidden">
+    <a href="#" onclick="return hide_forgot_form('_top')">[x]</a>
+  </form>
+</li>
+</ul>
+
+</div>
+
+<div id="bugzilla-body">
+<div class="tabbed">
+  <table class="tabs" width="100%" border="0" cellpadding="10" cellspacing="0">
+    <tbody><tr>
+      <td class="spacer">&nbsp;</td>
+
+          <td class="clickable_area" onclick="document.location='query.cgi?format=specific'"><a href="https://bugzilla.freedesktop.org/query.cgi?format=specific">Find a Specific Bug</a></td>
+          <td class="selected">Advanced Search</td>
+
+      <td class="spacer">&nbsp;</td>
+    </tr>
+  </tbody></table>
+
+  <div class="tabbody">
+
+
+
+
+<script type="text/javascript"> <!--
+  document.write("<p><a href='query.cgi?help=1&amp;format=advanced'>Give me some help<\/a> (reloads page).<\/p>");
+// -->
+</script><p><a href="https://bugzilla.freedesktop.org/query.cgi?help=1&amp;format=advanced">Give me some help</a> (reloads page).</p>
+
+<form method="post" action="buglist.cgi" name="queryform">
+<script type="text/javascript">
+
+var first_load = true;         
+var last_sel = new Array();    
+
+var useclassification = false;
+var cpts = new Array();
+var vers = new Array();
+
+
+
+
+
+
+  cpts[0] = ['general' ];
+  vers[0] = ['unspecified' ];
+  cpts[1] = ['Desktop daemon', 'Policy API', 'SPI', 'Templates' ];
+  vers[1] = ['unspecified' ];
+  cpts[2] = ['atk', 'core' ];
+  vers[2] = ['unspecified' ];
+  cpts[3] = ['avahi-daemon', 'libavahi', 'libavahi-core' ];
+  vers[3] = ['unspecified' ];
+  cpts[4] = ['General' ];
+  vers[4] = ['unspecified' ];
+  cpts[5] = ['beos backend', 'directfb backend', 'freetype font backend', 'general', 'gl backend', 'image backend', 'pdf backend', 'png functions', 'postscript backend', 'qt backend', 'quartz backend', 'quartz font backend', 'svg backend', 'win32 backend', 'xcb backend', 'xlib backend' ];
+  vers[5] = ['0.2.0', '0.9.3', '1.0.0', '1.0.1', '1.1.1', '1.0.2', '1.0.3', '1.1.2', '1.1.3', '1.0.4', '1.1.4', '1.1.5', '1.1.6', '1.1.7', '1.1.8', '1.1.9', '1.1.10', '1.1.11', '1.2.0', '1.2.1', '1.2.2', '1.2.3', '1.2.4', '1.2.5', '1.2.6', '1.2.7', '1.3.2', '1.3.4', '1.3.5', '1.3.6', '1.3.7', '1.3.8', '1.3.9', '1.3.10', '1.3.11', '1.3.12', '1.3.13', '1.3.14', '1.3.15', '1.3.16', '1.3.17', '1.4.0', '1.4.1', '1.4.2', '1.4.3', '1.4.4', '1.4.5', '1.4.6', '1.4.7', '1.4.8', '1.4.9', '1.4.10', '1.5.1', '1.5.2', '1.5.3', '1.4.12', '1.4.13', '1.5.4', '1.5.5', '1.4.14', '1.4.15', '1.5.6', '1.5.7', '1.5.8', '1.5.9', '1.5.10', '1.5.11', '1.5.12', '1.5.13', '1.5.14', '1.5.15', '1.5.16', '1.5.17', '1.5.18', '1.5.19', '1.5.20', '1.5.21', '1.6.0', '1.6.1', '1.6.2', '1.6.3', '1.6.4', '1.6.5', '1.7.2', '1.7.3', '1.7.4', '1.7.5', '1.7.6', '1.7.7', '1.8.0', '1.8.1', '1.8.2', '1.8.3', '1.9.1', '1.8.4', '1.8.5', '1.8.6', '1.9.2', '1.9.3', '1.8.8', '1.9.4', '1.9.5', '1.8.10', '1.8.11', '1.9.6', '1.9.7', '1.9.8', '1.9.9', '1.9.10', '1.9.11', '1.9.12', '1.9.13', '1.9.14', '1.9.15', '1.10.0', '1.10.1' ];
+  cpts[6] = ['general' ];
+  vers[6] = ['unspecified' ];
+  cpts[7] = ['Build', 'Documentation', 'General' ];
+  vers[7] = ['unspecified', '1.0.x', '0.9.x', 'CVS HEAD' ];
+  cpts[8] = ['general' ];
+  vers[8] = ['unspecified' ];
+  cpts[9] = ['Daemon', 'libck-connector', 'PAM module' ];
+  vers[9] = ['unspecified' ];
+  cpts[10] = ['website' ];
+  vers[10] = ['unspecified' ];
+  cpts[11] = ['General' ];
+  vers[11] = ['unspecified' ];
+  cpts[12] = ['core', 'doc', 'GLib', 'java', 'perl', 'python', 'Qt' ];
+  vers[12] = ['unspecified', '1.0.x', '1.2.x', '1.3.x (devel)', '1.4.x' ];
+  cpts[13] = ['Core', 'Driver \/ ATI', 'Driver \/ TDFX', 'Input \/ Keyboard', 'Input \/ Mouse' ];
+  vers[13] = ['unspecified' ];
+  cpts[14] = ['Experimental fonts', 'General', 'Mono Sans', 'Sans', 'Serif' ];
+  vers[14] = ['unspecified' ];
+  cpts[15] = ['general' ];
+  vers[15] = ['unspecified' ];
+  cpts[16] = ['DeviceKit', 'DeviceKit-disks', 'DeviceKit-power' ];
+  vers[16] = ['unspecified' ];
+  cpts[17] = ['general' ];
+  vers[17] = ['unspecified' ];
+  cpts[18] = ['DRM\/Intel', 'DRM\/other', 'DRM\/Radeon', 'DRM\/Via', 'General', 'libdrm', 'libGL', 'libglx' ];
+  vers[18] = ['unspecified', 'XFree86 4.4.0', 'XFree86 CVS', 'XOrg 6.7.0', 'XOrg CVS', 'DRI CVS' ];
+  cpts[19] = ['Problems' ];
+  vers[19] = ['unspecified' ];
+  cpts[20] = ['Core', 'GStreamer Elements', 'libjingle transmitter', 'Raw UDP transmitter', 'RTP Plugin' ];
+  vers[20] = ['unspecified' ];
+  cpts[21] = ['conf', 'doc', 'fc-cache', 'fc-cat', 'fc-list', 'fc-match', 'library', 'orth' ];
+  vers[21] = ['2.1', '2.0', '2_1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '2.8' ];
+  cpts[22] = ['Account Modification Requests', 'Administration', 'Bugzilla', 'CVS', 'Mailing lists', 'New Accounts', 'Project Creation Requests', 'Tinderbox', 'Website', 'Wiki' ];
+  vers[22] = ['unspecified' ];
+  cpts[23] = ['freedrtools' ];
+  vers[23] = ['unspecified' ];
+  cpts[24] = ['general' ];
+  vers[24] = ['unspecified' ];
+  cpts[25] = ['bidi', 'cmdline', 'datatables', 'docs', 'general', 'joining', 'shaping', 'website' ];
+  vers[25] = ['unspecified', '0.10.4' ];
+  cpts[26] = ['eds-feed', 'gaim-galago', 'galago-daemon', 'galago-gtk-sharp', 'galago-sharp', 'gnome-presence-applet', 'libgalago', 'libgalago-gtk', 'libnotify', 'notification-daemon', 'web' ];
+  vers[26] = ['unspecified' ];
+  cpts[27] = ['Backends', 'General', 'Language Bindings', 'Master Server' ];
+  vers[27] = ['unspecified' ];
+  cpts[28] = ['general', 'spec', 'www' ];
+  vers[28] = ['unspecified' ];
+  cpts[29] = ['build infrastructure', 'core library' ];
+  vers[29] = ['unspecified' ];
+  cpts[30] = ['account' ];
+  vers[30] = ['unspecified' ];
+  cpts[31] = ['GTK-Qt' ];
+  vers[31] = ['unspecified' ];
+  cpts[32] = ['Docs', 'General' ];
+  vers[32] = ['unspecified' ];
+  cpts[33] = ['General' ];
+  vers[33] = ['unspecified' ];
+  cpts[34] = ['build', 'hald', 'hal-info', 'libhal', 'misc', 'spec' ];
+  vers[34] = ['unspecified' ];
+  cpts[35] = ['src' ];
+  vers[35] = ['unspecified' ];
+  cpts[36] = ['Devices', 'Fonts', 'General' ];
+  vers[36] = ['unspecified' ];
+  cpts[37] = ['hicolor' ];
+  vers[37] = ['ALL' ];
+  cpts[38] = ['A11y test suite', 'appmap', 'Editor', 'General', 'LDTP', 'ldtprecord', 'ldtprunner', 'PyLDTP', 'Python CLI' ];
+  vers[38] = ['unspecified' ];
+  cpts[39] = ['general' ];
+  vers[39] = ['unspecified' ];
+  cpts[40] = ['library' ];
+  vers[40] = ['unspecified' ];
+  cpts[41] = ['libbsd' ];
+  vers[41] = ['unspecified' ];
+  cpts[42] = ['Unspecified' ];
+  vers[42] = ['unspecified' ];
+  cpts[43] = ['Library' ];
+  vers[43] = ['unspecified' ];
+  cpts[44] = ['fprintd', 'libfprint' ];
+  vers[44] = ['unspecified' ];
+  cpts[45] = ['libjpeg', 'libjpeg-progs' ];
+  vers[45] = ['unspecified', '6b', '6c' ];
+  cpts[46] = ['unknown' ];
+  vers[46] = ['unspecified', '0.3.5', 'HEAD' ];
+  cpts[47] = ['General' ];
+  vers[47] = ['unspecified' ];
+  cpts[48] = ['contrib', 'libreoffice' ];
+  vers[48] = ['unspecified' ];
+  cpts[49] = ['general' ];
+  vers[49] = ['unspecified' ];
+  cpts[50] = ['Documentation', 'General' ];
+  vers[50] = ['unspecified' ];
+  cpts[51] = ['Installer', 'local devices', 'ltspcfg', 'LTSP Core' ];
+  vers[51] = ['unspecified' ];
+  cpts[52] = ['General', 'New device' ];
+  vers[52] = ['unspecified' ];
+  cpts[53] = ['Demos', 'Drivers\/DRI\/FFB', 'Drivers\/DRI\/Gamma', 'Drivers\/DRI\/i810', 'Drivers\/DRI\/i830', 'Drivers\/DRI\/i915', 'Drivers\/DRI\/i965', 'Drivers\/DRI\/Mach64', 'Drivers\/DRI\/MGA', 'Drivers\/DRI\/nouveau', 'Drivers\/DRI\/r128', 'Drivers\/DRI\/r200', 'Drivers\/DRI\/r300', 'Drivers\/DRI\/R600', 'Drivers\/DRI\/Radeon', 'Drivers\/DRI\/S3V', 'Drivers\/DRI\/Savage', 'Drivers\/DRI\/SiS', 'Drivers\/DRI\/TDFX', 'Drivers\/DRI\/Trident', 'Drivers\/DRI\/Unichrome', 'Drivers\/Gallium\/i915g', 'Drivers\/Gallium\/r300', 'Drivers\/Gallium\/r600', 'Drivers\/Glide', 'Drivers\/X11', 'GLU', 'GLUT', 'GLX', 'Mesa core', 'Other' ];
+  vers[53] = ['unspecified', '6.0.1', '5.1', '5.0.2', '6.1', '6.2', '6.2.1', '6.3.1', '6.3.2', '6.4', '6.5', '7.0', '7.0.3', '7.1', '7.2', '7.3', '7.4', '7.5', 'git', '7.6' ];
+  cpts[54] = ['General' ];
+  vers[54] = ['unspecified' ];
+  cpts[55] = ['C code', 'doc', 'Nickle code' ];
+  vers[55] = ['2.2' ];
+  cpts[56] = ['General' ];
+  vers[56] = ['unspecified' ];
+  cpts[57] = ['clipart', 'dms', 'tools', 'website' ];
+  vers[57] = ['unspecified' ];
+  cpts[58] = ['website' ];
+  vers[58] = ['unspecified' ];
+  cpts[59] = ['Orc' ];
+  vers[59] = ['unspecified' ];
+  cpts[60] = ['backend-apt', 'backend-conary', 'backend-yum', 'backend-zypp', 'client-library', 'core', 'General', 'packagekit-qt', 'packagekit-sharp' ];
+  vers[60] = ['unspecified' ];
+  cpts[61] = ['general' ];
+  vers[61] = ['unspecified', 'git master' ];
+  cpts[62] = ['infrastructure', 'tests' ];
+  vers[62] = ['unspecified' ];
+  cpts[63] = ['libpixman' ];
+  vers[63] = ['0.1.3', 'git master', 'other', '0.14.0', '0.16.x', '0.18.x' ];
+  cpts[64] = ['src' ];
+  vers[64] = ['unspecified' ];
+  cpts[65] = ['general', 'script plugin' ];
+  vers[65] = ['unspecified' ];
+  cpts[66] = ['General' ];
+  vers[66] = ['unspecified' ];
+  cpts[67] = ['daemon', 'libpolkit' ];
+  vers[67] = ['unspecified' ];
+  cpts[68] = ['arthur backend', 'cairo backend', 'cpp frontend', 'general', 'glib frontend', 'qt4 frontend', 'qt frontend', 'splash backend' ];
+  vers[68] = ['unspecified' ];
+  cpts[69] = ['DAPI', 'Portland', 'test-report', 'xdg-utils' ];
+  vers[69] = ['unspecified', 'beta1', 'beta2', 'beta3', 'beta4', '1.0', 'TP', '1.1.0 rc1', '1.1.0 rc2', '1.1.0 rc3', '1.1.0' ];
+  cpts[70] = ['general' ];
+  vers[70] = ['unspecified' ];
+  cpts[71] = ['base' ];
+  vers[71] = ['unspecified' ];
+  cpts[72] = ['PyXDG' ];
+  vers[72] = ['unspecified' ];
+  cpts[73] = ['General' ];
+  vers[73] = ['unspecified' ];
+  cpts[74] = ['general' ];
+  vers[74] = ['unspecified' ];
+  cpts[75] = ['Build config', 'Core: libscim', 'Core: Other', 'Documentation', 'FrontEnd: Core', 'FrontEnd: GTK IMModule', 'FrontEnd: Other', 'FrontEnd: QT IMModule', 'FrontEnd: XIM', 'IMEngine: Core', 'IMEngine: Generic Table', 'IMEngine: M17N', 'IMEngine: Other', 'IMEngine: Smart Pinyin', 'IMEngine: UIM', 'Other', 'Panel: Core', 'Panel: scim-panel-gtk', 'Panel: scim-panel-kde (skim)' ];
+  vers[75] = ['unspecified' ];
+  cpts[76] = ['generic', 'libsb2', 'mappings' ];
+  vers[76] = ['unspecified', '1.99.0.x' ];
+  cpts[77] = ['misc', 'nao', 'ncal', 'nco', 'ndo', 'new-ontology', 'nexif', 'nfo', 'nid3', 'nie', 'nmm', 'nmo', 'nrl', 'nso', 'nuao', 'pimo' ];
+  vers[77] = ['unspecified' ];
+  cpts[78] = ['freedesktop.org.xml', 'general' ];
+  vers[78] = ['unspecified' ];
+  cpts[79] = ['Two' ];
+  vers[79] = ['unspecified' ];
+  cpts[80] = ['desktop-entry', 'General', 'trash' ];
+  vers[80] = ['unspecified' ];
+  cpts[81] = ['canvas', 'client', 'protocol', 'server', 'win32 qxl', 'win32 vd_agent', 'win32 vdi_port' ];
+  vers[81] = ['unspecified' ];
+  cpts[82] = ['Documentation', 'Other', 'ST: Applications', 'ST: Build config', 'ST: Drop-in Objects', 'ST: Font Server', 'ST: Libraries (libST.so and libstsf.so)', 'ST: Other', 'XST: Applications', 'XST: Build config', 'XST: Other', 'XST: X Client Library', 'XST: Xft bridge', 'XST: XLFD bridge', 'XST: X Server Extension' ];
+  vers[82] = ['unspecified', 'ST-HEAD', 'XST-HEAD', 'XST-XORG-RELEASE-1-STSF' ];
+  cpts[83] = ['library', 'plugin' ];
+  vers[83] = ['unspecified', '0.4.5', '0.5.0', '0.5.1', '0.5.2', '0.5.3', '0.5.4', '0.5.5', 'git', '0.6.6', '0.6.4', '0.6.2', '0.6.0', '0.7.x' ];
+  cpts[84] = ['init', 'network', 'shares', 'time', 'users' ];
+  vers[84] = ['unspecified' ];
+  cpts[85] = ['general' ];
+  vers[85] = ['unspecified' ];
+  cpts[86] = ['default', 'icon theme' ];
+  vers[86] = ['CVS' ];
+  cpts[87] = ['butterfly', 'cohoba', 'echobot', 'fargo', 'gabble', 'general', 'haze', 'idle', 'libtelepathy', 'logger', 'm5-account-plugins', 'mission-control', 'papyon', 'pymsn', 'ring', 'salut', 'sofiasip', 'ssh-contact', 'stream-engine', 'sunshine', 'tp-doc', 'tp-farsight', 'tp-glib', 'tp-inspector', 'tp-python', 'tp-qt4', 'tp-spec', 'wilde', 'yafono' ];
+  vers[87] = ['unspecified', 'git master', '0.8', '0.9', '0.10', '0.11', '0.4', '0.6', '5.4', '5.5', '0.12', '0.13', '5.6', '5.7' ];
+  cpts[88] = ['tinderclient', 'tinderserver', 'trees' ];
+  vers[88] = ['unspecified' ];
+  cpts[89] = ['detection', 'general', 'linux-md', 'luks', 'operations' ];
+  vers[89] = ['unspecified' ];
+  cpts[90] = ['bridge: fep', 'bridge: GTK+', 'bridge: Qt', 'bridge: XIM', 'doc', 'generic Scheme codes', 'helper: Candidate window', 'helper: dict', 'helper: others', 'helper: pref', 'helper: toolbar', 'IM: Other IMs', 'libuim', 'libuim: Scheme interpreter', 'Other' ];
+  vers[90] = ['unspecified' ];
+  cpts[91] = ['General' ];
+  vers[91] = ['unspecified', '0.0.1', 'git master', '0.8' ];
+  cpts[92] = ['appres', 'bdftopcf', 'editres', 'fdclock', 'fslsfonts', 'fstobdf', 'iceauth', 'imake', 'listres', 'luit', 'mkcfm', 'mkfontdir', 'mkfontscale', 'setxkbmap', 'showfont', 'smproxy', 'transset', 'twm', 'viewres', 'wininfo', 'x11perf', 'xauth', 'xcmsdb', 'xcompmgr', 'xcursorgen', 'xdm', 'xdpyinfo', 'xev', 'xfd', 'xfontsel', 'xfs', 'xfsinfo', 'xgamma', 'xhost', 'xinit', 'xkbcomp', 'xkbprint', 'xkbutils', 'xkill', 'xlsatoms', 'xlsclients', 'xlsfonts', 'xmodmap', 'xping', 'xprop', 'xrandr', 'xrdb', 'xrefresh', 'xset', 'xsetmode', 'xsetpointer', 'xsetroot', 'xsm', 'xterm', 'xvidtune', 'xvinfo', 'xwininfo' ];
+  vers[92] = ['unspecified' ];
+  cpts[93] = ['Demos', 'Library', 'Misc', 'Protocol', 'Utils' ];
+  vers[93] = ['unspecified', '0.9', '0.9.91 (1.0-RC1)', '1.0', '0.9.92 (1.0-RC2)', '0.9.93 (1.0-RC3)', '1.1' ];
+  cpts[94] = ['doc', 'library' ];
+  vers[94] = ['1.0' ];
+  cpts[95] = ['handhelds', 'redglass', 'whiteglass', 'xcursorgen' ];
+  vers[95] = ['1.0' ];
+  cpts[96] = ['General' ];
+  vers[96] = ['unspecified' ];
+  cpts[97] = ['General' ];
+  vers[97] = ['unspecified' ];
+  cpts[98] = ['xdgmime' ];
+  vers[98] = ['unspecified' ];
+  cpts[99] = ['Glib', 'Metadata Storage Specification', 'Ontology', 'QT', 'Search Specification', 'Shared Tools' ];
+  vers[99] = ['unspecified' ];
+  cpts[100] = ['Build', 'doc', 'library' ];
+  vers[100] = ['2.0', '2.1' ];
+  cpts[101] = ['doc', 'General', 'Translation' ];
+  vers[101] = ['unspecified' ];
+  cpts[102] = ['libICE', 'libSM', 'libX11', 'libXau', 'libXaw', 'libXcomposite', 'libXcursor', 'libXdamage', 'libXdmcp', 'libXext', 'libXfixes', 'libXfont', 'libXi', 'libXmu', 'libXpm', 'libXrandr', 'libXrender', 'libXRes', 'libXt', 'libXtrans', 'libXv', 'libXvMC' ];
+  vers[102] = ['unspecified' ];
+  cpts[103] = ['Acceleration\/EXA', 'Acceleration\/XAA', 'Acceleration\/XGL', 'App\/appres', 'App\/bdftopcf', 'App\/compiz', 'App\/glxgears', 'App\/glxinfo', 'App\/lbxproxy', 'App\/other', 'App\/twm', 'App\/xdm', 'App\/xedit', 'App\/xkbcomp', 'App\/xman', 'App\/xoo', 'App\/xorgcfg', 'App\/xorgconfig', 'App\/xrandr', 'App\/xresponse', 'App\/xset', 'App\/xterm', 'cvs', 'DDX\/cygwin', 'DDX\/darwin', 'DDX\/dmx', 'DDX\/vfb', 'DDX\/xnest', 'DDX\/xorg', 'Docs\/other', 'Documentation', 'Driver\/apm', 'Driver\/ark', 'Driver\/ASpeed', 'Driver\/avivo', 'Driver\/chips', 'Driver\/cirrus', 'Driver\/cyrix', 'Driver\/fbdev', 'Driver\/fglrx', 'Driver\/geode', 'Driver\/glide', 'Driver\/glint', 'Driver\/i128', 'Driver\/i740', 'Driver\/imstt', 'Driver\/intel', 'Driver\/mach64', 'Driver\/mga', 'Driver\/Neomagic', 'Driver\/newport', 'Driver\/nouveau', 'Driver\/nsc', 'Driver\/nVidia (open)', 'Driver\/nVidia (proprietary)', 'Driver\/other', 'Driver\/p690', 'Driver\/Radeon', 'Driver\/radeonhd', 'Driver\/rage128', 'Driver\/rendition', 'Driver\/s3', 'Driver\/s3virge', 'Driver\/savage', 'Driver\/siliconmotion', 'Driver\/SiS', 'Driver\/tdfx', 'Driver\/tga', 'Driver\/Trident', 'Driver\/Tseng Labs', 'Driver\/Vesa', 'Driver\/VGA', 'Driver\/Via', 'Driver\/VMWare', 'Driver\/Voodoo', 'Driver\/XGI', 'Extensions\/DRI', 'Fonts\/BDF', 'Fonts\/doc', 'Fonts\/other', 'Font\/XFS', 'I18N', 'imake', 'Input\/acecad', 'Input\/aiptek', 'Input\/calcomp', 'Input\/Citron', 'Input\/Core', 'Input\/digitaledge', 'Input\/dmc', 'Input\/dynapro', 'Input\/elo2300', 'Input\/elographics', 'Input\/evdev', 'Input\/fpit', 'Input\/hyperpen', 'Input\/jamstudio', 'Input\/joystick', 'Input\/Keyboard', 'Input\/magellan', 'Input\/magictouch', 'Input\/microtouch', 'Input\/Mouse', 'Input\/mutouch', 'Input\/other', 'Input\/palmax', 'Input\/penmount', 'Input\/sample', 'Input\/spaceorb', 'Input\/summa', 'Input\/synaptics', 'Input\/tek4957', 'Input\/ur98', 'Input\/void', 'Input\/wacom', 'Input\/XKB', 'Lib\/font', 'Lib\/Freetype2', 'Lib\/GLX', 'Lib\/ICE', 'Lib\/other', 'libpciaccess', 'Lib\/Xau', 'Lib\/Xaw', 'Lib\/Xcursor', 'Lib\/Xext', 'Lib\/Xft', 'Lib\/Xi', 'Lib\/Xlib', 'Lib\/Xlib (data)', 'Lib\/Xmu', 'Lib\/Xpm', 'Lib\/Xrender', 'Lib\/Xt', 'Lib\/xtrans', 'Lib\/zlib', 'Loader \/ dlloader', 'Loader \/ elfloader', 'Modular build system', 'Monolithic build system', '* Other', 'Protocol\/Core', 'Release', 'Security', 'Server\/general', 'Xephyr' ];
+  vers[103] = ['git', 'unspecified', '6.7.0', '6.8.0', '6.8.1', '6.8.2', '6.8.99.1', '6.8.99.2', '6.8.99.3', '6.8.99.4', '6.8.99.5', '6.8.99.6', '6.8.99.7', '6.8.99.8', '6.8.99.9', '6.8.99.10', '6.8.99.11', '6.8.99.12', '6.8.99.13', '6.8.99.901 (6.9 RC1)', '6.8.99.900 (6.9 RC0)', '6.8.99.902 (6.9 RC2)', '6.8.99.903 (6.9 RC3)', '6.99.99.900 (7.0 RC0)', '6.99.99.901 (7.0 RC1)', '6.99.99.902 (7.0 RC2)', '6.99.99.903 (7.0 RC3)', '6.8.99.14', '6.8.99.15', '6.8.99.16', '6.9.0', '7.0.0', '6.99.99.904 (7.0 RC4)', '6.8.99.904 (6.9 RC4)', '7.0', '7.0.99.901 (7.1RC1)', '7.0.99.902 (7.1RC2)', '7.0.99.903 (7.1RC3)', '7.1', '7.2', '7.3', '7.4', '7.5' ];
+  cpts[104] = ['Application support: Eclipse', 'Application support: GTK+\/Gnome', 'Application support: JAVA', 'Application support: Mozilla', 'Application support: Other', 'Application support: Qt\/KDE', 'Application support: Xt\/Athena', 'Application support: Xt\/Motif\/CDE', 'Build config', 'Client library: Other', 'Client library: XpExtension library', 'Client library: XprintUtil library', 'Documentation: FAQ', 'Documentation: Manual pages (manpages)', 'Documentation: Other', 'Fonts: Other', 'Other', 'Server: Config: model-configs', 'Server: Config: other', 'Server: Config: startup scripts', 'Server: DDX: other', 'Server: DDX: PCL', 'Server: DDX: PCL-mono', 'Server: DDX: PDF', 'Server: DDX: PostScript', 'Server: DDX: Raster', 'Server: DDX: SVG', 'Server: DDX: Windows', 'Server: Extensions: Other', 'Server: Extensions: XpExtension', 'Server: Font engine: FreeType', 'Server: Font engine: Other', 'Server: Font engine: PMF', 'Server: Font engine: PS Type1', 'Server: Font engine: STSF', 'Server: Font engine: TrueType', 'Server: Other', 'Server: Spooler support: CUPS', 'Server: Spooler support: LPRng', 'Server: Spooler support: Other', 'Site: Other', 'Site: xprint.freedesktop.org WWW pages', 'Site: xprint.mozdev.org WWW pages', 'Tools: Other', 'Tools: xphelloworld', 'Tools: xplsprinters', 'Tools: xpppdtomodelconfig', 'Tools: xptest', 'Tracking' ];
+  vers[104] = ['unspecified' ];
+  cpts[105] = ['Build', 'Documentation', 'Library', 'Protocol headers' ];
+  vers[105] = ['unspecified' ];
+  cpts[106] = ['all-but-hw', 'kdrive' ];
+  vers[106] = ['unspecified' ];
+  cpts[107] = ['BDF', 'BigReq', 'DBE', 'FontService', 'ICCCM', 'ICE', 'KeySyms', 'LBX', 'PEX', 'Protocol', 'RandR', 'Record', 'Render', 'Security', 'Session', 'Shape', 'Sync', 'XC-MISC', 'XDMCP', 'XIE', 'XInput', 'XKB', 'XLFD', 'XLib', 'Xt', 'XTEST' ];
+  vers[107] = ['X11R6.6' ];
+  cpts[108] = ['General', 'XTS' ];
+  vers[108] = ['unspecified' ];
+
+/*
+ * doOnSelectProduct determines which selection should get updated 
+ *
+ * - selectmode = 0  - init
+ *   selectmode = 1  - classification selected
+ *   selectmode = 2  - product selected
+ *
+ * globals:
+ *   queryform - string holding the name of the selection form
+ */
+function doOnSelectProduct(selectmode) {
+    var f = document.forms[queryform];
+    var milestone = (typeof(f.target_milestone) == "undefined" ? 
+                                               null : f.target_milestone);
+    if (selectmode == 0) {
+        // If there is no classification selected, give us a chance to fill
+        // the select fields with values from the possibly selected product.
+        if (useclassification && f.classification.selectedIndex > -1) {
+            selectClassification(f.classification, f.product, f.component, f.version, milestone);
+        } else {
+            selectProduct(f.product, f.component, f.version, milestone, null);
+        }
+    } else if (selectmode == 1) {
+        selectClassification(f.classification, f.product, f.component, f.version, milestone);
+    } else {
+        selectProduct(f.product, f.component, f.version, milestone, null);
+    }
+}
+
+</script>
+
+
+
+<input name="query_format" value="advanced" type="hidden">
+
+
+
+<table>
+  <tbody><tr>
+    <th align="right">
+      <label for="short_desc" accesskey="s"><u>S</u>ummary</label>:
+    </th>
+    <td><select name="short_desc_type">
+    <option selected="selected" value="allwordssubstr">contains all of the strings</option>
+    <option value="anywordssubstr">contains any of the strings</option>
+    <option value="substring">contains the string</option>
+    <option value="casesubstring">contains the string (exact case)</option>
+    <option value="allwords">contains all of the words</option>
+    <option value="anywords">contains any of the words</option>
+    <option value="regexp">matches regular expression</option>
+    <option value="notregexp">does not match regular expression</option>
+</select>
+    </td>
+    <td>
+      <input name="short_desc" id="short_desc" size="40">
+      <script type="text/javascript"> <!--
+          document.forms[queryform].short_desc.focus(); 
+      // -->
+      </script>
+    </td>
+    <td>
+        <input id="Search_top" value="Search" type="submit">
+    </td>
+  </tr>
+
+
+  <tr>
+    <td colspan="4">
+      <table>
+        <tbody><tr>
+          <td valign="top">
+            <table>
+              <tbody><tr valign="bottom">
+                <th align="left">
+                  <label for="product" accesskey="p"><u>P</u>roduct</label>:
+                </th>
+              </tr>
+              <tr valign="top">
+                
+                <td align="left">
+                  <select name="product" multiple="multiple" size="5" id="product" onchange="doOnSelectProduct(2);">
+                      <option value="accountsservice">accountsservice</option>
+                      <option value="apoc">apoc</option>
+                      <option value="at-spi2">at-spi2</option>
+                      <option value="avahi">avahi</option>
+                      <option value="burn">burn</option>
+                      <option value="cairo">cairo</option>
+                      <option value="cairo-java">cairo-java</option>
+                      <option value="cairomm">cairomm</option>
+                      <option value="ccss">ccss</option>
+                      <option value="ConsoleKit">ConsoleKit</option>
+                      <option value="create">create</option>
+                      <option value="cups-pk-helper">cups-pk-helper</option>
+                      <option value="dbus">dbus</option>
+                      <option value="Debrix">Debrix</option>
+                      <option value="DejaVu">DejaVu</option>
+                      <option value="desktop-file-utils">desktop-file-utils</option>
+                      <option value="DeviceKit">DeviceKit</option>
+                      <option value="dolt">dolt</option>
+                      <option value="DRI">DRI</option>
+                      <option value="exempi">exempi</option>
+                      <option value="Farsight">Farsight</option>
+                      <option value="fontconfig">fontconfig</option>
+                      <option value="freedesktop.org">freedesktop.org</option>
+                      <option value="freedrtools">freedrtools</option>
+                      <option value="freetype">freetype</option>
+                      <option value="FriBidi">FriBidi</option>
+                      <option value="Galago">Galago</option>
+                      <option value="GeoClue">GeoClue</option>
+                      <option value="ghns">ghns</option>
+                      <option value="GLU3">GLU3</option>
+                      <option value="gstreamer">gstreamer</option>
+                      <option value="GTK-Qt Engine">GTK-Qt Engine</option>
+                      <option value="guile-cairo">guile-cairo</option>
+                      <option value="Gypsy">Gypsy</option>
+                      <option value="hal">hal</option>
+                      <option value="HarfBuzz">HarfBuzz</option>
+                      <option value="Hieroglyph">Hieroglyph</option>
+                      <option value="Icon theme">Icon theme</option>
+                      <option value="LDTP">LDTP</option>
+                      <option value="libasyncns">libasyncns</option>
+                      <option value="libatasmart">libatasmart</option>
+                      <option value="libbsd">libbsd</option>
+                      <option value="libcanberra">libcanberra</option>
+                      <option value="libdlo">libdlo</option>
+                      <option value="libfprint">libfprint</option>
+                      <option value="libjpeg">libjpeg</option>
+                      <option value="liboil">liboil</option>
+                      <option value="libopenraw">libopenraw</option>
+                      <option value="LibreOffice">LibreOffice</option>
+                      <option value="libspectre">libspectre</option>
+                      <option value="libxklavier">libxklavier</option>
+                      <option value="LTSP">LTSP</option>
+                      <option value="media-player-info">media-player-info</option>
+                      <option value="Mesa">Mesa</option>
+                      <option value="nice">nice</option>
+                      <option value="nickle">nickle</option>
+                      <option value="OHM">OHM</option>
+                      <option value="openclipart.org">openclipart.org</option>
+                      <option value="openfontlibrary">openfontlibrary</option>
+                      <option value="Orc">Orc</option>
+                      <option value="PackageKit">PackageKit</option>
+                      <option value="papyon">papyon</option>
+                      <option value="piglit">piglit</option>
+                      <option value="pixman">pixman</option>
+                      <option value="pkg-config">pkg-config</option>
+                      <option value="plymouth">plymouth</option>
+                      <option value="pm-utils">pm-utils</option>
+                      <option value="PolicyKit">PolicyKit</option>
+                      <option value="poppler">poppler</option>
+                      <option value="Portland">Portland</option>
+                      <option value="pycairo">pycairo</option>
+                      <option value="python-geoclue">python-geoclue</option>
+                      <option value="PyXDG">PyXDG</option>
+                      <option value="Rarian">Rarian</option>
+                      <option value="roadster">roadster</option>
+                      <option value="scim">scim</option>
+                      <option value="Scratchbox 2">Scratchbox 2</option>
+                      <option value="shared-desktop-ontologies">shared-desktop-ontologies</option>
+                      <option value="shared-mime-info">shared-mime-info</option>
+                      <option value="Spam">Spam</option>
+                      <option value="Specifications">Specifications</option>
+                      <option value="Spice">Spice</option>
+                      <option value="STSF">STSF</option>
+                      <option value="swfdec">swfdec</option>
+                      <option value="system-tools-backends">system-tools-backends</option>
+                      <option value="systemd">systemd</option>
+                      <option value="tango">tango</option>
+                      <option value="Telepathy">Telepathy</option>
+                      <option value="tinderbox">tinderbox</option>
+                      <option value="udisks">udisks</option>
+                      <option value="UIM">UIM</option>
+                      <option value="Wocky">Wocky</option>
+                      <option value="xapps">xapps</option>
+                      <option value="XCB">XCB</option>
+                      <option value="Xcursor">Xcursor</option>
+                      <option value="xcursorgen">xcursorgen</option>
+                      <option value="xdg-sound-theme">xdg-sound-theme</option>
+                      <option value="xdg-user-dirs">xdg-user-dirs</option>
+                      <option value="xdgmime">xdgmime</option>
+                      <option value="xesam">xesam</option>
+                      <option value="Xft">Xft</option>
+                      <option value="xkeyboard-config">xkeyboard-config</option>
+                      <option value="xlibs">xlibs</option>
+                      <option value="xorg">xorg</option>
+                      <option value="xprint">xprint</option>
+                      <option value="Xrender">Xrender</option>
+                      <option value="xserver">xserver</option>
+                      <option value="XStandards">XStandards</option>
+                      <option value="Xtests">Xtests</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody></table>
+          </td>
+          <td valign="top">
+            <table>
+              <tbody><tr valign="bottom">
+                <th align="left">
+                  <label for="component" accesskey="m"><a href="https://bugzilla.freedesktop.org/describecomponents.cgi">Co<u>m</u>ponent</a></label>:
+                </th>
+              </tr>
+              <tr valign="top">
+                
+                <td align="left">
+                  <select name="component" id="component" multiple="multiple" size="5">
+                      <option value="* Other">* Other</option>
+                      <option value="A11y test suite">A11y test suite</option>
+                      <option value="Acceleration/EXA">Acceleration/EXA</option>
+                      <option value="Acceleration/XAA">Acceleration/XAA</option>
+                      <option value="Acceleration/XGL">Acceleration/XGL</option>
+                      <option value="Account Modification Requests">Account Modification Requests</option>
+                      <option value="Administration">Administration</option>
+                      <option value="App/appres">App/appres</option>
+                      <option value="App/bdftopcf">App/bdftopcf</option>
+                      <option value="App/compiz">App/compiz</option>
+                      <option value="App/glxgears">App/glxgears</option>
+                      <option value="App/glxinfo">App/glxinfo</option>
+                      <option value="App/lbxproxy">App/lbxproxy</option>
+                      <option value="App/other">App/other</option>
+                      <option value="App/twm">App/twm</option>
+                      <option value="App/xdm">App/xdm</option>
+                      <option value="App/xedit">App/xedit</option>
+                      <option value="App/xkbcomp">App/xkbcomp</option>
+                      <option value="App/xman">App/xman</option>
+                      <option value="App/xoo">App/xoo</option>
+                      <option value="App/xorgcfg">App/xorgcfg</option>
+                      <option value="App/xorgconfig">App/xorgconfig</option>
+                      <option value="App/xrandr">App/xrandr</option>
+                      <option value="App/xresponse">App/xresponse</option>
+                      <option value="App/xset">App/xset</option>
+                      <option value="App/xterm">App/xterm</option>
+                      <option value="Application support: Eclipse">Application support: Eclipse</option>
+                      <option value="Application support: GTK+/Gnome">Application support: GTK+/Gnome</option>
+                      <option value="Application support: JAVA">Application support: JAVA</option>
+                      <option value="Application support: Mozilla">Application support: Mozilla</option>
+                      <option value="Application support: Other">Application support: Other</option>
+                      <option value="Application support: Qt/KDE">Application support: Qt/KDE</option>
+                      <option value="Application support: Xt/Athena">Application support: Xt/Athena</option>
+                      <option value="Application support: Xt/Motif/CDE">Application support: Xt/Motif/CDE</option>
+                      <option value="BDF">BDF</option>
+                      <option value="Backends">Backends</option>
+                      <option value="BigReq">BigReq</option>
+                      <option value="Bugzilla">Bugzilla</option>
+                      <option value="Build">Build</option>
+                      <option value="Build config">Build config</option>
+                      <option value="C code">C code</option>
+                      <option value="CVS">CVS</option>
+                      <option value="Client library: Other">Client library: Other</option>
+                      <option value="Client library: XpExtension library">Client library: XpExtension library</option>
+                      <option value="Client library: XprintUtil library">Client library: XprintUtil library</option>
+                      <option value="Core">Core</option>
+                      <option value="Core: Other">Core: Other</option>
+                      <option value="Core: libscim">Core: libscim</option>
+                      <option value="DAPI">DAPI</option>
+                      <option value="DBE">DBE</option>
+                      <option value="DDX/cygwin">DDX/cygwin</option>
+                      <option value="DDX/darwin">DDX/darwin</option>
+                      <option value="DDX/dmx">DDX/dmx</option>
+                      <option value="DDX/vfb">DDX/vfb</option>
+                      <option value="DDX/xnest">DDX/xnest</option>
+                      <option value="DDX/xorg">DDX/xorg</option>
+                      <option value="DRM/Intel">DRM/Intel</option>
+                      <option value="DRM/Radeon">DRM/Radeon</option>
+                      <option value="DRM/Via">DRM/Via</option>
+                      <option value="DRM/other">DRM/other</option>
+                      <option value="Daemon">Daemon</option>
+                      <option value="Demos">Demos</option>
+                      <option value="Desktop daemon">Desktop daemon</option>
+                      <option value="DeviceKit">DeviceKit</option>
+                      <option value="DeviceKit-disks">DeviceKit-disks</option>
+                      <option value="DeviceKit-power">DeviceKit-power</option>
+                      <option value="Devices">Devices</option>
+                      <option value="Docs">Docs</option>
+                      <option value="Docs/other">Docs/other</option>
+                      <option value="Documentation">Documentation</option>
+                      <option value="Documentation: FAQ">Documentation: FAQ</option>
+                      <option value="Documentation: Manual pages (manpages)">Documentation: Manual pages (manpages)</option>
+                      <option value="Documentation: Other">Documentation: Other</option>
+                      <option value="Driver / ATI">Driver / ATI</option>
+                      <option value="Driver / TDFX">Driver / TDFX</option>
+                      <option value="Driver/ASpeed">Driver/ASpeed</option>
+                      <option value="Driver/Neomagic">Driver/Neomagic</option>
+                      <option value="Driver/Radeon">Driver/Radeon</option>
+                      <option value="Driver/SiS">Driver/SiS</option>
+                      <option value="Driver/Trident">Driver/Trident</option>
+                      <option value="Driver/Tseng Labs">Driver/Tseng Labs</option>
+                      <option value="Driver/VGA">Driver/VGA</option>
+                      <option value="Driver/VMWare">Driver/VMWare</option>
+                      <option value="Driver/Vesa">Driver/Vesa</option>
+                      <option value="Driver/Via">Driver/Via</option>
+                      <option value="Driver/Voodoo">Driver/Voodoo</option>
+                      <option value="Driver/XGI">Driver/XGI</option>
+                      <option value="Driver/apm">Driver/apm</option>
+                      <option value="Driver/ark">Driver/ark</option>
+                      <option value="Driver/avivo">Driver/avivo</option>
+                      <option value="Driver/chips">Driver/chips</option>
+                      <option value="Driver/cirrus">Driver/cirrus</option>
+                      <option value="Driver/cyrix">Driver/cyrix</option>
+                      <option value="Driver/fbdev">Driver/fbdev</option>
+                      <option value="Driver/fglrx">Driver/fglrx</option>
+                      <option value="Driver/geode">Driver/geode</option>
+                      <option value="Driver/glide">Driver/glide</option>
+                      <option value="Driver/glint">Driver/glint</option>
+                      <option value="Driver/i128">Driver/i128</option>
+                      <option value="Driver/i740">Driver/i740</option>
+                      <option value="Driver/imstt">Driver/imstt</option>
+                      <option value="Driver/intel">Driver/intel</option>
+                      <option value="Driver/mach64">Driver/mach64</option>
+                      <option value="Driver/mga">Driver/mga</option>
+                      <option value="Driver/nVidia (open)">Driver/nVidia (open)</option>
+                      <option value="Driver/nVidia (proprietary)">Driver/nVidia (proprietary)</option>
+                      <option value="Driver/newport">Driver/newport</option>
+                      <option value="Driver/nouveau">Driver/nouveau</option>
+                      <option value="Driver/nsc">Driver/nsc</option>
+                      <option value="Driver/other">Driver/other</option>
+                      <option value="Driver/p690">Driver/p690</option>
+                      <option value="Driver/radeonhd">Driver/radeonhd</option>
+                      <option value="Driver/rage128">Driver/rage128</option>
+                      <option value="Driver/rendition">Driver/rendition</option>
+                      <option value="Driver/s3">Driver/s3</option>
+                      <option value="Driver/s3virge">Driver/s3virge</option>
+                      <option value="Driver/savage">Driver/savage</option>
+                      <option value="Driver/siliconmotion">Driver/siliconmotion</option>
+                      <option value="Driver/tdfx">Driver/tdfx</option>
+                      <option value="Driver/tga">Driver/tga</option>
+                      <option value="Drivers/DRI/FFB">Drivers/DRI/FFB</option>
+                      <option value="Drivers/DRI/Gamma">Drivers/DRI/Gamma</option>
+                      <option value="Drivers/DRI/MGA">Drivers/DRI/MGA</option>
+                      <option value="Drivers/DRI/Mach64">Drivers/DRI/Mach64</option>
+                      <option value="Drivers/DRI/R600">Drivers/DRI/R600</option>
+                      <option value="Drivers/DRI/Radeon">Drivers/DRI/Radeon</option>
+                      <option value="Drivers/DRI/S3V">Drivers/DRI/S3V</option>
+                      <option value="Drivers/DRI/Savage">Drivers/DRI/Savage</option>
+                      <option value="Drivers/DRI/SiS">Drivers/DRI/SiS</option>
+                      <option value="Drivers/DRI/TDFX">Drivers/DRI/TDFX</option>
+                      <option value="Drivers/DRI/Trident">Drivers/DRI/Trident</option>
+                      <option value="Drivers/DRI/Unichrome">Drivers/DRI/Unichrome</option>
+                      <option value="Drivers/DRI/i810">Drivers/DRI/i810</option>
+                      <option value="Drivers/DRI/i830">Drivers/DRI/i830</option>
+                      <option value="Drivers/DRI/i915">Drivers/DRI/i915</option>
+                      <option value="Drivers/DRI/i965">Drivers/DRI/i965</option>
+                      <option value="Drivers/DRI/nouveau">Drivers/DRI/nouveau</option>
+                      <option value="Drivers/DRI/r128">Drivers/DRI/r128</option>
+                      <option value="Drivers/DRI/r200">Drivers/DRI/r200</option>
+                      <option value="Drivers/DRI/r300">Drivers/DRI/r300</option>
+                      <option value="Drivers/Gallium/i915g">Drivers/Gallium/i915g</option>
+                      <option value="Drivers/Gallium/r300">Drivers/Gallium/r300</option>
+                      <option value="Drivers/Gallium/r600">Drivers/Gallium/r600</option>
+                      <option value="Drivers/Glide">Drivers/Glide</option>
+                      <option value="Drivers/X11">Drivers/X11</option>
+                      <option value="Editor">Editor</option>
+                      <option value="Experimental fonts">Experimental fonts</option>
+                      <option value="Extensions/DRI">Extensions/DRI</option>
+                      <option value="Font/XFS">Font/XFS</option>
+                      <option value="FontService">FontService</option>
+                      <option value="Fonts">Fonts</option>
+                      <option value="Fonts/BDF">Fonts/BDF</option>
+                      <option value="Fonts/doc">Fonts/doc</option>
+                      <option value="Fonts/other">Fonts/other</option>
+                      <option value="Fonts: Other">Fonts: Other</option>
+                      <option value="FrontEnd: Core">FrontEnd: Core</option>
+                      <option value="FrontEnd: GTK IMModule">FrontEnd: GTK IMModule</option>
+                      <option value="FrontEnd: Other">FrontEnd: Other</option>
+                      <option value="FrontEnd: QT IMModule">FrontEnd: QT IMModule</option>
+                      <option value="FrontEnd: XIM">FrontEnd: XIM</option>
+                      <option value="GLU">GLU</option>
+                      <option value="GLUT">GLUT</option>
+                      <option value="GLX">GLX</option>
+                      <option value="GLib">GLib</option>
+                      <option value="GStreamer Elements">GStreamer Elements</option>
+                      <option value="GTK-Qt">GTK-Qt</option>
+                      <option value="General">General</option>
+                      <option value="Glib">Glib</option>
+                      <option value="I18N">I18N</option>
+                      <option value="ICCCM">ICCCM</option>
+                      <option value="ICE">ICE</option>
+                      <option value="IM: Other IMs">IM: Other IMs</option>
+                      <option value="IMEngine: Core">IMEngine: Core</option>
+                      <option value="IMEngine: Generic Table">IMEngine: Generic Table</option>
+                      <option value="IMEngine: M17N">IMEngine: M17N</option>
+                      <option value="IMEngine: Other">IMEngine: Other</option>
+                      <option value="IMEngine: Smart Pinyin">IMEngine: Smart Pinyin</option>
+                      <option value="IMEngine: UIM">IMEngine: UIM</option>
+                      <option value="Input / Keyboard">Input / Keyboard</option>
+                      <option value="Input / Mouse">Input / Mouse</option>
+                      <option value="Input/Citron">Input/Citron</option>
+                      <option value="Input/Core">Input/Core</option>
+                      <option value="Input/Keyboard">Input/Keyboard</option>
+                      <option value="Input/Mouse">Input/Mouse</option>
+                      <option value="Input/XKB">Input/XKB</option>
+                      <option value="Input/acecad">Input/acecad</option>
+                      <option value="Input/aiptek">Input/aiptek</option>
+                      <option value="Input/calcomp">Input/calcomp</option>
+                      <option value="Input/digitaledge">Input/digitaledge</option>
+                      <option value="Input/dmc">Input/dmc</option>
+                      <option value="Input/dynapro">Input/dynapro</option>
+                      <option value="Input/elo2300">Input/elo2300</option>
+                      <option value="Input/elographics">Input/elographics</option>
+                      <option value="Input/evdev">Input/evdev</option>
+                      <option value="Input/fpit">Input/fpit</option>
+                      <option value="Input/hyperpen">Input/hyperpen</option>
+                      <option value="Input/jamstudio">Input/jamstudio</option>
+                      <option value="Input/joystick">Input/joystick</option>
+                      <option value="Input/magellan">Input/magellan</option>
+                      <option value="Input/magictouch">Input/magictouch</option>
+                      <option value="Input/microtouch">Input/microtouch</option>
+                      <option value="Input/mutouch">Input/mutouch</option>
+                      <option value="Input/other">Input/other</option>
+                      <option value="Input/palmax">Input/palmax</option>
+                      <option value="Input/penmount">Input/penmount</option>
+                      <option value="Input/sample">Input/sample</option>
+                      <option value="Input/spaceorb">Input/spaceorb</option>
+                      <option value="Input/summa">Input/summa</option>
+                      <option value="Input/synaptics">Input/synaptics</option>
+                      <option value="Input/tek4957">Input/tek4957</option>
+                      <option value="Input/ur98">Input/ur98</option>
+                      <option value="Input/void">Input/void</option>
+                      <option value="Input/wacom">Input/wacom</option>
+                      <option value="Installer">Installer</option>
+                      <option value="KeySyms">KeySyms</option>
+                      <option value="LBX">LBX</option>
+                      <option value="LDTP">LDTP</option>
+                      <option value="LTSP Core">LTSP Core</option>
+                      <option value="Language Bindings">Language Bindings</option>
+                      <option value="Lib/Freetype2">Lib/Freetype2</option>
+                      <option value="Lib/GLX">Lib/GLX</option>
+                      <option value="Lib/ICE">Lib/ICE</option>
+                      <option value="Lib/Xau">Lib/Xau</option>
+                      <option value="Lib/Xaw">Lib/Xaw</option>
+                      <option value="Lib/Xcursor">Lib/Xcursor</option>
+                      <option value="Lib/Xext">Lib/Xext</option>
+                      <option value="Lib/Xft">Lib/Xft</option>
+                      <option value="Lib/Xi">Lib/Xi</option>
+                      <option value="Lib/Xlib">Lib/Xlib</option>
+                      <option value="Lib/Xlib (data)">Lib/Xlib (data)</option>
+                      <option value="Lib/Xmu">Lib/Xmu</option>
+                      <option value="Lib/Xpm">Lib/Xpm</option>
+                      <option value="Lib/Xrender">Lib/Xrender</option>
+                      <option value="Lib/Xt">Lib/Xt</option>
+                      <option value="Lib/font">Lib/font</option>
+                      <option value="Lib/other">Lib/other</option>
+                      <option value="Lib/xtrans">Lib/xtrans</option>
+                      <option value="Lib/zlib">Lib/zlib</option>
+                      <option value="Library">Library</option>
+                      <option value="Loader / dlloader">Loader / dlloader</option>
+                      <option value="Loader / elfloader">Loader / elfloader</option>
+                      <option value="Mailing lists">Mailing lists</option>
+                      <option value="Master Server">Master Server</option>
+                      <option value="Mesa core">Mesa core</option>
+                      <option value="Metadata Storage Specification">Metadata Storage Specification</option>
+                      <option value="Misc">Misc</option>
+                      <option value="Modular build system">Modular build system</option>
+                      <option value="Mono Sans">Mono Sans</option>
+                      <option value="Monolithic build system">Monolithic build system</option>
+                      <option value="New Accounts">New Accounts</option>
+                      <option value="New device">New device</option>
+                      <option value="Nickle code">Nickle code</option>
+                      <option value="Ontology">Ontology</option>
+                      <option value="Orc">Orc</option>
+                      <option value="Other">Other</option>
+                      <option value="PAM module">PAM module</option>
+                      <option value="PEX">PEX</option>
+                      <option value="Panel: Core">Panel: Core</option>
+                      <option value="Panel: scim-panel-gtk">Panel: scim-panel-gtk</option>
+                      <option value="Panel: scim-panel-kde (skim)">Panel: scim-panel-kde (skim)</option>
+                      <option value="Policy API">Policy API</option>
+                      <option value="Portland">Portland</option>
+                      <option value="Problems">Problems</option>
+                      <option value="Project Creation Requests">Project Creation Requests</option>
+                      <option value="Protocol">Protocol</option>
+                      <option value="Protocol headers">Protocol headers</option>
+                      <option value="Protocol/Core">Protocol/Core</option>
+                      <option value="PyLDTP">PyLDTP</option>
+                      <option value="PyXDG">PyXDG</option>
+                      <option value="Python CLI">Python CLI</option>
+                      <option value="QT">QT</option>
+                      <option value="Qt">Qt</option>
+                      <option value="RTP Plugin">RTP Plugin</option>
+                      <option value="RandR">RandR</option>
+                      <option value="Raw UDP transmitter">Raw UDP transmitter</option>
+                      <option value="Record">Record</option>
+                      <option value="Release">Release</option>
+                      <option value="Render">Render</option>
+                      <option value="SPI">SPI</option>
+                      <option value="ST: Applications">ST: Applications</option>
+                      <option value="ST: Build config">ST: Build config</option>
+                      <option value="ST: Drop-in Objects">ST: Drop-in Objects</option>
+                      <option value="ST: Font Server">ST: Font Server</option>
+                      <option value="ST: Libraries (libST.so and libstsf.so)">ST: Libraries (libST.so and libstsf.so)</option>
+                      <option value="ST: Other">ST: Other</option>
+                      <option value="Sans">Sans</option>
+                      <option value="Search Specification">Search Specification</option>
+                      <option value="Security">Security</option>
+                      <option value="Serif">Serif</option>
+                      <option value="Server/general">Server/general</option>
+                      <option value="Server: Config: model-configs">Server: Config: model-configs</option>
+                      <option value="Server: Config: other">Server: Config: other</option>
+                      <option value="Server: Config: startup scripts">Server: Config: startup scripts</option>
+                      <option value="Server: DDX: PCL">Server: DDX: PCL</option>
+                      <option value="Server: DDX: PCL-mono">Server: DDX: PCL-mono</option>
+                      <option value="Server: DDX: PDF">Server: DDX: PDF</option>
+                      <option value="Server: DDX: PostScript">Server: DDX: PostScript</option>
+                      <option value="Server: DDX: Raster">Server: DDX: Raster</option>
+                      <option value="Server: DDX: SVG">Server: DDX: SVG</option>
+                      <option value="Server: DDX: Windows">Server: DDX: Windows</option>
+                      <option value="Server: DDX: other">Server: DDX: other</option>
+                      <option value="Server: Extensions: Other">Server: Extensions: Other</option>
+                      <option value="Server: Extensions: XpExtension">Server: Extensions: XpExtension</option>
+                      <option value="Server: Font engine: FreeType">Server: Font engine: FreeType</option>
+                      <option value="Server: Font engine: Other">Server: Font engine: Other</option>
+                      <option value="Server: Font engine: PMF">Server: Font engine: PMF</option>
+                      <option value="Server: Font engine: PS Type1">Server: Font engine: PS Type1</option>
+                      <option value="Server: Font engine: STSF">Server: Font engine: STSF</option>
+                      <option value="Server: Font engine: TrueType">Server: Font engine: TrueType</option>
+                      <option value="Server: Other">Server: Other</option>
+                      <option value="Server: Spooler support: CUPS">Server: Spooler support: CUPS</option>
+                      <option value="Server: Spooler support: LPRng">Server: Spooler support: LPRng</option>
+                      <option value="Server: Spooler support: Other">Server: Spooler support: Other</option>
+                      <option value="Session">Session</option>
+                      <option value="Shape">Shape</option>
+                      <option value="Shared Tools">Shared Tools</option>
+                      <option value="Site: Other">Site: Other</option>
+                      <option value="Site: xprint.freedesktop.org WWW pages">Site: xprint.freedesktop.org WWW pages</option>
+                      <option value="Site: xprint.mozdev.org WWW pages">Site: xprint.mozdev.org WWW pages</option>
+                      <option value="Sync">Sync</option>
+                      <option value="Templates">Templates</option>
+                      <option value="Tinderbox">Tinderbox</option>
+                      <option value="Tools: Other">Tools: Other</option>
+                      <option value="Tools: xphelloworld">Tools: xphelloworld</option>
+                      <option value="Tools: xplsprinters">Tools: xplsprinters</option>
+                      <option value="Tools: xpppdtomodelconfig">Tools: xpppdtomodelconfig</option>
+                      <option value="Tools: xptest">Tools: xptest</option>
+                      <option value="Tracking">Tracking</option>
+                      <option value="Translation">Translation</option>
+                      <option value="Two">Two</option>
+                      <option value="Unspecified">Unspecified</option>
+                      <option value="Utils">Utils</option>
+                      <option value="Website">Website</option>
+                      <option value="Wiki">Wiki</option>
+                      <option value="XC-MISC">XC-MISC</option>
+                      <option value="XDMCP">XDMCP</option>
+                      <option value="XIE">XIE</option>
+                      <option value="XInput">XInput</option>
+                      <option value="XKB">XKB</option>
+                      <option value="XLFD">XLFD</option>
+                      <option value="XLib">XLib</option>
+                      <option value="XST: Applications">XST: Applications</option>
+                      <option value="XST: Build config">XST: Build config</option>
+                      <option value="XST: Other">XST: Other</option>
+                      <option value="XST: X Client Library">XST: X Client Library</option>
+                      <option value="XST: X Server Extension">XST: X Server Extension</option>
+                      <option value="XST: XLFD bridge">XST: XLFD bridge</option>
+                      <option value="XST: Xft bridge">XST: Xft bridge</option>
+                      <option value="XTEST">XTEST</option>
+                      <option value="XTS">XTS</option>
+                      <option value="Xephyr">Xephyr</option>
+                      <option value="Xt">Xt</option>
+                      <option value="account">account</option>
+                      <option value="all-but-hw">all-but-hw</option>
+                      <option value="appmap">appmap</option>
+                      <option value="appres">appres</option>
+                      <option value="arthur backend">arthur backend</option>
+                      <option value="atk">atk</option>
+                      <option value="avahi-daemon">avahi-daemon</option>
+                      <option value="backend-apt">backend-apt</option>
+                      <option value="backend-conary">backend-conary</option>
+                      <option value="backend-yum">backend-yum</option>
+                      <option value="backend-zypp">backend-zypp</option>
+                      <option value="base">base</option>
+                      <option value="bdftopcf">bdftopcf</option>
+                      <option value="beos backend">beos backend</option>
+                      <option value="bidi">bidi</option>
+                      <option value="bridge: GTK+">bridge: GTK+</option>
+                      <option value="bridge: Qt">bridge: Qt</option>
+                      <option value="bridge: XIM">bridge: XIM</option>
+                      <option value="bridge: fep">bridge: fep</option>
+                      <option value="build">build</option>
+                      <option value="build infrastructure">build infrastructure</option>
+                      <option value="butterfly">butterfly</option>
+                      <option value="cairo backend">cairo backend</option>
+                      <option value="canvas">canvas</option>
+                      <option value="client">client</option>
+                      <option value="client-library">client-library</option>
+                      <option value="clipart">clipart</option>
+                      <option value="cmdline">cmdline</option>
+                      <option value="cohoba">cohoba</option>
+                      <option value="conf">conf</option>
+                      <option value="contrib">contrib</option>
+                      <option value="core">core</option>
+                      <option value="core library">core library</option>
+                      <option value="cpp frontend">cpp frontend</option>
+                      <option value="cvs">cvs</option>
+                      <option value="daemon">daemon</option>
+                      <option value="datatables">datatables</option>
+                      <option value="default">default</option>
+                      <option value="desktop-entry">desktop-entry</option>
+                      <option value="detection">detection</option>
+                      <option value="directfb backend">directfb backend</option>
+                      <option value="dms">dms</option>
+                      <option value="doc">doc</option>
+                      <option value="docs">docs</option>
+                      <option value="echobot">echobot</option>
+                      <option value="editres">editres</option>
+                      <option value="eds-feed">eds-feed</option>
+                      <option value="fargo">fargo</option>
+                      <option value="fc-cache">fc-cache</option>
+                      <option value="fc-cat">fc-cat</option>
+                      <option value="fc-list">fc-list</option>
+                      <option value="fc-match">fc-match</option>
+                      <option value="fdclock">fdclock</option>
+                      <option value="fprintd">fprintd</option>
+                      <option value="freedesktop.org.xml">freedesktop.org.xml</option>
+                      <option value="freedrtools">freedrtools</option>
+                      <option value="freetype font backend">freetype font backend</option>
+                      <option value="fslsfonts">fslsfonts</option>
+                      <option value="fstobdf">fstobdf</option>
+                      <option value="gabble">gabble</option>
+                      <option value="gaim-galago">gaim-galago</option>
+                      <option value="galago-daemon">galago-daemon</option>
+                      <option value="galago-gtk-sharp">galago-gtk-sharp</option>
+                      <option value="galago-sharp">galago-sharp</option>
+                      <option value="general">general</option>
+                      <option value="generic">generic</option>
+                      <option value="generic Scheme codes">generic Scheme codes</option>
+                      <option value="gl backend">gl backend</option>
+                      <option value="glib frontend">glib frontend</option>
+                      <option value="gnome-presence-applet">gnome-presence-applet</option>
+                      <option value="hal-info">hal-info</option>
+                      <option value="hald">hald</option>
+                      <option value="handhelds">handhelds</option>
+                      <option value="haze">haze</option>
+                      <option value="helper: Candidate window">helper: Candidate window</option>
+                      <option value="helper: dict">helper: dict</option>
+                      <option value="helper: others">helper: others</option>
+                      <option value="helper: pref">helper: pref</option>
+                      <option value="helper: toolbar">helper: toolbar</option>
+                      <option value="hicolor">hicolor</option>
+                      <option value="iceauth">iceauth</option>
+                      <option value="icon theme">icon theme</option>
+                      <option value="idle">idle</option>
+                      <option value="image backend">image backend</option>
+                      <option value="imake">imake</option>
+                      <option value="infrastructure">infrastructure</option>
+                      <option value="init">init</option>
+                      <option value="java">java</option>
+                      <option value="joining">joining</option>
+                      <option value="kdrive">kdrive</option>
+                      <option value="ldtprecord">ldtprecord</option>
+                      <option value="ldtprunner">ldtprunner</option>
+                      <option value="libGL">libGL</option>
+                      <option value="libICE">libICE</option>
+                      <option value="libSM">libSM</option>
+                      <option value="libX11">libX11</option>
+                      <option value="libXRes">libXRes</option>
+                      <option value="libXau">libXau</option>
+                      <option value="libXaw">libXaw</option>
+                      <option value="libXcomposite">libXcomposite</option>
+                      <option value="libXcursor">libXcursor</option>
+                      <option value="libXdamage">libXdamage</option>
+                      <option value="libXdmcp">libXdmcp</option>
+                      <option value="libXext">libXext</option>
+                      <option value="libXfixes">libXfixes</option>
+                      <option value="libXfont">libXfont</option>
+                      <option value="libXi">libXi</option>
+                      <option value="libXmu">libXmu</option>
+                      <option value="libXpm">libXpm</option>
+                      <option value="libXrandr">libXrandr</option>
+                      <option value="libXrender">libXrender</option>
+                      <option value="libXt">libXt</option>
+                      <option value="libXtrans">libXtrans</option>
+                      <option value="libXv">libXv</option>
+                      <option value="libXvMC">libXvMC</option>
+                      <option value="libavahi">libavahi</option>
+                      <option value="libavahi-core">libavahi-core</option>
+                      <option value="libbsd">libbsd</option>
+                      <option value="libck-connector">libck-connector</option>
+                      <option value="libdrm">libdrm</option>
+                      <option value="libfprint">libfprint</option>
+                      <option value="libgalago">libgalago</option>
+                      <option value="libgalago-gtk">libgalago-gtk</option>
+                      <option value="libglx">libglx</option>
+                      <option value="libhal">libhal</option>
+                      <option value="libjingle transmitter">libjingle transmitter</option>
+                      <option value="libjpeg">libjpeg</option>
+                      <option value="libjpeg-progs">libjpeg-progs</option>
+                      <option value="libnotify">libnotify</option>
+                      <option value="libpciaccess">libpciaccess</option>
+                      <option value="libpixman">libpixman</option>
+                      <option value="libpolkit">libpolkit</option>
+                      <option value="library">library</option>
+                      <option value="libreoffice">libreoffice</option>
+                      <option value="libsb2">libsb2</option>
+                      <option value="libtelepathy">libtelepathy</option>
+                      <option value="libuim">libuim</option>
+                      <option value="libuim: Scheme interpreter">libuim: Scheme interpreter</option>
+                      <option value="linux-md">linux-md</option>
+                      <option value="listres">listres</option>
+                      <option value="local devices">local devices</option>
+                      <option value="logger">logger</option>
+                      <option value="ltspcfg">ltspcfg</option>
+                      <option value="luit">luit</option>
+                      <option value="luks">luks</option>
+                      <option value="m5-account-plugins">m5-account-plugins</option>
+                      <option value="mappings">mappings</option>
+                      <option value="misc">misc</option>
+                      <option value="mission-control">mission-control</option>
+                      <option value="mkcfm">mkcfm</option>
+                      <option value="mkfontdir">mkfontdir</option>
+                      <option value="mkfontscale">mkfontscale</option>
+                      <option value="nao">nao</option>
+                      <option value="ncal">ncal</option>
+                      <option value="nco">nco</option>
+                      <option value="ndo">ndo</option>
+                      <option value="network">network</option>
+                      <option value="new-ontology">new-ontology</option>
+                      <option value="nexif">nexif</option>
+                      <option value="nfo">nfo</option>
+                      <option value="nid3">nid3</option>
+                      <option value="nie">nie</option>
+                      <option value="nmm">nmm</option>
+                      <option value="nmo">nmo</option>
+                      <option value="notification-daemon">notification-daemon</option>
+                      <option value="nrl">nrl</option>
+                      <option value="nso">nso</option>
+                      <option value="nuao">nuao</option>
+                      <option value="operations">operations</option>
+                      <option value="orth">orth</option>
+                      <option value="packagekit-qt">packagekit-qt</option>
+                      <option value="packagekit-sharp">packagekit-sharp</option>
+                      <option value="papyon">papyon</option>
+                      <option value="pdf backend">pdf backend</option>
+                      <option value="perl">perl</option>
+                      <option value="pimo">pimo</option>
+                      <option value="plugin">plugin</option>
+                      <option value="png functions">png functions</option>
+                      <option value="postscript backend">postscript backend</option>
+                      <option value="protocol">protocol</option>
+                      <option value="pymsn">pymsn</option>
+                      <option value="python">python</option>
+                      <option value="qt backend">qt backend</option>
+                      <option value="qt frontend">qt frontend</option>
+                      <option value="qt4 frontend">qt4 frontend</option>
+                      <option value="quartz backend">quartz backend</option>
+                      <option value="quartz font backend">quartz font backend</option>
+                      <option value="redglass">redglass</option>
+                      <option value="ring">ring</option>
+                      <option value="salut">salut</option>
+                      <option value="script plugin">script plugin</option>
+                      <option value="server">server</option>
+                      <option value="setxkbmap">setxkbmap</option>
+                      <option value="shaping">shaping</option>
+                      <option value="shares">shares</option>
+                      <option value="showfont">showfont</option>
+                      <option value="smproxy">smproxy</option>
+                      <option value="sofiasip">sofiasip</option>
+                      <option value="spec">spec</option>
+                      <option value="splash backend">splash backend</option>
+                      <option value="src">src</option>
+                      <option value="ssh-contact">ssh-contact</option>
+                      <option value="stream-engine">stream-engine</option>
+                      <option value="sunshine">sunshine</option>
+                      <option value="svg backend">svg backend</option>
+                      <option value="test-report">test-report</option>
+                      <option value="tests">tests</option>
+                      <option value="time">time</option>
+                      <option value="tinderclient">tinderclient</option>
+                      <option value="tinderserver">tinderserver</option>
+                      <option value="tools">tools</option>
+                      <option value="tp-doc">tp-doc</option>
+                      <option value="tp-farsight">tp-farsight</option>
+                      <option value="tp-glib">tp-glib</option>
+                      <option value="tp-inspector">tp-inspector</option>
+                      <option value="tp-python">tp-python</option>
+                      <option value="tp-qt4">tp-qt4</option>
+                      <option value="tp-spec">tp-spec</option>
+                      <option value="transset">transset</option>
+                      <option value="trash">trash</option>
+                      <option value="trees">trees</option>
+                      <option value="twm">twm</option>
+                      <option value="unknown">unknown</option>
+                      <option value="users">users</option>
+                      <option value="viewres">viewres</option>
+                      <option value="web">web</option>
+                      <option value="website">website</option>
+                      <option value="whiteglass">whiteglass</option>
+                      <option value="wilde">wilde</option>
+                      <option value="win32 backend">win32 backend</option>
+                      <option value="win32 qxl">win32 qxl</option>
+                      <option value="win32 vd_agent">win32 vd_agent</option>
+                      <option value="win32 vdi_port">win32 vdi_port</option>
+                      <option value="wininfo">wininfo</option>
+                      <option value="www">www</option>
+                      <option value="x11perf">x11perf</option>
+                      <option value="xauth">xauth</option>
+                      <option value="xcb backend">xcb backend</option>
+                      <option value="xcmsdb">xcmsdb</option>
+                      <option value="xcompmgr">xcompmgr</option>
+                      <option value="xcursorgen">xcursorgen</option>
+                      <option value="xdg-utils">xdg-utils</option>
+                      <option value="xdgmime">xdgmime</option>
+                      <option value="xdm">xdm</option>
+                      <option value="xdpyinfo">xdpyinfo</option>
+                      <option value="xev">xev</option>
+                      <option value="xfd">xfd</option>
+                      <option value="xfontsel">xfontsel</option>
+                      <option value="xfs">xfs</option>
+                      <option value="xfsinfo">xfsinfo</option>
+                      <option value="xgamma">xgamma</option>
+                      <option value="xhost">xhost</option>
+                      <option value="xinit">xinit</option>
+                      <option value="xkbcomp">xkbcomp</option>
+                      <option value="xkbprint">xkbprint</option>
+                      <option value="xkbutils">xkbutils</option>
+                      <option value="xkill">xkill</option>
+                      <option value="xlib backend">xlib backend</option>
+                      <option value="xlsatoms">xlsatoms</option>
+                      <option value="xlsclients">xlsclients</option>
+                      <option value="xlsfonts">xlsfonts</option>
+                      <option value="xmodmap">xmodmap</option>
+                      <option value="xping">xping</option>
+                      <option value="xprop">xprop</option>
+                      <option value="xrandr">xrandr</option>
+                      <option value="xrdb">xrdb</option>
+                      <option value="xrefresh">xrefresh</option>
+                      <option value="xset">xset</option>
+                      <option value="xsetmode">xsetmode</option>
+                      <option value="xsetpointer">xsetpointer</option>
+                      <option value="xsetroot">xsetroot</option>
+                      <option value="xsm">xsm</option>
+                      <option value="xterm">xterm</option>
+                      <option value="xvidtune">xvidtune</option>
+                      <option value="xvinfo">xvinfo</option>
+                      <option value="xwininfo">xwininfo</option>
+                      <option value="yafono">yafono</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody></table>
+          </td>
+          <td valign="top">
+            <table>
+              <tbody><tr valign="bottom">
+                <th align="left">
+                  <label for="version">Version</label>:
+                </th>
+              </tr>
+              <tr valign="top"><td align="left">
+    <select name="version" id="version" multiple="multiple" size="5">
+        <option value="0.0.1">0.0.1
+        </option>
+        <option value="0.1.3">0.1.3
+        </option>
+        <option value="0.2.0">0.2.0
+        </option>
+        <option value="0.3.5">0.3.5
+        </option>
+        <option value="0.4">0.4
+        </option>
+        <option value="0.4.5">0.4.5
+        </option>
+        <option value="0.5.0">0.5.0
+        </option>
+        <option value="0.5.1">0.5.1
+        </option>
+        <option value="0.5.2">0.5.2
+        </option>
+        <option value="0.5.3">0.5.3
+        </option>
+        <option value="0.5.4">0.5.4
+        </option>
+        <option value="0.5.5">0.5.5
+        </option>
+        <option value="0.6">0.6
+        </option>
+        <option value="0.6.0">0.6.0
+        </option>
+        <option value="0.6.2">0.6.2
+        </option>
+        <option value="0.6.4">0.6.4
+        </option>
+        <option value="0.6.6">0.6.6
+        </option>
+        <option value="0.7.x">0.7.x
+        </option>
+        <option value="0.8">0.8
+        </option>
+        <option value="0.9">0.9
+        </option>
+        <option value="0.9.3">0.9.3
+        </option>
+        <option value="0.9.91 (1.0-RC1)">0.9.91 (1.0-RC1)
+        </option>
+        <option value="0.9.92 (1.0-RC2)">0.9.92 (1.0-RC2)
+        </option>
+        <option value="0.9.93 (1.0-RC3)">0.9.93 (1.0-RC3)
+        </option>
+        <option value="0.9.x">0.9.x
+        </option>
+        <option value="0.10">0.10
+        </option>
+        <option value="0.10.4">0.10.4
+        </option>
+        <option value="0.11">0.11
+        </option>
+        <option value="0.12">0.12
+        </option>
+        <option value="0.13">0.13
+        </option>
+        <option value="0.14.0">0.14.0
+        </option>
+        <option value="0.16.x">0.16.x
+        </option>
+        <option value="0.18.x">0.18.x
+        </option>
+        <option value="1.0">1.0
+        </option>
+        <option value="1.0.0">1.0.0
+        </option>
+        <option value="1.0.1">1.0.1
+        </option>
+        <option value="1.0.2">1.0.2
+        </option>
+        <option value="1.0.3">1.0.3
+        </option>
+        <option value="1.0.4">1.0.4
+        </option>
+        <option value="1.0.x">1.0.x
+        </option>
+        <option value="1.1">1.1
+        </option>
+        <option value="1.1.0">1.1.0
+        </option>
+        <option value="1.1.0 rc1">1.1.0 rc1
+        </option>
+        <option value="1.1.0 rc2">1.1.0 rc2
+        </option>
+        <option value="1.1.0 rc3">1.1.0 rc3
+        </option>
+        <option value="1.1.1">1.1.1
+        </option>
+        <option value="1.1.2">1.1.2
+        </option>
+        <option value="1.1.3">1.1.3
+        </option>
+        <option value="1.1.4">1.1.4
+        </option>
+        <option value="1.1.5">1.1.5
+        </option>
+        <option value="1.1.6">1.1.6
+        </option>
+        <option value="1.1.7">1.1.7
+        </option>
+        <option value="1.1.8">1.1.8
+        </option>
+        <option value="1.1.9">1.1.9
+        </option>
+        <option value="1.1.10">1.1.10
+        </option>
+        <option value="1.1.11">1.1.11
+        </option>
+        <option value="1.2.0">1.2.0
+        </option>
+        <option value="1.2.1">1.2.1
+        </option>
+        <option value="1.2.2">1.2.2
+        </option>
+        <option value="1.2.3">1.2.3
+        </option>
+        <option value="1.2.4">1.2.4
+        </option>
+        <option value="1.2.5">1.2.5
+        </option>
+        <option value="1.2.6">1.2.6
+        </option>
+        <option value="1.2.7">1.2.7
+        </option>
+        <option value="1.2.x">1.2.x
+        </option>
+        <option value="1.3.2">1.3.2
+        </option>
+        <option value="1.3.4">1.3.4
+        </option>
+        <option value="1.3.5">1.3.5
+        </option>
+        <option value="1.3.6">1.3.6
+        </option>
+        <option value="1.3.7">1.3.7
+        </option>
+        <option value="1.3.8">1.3.8
+        </option>
+        <option value="1.3.9">1.3.9
+        </option>
+        <option value="1.3.10">1.3.10
+        </option>
+        <option value="1.3.11">1.3.11
+        </option>
+        <option value="1.3.12">1.3.12
+        </option>
+        <option value="1.3.13">1.3.13
+        </option>
+        <option value="1.3.14">1.3.14
+        </option>
+        <option value="1.3.15">1.3.15
+        </option>
+        <option value="1.3.16">1.3.16
+        </option>
+        <option value="1.3.17">1.3.17
+        </option>
+        <option value="1.3.x (devel)">1.3.x (devel)
+        </option>
+        <option value="1.4.0">1.4.0
+        </option>
+        <option value="1.4.1">1.4.1
+        </option>
+        <option value="1.4.2">1.4.2
+        </option>
+        <option value="1.4.3">1.4.3
+        </option>
+        <option value="1.4.4">1.4.4
+        </option>
+        <option value="1.4.5">1.4.5
+        </option>
+        <option value="1.4.6">1.4.6
+        </option>
+        <option value="1.4.7">1.4.7
+        </option>
+        <option value="1.4.8">1.4.8
+        </option>
+        <option value="1.4.9">1.4.9
+        </option>
+        <option value="1.4.10">1.4.10
+        </option>
+        <option value="1.4.12">1.4.12
+        </option>
+        <option value="1.4.13">1.4.13
+        </option>
+        <option value="1.4.14">1.4.14
+        </option>
+        <option value="1.4.15">1.4.15
+        </option>
+        <option value="1.4.x">1.4.x
+        </option>
+        <option value="1.5.1">1.5.1
+        </option>
+        <option value="1.5.2">1.5.2
+        </option>
+        <option value="1.5.3">1.5.3
+        </option>
+        <option value="1.5.4">1.5.4
+        </option>
+        <option value="1.5.5">1.5.5
+        </option>
+        <option value="1.5.6">1.5.6
+        </option>
+        <option value="1.5.7">1.5.7
+        </option>
+        <option value="1.5.8">1.5.8
+        </option>
+        <option value="1.5.9">1.5.9
+        </option>
+        <option value="1.5.10">1.5.10
+        </option>
+        <option value="1.5.11">1.5.11
+        </option>
+        <option value="1.5.12">1.5.12
+        </option>
+        <option value="1.5.13">1.5.13
+        </option>
+        <option value="1.5.14">1.5.14
+        </option>
+        <option value="1.5.15">1.5.15
+        </option>
+        <option value="1.5.16">1.5.16
+        </option>
+        <option value="1.5.17">1.5.17
+        </option>
+        <option value="1.5.18">1.5.18
+        </option>
+        <option value="1.5.19">1.5.19
+        </option>
+        <option value="1.5.20">1.5.20
+        </option>
+        <option value="1.5.21">1.5.21
+        </option>
+        <option value="1.6.0">1.6.0
+        </option>
+        <option value="1.6.1">1.6.1
+        </option>
+        <option value="1.6.2">1.6.2
+        </option>
+        <option value="1.6.3">1.6.3
+        </option>
+        <option value="1.6.4">1.6.4
+        </option>
+        <option value="1.6.5">1.6.5
+        </option>
+        <option value="1.7.2">1.7.2
+        </option>
+        <option value="1.7.3">1.7.3
+        </option>
+        <option value="1.7.4">1.7.4
+        </option>
+        <option value="1.7.5">1.7.5
+        </option>
+        <option value="1.7.6">1.7.6
+        </option>
+        <option value="1.7.7">1.7.7
+        </option>
+        <option value="1.8.0">1.8.0
+        </option>
+        <option value="1.8.1">1.8.1
+        </option>
+        <option value="1.8.2">1.8.2
+        </option>
+        <option value="1.8.3">1.8.3
+        </option>
+        <option value="1.8.4">1.8.4
+        </option>
+        <option value="1.8.5">1.8.5
+        </option>
+        <option value="1.8.6">1.8.6
+        </option>
+        <option value="1.8.8">1.8.8
+        </option>
+        <option value="1.8.10">1.8.10
+        </option>
+        <option value="1.8.11">1.8.11
+        </option>
+        <option value="1.9.1">1.9.1
+        </option>
+        <option value="1.9.2">1.9.2
+        </option>
+        <option value="1.9.3">1.9.3
+        </option>
+        <option value="1.9.4">1.9.4
+        </option>
+        <option value="1.9.5">1.9.5
+        </option>
+        <option value="1.9.6">1.9.6
+        </option>
+        <option value="1.9.7">1.9.7
+        </option>
+        <option value="1.9.8">1.9.8
+        </option>
+        <option value="1.9.9">1.9.9
+        </option>
+        <option value="1.9.10">1.9.10
+        </option>
+        <option value="1.9.11">1.9.11
+        </option>
+        <option value="1.9.12">1.9.12
+        </option>
+        <option value="1.9.13">1.9.13
+        </option>
+        <option value="1.9.14">1.9.14
+        </option>
+        <option value="1.9.15">1.9.15
+        </option>
+        <option value="1.10.0">1.10.0
+        </option>
+        <option value="1.10.1">1.10.1
+        </option>
+        <option value="1.99.0.x">1.99.0.x
+        </option>
+        <option value="2.0">2.0
+        </option>
+        <option value="2.1">2.1
+        </option>
+        <option value="2.2">2.2
+        </option>
+        <option value="2.3">2.3
+        </option>
+        <option value="2.4">2.4
+        </option>
+        <option value="2.5">2.5
+        </option>
+        <option value="2.6">2.6
+        </option>
+        <option value="2.7">2.7
+        </option>
+        <option value="2.8">2.8
+        </option>
+        <option value="2_1">2_1
+        </option>
+        <option value="5.0.2">5.0.2
+        </option>
+        <option value="5.1">5.1
+        </option>
+        <option value="5.4">5.4
+        </option>
+        <option value="5.5">5.5
+        </option>
+        <option value="5.6">5.6
+        </option>
+        <option value="5.7">5.7
+        </option>
+        <option value="6.0.1">6.0.1
+        </option>
+        <option value="6.1">6.1
+        </option>
+        <option value="6.2">6.2
+        </option>
+        <option value="6.2.1">6.2.1
+        </option>
+        <option value="6.3.1">6.3.1
+        </option>
+        <option value="6.3.2">6.3.2
+        </option>
+        <option value="6.4">6.4
+        </option>
+        <option value="6.5">6.5
+        </option>
+        <option value="6.7.0">6.7.0
+        </option>
+        <option value="6.8.0">6.8.0
+        </option>
+        <option value="6.8.1">6.8.1
+        </option>
+        <option value="6.8.2">6.8.2
+        </option>
+        <option value="6.8.99.1">6.8.99.1
+        </option>
+        <option value="6.8.99.2">6.8.99.2
+        </option>
+        <option value="6.8.99.3">6.8.99.3
+        </option>
+        <option value="6.8.99.4">6.8.99.4
+        </option>
+        <option value="6.8.99.5">6.8.99.5
+        </option>
+        <option value="6.8.99.6">6.8.99.6
+        </option>
+        <option value="6.8.99.7">6.8.99.7
+        </option>
+        <option value="6.8.99.8">6.8.99.8
+        </option>
+        <option value="6.8.99.9">6.8.99.9
+        </option>
+        <option value="6.8.99.10">6.8.99.10
+        </option>
+        <option value="6.8.99.11">6.8.99.11
+        </option>
+        <option value="6.8.99.12">6.8.99.12
+        </option>
+        <option value="6.8.99.13">6.8.99.13
+        </option>
+        <option value="6.8.99.14">6.8.99.14
+        </option>
+        <option value="6.8.99.15">6.8.99.15
+        </option>
+        <option value="6.8.99.16">6.8.99.16
+        </option>
+        <option value="6.8.99.900 (6.9 RC0)">6.8.99.900 (6.9 RC0)
+        </option>
+        <option value="6.8.99.901 (6.9 RC1)">6.8.99.901 (6.9 RC1)
+        </option>
+        <option value="6.8.99.902 (6.9 RC2)">6.8.99.902 (6.9 RC2)
+        </option>
+        <option value="6.8.99.903 (6.9 RC3)">6.8.99.903 (6.9 RC3)
+        </option>
+        <option value="6.8.99.904 (6.9 RC4)">6.8.99.904 (6.9 RC4)
+        </option>
+        <option value="6.9.0">6.9.0
+        </option>
+        <option value="6.99.99.900 (7.0 RC0)">6.99.99.900 (7.0 RC0)
+        </option>
+        <option value="6.99.99.901 (7.0 RC1)">6.99.99.901 (7.0 RC1)
+        </option>
+        <option value="6.99.99.902 (7.0 RC2)">6.99.99.902 (7.0 RC2)
+        </option>
+        <option value="6.99.99.903 (7.0 RC3)">6.99.99.903 (7.0 RC3)
+        </option>
+        <option value="6.99.99.904 (7.0 RC4)">6.99.99.904 (7.0 RC4)
+        </option>
+        <option value="6b">6b
+        </option>
+        <option value="6c">6c
+        </option>
+        <option value="7.0">7.0
+        </option>
+        <option value="7.0.0">7.0.0
+        </option>
+        <option value="7.0.3">7.0.3
+        </option>
+        <option value="7.0.99.901 (7.1RC1)">7.0.99.901 (7.1RC1)
+        </option>
+        <option value="7.0.99.902 (7.1RC2)">7.0.99.902 (7.1RC2)
+        </option>
+        <option value="7.0.99.903 (7.1RC3)">7.0.99.903 (7.1RC3)
+        </option>
+        <option value="7.1">7.1
+        </option>
+        <option value="7.2">7.2
+        </option>
+        <option value="7.3">7.3
+        </option>
+        <option value="7.4">7.4
+        </option>
+        <option value="7.5">7.5
+        </option>
+        <option value="7.6">7.6
+        </option>
+        <option value="ALL">ALL
+        </option>
+        <option value="beta1">beta1
+        </option>
+        <option value="beta2">beta2
+        </option>
+        <option value="beta3">beta3
+        </option>
+        <option value="beta4">beta4
+        </option>
+        <option value="CVS">CVS
+        </option>
+        <option value="CVS HEAD">CVS HEAD
+        </option>
+        <option value="DRI CVS">DRI CVS
+        </option>
+        <option value="git">git
+        </option>
+        <option value="git master">git master
+        </option>
+        <option value="HEAD">HEAD
+        </option>
+        <option value="other">other
+        </option>
+        <option value="ST-HEAD">ST-HEAD
+        </option>
+        <option value="TP">TP
+        </option>
+        <option value="unspecified">unspecified
+        </option>
+        <option value="X11R6.6">X11R6.6
+        </option>
+        <option value="XFree86 4.4.0">XFree86 4.4.0
+        </option>
+        <option value="XFree86 CVS">XFree86 CVS
+        </option>
+        <option value="XOrg 6.7.0">XOrg 6.7.0
+        </option>
+        <option value="XOrg CVS">XOrg CVS
+        </option>
+        <option value="XST-HEAD">XST-HEAD
+        </option>
+        <option value="XST-XORG-RELEASE-1-STSF">XST-XORG-RELEASE-1-STSF
+        </option>
+    </select>
+  </td>
+              </tr>
+            </tbody></table>
+          </td>
+        </tr>
+      </tbody></table>
+    </td>
+  </tr>
+
+
+
+
+    <tr>
+      <th align="right">
+        <label for="longdesc" accesskey="c">A&nbsp;<u>C</u>omment</label>:
+      </th>
+      <td><select name="longdesc_type">
+    <option selected="selected" value="allwordssubstr">contains all of the strings</option>
+    <option value="anywordssubstr">contains any of the strings</option>
+    <option value="substring">contains the string</option>
+    <option value="casesubstring">contains the string (exact case)</option>
+    <option value="allwords">contains all of the words</option>
+    <option value="anywords">contains any of the words</option>
+    <option value="regexp">matches regular expression</option>
+    <option value="notregexp">does not match regular expression</option>
+</select>
+      </td>
+      <td><input name="longdesc" id="longdesc" size="40">
+      </td>
+      <td></td>
+    </tr>
+
+    <tr>
+      <th align="right">
+        <label for="bug_file_loc" accesskey="u">The&nbsp;<u>U</u>RL</label>:
+      </th>
+      <td><select name="bug_file_loc_type">
+    <option selected="selected" value="allwordssubstr">contains all of the strings</option>
+    <option value="anywordssubstr">contains any of the strings</option>
+    <option value="substring">contains the string</option>
+    <option value="casesubstring">contains the string (exact case)</option>
+    <option value="allwords">contains all of the words</option>
+    <option value="anywords">contains any of the words</option>
+    <option value="regexp">matches regular expression</option>
+    <option value="notregexp">does not match regular expression</option>
+</select>
+      </td>
+      <td><input name="bug_file_loc" id="bug_file_loc" size="40">
+      </td>
+      <td></td>
+    </tr>
+
+    <tr>
+      <th align="right">
+        <label for="status_whiteboard" accesskey="w"><u>W</u>hiteboard</label>:
+      </th>
+      <td><select name="status_whiteboard_type">
+    <option selected="selected" value="allwordssubstr">contains all of the strings</option>
+    <option value="anywordssubstr">contains any of the strings</option>
+    <option value="substring">contains the string</option>
+    <option value="casesubstring">contains the string (exact case)</option>
+    <option value="allwords">contains all of the words</option>
+    <option value="anywords">contains any of the words</option>
+    <option value="regexp">matches regular expression</option>
+    <option value="notregexp">does not match regular expression</option>
+</select>
+      </td>
+      <td><input name="status_whiteboard" id="status_whiteboard" size="40">
+      </td>
+      <td></td>
+    </tr>
+
+    <tr>
+      <th align="right">
+        <label for="keywords" accesskey="k"><a href="https://bugzilla.freedesktop.org/describekeywords.cgi"><u>K</u>eywords</a></label>:
+      </th>
+      <td><select name="keywords_type">
+    <option selected="selected" value="allwords">contains all of the words</option>
+    <option value="anywords">contains any of the words</option>
+    <option value="nowords">contains none of the words</option>
+</select>
+      </td>
+      <td>
+        <input name="keywords" id="keywords" size="40">
+      </td>
+    </tr>
+
+  
+  
+</tbody></table>
+
+<hr>
+
+
+
+<table>
+  <tbody><tr>
+    <td>
+      <table>
+        <tbody><tr>
+          <th align="left">
+            <label for="bug_status" accesskey="a">St<u>a</u>tus</label>:
+          </th>
+        </tr>
+        <tr valign="top"><td align="left">
+    <select name="bug_status" id="bug_status" multiple="multiple" size="7">
+        <option value="UNCONFIRMED">UNCONFIRMED
+        </option>
+        <option value="NEW" selected="selected">NEW
+        </option>
+        <option value="ASSIGNED" selected="selected">ASSIGNED
+        </option>
+        <option value="REOPENED" selected="selected">REOPENED
+        </option>
+        <option value="RESOLVED">RESOLVED
+        </option>
+        <option value="VERIFIED">VERIFIED
+        </option>
+        <option value="CLOSED">CLOSED
+        </option>
+        <option value="NEEDINFO">NEEDINFO
+        </option>
+        <option value="PLEASETEST">PLEASETEST
+        </option>
+    </select>
+  </td>
+        </tr>
+      </tbody></table>
+    </td>
+    <td>
+      <table>
+        <tbody><tr>
+          <th align="left">
+            <label for="resolution" accesskey="r"><u>R</u>esolution</label>:
+          </th>
+        </tr>
+        <tr valign="top"><td align="left">
+    <select name="resolution" id="resolution" multiple="multiple" size="7">
+        <option value="FIXED">FIXED
+        </option>
+        <option value="INVALID">INVALID
+        </option>
+        <option value="WONTFIX">WONTFIX
+        </option>
+        <option value="DUPLICATE">DUPLICATE
+        </option>
+        <option value="WORKSFORME">WORKSFORME
+        </option>
+        <option value="MOVED">MOVED
+        </option>
+        <option value="NOTABUG">NOTABUG
+        </option>
+        <option value="NOTOURBUG">NOTOURBUG
+        </option>
+        <option value="---">---
+        </option>
+    </select>
+  </td>
+        </tr>
+      </tbody></table>
+    </td>
+    <td>
+      <table>
+        <tbody><tr>
+          <th align="left">
+            <label for="bug_severity">Severity</label>:
+          </th>
+        </tr>
+        <tr valign="top"><td align="left">
+    <select name="bug_severity" id="bug_severity" multiple="multiple" size="7">
+        <option value="blocker">blocker
+        </option>
+        <option value="critical">critical
+        </option>
+        <option value="major">major
+        </option>
+        <option value="normal">normal
+        </option>
+        <option value="minor">minor
+        </option>
+        <option value="trivial">trivial
+        </option>
+        <option value="enhancement">enhancement
+        </option>
+    </select>
+  </td>
+        </tr>
+      </tbody></table>
+    </td>
+    <td>
+      <table>
+        <tbody><tr>
+          <th align="left">
+            <label for="priority" accesskey="i">Pr<u>i</u>ority</label>:
+          </th>
+        </tr>
+        <tr valign="top"><td align="left">
+    <select name="priority" id="priority" multiple="multiple" size="7">
+        <option value="highest">highest
+        </option>
+        <option value="high">high
+        </option>
+        <option value="medium">medium
+        </option>
+        <option value="low">low
+        </option>
+        <option value="lowest">lowest
+        </option>
+    </select>
+  </td>
+        </tr>
+      </tbody></table>
+    </td>
+    <td>
+      <table>
+        <tbody><tr>
+          <th align="left">
+            <label for="rep_platform" accesskey="h"><u>H</u>ardware</label>:
+          </th>
+        </tr>
+        <tr valign="top"><td align="left">
+    <select name="rep_platform" id="rep_platform" multiple="multiple" size="7">
+        <option value="All">All
+        </option>
+        <option value="x86 (IA32)">x86 (IA32)
+        </option>
+        <option value="x86-64 (AMD64)">x86-64 (AMD64)
+        </option>
+        <option value="PowerPC">PowerPC
+        </option>
+        <option value="IA64 (Itanium)">IA64 (Itanium)
+        </option>
+        <option value="SPARC">SPARC
+        </option>
+        <option value="ARM">ARM
+        </option>
+        <option value="Alpha">Alpha
+        </option>
+        <option value="PA-RISC (HP)">PA-RISC (HP)
+        </option>
+        <option value="SGI">SGI
+        </option>
+        <option value="Other">Other
+        </option>
+    </select>
+  </td>
+        </tr>
+      </tbody></table>
+    </td>
+    <td>
+      <table>
+        <tbody><tr>
+          <th align="left">
+            <label for="op_sys" accesskey="o"><u>O</u>S</label>:
+          </th>
+        </tr>
+        <tr valign="top"><td align="left">
+    <select name="op_sys" id="op_sys" multiple="multiple" size="7">
+        <option value="All">All
+        </option>
+        <option value="Linux (All)">Linux (All)
+        </option>
+        <option value="FreeBSD">FreeBSD
+        </option>
+        <option value="NetBSD">NetBSD
+        </option>
+        <option value="OpenBSD">OpenBSD
+        </option>
+        <option value="BSD (Others)">BSD (Others)
+        </option>
+        <option value="Mac OS X (All)">Mac OS X (All)
+        </option>
+        <option value="Solaris">Solaris
+        </option>
+        <option value="Windows (All)">Windows (All)
+        </option>
+        <option value="Cygwin">Cygwin
+        </option>
+        <option value="AIX">AIX
+        </option>
+        <option value="HP-UX">HP-UX
+        </option>
+        <option value="IRIX">IRIX
+        </option>
+        <option value="Interix">Interix
+        </option>
+        <option value="other">other
+        </option>
+    </select>
+  </td>
+        </tr>
+      </tbody></table>
+    </td>
+  </tr>
+</tbody></table>
+
+
+
+<table>
+  <tbody><tr>
+    <td>
+      <fieldset>
+        <legend>
+          <strong>
+              Email Addresses and Bug Numbers
+          </strong>
+        </legend>
+
+
+<table>
+  <tbody><tr>
+    <td>
+
+
+<table cellpadding="0" cellspacing="0">
+  <tbody><tr>
+    <td>
+      Any of:
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <input name="emailassigned_to1" id="emailassigned_to1" value="1" checked="checked" type="checkbox">
+      <label for="emailassigned_to1">
+        the bug assignee
+      </label>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <input name="emailreporter1" id="emailreporter1" value="1" type="checkbox">
+      <label for="emailreporter1">
+        the reporter
+      </label>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <input name="emailqa_contact1" id="emailqa_contact1" value="1" type="checkbox">
+      <label for="emailqa_contact1">
+        the QA contact
+      </label>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <input name="emailcc1" id="emailcc1" value="1" type="checkbox">
+      <label for="emailcc1">
+        a CC list member
+      </label>
+    </td>
+  </tr>
+  <tr>
+    <td>
+        <input name="emaillongdesc1" id="emaillongdesc1" value="1" type="checkbox">
+      <label for="emaillongdesc1">
+        a commenter
+      </label>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <select name="emailtype1">
+
+        <option selected="selected" value="substring">contains</option>
+
+        <option value="exact">is</option>
+
+        <option value="notequals">is not</option>
+
+        <option value="regexp">matches regexp</option>
+
+        <option value="notregexp">doesn't match regexp</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <input name="email1" size="25">
+    </td>
+  </tr>
+</tbody></table>
+
+
+    </td>
+    <td>
+
+
+<table cellpadding="0" cellspacing="0">
+  <tbody><tr>
+    <td>
+      Any of:
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <input name="emailassigned_to2" id="emailassigned_to2" value="1" checked="checked" type="checkbox">
+      <label for="emailassigned_to2">
+        the bug assignee
+      </label>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <input name="emailreporter2" id="emailreporter2" value="1" checked="checked" type="checkbox">
+      <label for="emailreporter2">
+        the reporter
+      </label>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <input name="emailqa_contact2" id="emailqa_contact2" value="1" checked="checked" type="checkbox">
+      <label for="emailqa_contact2">
+        the QA contact
+      </label>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <input name="emailcc2" id="emailcc2" value="1" checked="checked" type="checkbox">
+      <label for="emailcc2">
+        a CC list member
+      </label>
+    </td>
+  </tr>
+  <tr>
+    <td>
+        <input name="emaillongdesc2" id="emaillongdesc2" value="1" type="checkbox">
+      <label for="emaillongdesc2">
+        a commenter
+      </label>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <select name="emailtype2">
+
+        <option selected="selected" value="substring">contains</option>
+
+        <option value="exact">is</option>
+
+        <option value="notequals">is not</option>
+
+        <option value="regexp">matches regexp</option>
+
+        <option value="notregexp">doesn't match regexp</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <input name="email2" size="25">
+    </td>
+  </tr>
+</tbody></table>
+
+
+    </td>
+  </tr>
+</tbody></table>
+<hr>
+<table>
+  <tbody><tr>
+    <td>
+      <select name="bugidtype">
+        <option selected="selected" value="include">Only include</option>
+        <option value="exclude">Exclude</option>
+      </select>
+      <label for="bug_id">bugs numbered</label>:
+    </td>
+    <td>
+      <input name="bug_id" id="bug_id" size="20" type="text">
+    </td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>(comma-separated list)</td>
+  </tr>
+</tbody></table>
+
+
+      </fieldset>
+    </td>
+   
+
+
+    <td valign="top">
+      <fieldset>
+        <legend><strong>Bug Changes</strong></legend>
+
+
+<dl class="bug_changes">
+  <dt>
+    <label for="chfieldfrom">Only bugs changed between</label>:
+  </dt>
+  <dd>
+    <input name="chfieldfrom" id="chfieldfrom" size="10">
+    and <input name="chfieldto" size="10" value="Now">
+    <br>(YYYY-MM-DD or relative dates)
+  </dd>
+  <dt>
+    <label for="chfield">where one or more of the following changed</label>:
+  </dt>
+  <dd>
+    
+
+    <select name="chfield" id="chfield" multiple="multiple" size="4">
+      <option value="[Bug creation]">[Bug creation]</option>
+      <option value="alias">Alias</option>
+      <option value="assigned_to">Assignee</option>
+      <option value="cclist_accessible">CC list accessible</option>
+      <option value="component">Component</option>
+      <option value="deadline">Deadline</option>
+      <option value="everconfirmed">Ever confirmed</option>
+      <option value="rep_platform">Hardware</option>
+      <option value="keywords">Keywords</option>
+      <option value="op_sys">OS</option>
+      <option value="priority">Priority</option>
+      <option value="product">Product</option>
+      <option value="qa_contact">QA Contact</option>
+      <option value="reporter_accessible">Reporter accessible</option>
+      <option value="resolution">Resolution</option>
+      <option value="bug_severity">Severity</option>
+      <option value="bug_status">Status</option>
+      <option value="short_desc">Summary</option>
+      <option value="target_milestone">Target Milestone</option>
+      <option value="bug_file_loc">URL</option>
+      <option value="version">Version</option>
+      <option value="votes">Votes</option>
+      <option value="status_whiteboard">Whiteboard</option>
+    </select>
+  </dd>
+  <dt>and <label for="chfieldvalue">the new value was</label>:</dt>
+  <dd>
+    <input name="chfieldvalue" id="chfieldvalue" size="20">
+  </dd>
+</dl>
+
+       </fieldset>
+     </td>
+  </tr>
+</tbody></table>
+<input name="cmdtype" value="doit" type="hidden">
+
+<p>
+  <label for="order">Sort results by</label>:
+  <select name="order" id="order">
+    <option value="Reuse same sort as last time" selected="selected">Reuse same sort as last time</option>
+    <option value="Bug Number">Bug Number</option>
+    <option value="Importance">Importance</option>
+    <option value="Assignee">Assignee</option>
+    <option value="Last Changed">Last Changed</option>
+  </select>
+</p>
+
+<p>  
+  <input id="Search" value="Search" type="submit">
+  
+</p>
+
+<p>
+  &nbsp;&nbsp;&nbsp;
+  <input id="remasdefault" name="remtype" value="asdefault" type="checkbox">
+  <label for="remasdefault">
+    and remember these as my default search options
+  </label>
+</p>
+
+<hr>
+<p>
+    <strong>
+      <a name="chart">Advanced Searching Using Boolean Charts</a>:
+    </strong>
+  </p>
+
+
+
+
+  <table>
+    <tbody><tr>
+      <td>
+        <input id="negate0" name="negate0" value="1" type="checkbox">
+        <label for="negate0">
+          Not (negate this whole chart)
+        </label>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <select name="field0-0-0">
+            <option selected="selected" value="noop">---
+            </option>
+            <option value="alias">Alias
+            </option>
+            <option value="assigned_to">Assignee
+            </option>
+            <option value="attachments.submitter">Attachment creator
+            </option>
+            <option value="attach_data.thedata">Attachment data
+            </option>
+            <option value="attachments.description">Attachment description
+            </option>
+            <option value="attachments.filename">Attachment filename
+            </option>
+            <option value="attachments.isurl">Attachment is a URL
+            </option>
+            <option value="attachments.isobsolete">Attachment is obsolete
+            </option>
+            <option value="attachments.ispatch">Attachment is patch
+            </option>
+            <option value="attachments.isprivate">Attachment is private
+            </option>
+            <option value="attachments.mimetype">Attachment mime type
+            </option>
+            <option value="blocked">Blocks
+            </option>
+            <option value="bug_id">Bug ID
+            </option>
+            <option value="cc">CC
+            </option>
+            <option value="cclist_accessible">CC list accessible
+            </option>
+            <option value="classification">Classification
+            </option>
+            <option value="longdesc">Comment
+            </option>
+            <option value="longdescs.isprivate">Comment is private
+            </option>
+            <option value="commenter">Commenter
+            </option>
+            <option value="component">Component
+            </option>
+            <option value="content">Content
+            </option>
+            <option value="creation_ts">Creation date
+            </option>
+            <option value="days_elapsed">Days since bug changed
+            </option>
+            <option value="dependson">Depends on
+            </option>
+            <option value="everconfirmed">Ever confirmed
+            </option>
+            <option value="flagtypes.name">Flag
+            </option>
+            <option value="requestees.login_name">Flag Requestee
+            </option>
+            <option value="setters.login_name">Flag Setter
+            </option>
+            <option value="bug_group">Group
+            </option>
+            <option value="keywords">Keywords
+            </option>
+            <option value="delta_ts">Changed
+            </option>
+            <option value="op_sys">OS
+            </option>
+            <option value="rep_platform">Hardware
+            </option>
+            <option value="priority">Priority
+            </option>
+            <option value="product">Product
+            </option>
+            <option value="qa_contact">QA Contact
+            </option>
+            <option value="reporter">Reporter
+            </option>
+            <option value="reporter_accessible">Reporter accessible
+            </option>
+            <option value="resolution">Resolution
+            </option>
+            <option value="see_also">See Also
+            </option>
+            <option value="bug_severity">Severity
+            </option>
+            <option value="bug_status">Status
+            </option>
+            <option value="status_whiteboard">Whiteboard
+            </option>
+            <option value="short_desc">Summary
+            </option>
+            <option value="target_milestone">Target Milestone
+            </option>
+            <option value="owner_idle_time">Time Since Assignee Touched
+            </option>
+            <option value="bug_file_loc">URL
+            </option>
+            <option value="version">Version
+            </option>
+            <option value="votes">Votes
+            </option>
+        </select>
+<select name="type0-0-0">
+    <option value="noop" selected="selected">---</option>
+    <option value="equals">is equal to</option>
+    <option value="notequals">is not equal to</option>
+    <option value="anyexact">is equal to any of the strings</option>
+    <option value="substring">contains the string</option>
+    <option value="casesubstring">contains the string (exact case)</option>
+    <option value="notsubstring">does not contain the string</option>
+    <option value="anywordssubstr">contains any of the strings</option>
+    <option value="allwordssubstr">contains all of the strings</option>
+    <option value="nowordssubstr">contains none of the strings</option>
+    <option value="regexp">matches regular expression</option>
+    <option value="notregexp">does not match regular expression</option>
+    <option value="lessthan">is less than</option>
+    <option value="greaterthan">is greater than</option>
+    <option value="anywords">contains any of the words</option>
+    <option value="allwords">contains all of the words</option>
+    <option value="nowords">contains none of the words</option>
+    <option value="changedbefore">changed before</option>
+    <option value="changedafter">changed after</option>
+    <option value="changedfrom">changed from</option>
+    <option value="changedto">changed to</option>
+    <option value="changedby">changed by</option>
+    <option value="matches">matches</option>
+</select>
+
+        <input name="value0-0-0"> 
+      </td>
+      
+        <td>
+          <input value="Or" onclick="this.form.action='query.cgi#chart'; this.form.method='POST'; return 1;" name="cmd-add0-0-1" id="cmd-add0-0-1" type="submit">
+        </td>
+      
+    </tr>
+    
+    <tr>
+      <td>
+        <input value="And" onclick="this.form.action='query.cgi#chart'; this.form.method='POST'; return 1;" name="cmd-add0-1-0" id="cmd-add0-1-0" type="submit">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <input value="Add another boolean chart" onclick="this.form.action='query.cgi#chart'; this.form.method='POST'; return 1;" name="cmd-add1-0-0" id="cmd-add1-0-0" type="submit">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      </td>
+    </tr>   
+    
+  </tbody></table>
+  <hr>
+
+</form>
+
+
+
+  </div>
+
+</div>
+</div>
+
+
+
+<div id="footer">
+  <div class="intro"></div>
+
+
+
+
+<ul id="useful-links">
+  <li id="links-actions"><ul class="links">
+  <li><a href="https://bugzilla.freedesktop.org/">Home</a></li>
+  <li><span class="separator">| </span><a href="https://bugzilla.freedesktop.org/enter_bug.cgi">New</a></li>
+  <li><span class="separator">| </span><a href="https://bugzilla.freedesktop.org/query.cgi">Search</a></li>
+
+  <li class="form">
+    <span class="separator">| </span>
+    <form action="buglist.cgi" method="get" onsubmit="if (this.quicksearch.value == '')
+                  { alert('Please enter one or more search terms first.');
+                    return false; } return true;">
+    <input class="txt" id="quicksearch_bottom" name="quicksearch" type="text">
+    <input class="btn" value="Find" id="find_bottom" type="submit"></form></li>
+
+  <li><span class="separator">| </span><a href="https://bugzilla.freedesktop.org/report.cgi">Reports</a></li>
+
+  <li>
+      <span class="separator">| </span>
+        <a href="https://bugzilla.freedesktop.org/request.cgi">Requests</a></li>
+
+
+  <li>
+        <span class="separator">| </span>
+        <a href="https://bugzilla.freedesktop.org/docs/html/query.html" target="_blank">Help</a>
+      </li>
+    
+      <li id="new_account_container_bottom">
+        <span class="separator">| </span>
+        <a href="https://bugzilla.freedesktop.org/createaccount.cgi">New&nbsp;Account</a>
+      </li>
+
+    <li id="mini_login_container_bottom">
+  <span class="separator">| </span>
+  <a id="login_link_bottom" href="https://bugzilla.freedesktop.org/query.cgi?GoAheadAndLogIn=1" onclick="return show_mini_login_form('_bottom')">Log In</a>
+  <form action="https://bugs.freedesktop.org/query.cgi?format=advanced&amp;field0-0-0=xyzzy" method="POST" class="mini_login bz_default_hidden" id="mini_login_bottom" onsubmit="return check_mini_login_fields( '_bottom' );">
+    <input value="login" id="Bugzilla_login_bottom" class="bz_login bz_mini_login_help" name="Bugzilla_login" onfocus="mini_login_on_focus('_bottom')">
+    <input class="bz_password bz_default_hidden" id="Bugzilla_password_bottom" name="Bugzilla_password" type="password">
+    <input class="bz_password bz_mini_login_help" id="Bugzilla_password_dummy_bottom" value="password" onfocus="mini_login_on_focus('_bottom')" type="text">
+    <input name="GoAheadAndLogIn" value="Log in" id="log_in_bottom" type="submit">
+    <script type="text/javascript">
+      mini_login_constants = {
+          "login" : "login",
+          "warning" : "You must set the login and password before logging in."
+      };
+      
+      if (YAHOO.env.ua.gecko || YAHOO.env.ua.ie || YAHOO.env.ua.opera) {
+          YAHOO.util.Event.onDOMReady(function() {
+              init_mini_login_form('_bottom');
+          });
+      }
+      else {
+          YAHOO.util.Event.on(window, 'load', function () {
+              window.setTimeout(function() {
+                  init_mini_login_form('_bottom');
+              }, 200);
+          });
+    }
+    </script>
+    <a href="#" onclick="return hide_mini_login_form('_bottom')">[x]</a>
+  </form>
+</li>
+<li id="forgot_container_bottom">
+  <span class="separator">| </span>
+  <a id="forgot_link_bottom" href="https://bugzilla.freedesktop.org/query.cgi?GoAheadAndLogIn=1#forgot" onclick="return show_forgot_form('_bottom')">Forgot Password</a>
+  <form action="token.cgi" method="post" id="forgot_form_bottom" class="mini_forgot bz_default_hidden">
+    <label>Login: <input name="loginname" size="20" type="text"></label>
+    <input id="forgot_button_bottom" value="Reset Password" type="submit">
+    <input name="a" value="reqpw" type="hidden">
+    <a href="#" onclick="return hide_forgot_form('_bottom')">[x]</a>
+  </form>
+</li>
+</ul>
+  </li>
+
+  
+    
+
+  
+
+
+  
+</ul>
+
+  <div class="outro"></div>
+</div>
+
+</body></html>

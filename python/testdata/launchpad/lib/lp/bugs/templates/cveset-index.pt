@@ -1,0 +1,79 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="malone"
+>
+  <body>
+
+<div metal:fill-slot="main">
+
+  <form method="post" style="margin-top: 1em; margin-bottom: 1em;">
+    <div>Find CVEs by number or keywords:</div>
+    <div>
+          <input name="text" size="20" tal:attributes="value view/text" />
+          <input tal:condition="view/text" type="submit"
+              value="Search Again" />
+          <input tal:condition="not: view/text" type="submit"
+              value="Search" />
+    </div>
+  </form>
+
+  <div style="margin-top: 1em; margin-bottom: 1em;">
+    <a href="/bugs/cve/+all">Show all registered CVEs</a>
+  </div>
+
+  <p class="error message" tal:repeat="notice view/notices"
+     tal:content="notice">
+    Message Goes Here
+  </p>
+
+  <tal:searching condition="view/searchrequested">
+    <table class="listing" tal:define="results view/searchresults">
+      <thead>
+        <tr class="results">
+          <th colspan="0">
+            Matches: <span tal:replace="view/matches">3</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <dl condition="view/matches" class="products">
+              <tal:block repeat="cve results">
+                <dt>
+                  <a tal:attributes="href cve/fmt:url"
+                    ><dfn tal:content="cve/title">$CVE.title</dfn></a>
+                </dt>
+                <dd tal:content="cve/description">
+                  $CVE.description
+                </dd>
+              </tal:block>
+            </dl>
+            <p tal:condition="not: view/matches">
+              <i>No matching CVE entries were found.</i>
+            </p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </tal:searching>
+
+  <tal:not_searching condition="not: view/searchrequested">
+    <h2>Recently updated CVEs</h2>
+
+    <div tal:repeat="cve context/latest_modified"
+         tal:replace="structure cve/@@+listing-detailed" />
+  </tal:not_searching>
+
+  <div tal:replace="structure context/@@+portlet-details" />
+
+</div>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<html>
+  <head>
+    <title>Verifying a download</title>
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssreset/reset.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssfonts/fonts.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssbase/base.css" />
+  </head>
+  <body>
+    <h1>Verifying a download</h1>
+
+    <p>
+      There are two ways to check the files you've downloaded from a project:
+    </p>
+
+    <ul>
+      <li>using the MD5 sum that Launchpad generates</li>
+      <li>optionally, using the digital signature generated if the uploader
+          signed the file.</li>
+    </ul>
+
+    <p>
+      The difference between the two is that the MD5 lets you check the file
+      hasn't changed between leaving Launchpad and arriving on your machine,
+      whereas the signature lets you check that the file hasn't changed since
+      it was signed.
+    </p>
+
+    <h2>Using the MD5 sum</h2>
+
+    <p>
+      When a project maintainer uploads a file that they want to make
+      available for download, Launchpad analyzes the file using the MD5
+      hashing algorithm. This produces a short sequence of letters and
+      numbers.
+    </p>
+
+    <p>
+      You can use that sequence, called the MD5 sum, to check that the file
+      has arrived on your machine intact.
+    </p>
+
+    <p>
+      <strong>Step 1:</strong> Get the MD5 sum by following the <code>md5
+      </code> link next to the file you've downloaded.
+    </p>
+
+    <p>
+      <strong>Step 2:</strong> Open a terminal, enter the directory where you
+      downloaded the file and type:
+    </p>
+
+    <p>
+      <code>md5sum filename</code>
+    </p>
+
+    <p>
+      Obviously you need to replace <em>filename</em> with the name of the
+      file you downloaded.
+    </p>
+
+    <p>
+      <strong>Step 3:</strong> You'll see an MD5 sum. Check that it's the same
+      as the one you obtained in step 1. If the two sums are different, there
+      has been a problem downloading the file.  You should delete the file and
+      try downloading it again.  Do not use the file if the MD5 sums do not
+      match.
+    </p>
+
+    <h2>Verifying a signature</h2>
+
+    <p>
+      When a project maintainer uploads a file to Launchpad, they have the
+      option of also digitally signing the file and uploading the resultant
+      signature.
+    </p>
+
+    <p>
+      You can tell which files have a signature by looking out for the <em>sig
+      </em> link alongside the <em>md5</em> link. Verifying the files
+      signature lets you check that the file is exactly as intended by whoever
+      signed the file.
+    </p>
+
+    <p>
+      <strong>Step 1:</strong> Download the signature file to the same
+      directory where you've downloaded the project file you want to verify.
+      The signature file will have the same name as the project file you've
+      downloaded but with <em>.asc</em> or <em>.sig</em> appended to the end.
+    </p>
+
+    <p>
+      <strong>Step 2:</strong> Open a terminal, change to the directory where
+      you have saved the file and accompanying signature, then enter the
+      following:
+    </p>
+
+    <p>
+      <code>gpg --verify <em>signaturefilename</em></code>
+    </p>
+
+    <p>
+      Replace <em>signaturefilename</em> with the signature's filename.
+    </p>
+
+    <p>
+      gpg will now try to check the signature against the signer's public
+      key. If your version of gpg is configured to retrieve public keys
+      automatically, you can skip to step 4. Otherwise, you'll need to fetch
+      the signer's public key manually.</p>
+
+    <p>
+      <strong>Step 3:</strong> If gpg can't find the public key on your local
+      system, it will give you an error message similar to this:
+    </p>
+
+    <p>
+      <code>gpg: Signature made Sun 28 Jun 2009 02:20:52 BST using DSA key ID
+      2F9532C8<br />
+      gpg: Can't check signature: public key not found</code>
+    </p>
+
+    <p>
+      That's no problem: you can easily retrieve the public key. Simply copy
+      the key ID; it's the alphanumeric code, <code>2F9532C8</code>, at the
+      end of the first line of the error message.
+    </p>
+
+    <p>Next, enter:</p>
+
+    <p><code>gpg --recv-keys 2F9532C8</code></p>
+
+    <p>
+      gpg will now pull down the public key and you can re-run <code>gpg
+      --verify <em>signaturefilename</em></code>
+    </p>
+
+    <p>
+      <strong>Step 4:</strong> We're nearly done! You'll see a message from
+      gpg that is similar to this:
+    </p>
+
+    <p>
+      <code>gpg: Signature made Sun 28 Jun 2009 02:20:52 BST using DSA key ID
+      2F9532C8<br />
+      gpg: Good signature from "Guillermo Gonzalez &lt;
+      guillermo.gonzalez@canonical.com&gt;"<br />
+      gpg: WARNING: This key is not certified with a trusted signature!<br />
+      gpg:          There is no indication that the signature belongs to the
+      owner.<br />
+      Primary key fingerprint: CDD8 87C2 C5CE CD1A C593  8EEF 698A D97E 2F95
+      32C8</code></p>
+
+    <p>
+      This message shows that the file hasn't changed since it was signed by
+      the uploader. Because Launchpad allows only a project's owners and
+      series release managers to upload files for download, you may decide
+      that this is enough confirmation that the file is good.
+    </p>
+
+    <p>
+      However, you can verify that the public key is owned by someone that you
+      trust from the project.
+    </p>
+
+    <p>
+      <strong>Step 5:</strong> Visit <a href="https://launchpad.net/people"
+      target="_blank">Launchpad's people search</a> page and search for the
+      person name in the output from <code>gpg --verify</code>.
+    </p>
+
+    <p>
+      From their profile page, you can check their involvement in the project
+      and also that they own the key used to sign the file you downloaded.
+    </p>
+
+
+
+
+
+
+
+
+  </body>
+</html>

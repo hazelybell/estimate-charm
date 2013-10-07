@@ -1,0 +1,115 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+
+<body>
+
+<div metal:fill-slot="main">
+
+  <p id="distro-branch-warning">
+    <strong>This page is for a packaging branch for a program in
+    <tal:name replace="context/distribution/displayname"/>.</strong> Changes
+    should be made here to
+    <tal:name replace="context/distribution/displayname"/> packaging or
+    for changes specific to
+    <tal:name replace="context/distribution/displayname"/>'s
+    needs. Changes to the program in general should be made on the
+    upstream branch
+
+    <tal:upstream condition="context/upstream_product">
+        <a tal:replace="structure context/upstream_product/fmt:link" />.
+    </tal:upstream>
+    <tal:no-upstream condition="not: context/upstream_product">
+        which is not currently known to Launchpad.
+    </tal:no-upstream>
+  </p>
+
+  <tal:no-branches condition="not: view/branch_count">
+    <div id="branch-summary">
+    There are no branches for the <tal:name replace="context/title"/>
+    in Launchpad.
+    </div>
+  </tal:no-branches>
+
+  <table id="series-branches" class="listing">
+    <tal:distro-series repeat="group view/groups">
+      <tbody>
+      <tal:series-branches
+          define="series group/distroseries"
+          condition="series/active">
+        <tr>
+          <td class="section-heading" colspan="4">
+            <tal:name replace="series/displayname">
+              Karmic
+            </tal:name> &mdash;
+            <tal:state replace="series/status/title">
+              Stable
+            </tal:state>
+          </td>
+        </tr>
+        <tr class="thead">
+          <th colspan="2">Name</th>
+          <th>Status</th>
+          <th>Last Modified</th>
+        </tr>
+        <tr tal:repeat="branch group/branches">
+          <td tal:content="structure branch/fmt:link">
+            lp:ubuntu/karmic/evolution
+          </td>
+          <td align="right" style="padding-right: 5px"
+              tal:content="structure branch/badges:small"/>
+          <td>
+            <span tal:content="branch/lifecycle_status/title"
+                  tal:attributes="class string:branchstatus${branch/lifecycle_status/name}">
+            Status</span>
+          </td>
+          <td>
+            <span tal:attributes="title branch/date_last_modified/fmt:datetime"
+                  tal:content="branch/date_last_modified/fmt:approximatedate">
+              sometime
+              </span>
+          </td>
+        </tr>
+        <tr tal:condition="group/more-branch-count">
+          <td colspan="4" style="padding-left: 2em">
+            <a tal:attributes="href group/package/fmt:url">
+              and <tal:count replace="group/more-branch-count"/> more...
+            </a>
+          </td>
+        </tr>
+      </tal:series-branches>
+      </tbody>
+    </tal:distro-series>
+  </table>
+
+  <div class="related">
+    <h2>Nearby</h2>
+    <ul>
+    <tal:distro-series repeat="group view/groups">
+      <tal:series-branches
+          define="series group/distroseries"
+          condition="not: series/active">
+        <li>
+          <a tal:attributes="href group/package/fmt:url"
+             tal:content="series/displayname">
+            Experimental
+          </a>
+          (<tal:count replace="group/total-count-string"/>)
+          - <tal:state replace="series/status/title"/>
+        </li>
+      </tal:series-branches>
+    </tal:distro-series>
+    <li><a tal:attributes="href context/fmt:url:code/+branches">
+      All branches for the <tal:name replace="context/title"/>
+    </a></li>
+    </ul>
+  </div>
+
+</div>
+
+</body>
+</html>

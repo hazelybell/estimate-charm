@@ -1,0 +1,9 @@
+Format-Version: 2
+Found-In: pmount/0.9.4-1
+Subject: pmount: patch for read-only encrypted devices
+Date: 1125653584
+Submitter: =?UTF-8?Q?S=C3=B6ren_?= =?UTF-8?Q?K=C3=B6pping?= <s.koepping@gmx.de>
+Package: pmount
+Tags: experimental patch
+Message-Id: <1125652768.11887.3.camel@antec.local>
+Severity: normal

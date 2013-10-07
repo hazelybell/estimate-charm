@@ -1,0 +1,34 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<body>
+  <metal:main fill-slot="main" tal:define="specs view/documentation">
+    <p>
+      To classify a blueprint as documentation, set the Implementation status
+      to &#8220;Informational&#8221; When the blueprint's Definition status is
+      marked &#8220;Approved&#8221;, it will appear in this listing.
+    </p>
+
+    <table id="documentation-listing-table">
+      <tr tal:repeat="spec specs"
+           tal:replace="structure spec/@@+listing-simple" />
+    </table>
+
+    <p>
+      <tal:no_specs condition="not: specs">
+        No documentation to list for
+        <span tal:replace="context/displayname">Mozilla</span>.
+      </tal:no_specs>
+      <tal:has_specs condition="specs">
+        <span tal:replace="specs/count:len">7</span> blueprint(s) listed.
+      </tal:has_specs>
+    </p>
+  </metal:main>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+  <body>
+
+<div metal:fill-slot="main">
+
+  <ul class="horizontal">
+    <li>
+      <a tal:replace="structure context/sourcepackage/menu:overview/distribution_source_package/fmt:link" />
+    </li>
+  </ul>
+
+  <div class="portlet">
+    <h2>Publishing history</h2>
+
+    <div id="publishing_history">
+      <tal:block repeat="publishing context/publishing_history"
+                replace="structure publishing/@@+listing-detailed">
+      </tal:block>
+    </div>
+  </div>
+
+  <div class="yui-g">
+
+    <div class="first yui-u">
+      <div tal:replace="structure context/sourcepackagerelease/@@+portlet-distroseries" />
+      <div class="portlet">
+        <h2>Download</h2>
+        <div id="files"
+             tal:content="structure context/sourcepackagerelease/@@+files" />
+      </div>
+    </div>
+
+    <div class="yui-u" tal:content="structure context/@@+portlet-builds" />
+
+  </div>
+
+  <div class="portlet">
+    <h2>Changelog</h2>
+     <tal:pre
+          replace="structure context/sourcepackagerelease/@@+changelog" />
+  </div>
+
+   <div id="changesfile" tal:define="changesfile context/changesfile">
+     <p tal:condition="changesfile">
+        <a tal:attributes="href changesfile/http_url">
+           View changes file
+        </a>
+     </p>
+     <p tal:condition="not: changesfile">No changes file available.</p>
+   </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+>
+
+<body>
+
+<tal:main metal:fill-slot="main"
+          define="overview_menu context/menu:overview;
+                  has_records view/probe_records/currentBatch">
+  <div class="top-portlet">
+    <h1 tal:content="view/page_title">Foo mirror prober logs</h1>
+
+    <p tal:condition="not: has_records">
+      This mirror has never been probed.
+    </p>
+  </div>
+  <tal:logs condition="has_records">
+    <tal:navigation replace="structure view/probe_records/@@+navigation-links-upper" />
+    <table class="listing">
+      <thead>
+        <tr>
+          <th>When</th>
+          <th>Log</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr tal:repeat="record view/probe_records/currentBatch">
+          <td>
+            <span
+              tal:attributes="title record/date_created/fmt:datetime"
+              tal:content="record/date_created/fmt:approximatedate" />
+          </td>
+          <td><a tal:content="record/log_file/filename"
+                 tal:attributes="href record/log_file/http_url" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <tal:navigation replace="structure view/probe_records/@@+navigation-links-lower" />
+  </tal:logs>
+</tal:main>
+
+<tal:side metal:fill-slot="side">
+  <tal:menu replace="structure context/@@+global-actions" />
+</tal:side>
+
+</body>
+</html>

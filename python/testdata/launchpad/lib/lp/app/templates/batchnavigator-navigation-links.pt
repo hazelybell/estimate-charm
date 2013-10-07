@@ -1,0 +1,75 @@
+<table
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  tal:define="
+    first_page_url context/firstBatchURL;
+    prev_page_url context/prevBatchURL;
+    next_page_url context/nextBatchURL;
+    last_page_url context/lastBatchURL;
+    total context/batch/total;
+    size context/batch/size;
+    hide_counts context/hide_counts|nothing"
+  style="width: 100%;"
+  tal:attributes="class view/css_class"
+>
+  <tbody>
+    <tr>
+      <td style="white-space: nowrap"
+          class="batch-navigation-index">
+        <tal:batch_counts condition='not:hide_counts'>
+            <strong tal:content="context/batch/startNumber">1</strong>
+            <tal:block condition="python: size > 1">
+              &rarr;
+              <strong tal:content="context/batch/endNumber">10</strong>
+            </tal:block>
+            of
+            <tal:total replace="total">42</tal:total>
+            <tal:heading content="context/heading">results</tal:heading>
+        </tal:batch_counts>
+      </td>
+      <td style="text-align: right; white-space: nowrap"
+          class="batch-navigation-links">
+        <a
+          tal:condition="first_page_url"
+          tal:attributes="href first_page_url;
+                          id string:${view/css_class}-batchnav-first"
+          class="first"
+          rel="first"
+        >First</a>
+        <span tal:condition="not:first_page_url" class="first inactive"
+        >First</span>
+        &bull;
+        <a
+          tal:condition="prev_page_url"
+          tal:attributes="href prev_page_url;
+                          id string:${view/css_class}-batchnav-previous"
+          class="previous"
+          rel="previous"
+        >Previous</a>
+        <span tal:condition="not:prev_page_url" class="previous inactive"
+        >Previous</span>
+        &bull;
+        <a
+          tal:condition="next_page_url"
+          tal:attributes="href next_page_url;
+                          id string:${view/css_class}-batchnav-next"
+          class="next"
+          rel="next"
+        ><strong>Next</strong></a>
+        <span tal:condition="not:next_page_url" class="next inactive"
+        ><strong>Next</strong></span>
+        <tal:last_link condition="context/show_last_link|default">
+          &bull;
+          <a
+            tal:condition="last_page_url"
+            tal:attributes="href last_page_url;
+                            id string:${view/css_class}-batchnav-last"
+            class="last"
+            rel="last"
+          >Last</a>
+          <span tal:condition="not:last_page_url" class="last inactive"
+          >Last</span>
+        </tal:last_link>
+      </td>
+    </tr>
+  </tbody>
+</table>

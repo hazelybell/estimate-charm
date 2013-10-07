@@ -1,0 +1,19 @@
+Date: Wed, 13 Apr 2005 19:17:16 -0400
+From: Sample Person <test@canonical.com>
+To: someone@somehost
+Subject: Signed Email
+Message-ID: <20050413231716.HA16989@localhost.localdomain>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Some signed content.
+
+With multiple paragraphs.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.2.5 (GNU/Linux)
+
+iD8DBQFCXaoOuiuTid/SBUMRAoRkAJoCuy/kSVPCN1kBTqMG+cgsbhhFbwCfeSjH
+/Uc8UVJBiA94yh4G50qgD8o=
+=lNZi
+-----END PGP SIGNATURE-----

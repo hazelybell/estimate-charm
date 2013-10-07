@@ -1,0 +1,32 @@
+<tal:open-tag replace="structure view/open_tag"/>
+<span
+    tal:attributes="
+     class string:${view/text_css_class};
+     style string:${view/text_css_style};">
+    <tal:text replace="view/value"/>
+</span>
+  <a tal:condition="view/can_write"
+     tal:attributes="href view/edit_url;
+                     title view/edit_title"
+     class="yui3-editable_text-trigger sprite edit action-icon"
+     >Edit</a>
+<tal:close-tag replace="structure view/close_tag"/>
+
+<script tal:condition="view/can_write"
+        tal:content="structure string:
+        LPJS.use('lp.ui.editor', 'lp.client.plugins', function (Y) {
+            var widget = new Y.EditableText({
+                contentBox: ${view/widget_css_selector},
+                accept_empty: ${view/accept_empty},
+                width: ${view/width},
+                truncate_lines: ${view/truncate_lines},
+                initial_value_override: ${view/initial_value_override}
+                });
+            widget.editor.plug({
+                fn: Y.lp.client.plugins.PATCHPlugin, cfg: {
+                  patch: ${view/json_attribute},
+                  resource: ${view/json_resource_uri}
+                  }});
+            widget.render();
+        });
+"/>

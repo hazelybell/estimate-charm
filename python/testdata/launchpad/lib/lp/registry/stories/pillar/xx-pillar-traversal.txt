@@ -1,0 +1,28 @@
+= Traversing to pillars =
+
+Our pillars can have any number of aliases, and these aliases can be used to
+traverse to that pillar.  As an example we'll add an alias to the firefox
+product and show that accessing it using the alias will redirect to its
+canonical URL.
+
+    >>> from zope.component import getUtility
+    >>> from lp.registry.interfaces.product import IProductSet
+    >>> login(ANONYMOUS)
+    >>> getUtility(IProductSet)['firefox'].aliases
+    []
+    >>> logout()
+
+    >>> browser.open('http://launchpad.dev/firefox')
+
+    >>> browser.open('http://launchpad.dev/iceweasel')
+    Traceback (most recent call last):
+    ...
+    NotFound:...
+
+    >>> login('mark@example.com')
+    >>> getUtility(IProductSet)['firefox'].setAliases(['iceweasel'])
+    >>> logout()
+
+    >>> browser.open('http://launchpad.dev/iceweasel')
+    >>> browser.url
+    'http://launchpad.dev/firefox'

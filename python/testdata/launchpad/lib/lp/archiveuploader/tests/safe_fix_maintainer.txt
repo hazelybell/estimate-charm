@@ -1,0 +1,41 @@
+Test some utils method inheritaded from DAK:
+
+safe_fix_maintainer() is a function used to sanitise the
+identification fields coming from the Debian control files (changes
+and dsc). It allows safe unicode and non-unicode inputs.
+
+  >>> from lp.archiveuploader.utils import (
+  ...     safe_fix_maintainer)
+
+  >>> maintainer_field = 'maintainer'
+  >>> changer_field = 'changed-by'
+
+Pure ASCII content using the two available fieldname (pretty much the same)
+
+  >>> content = 'Hello World <hello@world.com>'
+  >>> safe_fix_maintainer(content, maintainer_field)
+  ('Hello World <hello@world.com>', 'Hello World <hello@world.com>', 'Hello World', 'hello@world.com')
+
+  >>> content = 'Hello World <hello@world.com>'
+  >>> safe_fix_maintainer(content, changer_field)
+  ('Hello World <hello@world.com>', 'Hello World <hello@world.com>', 'Hello World', 'hello@world.com')
+
+
+Passing Unicode:
+
+  # XXX cprov 2006-02-20 bug=32148: Not sure if it is working properly,
+  # at least doesn't raise any exception like in bug #32148.
+
+  >>> content = u'Rapha\xc3l Pinson <raphink@ubuntu.com>'
+  >>> safe_fix_maintainer(content, maintainer_field)
+  ('RaphaAl Pinson <raphink@ubuntu.com>', 'RaphaAl Pinson <raphink@ubuntu.com>', 'RaphaAl Pinson', 'raphink@ubuntu.com')
+
+
+Passing latin encoded string:
+
+  >>> content = 'Rapha\xebl Pinson <raphink@ubuntu.com>'
+  >>> safe_fix_maintainer(content, maintainer_field)
+  ('Raphael Pinson <raphink@ubuntu.com>', 'Raphael Pinson <raphink@ubuntu.com>', 'Raphael Pinson', 'raphink@ubuntu.com')
+
+
+

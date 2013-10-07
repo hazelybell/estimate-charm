@@ -1,0 +1,16 @@
+Subject: An existing comment
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+From: Sample Person <test@canonical.com>
+To: Debian Bug Tracking System <submit@bugs.debian.org>
+Date: Fri, 14 Dec 2007 18:54:30 +0000
+Message-Id: <20071214185430.98CD1D4AA12@launchpad>
+Delivered-To: submit@bugs.debian.org
+X-Spam-Checker-Version: SpamAssassin 2.60-bugs.debian.org_2004_03_08 
+	(1.212-2003-09-23-exp) on spohr.debian.org
+X-Spam-Status: No, hits=-5.0 required=4.0 tests=HAS_PACKAGE autolearn=no 
+	version=2.60-bugs.debian.org_2004_03_08
+X-Spam-Level: 
+
+It doesn't necessarily happen in that order, though.

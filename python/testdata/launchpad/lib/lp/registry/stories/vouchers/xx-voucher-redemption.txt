@@ -1,0 +1,131 @@
+Voucher Redemption
+==================
+
+For a project to use Launchpad it must either be released under an
+approved open source licence or the project administrators must buy a
+commercial subscription to use Launchpad.  Vouchers for commercial
+subscriptions are sold in the Canonical Store and the vouchers are
+then redeemed against a project in Launchpad to create or extend a
+commercial subscription.
+
+The voucher belongs to a user in Launchpad so the redemption function
+is related to a person.
+
+
+Accessing the voucher redemption page
+-------------------------------------
+
+Mark is an administrator for at least one project that does not have a
+valid open source licence so he is displayed the voucher redemption
+page.
+
+    >>> browser = setupBrowser(auth='Basic mark@example.com:test')
+    >>> browser.open('http://launchpad.dev/~mark')
+    >>> browser.getLink('Manage commercial subscriptions').click()
+    >>> main = find_main_content(browser.contents)
+    >>> print extract_text(main)
+    Purchase and Redeem Commercial Subscription Vouchers
+    ...Select the project you wish to subscribe...
+
+A user can access her voucher page but not someone else's.  Here
+no-priv tries to access '+vouchers' on another user and is not
+allowed.
+
+    >>> browser = setupBrowser(auth='Basic no-priv@canonical.com:test')
+    >>> browser.open('http://launchpad.dev/~mark/+vouchers')
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...
+
+Unless, of course, that user is an administrator.  Then he can access
+the '+vouchers' page on any user.
+
+    >>> browser = setupBrowser(auth='Basic foo.bar@canonical.com:test')
+    >>> browser.open('http://launchpad.dev/~mark/+vouchers')
+    >>> main = find_main_content(browser.contents)
+    >>> print extract_text(main)
+    Purchase and Redeem Commercial Subscription Vouchers
+    ...Select the project you wish to subscribe...
+
+Foo Bar has no vouchers.  Accessing the +vouchers page results in a message.
+
+    >>> browser.open('http://launchpad.dev/~name12/+vouchers')
+    >>> main = find_main_content(browser.contents)
+    >>> print extract_text(main)
+    Purchase and Redeem Commercial Subscription Vouchers
+    ...You do not have any redeemable commercial subscription vouchers.
+    Here are the steps to obtain a commercial subscription:...
+
+
+Redeeming a voucher
+------------------
+
+Selecting a project the user owns and a valid voucher result in a
+successful voucher redemption.
+
+    >>> browser = setupBrowser(
+    ...     auth='Basic celso.providelo@canonical.com:test')
+    >>> browser.open('http://launchpad.dev/~cprov/+vouchers')
+    >>> browser.getControl(name='field.project').value='aptoncd'
+    >>> browser.getControl(name='field.voucher').value = [
+    ...     'LPCBS12-f78df324-0cc2-11dd-8b6b-000000000004']
+    >>> browser.getControl('Redeem').click()
+    >>> print browser.url
+    http://launchpad.dev/%7Ecprov/+vouchers
+    >>> print_feedback_messages(browser.contents)
+    Voucher redeemed successfully
+
+
+Selecting a project that is not a commercial project owned by the user
+results in an error.
+
+    >>> browser.open('http://launchpad.dev/~cprov/+vouchers')
+    >>> browser.getControl(name='field.project').value='bzr'
+    >>> browser.getControl(name='field.voucher').value = [
+    ...     'LPCBS12-f78df324-0cc2-11dd-8b6b-000000000005']
+    >>> browser.getControl('Redeem').click()
+    >>> print_feedback_messages(browser.contents)
+    There is 1 error.
+    Invalid value
+
+If, however, a person is a member of the Launchpad Commercial team he
+can apply a voucher to any project, not just those he administers.
+This ability is provided so that commercial admins in Launchpad can
+help projects with voucher issues, which is especially useful when
+setting up Canonical-internal projects.
+
+    >>> browser = setupBrowser(
+    ...     auth='Basic commercial-member@canonical.com:test')
+
+Show that the commercial member does not own or drive any projects by
+viewing his +related-projects page.
+
+    >>> login('foo.bar@canonical.com')
+    >>> from zope.component import getUtility
+    >>> from lp.app.interfaces.launchpad import ILaunchpadCelebrities
+    >>> from lp.registry.interfaces.person import IPersonSet
+    >>> commercial_member = getUtility(IPersonSet).getByEmail(
+    ...     'commercial-member@canonical.com')
+    >>> celebs = getUtility(ILaunchpadCelebrities)
+    >>> ignored = celebs.registry_experts.addMember(
+    ...     commercial_member, commercial_member)
+    >>> logout()
+
+    >>> browser.open(
+    ...     'http://launchpad.dev/~commercial-member/+related-projects')
+    >>> main = find_main_content(browser.contents)
+    >>> print extract_text(main)
+    Related projects
+    ...
+    Commercial Member doesn't own or drive any projects.
+
+He can still redeem a voucher against a commercial project even though
+he is not responsible for it.
+
+    >>> browser.open('http://launchpad.dev/~commercial-member/+vouchers')
+    >>> browser.getControl(name='field.project').value='mega-money-maker'
+    >>> browser.getControl(name='field.voucher').value = [
+    ...     'LPCBS12-f78df324-0cc2-11dd-8b6b-com000000001']
+    >>> browser.getControl('Redeem').click()
+    >>> print_feedback_messages(browser.contents)
+    Voucher redeemed successfully

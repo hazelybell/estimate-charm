@@ -1,0 +1,33 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Format: 1.7
+Date: Thu, 30 Mar 2006 01:36:14 +0100
+Source: bar
+Binary: bar
+Architecture: source
+Version: 1.0-10
+Distribution: breezy
+Urgency: low
+Maintainer: Non-ascii maintainer Čihař <launchpad@lists.canonical.com>
+Changed-By: Non-ascii changed-by Čihař <daniel.silverstone@canonical.com>
+Description: 
+ bar        - Stuff for testing
+Changes: 
+ bar (1.0-10) breezy; urgency=low
+ .
+   * Changes file that contains UTF-8
+ .
+   * Non-ascii text: Čihař
+ .
+Files: 
+ a4932aa84fdb62819b49f3dda163fc0d 514 devel optional bar_1.0-10.dsc
+ ac6b4efe44e31f47ec9f0d0fac6935f4 622 devel optional bar_1.0-10.diff.gz
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+
+iD8DBQFGjOzNjn63CGxkqMURAlDZAJ9CusNQWwbTJr7JHYV4Ka1JbWwmJACeLbs5
+Hzkb2pxxwYzKs7uyCiFONlo=
+=9dL/
+-----END PGP SIGNATURE-----

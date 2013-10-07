@@ -1,0 +1,42 @@
+Package: libgadu3
+Priority: optional
+Section: libs
+Installed-Size: 164
+Maintainer: Marcin Owsiany <porridge@debian.org>
+Architecture: i386
+Source: ekg
+Version: 1:1.5-4ubuntu1.2
+Depends: libc6 (>= 2.3.2.ds1-4), libssl0.9.7
+Filename: pool/main/e/ekg/libgadu3_1.5-4ubuntu1.2_i386.deb
+Size: 59244
+MD5sum: cd0e3173ca11c6193c3890565efcdf19
+Description: Gadu-Gadu protocol library - runtime files
+ Gadu-Gadu is an instant messaging program, very popular in
+ Poland. libgadu is a Gadu-Gadu protocol implementation
+ library.
+ .
+ This package contains the shared library.
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+
+Package: libgadu-dev
+Priority: optional
+Section: libdevel
+Installed-Size: 520
+Maintainer: Marcin Owsiany <porridge@debian.org>
+Architecture: i386
+Source: ekg
+Version: 1:1.5-4ubuntu1.2
+Depends: libgadu3 (= 1:1.5-4ubuntu1.2), libssl-dev
+Filename: pool/main/e/ekg/libgadu-dev_1.5-4ubuntu1.2_i386.deb
+Size: 118968
+MD5sum: 1d862c2b0f6631b06a30ecea3c6059f2
+Description: Gadu-Gadu protocol library - development files
+ Gadu-Gadu is an instant messaging program, very popular in
+ Poland. libgadu is a Gadu-Gadu protocol implementation
+ library.
+ .
+ This package contains the development files.
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+

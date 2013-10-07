@@ -1,0 +1,47 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<div class="portlet" id="portlet-details">
+
+    <h2>Template details</h2>
+            <span tal:replace="view/num_messages" /><br />
+            <img alt="" src="/@@/language" />
+            <span tal:replace="context/language_count">421</span>
+            Languages<br />
+            <b>Owner:</b><br />
+            <a tal:replace="structure context/owner/fmt:link" /><br />
+            <b>Created:</b>
+            <span
+              tal:attributes="title context/datecreated/fmt:datetime"
+              tal:content="context/datecreated/fmt:displaydate">
+              2004-05-22
+            </span><br />
+            <b>Domain:</b>
+            <tal:translation_domain replace="context/translation_domain">
+              foobar
+            </tal:translation_domain><br />
+            <b>Priority:</b>
+            <span tal:replace="context/priority">34</span><br />
+            <b>Translation Group(s):</b><br />
+            <img alt="" src="/@@/language" />
+            <tal:block repeat="group context/translationgroups">
+            <a tal:attributes="href
+                     string:/translations/groups/${group/name}/"
+               tal:content="group/title"
+            >Group</a><br />
+            </tal:block>
+            <tal:block condition="not: context/translationgroups">
+            <i>None assigned</i><br />
+            </tal:block>
+            <b>Permissions:</b>
+            <span tal:replace="context/translationpermission/title" /><br />
+            <b>Description:</b><br />
+            <span tal:replace="context/description">
+              POTemplate Description
+            </span>
+            <i tal:condition="not: context/description">None given</i><br/>
+</div>
+</tal:root>

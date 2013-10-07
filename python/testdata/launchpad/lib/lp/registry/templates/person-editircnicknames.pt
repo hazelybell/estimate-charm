@@ -1,0 +1,79 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+<body>
+
+<div metal:fill-slot="main">
+<div metal:use-macro="context/@@launchpad_form/form">
+  <div metal:fill-slot="widgets">
+
+    <p tal:condition="view/error_message"
+       tal:content="structure view/error_message/escapedtext" class="error message" />
+
+    <table>
+
+      <div tal:condition="context/ircnicknames">
+
+        <tr><td colspan="2"><h2>Existing IRC nicknames</h2></td></tr>
+
+        <tr>
+          <td><label>Network:</label></td>
+          <td><label>Nickname:</label></td>
+        </tr>
+
+        <tr tal:repeat="ircnick context/ircnicknames">
+          <td>
+            <input tal:attributes="name string:network_${ircnick/id};
+                                   value ircnick/network"
+                   type="text" style="margin-bottom: 0.5em;"/>
+          </td>
+          <td>
+            <input type="text"
+                   tal:attributes="name string:nick_${ircnick/id};
+                                   value ircnick/nickname" />
+          </td>
+
+          <td>
+            <label>
+              <input type="checkbox" value="Remove"
+                     tal:attributes="name string:remove_${ircnick/id}" />
+              Remove
+            </label>
+          </td>
+        </tr>
+
+      </div>
+
+    <tr>
+      <td><label>Network:</label></td>
+      <td><label>Nickname:</label></td>
+    </tr>
+
+    <tr>
+      <td>
+        <input name="newnetwork" type="text"
+               tal:attributes="value view/newnetwork|nothing" />
+      </td>
+      <td>
+        <input name="newnick" type="text"
+               tal:attributes="value view/newnick|nothing" />
+      </td>
+    </tr>
+
+    <tr>
+      <td class="formHelp">Example: irc.freenode.net</td>
+      <td class="formHelp">Example: mark</td>
+    </tr>
+  </table>
+
+  </div>
+</div>
+</div>
+
+</body>
+</html>

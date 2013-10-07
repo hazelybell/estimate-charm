@@ -1,0 +1,65 @@
+<!-- Copyright 2009-2011 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:webservice="http://namespaces.canonical.com/webservice"
+    i18n_domain="launchpad">
+
+    <!-- Message -->
+    <class
+        class="lp.services.messages.model.message.Message">
+        <allow interface="lp.services.messages.interfaces.message.IMessage" />
+        <!-- setVisible is required to allow IBug.setCommentVisibility() to
+             change the visibility attribute whilst still ensuring restricted
+             access to the attribute via the API.-->
+        <require
+            permission="launchpad.AnyPerson"
+            attributes="setVisible"/>
+        <require
+            permission="launchpad.Admin"
+            set_attributes="visible"/>
+    </class>
+
+    <class class="lp.services.messages.interfaces.message.IndexedMessage">
+      <allow interface="lp.services.messages.interfaces.message.IMessage" />
+      <allow interface="lp.services.messages.interfaces.message.IIndexedMessage" />
+    </class>
+
+    <!-- MessageChunk -->
+    <class class="lp.services.messages.model.message.MessageChunk">
+        <allow interface="lp.services.messages.interfaces.message.IMessageChunk" />
+    </class>
+
+  <!-- MessageSet -->
+  <securedutility
+      class="lp.services.messages.model.message.MessageSet"
+      provides="lp.services.messages.interfaces.message.IMessageSet">
+      <allow interface="lp.services.messages.interfaces.message.IMessageSet" />
+  </securedutility>
+
+  <!-- Some message have a canonical_url -->
+  <adapter for="lp.services.messages.interfaces.message.IMessage"
+    provides="lp.services.webapp.interfaces.ICanonicalUrlData"
+    factory="lp.services.messages.browser.message.message_to_canonical_url_data"
+    />
+
+  <!-- Adapt several related objects to provide unified details -->
+  <adapter for="lp.registry.interfaces.mailinglist.IMessageApproval"
+    provides="lp.registry.interfaces.mailinglist.IHeldMessageDetails"
+    factory="lp.registry.model.mailinglist.HeldMessageDetails"
+    />
+
+  <!-- Adapt a person to an IDirectEmailAuthorization for throttling of direct
+       person-to-person emails. -->
+  <adapter
+    for="lp.registry.interfaces.person.IPerson"
+    provides="lp.services.messages.interfaces.message.IDirectEmailAuthorization"
+    factory="lp.services.messages.model.message.DirectEmailAuthorization"
+    />
+
+  <webservice:register module="lp.services.messages.interfaces.webservice" />
+</configure>

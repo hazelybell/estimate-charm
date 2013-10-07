@@ -1,0 +1,116 @@
+
+h1, h2, h3, h4, h5, h6 {
+    background: none;
+    clear: left;
+    }
+h1 {
+    clear: none;
+    font-size: 30px;
+    line-height: 34px;
+    }
+h2 {
+    margin-top: 16px;
+    margin-bottom: 8px;
+    font-size: 22px;
+    line-height: 26px;
+    }
+h3 {
+    margin-top: 16px;
+    margin-bottom: 8px;
+    font-size: 16px;
+    line-height: 20px;
+    }
+.yui-u > div > h3:first-child {
+    margin-top: 0;
+    }
+p {
+    width: auto;
+    margin-bottom: 0.8em;
+    }
+div + p, ul + p, table + p {
+    margin-top: 0.8em;
+    }
+p, li, dt, dd, blockquote, .narrow, .narrow-listing {
+    /* Wrap the text before the eye gets lost. */
+    max-width: 45em;
+    }
+.wide * {
+    max-width: 60em;
+    }
+table.wide {
+    width: 60em;
+    }
+pre, code, samp, tt, .console {
+    font-family: 'Ubuntu Mono', monospace;
+    margin-bottom: 0.8em;
+    }
+pre.wrap {
+    /* From nice_pre in tales.py */
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    }
+
+:link, :visited {
+    /* Links are blue, brighter when clicked, and greyer once visited. */
+    color: #03a;
+    text-decoration: none;
+    }
+:link:hover, :visited:hover {
+    text-decoration: underline;
+    }
+:link:active, :visited:active {
+    color: #36c;
+    }
+a[onclick], .collapsible legend a, a.js-action,
+a[onclick]:active, .collapsible legend a:active, a.js-action,
+a.js-action:active {
+    /* Links that don't open separate pages are green. */
+    color: #093;
+    }
+a.help {
+    border-bottom: 1px dotted #03a;
+    cursor: help;
+    }
+a.help:hover, a.action-icon:hover {
+    text-decoration: none;
+    }
+a.help.icon, a.sprite.maybe.help {
+    border: none;
+}
+a.invalid-link, a.invalid-link:active, a.invalid-link:hover {
+    color: #909090;
+    text-decoration: none;
+    cursor: default;
+    }
+img, a img {
+    /* No border on images that are links. */
+    border: none;
+    }
+abbr[title], acronym[title] {
+    border-bottom: 1px dotted black;
+    cursor: help;
+    }
+em {
+    font-style: italic;
+    }
+strong {
+    font-weight: bold;
+    }
+.title {
+    font-weight: bold;
+    }
+kbd {
+    background-color: #ddd;
+    border: 1px solid;
+    border-color: white gray gray white;
+    color: black;
+    margin: 1px;
+    min-width: 1em;
+    outline: 1px #666;
+    }
+tt.command {
+    padding-left: 2em;
+    }
+.nowrap {
+    white-space: nowrap;
+    }

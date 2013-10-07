@@ -1,0 +1,138 @@
+
+This tests GPG-related pages of an IPerson.
+
+    >>> from lp.services.webapp.servers import LaunchpadTestRequest
+    >>> from lp.registry.interfaces.person import IPersonSet
+    >>> from zope.component import getMultiAdapter, getUtility
+
+Set up the key server:
+
+  >>> from lp.testing.keyserver import KeyServerTac
+  >>> tac = KeyServerTac()
+  >>> tac.setUp()
+
+Grab the sample user:
+
+    >>> personset = getUtility(IPersonSet)
+    >>> login("test@canonical.com")
+    >>> sample_user = personset.getByName('name12')
+
+Set up some fingerprints for testing:
+
+    >>> malformed   = "XXXX"
+    >>> bogus       = "1111 1111 1111 1111 1111  1111 1111 1111 1111 1111"
+    >>> gpgv3       = "11 28 37 E2 CB 46 72 67  9E 8E 22 18 DA F9 C0 96"
+    >>> with_crap   = ("CFDD 0231 D4A8 992D C760 F5B3 E0B4 E659 E389 E544 uid "
+    ...                "S\xe9bastien Serre (Bienvenue sous Ubuntu) "
+    ...                "<sebastien.serre@gmail.com> sub 1024g/F39C8D42 2006-08-17")
+    >>> revoked     = "84D2 05F0 3E1E 6709 6CB5  4E26 2BE8 3793 AACC D97C"
+    >>> expired     = "ECA5 B797 586F 2E27 381A  16CF DE6C 9167 046C 6D63"
+
+    >>> def post_fingerprint(fingerprint, action='claim_gpg'):
+    ...     request = LaunchpadTestRequest(form={
+    ...         'fingerprint': fingerprint,
+    ...         'action': action,
+    ...         'import': 'Import Key'})
+    ...     request.method = "POST"
+    ...     view = getMultiAdapter((sample_user, request), name="+editpgpkeys")
+    ...     view.form_action()
+    ...     return view
+
+
+Importing GPG Keys
+------------------
+
+The first fingerprint is invalid:
+
+    >>> view = post_fingerprint(malformed)
+    >>> view.key_ok, view.invalid_fingerprint
+    (False, True)
+
+This one is valid. It doesn't exist in our keyserver though.
+
+    >>> view = post_fingerprint(bogus)
+    >>> view.key_ok, view.invalid_fingerprint, view.key_retrieval_failed
+    (False, False, True)
+
+This next one is a GPGv3 signature, which is only 128 bits. It's also
+valid, though:
+
+    >>> view = post_fingerprint(gpgv3)
+    >>> view.key_ok, view.invalid_fingerprint, view.key_retrieval_failed
+    (False, False, True)
+
+This one is a fingerprint with some stuff at the end of it. The end-user
+just copied too much, but our code truncates it and the result is valid:
+
+    >>> view = post_fingerprint(with_crap)
+    >>> view.key_ok, view.invalid_fingerprint, view.key_retrieval_failed
+    (False, False, True)
+
+These two keys are actually valid and present, but they are revoked and
+expired, respectively:
+
+    >>> view = post_fingerprint(revoked)
+    >>> view.key_ok, view.key.revoked
+    (False, True)
+
+    >>> view = post_fingerprint(expired)
+    >>> view.key_ok, view.key.expired
+    (False, True)
+
+
+GPG Key Validation
+------------------
+
+Use a valid fingerprint to import a new key.
+
+    >>> good_fingerprint = "A419AE861E88BC9E04B9C26FBA2B9389DFD20543"
+    >>> view = post_fingerprint(good_fingerprint)
+    >>> view.key_ok
+    True
+
+This new key will be pending validation, though.
+
+    >>> view.context.pending_gpg_keys
+    [u'A419AE861E88BC9E04B9C26FBA2B9389DFD20543']
+
+And while the validation is not finished, it's possible to cancel the
+validation, removing the key from the list of pending validation keys.
+
+If we do not specify which key we want to cancel the validation, we get
+an error message.
+
+    >>> form = {'action': 'remove_gpgtoken'}
+    >>> request = LaunchpadTestRequest(form=form)
+    >>> request.method = "POST"
+    >>> view = getMultiAdapter((sample_user, request), name="+editpgpkeys")
+    >>> view.form_action()
+    >>> view.error_message.escapedtext
+    u'No key(s) pending validation selected.'
+
+    >>> view.context.pending_gpg_keys
+    [u'A419AE861E88BC9E04B9C26FBA2B9389DFD20543']
+
+Now we specify the key and it's removed from the list of keys pending
+validation.
+
+    >>> form = {
+    ...     'REMOVE_GPGTOKEN': 'A419AE861E88BC9E04B9C26FBA2B9389DFD20543',
+    ...     'action': 'remove_gpgtoken'}
+    >>> request = LaunchpadTestRequest(form=form)
+    >>> request.method = "POST"
+    >>> view = getMultiAdapter((sample_user, request), name="+editpgpkeys")
+    >>> view.form_action()
+    >>> view.info_message.escapedtext
+    u'Cancelled validation of key(s): A419AE861E88BC9E04B9C26FBA2B9389DFD20543'
+
+    >>> view.context.pending_gpg_keys
+    []
+
+In some unknown way, the action sent to the form can be None (see bug 520476).
+
+    >>> view = post_fingerprint(good_fingerprint, action=None)
+    Traceback (most recent call last):
+     ...
+    UnexpectedFormData: Action not permitted: None
+
+    >>> tac.tearDown()

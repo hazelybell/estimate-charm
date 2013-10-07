@@ -1,0 +1,1650 @@
+Bugs in Malone
+==============
+
+This document describes what a Bug is in Malone, and provides some (currently
+rather incomplete) info on how to poke at bugs through the Component
+Architecture.
+
+Working with Bugs
+-----------------
+
+Bugs are created and retrieved via IBugSet.
+
+    >>> from zope.component import getUtility
+    >>> from lp.bugs.interfaces.bug import IBugSet, IBug
+    >>> bugset = getUtility(IBugSet)
+
+To retrieve a specific Bug, use IBugSet.get:
+
+    >>> firefox_crashes = bugset.get(6)
+    >>> print firefox_crashes.title
+    Firefox crashes when Save As dialog for a nonexistent window is closed
+
+Or you can use IBugSet.getByNameOrID to get it by its nickname:
+
+    >>> blackhole_bug = bugset.getByNameOrID('blackhole')
+    >>> print blackhole_bug.title
+    Blackhole Trash folder
+
+If the bug can't be found, a zope.exceptions.NotFoundError will be
+raised:
+
+    >>> bugset.get(123456)
+    Traceback (most recent call last):
+      ...
+    NotFoundError: 'Unable to locate bug with ID 123456.'
+
+    >>> bugset.getByNameOrID('+bugs')
+    Traceback (most recent call last):
+      ...
+    NotFoundError: 'Unable to locate bug with nickname +bugs.'
+
+It is also possible to retrieve a number of bugs by specifying the bug numbers
+of interest.
+
+The method ignores bug numbers not found in the database. That's why the
+result set below has only one element.
+
+    >>> result_set = bugset.getByNumbers([6, 1234])
+    >>> print result_set.count()
+    1
+
+    >>> [the_bug_found] = result_set
+    >>> print the_bug_found.title
+    Firefox crashes when Save As dialog for a nonexistent window is closed
+
+    >>> result_set = bugset.getByNumbers([6, 1])
+    >>> print result_set.count()
+    2
+
+    >>> print [(bug.id, bug.title[:40]) for bug in result_set]
+    [(1, u'Firefox does not support SVG'),
+     (6, u'Firefox crashes when Save As dialog for ')]
+
+If no bug numbers are specified an empty result set is returned.
+
+    >>> result_set = bugset.getByNumbers(None)
+    >>> print result_set.count()
+    0
+    >>> result_set = bugset.getByNumbers([])
+    >>> print result_set.count()
+    0
+
+Bug creation events
+-------------------
+
+IObjectCreatedEvent events are fired off when a bug is created. First
+we will register a handler to observe the event.
+
+    >>> from zope.component import globalSiteManager
+    >>> from lazr.lifecycle.event import IObjectCreatedEvent
+
+    >>> def show_bug_creation_event(bug, event):
+    ...     print "New bug created: %s" % (bug.title,)
+    ...     print "          Owner: %s" % (bug.owner.name,)
+    ...     print "       Filed by: %s" % (event.user.name,)
+
+    >>> globalSiteManager.registerHandler(
+    ...     show_bug_creation_event, (IBug, IObjectCreatedEvent))
+
+The event can be seen when we file a bug.
+
+    >>> from lp.bugs.interfaces.bug import CreateBugParams
+    >>> from lp.app.enums import InformationType
+
+    >>> steve_harris = factory.makePerson(name='steve-harris')
+    >>> jukebox = factory.makeProduct()
+    >>> params = CreateBugParams(
+    ...     owner=steve_harris, title="Oh I hate this song",
+    ...     comment="Janick keeps playing Mr Blobby.",
+    ...     target=jukebox)
+
+    >>> bug = bugset.createBug(params)
+    New bug created: Oh I hate this song
+              Owner: steve-harris
+           Filed by: steve-harris
+
+The bug has been filed and is owned by the same person, the owner
+specified in `params`. However, when importing bugs, a user other than
+the bug owner will create the bugs. A `CreateBugParams.filed_by`
+parameter is available to override the user recorded in the event.
+
+    >>> rod_smallwood = factory.makePerson(name='rod-smallwood')
+    >>> params = CreateBugParams(
+    ...     owner=steve_harris, filed_by=rod_smallwood,
+    ...     title="Steve really hates this song",
+    ...     comment="He thinks Janick is doing it, but it's really me.",
+    ...     target=jukebox)
+    >>> bug = bugset.createBug(params)
+    New bug created: Steve really hates this song
+              Owner: steve-harris
+           Filed by: rod-smallwood
+
+    >>> login(ANONYMOUS)
+
+We must unregister the handler.
+
+    >>> globalSiteManager.unregisterHandler(
+    ...     show_bug_creation_event, (IBug, IObjectCreatedEvent))
+    True
+
+
+Interface check
+---------------
+
+It is guaranteed to implement the correct interface, too:
+
+    >>> from lp.testing import verifyObject
+    >>> verifyObject(IBug, firefox_crashes)
+    True
+
+(We grab the object directly from the database here to avoid it being
+security proxied, which doesn't make sense to test here.)
+
+
+Absolute URLs
+-------------
+
+For things like bug notification emails, it's handy to be able to
+include a URL to the bug inside the email.
+
+    >>> from lp.services.webapp import canonical_url
+    >>> login(ANONYMOUS)
+    >>> print canonical_url(firefox_crashes)
+    http://.../bugs/6
+
+
+Bug Privacy
+-----------
+
+A Bug has a "private" field. If Bug.private is False, the bug is
+publicly visible. If Bug.private is True, only people who are directly
+subscribed to the bug can see it. Launchpad admins can always view and
+modify private bugs.
+
+Marking Bugs Private
+....................
+
+For the purposes of demonstration, we'll make the firefox crashing bug
+private. A bug cannot be made private by an anonymous user.
+
+    >>> from lp.services.webapp.interfaces import ILaunchBag
+
+    >>> def current_user():
+    ...     return getUtility(ILaunchBag).user
+
+    >>> firefox_crashes.private = True
+    Traceback (most recent call last):
+      ...
+    ForbiddenAttribute: ('private', ...)
+
+    >>> firefox_crashes.setPrivate(True, current_user())
+    Traceback (most recent call last):
+      ...
+    Unauthorized: (..., 'setPrivate', 'launchpad.Edit')
+
+We have to be logged in, so let's do that:
+
+    >>> login("test@canonical.com")
+
+There are currently no people subscribed to this bug:
+
+    >>> print firefox_crashes.subscriptions.count()
+    0
+
+The rule with private bugs is that only direct subscribers can view the
+bug after it's been marked private. So, if Sample Person is to mark the
+firefox_crashes bug private, we must first ensure that Sample Person is
+subscribed to the bug!
+
+    >>> sample_person = current_user()
+    >>> subscription = firefox_crashes.subscribe(sample_person, sample_person)
+
+Even though we are logged in and subscribed to the bug, we are
+prevented from using the private attribute to mark bug #6 private:
+
+    >>> firefox_crashes.private = True
+    Traceback (most recent call last):
+      ...
+    ForbiddenAttribute: ('private', ...)
+
+We must use setPrivate:
+
+    >>> from zope.event import notify
+    >>> from lazr.lifecycle.event import (
+    ...     ObjectModifiedEvent, ObjectCreatedEvent)
+    >>> from lazr.lifecycle.snapshot import Snapshot
+
+    >>> old_state = Snapshot(firefox_crashes, providing=IBug)
+    >>> firefox_crashes.setPrivate(True, current_user())
+    True
+    >>> bug_set_private = ObjectModifiedEvent(
+    ...     firefox_crashes, old_state,
+    ...     ["id", "title", "private"])
+
+    >>> notify(bug_set_private)
+    >>> flush_database_updates()
+
+Trying to mark a private bug as private is a no-op, as is marking a
+non-private bug as non-private. The return value from setPrivate is an
+indicator that it modified the bug.
+
+    >>> firefox_crashes.setPrivate(False, current_user())
+    True
+    >>> firefox_crashes.setPrivate(False, current_user())
+    False
+    >>> firefox_crashes.setPrivate(True, current_user())
+    True
+    >>> firefox_crashes.setPrivate(True, current_user())
+    False
+
+How Privacy Affects Access to a Bug
+...................................
+
+Once a bug is made private, it can only be accessed by the users that
+are directly subscribed to the bug and Launchpad admins.
+
+So, remembering that we're still logged in as Sample Person (ID 12 in
+the Person table), and that Sample Person is a direct subscriber to the
+firefox_crashes bug, we can still access properties of this bug:
+
+    >>> firefox_crashes.title
+    u'Firefox crashes when Save As dialog for a nonexistent window is closed'
+
+Note that a search will return all public bugs, omitting bug 14 which is
+private:
+
+    >>> from lp.bugs.interfaces.bugtask import IBugTaskSet
+    >>> from lp.bugs.interfaces.bugtasksearch import BugTaskSearchParams
+    >>> from lp.bugs.model.bug import Bug
+    >>> from lp.services.database.interfaces import IStore
+
+    >>> all_bugs = set(IStore(Bug).find(Bug).values(Bug.id))
+
+    >>> taskset = getUtility(IBugTaskSet)
+    >>> def hidden_bugs():
+    ...     found_bugs = set(
+    ...         task.bug.id for task in taskset.search(
+    ...             BugTaskSearchParams(current_user())))
+    ...     return sorted(all_bugs - found_bugs)
+
+    >>> login("test@canonical.com")
+    >>> hidden_bugs()
+    [14]
+
+Likewise Foo Bar, an admin, can access the bug.
+
+    >>> login("foo.bar@canonical.com")
+
+    >>> old_title = firefox_crashes.title
+    >>> firefox_crashes.title = "new title"
+    >>> firefox_crashes.title
+    u'new title'
+    >>> firefox_crashes.title = old_title
+    >>> firefox_crashes.title
+    u'Firefox crashes when Save As dialog for a nonexistent window is closed'
+
+Bug 14, which is private, is returned by the search results for an
+admin as well:
+
+    >>> hidden_bugs()
+    []
+
+As one would expect, the permissions are team aware. So, let's retrieve a bug
+and set it private (as Foo Bar again who, of course, is an admin.)
+
+    >>> reflow_problems_bug = bugset.get(4)
+
+And again, let's fake setting the bug private:
+
+    >>> old_state = Snapshot(reflow_problems_bug, providing=IBug)
+    >>> reflow_problems_bug.setPrivate(True, current_user())
+    True
+    >>> bug_set_private = ObjectModifiedEvent(
+    ...     reflow_problems_bug, old_state,
+    ...     ["id", "title", "private"])
+
+    >>> notify(bug_set_private)
+    >>> flush_database_updates()
+
+Then let's permit the Ubuntu Team to access this bug by adding them to
+the Cc list:
+
+    >>> from lp.registry.interfaces.person import IPersonSet
+    >>> personset = getUtility(IPersonSet)
+
+    >>> ubuntu_team = personset.get(17)
+    >>> subscription = reflow_problems_bug.subscribe(
+    ...     ubuntu_team, ubuntu_team)
+
+Jeff Waugh, a member of the Ubuntu Team, is able to access this bug:
+
+    >>> login("jeff.waugh@ubuntulinux.com")
+
+    >>> old_title = reflow_problems_bug.title
+    >>> reflow_problems_bug.title = "new title"
+    >>> reflow_problems_bug.title
+    u'new title'
+    >>> reflow_problems_bug.title = old_title
+    >>> reflow_problems_bug.title
+    u'Reflow problems with complex page layouts'
+
+Bug #4 is visible to him in searches. Note that bugs #6 and #14 are
+hidden from him.
+
+    >>> hidden_bugs()
+    [6, 14]
+
+If we login as someone who *isn't* a member of the Ubuntu Team (and
+isn't otherwise someone who should be allowed to access the properties
+of this bug) though:
+
+    >>> login("no-priv@canonical.com")
+
+Trying to access a property of this bug will again raise an
+Unauthorized:
+
+    >>> reflow_problems_bug.title
+    Traceback (most recent call last):
+      ...
+    Unauthorized: (..., 'title', 'launchpad.View')
+
+And, as you might have guessed, bug #4 is invisible in searches, in
+addition to bugs #6 and #14:
+
+    >>> hidden_bugs()
+    [4, 6, 14]
+
+
+
+Filing Public vs. Private Bugs
+..............................
+
+Let's log back in as Foo Bar to continue our examples:
+
+    >>> login("foo.bar@canonical.com")
+
+When a public bug is filed:
+
+    >>> from lp.registry.interfaces.product import IProductSet
+    >>> productset = getUtility(IProductSet)
+    >>> firefox = productset.get(4)
+    >>> foobar = personset.getByEmail('foo.bar@canonical.com')
+    >>> params = CreateBugParams(
+    ...     title="test firefox bug", comment="blah blah blah", owner=foobar,
+    ...     target=firefox)
+    >>> added_bug = getUtility(IBugSet).createBug(params)
+    >>> public_bug = bugset.get(added_bug.id)
+
+the submitter and the maintainer are directly subscribed. Note that
+passing both a comment /and/ a msg would have raised an AssertionError:
+
+    >>> params = CreateBugParams(
+    ...     title="test firefox bug", comment="blah blah blah",
+    ...     msg="foo foo foo", owner=foobar, target=firefox)
+    >>> added_bug = getUtility(IBugSet).createBug(params)
+    Traceback (most recent call last):
+    ...
+    AssertionError: Expected either a comment or a msg, but got both.
+
+
+So, let's continue:
+
+    >>> for subscription in public_bug.subscriptions:
+    ...     print subscription.person.name
+    name16
+
+The first comment made (this is submitted in the bug report) is set to
+the description of the bug:
+
+    >>> print public_bug.description
+    blah blah blah
+
+The bug description can also be accessed through the task:
+
+    >>> print public_bug.bugtasks[0].bug.description
+    blah blah blah
+    >>> public_bug.description = 'a new description'
+    >>> print public_bug.bugtasks[0].bug.description
+    a new description
+
+When a private bug is filed:
+
+    >>> params = CreateBugParams(
+    ...     title="test firefox bug", comment="blah blah blah", owner=foobar,
+    ...     information_type=InformationType.USERDATA, target=firefox)
+    >>> added_bug = getUtility(IBugSet).createBug(params)
+    >>> private_bug = bugset.get(added_bug.id)
+
+*only* the submitter is directly subscribed:
+
+    >>> [subscriber.name for subscriber in private_bug.getDirectSubscribers()]
+    [u'name16']
+
+It's up to the submitter to subscribe the maintainer, if they so choose.
+
+This works similarly for distributions; in this case the
+"maintainer" is considered the person who maintains the applicable
+sourcepackage. E.g.
+
+    >>> from lp.registry.interfaces.distribution import IDistributionSet
+    >>> from lp.registry.interfaces.sourcepackagename import (
+    ...     ISourcePackageNameSet)
+    >>> distributionset = getUtility(IDistributionSet)
+    >>> spnset = getUtility(ISourcePackageNameSet)
+    >>> ubuntu = distributionset.get(1)
+    >>> evolution = spnset.get(9)
+    >>> params = CreateBugParams(
+    ...     title="test firefox bug", comment="blah blah blah",
+    ...     owner=foobar, information_type=InformationType.USERDATA,
+    ...     target=ubuntu.getSourcePackage(evolution))
+    >>> added_bug = getUtility(IBugSet).createBug(params)
+    >>> private_bug = bugset.get(added_bug.id)
+    >>> [subscriber.name for subscriber in private_bug.getDirectSubscribers()]
+    [u'name16']
+
+
+Prevent reporter from being subscribed to filed bugs
+----------------------------------------------------
+
+If necessary, subscriber_reporter may be specified when creating a bug,
+to prevent the reporter from being subscribed to the bug. This is useful
+when importing bugs.
+
+    >>> params = CreateBugParams(
+    ...     owner=current_user(), title="test", comment="test",
+    ...     subscribe_owner=False)
+    >>> bug = ubuntu.createBug(params)
+    >>> [person.name for person in bug.getDirectSubscribers()]
+    []
+
+
+Date Last Updated
+-----------------
+
+Malone tracks the last time a change was made to a
+bug. IBug.date_last_updated stores the date when anything is changed or
+added to a bug, i.e., an IBug or IBugTask is added or changed, or an
+IHasBug object is added or changed. The sole exception to this is
+subscribing/unsubscribing (which create/delete IBugSubscription
+objects.) Let's look at an example of each.
+
+When a bug is created, its date_last_updated is set right away, to
+ensure that new bugs sort appropriately.
+
+    >>> params = CreateBugParams(
+    ...     title="a test firefox bug",
+    ...     comment="a description of the bug",
+    ...     owner=current_user())
+    >>> firefox_bug = firefox.createBug(params)
+
+    >>> firefox_bug.datecreated == firefox_bug.date_last_updated
+    True
+
+Adding a comment.
+
+    >>> current_date_last_updated = firefox_bug.date_last_updated
+
+    >>> comment = firefox_bug.newMessage(
+    ...     owner=current_user(),
+    ...     subject="blah blah blah",
+    ...     content="blah blah blah")
+
+    >>> firefox_bug.date_last_updated > current_date_last_updated
+    True
+
+Changing the bug summary.
+
+    >>> from lp.bugs.interfaces.bug import IBug
+
+    >>> bug_before_modification = Snapshot(firefox_bug, providing=IBug)
+
+    >>> firefox_bug.title = "a new title"
+
+    >>> bug_summary_changed = ObjectModifiedEvent(
+    ...     firefox_bug, bug_before_modification, ["title"])
+
+    >>> current_date_last_updated = firefox_bug.date_last_updated
+
+    >>> notify(bug_summary_changed)
+
+    >>> firefox_bug.date_last_updated > current_date_last_updated
+    True
+
+Changing the description.
+
+    >>> bug_before_modification = Snapshot(firefox_bug, providing=IBug)
+
+    >>> firefox_bug.description = "a new description"
+
+    >>> bug_description_changed = ObjectModifiedEvent(
+    ...     firefox_bug, bug_before_modification, ["description"])
+
+    >>> current_date_last_updated = firefox_bug.date_last_updated
+
+    >>> notify(bug_description_changed)
+
+    >>> firefox_bug.date_last_updated > current_date_last_updated
+    True
+
+Modifying a bugtask will update IBug.date_last_updated.
+
+    >>> from lp.bugs.interfaces.bugtask import (
+    ...     BugTaskImportance, BugTaskStatus, IBugTask)
+
+    >>> firefox_task = firefox_bug.bugtasks[0]
+
+    >>> print firefox_task.bugtargetdisplayname
+    Mozilla Firefox
+
+    >>> print firefox_task.importance.title
+    Undecided
+    >>> print firefox_task.status.title
+    New
+
+    >>> bugtask_before_modification = Snapshot(
+    ...     firefox_task, providing=IBugTask)
+
+    >>> firefox_task.transitionToImportance(
+    ...     BugTaskImportance.CRITICAL, current_user())
+    >>> firefox_task.transitionToStatus(
+    ...     BugTaskStatus.CONFIRMED, current_user())
+
+    >>> bugtask_modified = ObjectModifiedEvent(
+    ...     firefox_task, bugtask_before_modification,
+    ...     ["status", "importance"])
+
+    >>> current_date_last_updated = firefox_bug.date_last_updated
+
+    >>> notify(bugtask_modified)
+
+    >>> firefox_bug.date_last_updated > current_date_last_updated
+    True
+
+Adding a new task.
+
+    >>> from lp.bugs.interfaces.bugtask import IBugTaskSet
+
+    >>> thunderbird = productset.getByName("thunderbird")
+
+    >>> print thunderbird.name
+    thunderbird
+
+    >>> thunderbird_task = getUtility(IBugTaskSet).createTask(
+    ...     firefox_bug, foobar, thunderbird)
+
+    >>> current_date_last_updated = firefox_bug.date_last_updated
+
+    >>> notify(ObjectCreatedEvent(thunderbird_task))
+
+    >>> firefox_bug.date_last_updated > current_date_last_updated
+    True
+
+A new task can also be added using IBug.addTask(), which takes an
+IBugTarget parameter and works out what parameters to pass to
+createTask(), above.
+
+    >>> redfish = getUtility(IProductSet).getByName('redfish')
+    >>> redfish_task = firefox_bug.addTask(
+    ...     owner=foobar, target=redfish)
+
+    >>> current_date_last_updated = firefox_bug.date_last_updated
+
+    >>> notify(ObjectCreatedEvent(redfish_task))
+
+    >>> firefox_bug.date_last_updated > current_date_last_updated
+    True
+
+You can also add bugs for a specific distro.
+
+    >>> from lp.registry.interfaces.distribution import IDistributionSet
+    >>> ubuntu = getUtility(IDistributionSet).getByName('ubuntu')
+    >>> ubuntu_task = firefox_bug.addTask(
+    ...     owner=foobar, target=ubuntu)
+    >>> notify(ObjectCreatedEvent(ubuntu_task))
+
+    >>> print ubuntu_task.distribution.title
+    Ubuntu Linux
+
+And for a specific distribution series.
+
+    >>> warty = ubuntu.getSeries('warty')
+    >>> warty_task = firefox_bug.addTask(
+    ...     owner=foobar, target=warty)
+    >>> notify(ObjectCreatedEvent(warty_task))
+
+    >>> print warty_task.distroseries.title
+    The Warty Warthog Release
+
+Also for a specific distribution source package.
+
+    >>> tubuntu = factory.makeDistribution(name='tubuntu')
+    >>> linux_source = tubuntu.getSourcePackage('linux-source-2.6.15')
+    >>> linux_task = firefox_bug.addTask(
+    ...     owner=foobar, target=linux_source)
+    >>> notify(ObjectCreatedEvent(linux_task))
+
+    >>> print linux_task.bugtargetname
+    linux-source-2.6.15 (Tubuntu)
+
+And for a distro series source package.
+
+    >>> from lp.registry.model.sourcepackage import SourcePackage
+    >>> firefox_package = ubuntu.getSourcePackage('mozilla-firefox')
+    >>> warty_fox_package = SourcePackage(
+    ...     distroseries=warty,
+    ...     sourcepackagename=firefox_package.sourcepackagename)
+    >>> warty_fox_task = firefox_bug.addTask(
+    ...     owner=foobar, target=warty_fox_package)
+    >>> notify(ObjectCreatedEvent(warty_fox_task))
+
+    >>> print warty_fox_task.bugtargetname
+    mozilla-firefox (Ubuntu Warty)
+
+    >>> print warty_fox_task.distroseries.name
+    warty
+
+    >>> print warty_fox_task.sourcepackagename.name
+    mozilla-firefox
+
+The first task is available as default_bugtask. Launchpad often views
+bugs in the context of a bugtask, and the default choice is the first
+or oldest bugtask.
+
+    >>> print firefox_bug.default_bugtask.bugtargetdisplayname
+    Mozilla Firefox
+
+Changing bug visibility.
+
+    >>> bug_before_modification = Snapshot(firefox_bug, providing=IBug)
+
+    >>> firefox_bug.private
+    False
+    >>> firefox_bug.setPrivate(True, current_user())
+    True
+
+    >>> bug_visibility_changed = ObjectModifiedEvent(
+    ...     firefox_bug, bug_before_modification, ["private"])
+
+    >>> current_date_last_updated = firefox_bug.date_last_updated
+
+    >>> notify(bug_visibility_changed)
+
+    >>> firefox_bug.date_last_updated > current_date_last_updated
+    True
+
+Changing bug security.
+
+    >>> bug_before_modification = Snapshot(firefox_bug, providing=IBug)
+
+    >>> firefox_bug.security_related
+    False
+    >>> changed = firefox_bug.setSecurityRelated(True,
+    ...     getUtility(ILaunchBag).user)
+
+    >>> bug_security_changed = ObjectModifiedEvent(
+    ...     firefox_bug, bug_before_modification, ["security_related"])
+
+    >>> current_date_last_updated = firefox_bug.date_last_updated
+
+    >>> notify(bug_security_changed)
+
+    >>> firefox_bug.date_last_updated > current_date_last_updated
+    True
+
+Marking as duplicate.
+
+    >>> bug_before_modification = Snapshot(firefox_bug, providing=IBug)
+
+    >>> print firefox_bug.duplicateof
+    None
+    >>> firefox_bug.markAsDuplicate(factory.makeBug())
+
+    >>> bug_duplicateof_changed = ObjectModifiedEvent(
+    ...     firefox_bug, bug_before_modification, ["duplicateof"])
+
+    >>> current_date_last_updated = firefox_bug.date_last_updated
+
+    >>> notify(bug_duplicateof_changed)
+
+    >>> firefox_bug.date_last_updated > current_date_last_updated
+    True
+
+Adding an attachment.
+
+    >>> from StringIO import StringIO
+    >>> from lp.bugs.interfaces.bugattachment import IBugAttachmentSet
+    >>> from lp.services.librarian.interfaces import (
+    ...     ILibraryFileAliasSet)
+    >>> from lp.services.messages.interfaces.message import IMessageSet
+
+    >>> firefox_bug.attachments.count()
+    0
+
+(Upload a file to the Librarian.)
+
+    >>> filecontent = 'Some useful information.'
+    >>> filealias = getUtility(ILibraryFileAliasSet).create(
+    ...     name='foo.txt', size=len(filecontent),
+    ...     file=StringIO(filecontent), contentType='text/plain')
+
+(Attach it to the bug.)
+
+    >>> message = getUtility(IMessageSet).fromText(
+    ...     subject="title", content="added an attachment.")
+    >>> attachmentset = getUtility(IBugAttachmentSet)
+    >>> attachment = attachmentset.create(
+    ...     bug=firefox_bug, filealias=filealias, title='Some info.',
+    ...     message=message)
+
+    >>> current_date_last_updated = firefox_bug.date_last_updated
+
+    >>> notify(ObjectCreatedEvent(attachment))
+
+    >>> firefox_bug.attachments.count()
+    1
+
+    >>> firefox_bug.date_last_updated > current_date_last_updated
+    True
+
+Editing an attachment.
+
+    >>> from lp.bugs.interfaces.bugattachment import IBugAttachment
+
+    >>> attachment_before_modification = Snapshot(
+    ...     attachment, providing=IBugAttachment)
+
+    >>> attachment.title = "a new title"
+
+    >>> attachment_changed = ObjectModifiedEvent(
+    ...     attachment, attachment_before_modification,
+    ...     ["title"])
+
+    >>> current_date_last_updated = firefox_bug.date_last_updated
+
+    >>> notify(attachment_changed)
+
+    >>> firefox_bug.date_last_updated > current_date_last_updated
+    True
+
+Linking to a CVE.
+
+    >>> from lp.bugs.interfaces.cve import ICveSet
+
+    >>> firefox_bug.cve_links.count()
+    0
+
+    >>> cveref = getUtility(ICveSet)["1999-8979"]
+    >>> bug_cveref = firefox_bug.linkCVE(cveref, sample_person)
+
+    >>> current_date_last_updated = firefox_bug.date_last_updated
+
+    >>> notify(ObjectCreatedEvent(bug_cveref))
+
+    >>> firefox_bug.cve_links.count()
+    1
+
+    >>> firefox_bug.date_last_updated > current_date_last_updated
+    True
+
+Linking to an external bug tracker.
+
+    >>> from lp.bugs.interfaces.bugtracker import IBugTrackerSet
+    >>> from lp.bugs.interfaces.bugwatch import IBugWatchSet
+
+    >>> firefox_bug.watches.count()
+    0
+
+    >>> mozilla_bugtracker = getUtility(IBugTrackerSet)['mozilla.org']
+    >>> bugwatch = getUtility(IBugWatchSet).createBugWatch(
+    ...     bug=firefox_bug, owner=current_user(),
+    ...     bugtracker=mozilla_bugtracker, remotebug='1234')
+
+    >>> current_date_last_updated = firefox_bug.date_last_updated
+
+    >>> notify(ObjectCreatedEvent(bugwatch))
+
+    >>> firefox_bug.watches.count()
+    1
+
+    >>> firefox_bug.date_last_updated > current_date_last_updated
+    True
+
+Editing the external bug watch.
+
+    >>> from lp.bugs.interfaces.bugwatch import IBugWatch
+
+    >>> bugwatch_before_modification = Snapshot(
+    ...     bugwatch, providing=IBugWatch)
+
+    >>> print bugwatch.remotebug
+    1234
+
+    >>> bugwatch.remotebug = '5678'
+
+    >>> bugwatch_changed = ObjectModifiedEvent(
+    ...     bugwatch, bugwatch_before_modification, ["remotebug"],
+    ...     bugwatch.bug.owner)
+
+    >>> current_date_last_updated = firefox_bug.date_last_updated
+
+    >>> notify(bugwatch_changed)
+
+    >>> firefox_bug.date_last_updated > current_date_last_updated
+    True
+
+Adding a comment imported from an external bugtracker.
+
+    >>> remote_comment = firefox_bug.newMessage(
+    ...     owner=current_user(),
+    ...     subject="blah blah blah again",
+    ...     content="blah blah blah blah remotely",
+    ...     bugwatch=bugwatch,
+    ...     remote_comment_id='blah'
+    ...     )
+
+    >>> imported_message = bugwatch.getImportedBugMessages()[0]
+    >>> print imported_message.message.text_contents
+    blah blah blah blah remotely
+
+Subscribing and unsubscribing does *not* trigger an update of
+IBug.date_last_updated.
+
+    >>> current_date_last_updated = firefox_bug.date_last_updated
+
+    >>> firefox_bug.unsubscribe(ubuntu_team, ubuntu_team)
+
+    >>> firefox_bug.date_last_updated == current_date_last_updated
+    True
+
+    >>> firefox_bug.isSubscribed(ubuntu_team)
+    False
+
+    >>> subscription = firefox_bug.subscribe(ubuntu_team, ubuntu_team)
+
+    >>> notify(ObjectCreatedEvent(subscription))
+
+    >>> firefox_bug.date_last_updated == current_date_last_updated
+    True
+
+
+Bug Completeness
+----------------
+
+A bug is considered "complete" iff all of its bugtasks are themselves
+complete. The definition of completeness for a bugtask is that the bug
+has been marked invalid or a fix has been released.
+
+    >>> b8 = bugset.get(8)
+    >>> b8.is_complete
+    True
+    >>> b9 = bugset.get(9)
+    >>> b9.is_complete
+    False
+
+Let's add a new task to b8 to see if that affects the completeness.
+
+    >>> newtask = getUtility(IBugTaskSet).createTask(b8, b8.owner, firefox)
+    >>> newtask.status.name
+    'NEW'
+    >>> b8.is_complete
+    False
+
+Now, let's iterate over the bug tasks, some complete and others
+incomplete, and show the status of each of the tasts:
+
+    >>> for task in b8.bugtasks:
+    ...     print task.bugtargetdisplayname, task.is_complete
+    Mozilla Firefox False
+    mozilla-firefox (Debian) True
+
+
+Bug Tasks
+---------
+
+A bug can be targeted to more than one product, distribution, or source
+package. A BugTask is used to represent a target, which has its own
+status, importance, assignee, and so on.
+
+You can get the set of bugtasks for at bug with the 'bugtasks' attribute:
+
+    >>> bug_two = bugset.get(2)
+    >>> for task in bug_two.bugtasks: print task.target.displayname
+    Tomcat
+    Ubuntu
+    Hoary
+    mozilla-firefox in Debian
+    mozilla-firefox in Debian Woody
+
+You can also get a list of the "LP pillars" affected by a particular bug.
+
+    >>> for pillar in bug_two.affected_pillars:
+    ...     print pillar.displayname
+    Tomcat
+    Ubuntu
+    Debian
+
+Yes, this is TERRIBLE sample data, but it serves to illustrate the point.
+
+If you are interested in bugtask targeted to a specific target, you can
+use getBugTask() to get it.
+
+    >>> tomcat = getUtility(IProductSet).getByName('tomcat')
+    >>> tomcat_task = bug_two.getBugTask(tomcat)
+    >>> tomcat_task.target.name
+    u'tomcat'
+
+    >>> ubuntu = getUtility(IDistributionSet).getByName('ubuntu')
+    >>> ubuntu_task = bug_two.getBugTask(ubuntu)
+    >>> ubuntu_task.target.name
+    u'ubuntu'
+
+    >>> ubuntu_hoary = ubuntu.getSeries('hoary')
+    >>> ubuntu_hoary_task = bug_two.getBugTask(ubuntu_hoary)
+    >>> ubuntu_hoary_task.target.name
+    u'hoary'
+
+    >>> debian = getUtility(IDistributionSet).getByName('debian')
+    >>> mozilla_in_debian = debian.getSourcePackage('mozilla-firefox')
+    >>> mozilla_in_debian_task = bug_two.getBugTask(mozilla_in_debian)
+    >>> mozilla_in_debian_task.target.displayname
+    u'mozilla-firefox in Debian'
+
+    >>> debian_woody = debian.getSeries('woody')
+    >>> mozilla_in_woody = debian_woody.getSourcePackage('mozilla-firefox')
+    >>> mozilla_in_woody_task = bug_two.getBugTask(mozilla_in_woody)
+    >>> mozilla_in_woody_task.target.displayname
+    u'mozilla-firefox in Debian Woody'
+
+If the bug isn't targeted to the target, None is returned.
+
+    >>> bug_two.getBugTask(debian) is None
+    True
+
+
+Bug Expiration
+--------------
+
+Incomplete bug reports may expire when they become inactive. Expiration
+is only available to projects that use Launchpad to track bugs. There are
+two properties related to expiration. IBug.permits_expiration tests
+that the state of the bug permits expiration, and returns True or False.
+IBug.can_expire property returns True or False as to whether the bug
+will expire if it becomes inactive because of a bugtask.
+
+`bugtask-expiration.txt` outlines the complete list of constraints that
+govern expiration. In general, a bug that is not valid anywhere,
+that has a single unattended Incomplete bugtask whose pillar has enabled
+bug expiration. Once an bug is recognised to be valid for one bugtask
+(confirmed), or attended (is assigned or has a milestone), the bug will
+not permit expiration.
+
+The thunderbird project does not use Launchpad to track bugs.
+Incomplete, unattended bug reports cannot ever expire for this project.
+
+create_old_bug creates an bug with a bugtask that is eligible for expiration,
+so long as the pillar object has enabled bug expiration. Every change to a
+bug or bugtask must be synced back to the database to test can_expire.
+
+    >>> from lp.bugs.tests.bug import create_old_bug
+
+    >>> upstream_bugtask = create_old_bug('bug a', 1, thunderbird)
+    >>> upstream_bugtask.status.name
+    'INCOMPLETE'
+    >>> upstream_bugtask.pillar.enable_bug_expiration
+    False
+    >>> upstream_bugtask.bug.permits_expiration
+    False
+    >>> upstream_bugtask.bug.can_expire
+    False
+
+Ubuntu has enabled bug expiration. Incomplete, unattended bugs can
+expire.
+
+    >>> expirable_bugtask = create_old_bug(
+    ...     'bug c', 61, ubuntu, with_message=False)
+
+    >>> expirable_bugtask.status.name
+    'INCOMPLETE'
+    >>> expirable_bugtask.pillar.enable_bug_expiration
+    True
+    >>> expirable_bugtask.bug.permits_expiration
+    True
+    >>> expirable_bugtask.bug.can_expire
+    True
+
+When the expirable_bugtask is assigned, the bugtask is no longer in an
+expirable state, thus the bug cannot expire even though bug permits
+expiration.
+
+    >>> expirable_bugtask.transitionToAssignee(sample_person)
+    >>> expirable_bugtask.bug.permits_expiration
+    True
+    >>> expirable_bugtask.bug.can_expire
+    False
+
+Changing the status of the bug's single bugtask to any value other
+than Incomplete, will cause the bug to not permit expiration.
+
+    >>> expirable_bugtask.transitionToStatus(
+    ...     BugTaskStatus.CONFIRMED, sample_person)
+    >>> expirable_bugtask.bug.permits_expiration
+    False
+    >>> expirable_bugtask.bug.can_expire
+    False
+
+See `bugtask-expiration.txt` for a more comprehensive set of bugs
+that can or cannot expire.
+
+
+Bug Comments
+------------
+
+A bug comment is actually made up of a number of chunks. The
+IBug.getMessagesForView() method allows you to get all the data needed to
+show messages in the bugtask index template in one shot.
+
+    >>> from lp.testing.pgsql import CursorWrapper
+    >>> CursorWrapper.record_sql = True
+    >>> queries = len(CursorWrapper.last_executed_sql)
+
+    >>> chunks = bug_two.getMessagesForView(None)
+    >>> for _, _1, chunk in sorted(chunks, key=lambda x:x[2].id):
+    ...    (chunk.id, chunk.message.id, chunk.message.owner.id,
+    ...     chunk.content[:30])
+    (4, 1, 16, u'Problem exists between chair a')
+    (7, 5, 12, u'This would be a real killer fe')
+    (8, 6, 12, u'Oddly enough the bug system se')
+
+It's done in a way that we only issue two queries to fetch all this
+information, too:
+
+XXX RobertCollins <unknown date> bug=619017: Storm bug 619017 means that this
+sometimes does 3 queries, depending on the precise state of the storm cache.
+To avoid spurious failures it has been changed to tolerate this additional
+query.
+
+    >>> len(CursorWrapper.last_executed_sql) - queries <= 3
+    True
+
+getMessagesForView supports slicing operations:
+
+    >>> def message_ids(slices):
+    ...     chunks = bug_two.getMessagesForView(slices)
+    ...     return sorted(set(
+    ...         bugmessage.index for bugmessage, _, _1 in chunks))
+    >>> message_ids([slice(1, 2)])
+    [1]
+
+We use this to get the first N and last M messages in big bugs:
+    >>> message_ids([slice(None, 1), slice(2, None)])
+    [0, 2]
+
+We also support a negative lookup though the bug view does not use that at the
+moment:
+    >>> message_ids([slice(None, 1), slice(-1, None)])
+    [0, 2]
+
+Bugs have a special attribute, `indexed_messages` which returns the collection
+of messages, each decorated with the index of that message in its context
+(the bug) and the primary bug task. This is used for providing an efficient
+implementation of the canonical url resolution for messages when they are
+exported using the webservice API.
+
+    >>> for indexed_message in bug_two.indexed_messages:
+    ...     print '%s\t%s\t%s' % (
+    ...         indexed_message.index, indexed_message.subject,
+    ...         indexed_message.inside.title)
+    0 PEBCAK
+    Bug #2 in Tomcat: "Blackhole Trash folder"
+    1 Fantastic idea, I'd really like to see this
+    Bug #2 in Tomcat: "Blackhole Trash folder"
+    2 Strange bug with duplicate messages.
+    Bug #2 in Tomcat: "Blackhole Trash folder"
+
+
+Affected users
+--------------
+
+Users can mark bugs as affecting or not affecting them. For each bug we
+then keep a count of the number of users affected by it, as well as the
+number of users not affected by it.
+
+    >>> test_bug_owner = factory.makePerson(name='paul-dianno')
+    >>> test_bug = factory.makeBug(owner=test_bug_owner)
+    >>> affected_user = factory.makePerson(name='bruce-dickinson')
+    >>> unaffected_user = factory.makePerson(name='blaze-bayley')
+
+Initially, only the bug reporter is marked as affected. Other users,
+including the anonymous user, are neither marked as affected nor as
+unaffected.
+
+    >>> print test_bug.isUserAffected(test_bug.owner)
+    True
+
+    >>> print test_bug.isUserAffected(affected_user)
+    None
+
+    >>> print test_bug.isUserAffected(None)
+    None
+
+When we mark a bug as affecting a new user, the affected_users_count
+increments.
+
+    >>> test_bug.markUserAffected(affected_user, affected=True)
+    >>> test_bug.isUserAffected(affected_user)
+    True
+    >>> test_bug.users_affected_count
+    2
+
+A bug can only affect a user once. Calling markUserAffect() with the
+same user more than once does not increment users_affect_count.
+
+    >>> test_bug.markUserAffected(affected_user, affected=True)
+    >>> test_bug.users_affected_count
+    2
+
+We can mark a user as unaffected by a bug.
+
+    >>> print test_bug.isUserAffected(unaffected_user)
+    None
+    >>> test_bug.markUserAffected(unaffected_user, affected=False)
+    >>> test_bug.isUserAffected(unaffected_user)
+    False
+    >>> test_bug.users_unaffected_count
+    1
+
+And we can change whether a user is marked as affected or unaffected.
+
+    >>> test_bug.markUserAffected(unaffected_user, affected=True)
+    >>> test_bug.isUserAffected(unaffected_user)
+    True
+    >>> test_bug.users_unaffected_count
+    0
+    >>> test_bug.users_affected_count
+    3
+    >>> test_bug.markUserAffected(unaffected_user, affected=False)
+    >>> test_bug.isUserAffected(unaffected_user)
+    False
+    >>> test_bug.users_unaffected_count
+    1
+    >>> test_bug.users_affected_count
+    2
+
+We can also get the collection of users affected by a bug.
+
+    >>> print '\n'.join(
+    ...     sorted(user.name for user in test_bug.users_affected))
+    bruce-dickinson
+    paul-dianno
+
+    >>> unaffecting_bug = factory.makeBug()
+    >>> print list(unaffecting_bug.users_affected)
+    [<Person at ...>]
+
+Similarly, we can get the collection of users unaffected by a bug.
+
+    >>> print '\n'.join(
+    ...     sorted(user.name for user in test_bug.users_unaffected))
+    blaze-bayley
+
+If a user is marked as being affected by a bug (either by explicitly
+marking it so, or by being the bug's owner), and then that bug is
+marked as a duplicate of master bug, then the users_affected_count of
+the master bug increases too.
+
+    >>> dupe_affected_user = factory.makePerson(name='sheila-shakespeare')
+    >>> dupe_one = factory.makeBug(owner=dupe_affected_user)
+    >>> dupe_one.markAsDuplicate(test_bug)
+    >>> test_bug.users_affected_count_with_dupes
+    3
+
+And the list of users the master bug affects includes that user.
+
+    >>> print '\n'.join(
+    ...     sorted(user.name for user in test_bug.users_affected_with_dupes))
+    bruce-dickinson
+    paul-dianno
+    sheila-shakespeare
+
+However, if the user was also marked as being affected by the master
+bug, then the master bug's user_affected_count does *not* increment
+just because she is also affected by the duplicate.
+
+    >>> test_bug.markUserAffected(dupe_affected_user, affected=True)
+    >>> test_bug.users_affected_count_with_dupes
+    3
+
+And the list of users that the master bug affects still includes the
+user, of course.
+
+    >>> print '\n'.join(
+    ...     sorted(user.name for user in test_bug.users_affected_with_dupes))
+    bruce-dickinson
+    paul-dianno
+    sheila-shakespeare
+
+If there is another dup of the master bug, filed by someone else, the
+master bug's affected count with dups increases.
+
+    >>> dupe_affected_other_user = factory.makePerson(
+    ...     name='napoleon-bonaparte')
+    >>> dupe_three = factory.makeBug(owner=dupe_affected_other_user)
+    >>> dupe_three.markAsDuplicate(test_bug)
+    >>> test_bug.users_affected_count_with_dupes
+    4
+
+If the user claims that two bugs both affect her, then if they are
+both marked as duplicates of the master bugs, the master bug's
+user_affected_count still only increments by 1 for that user.
+
+    >>> dupe_two = factory.makeBug(owner=dupe_affected_user)
+    >>> dupe_two.markAsDuplicate(test_bug)
+    >>> test_bug.users_affected_count_with_dupes
+    4
+
+Both duplicates claim to affect just that user:
+
+    >>> print '\n'.join(
+    ...     sorted(user.name for user in dupe_one.users_affected))
+    sheila-shakespeare
+    >>> print '\n'.join(
+    ...     sorted(user.name for user in dupe_two.users_affected))
+    sheila-shakespeare
+
+And the list of users that the master bug affects includes the user
+exactly once, of course.
+
+    >>> print '\n'.join(
+    ...     sorted(user.name for user in test_bug.users_affected_with_dupes))
+    bruce-dickinson
+    napoleon-bonaparte
+    paul-dianno
+    sheila-shakespeare
+
+If the user marks the master bug as not affecting her, but the master
+bug still has a duplicate that she claims affects her, then that
+duplicate is also marked as not affecting her either.
+
+    >>> dupe_one.users_affected_count
+    1
+    >>> test_bug.markUserAffected(dupe_affected_user, affected=False)
+    >>> dupe_one.users_affected_count
+    0
+
+The master bug's affected count, with or without dups, is reduced by one:
+
+    >>> test_bug.users_affected_count
+    2
+    >>> test_bug.users_affected_count_with_dupes
+    3
+
+The dup user no longer appears as affected by the master bug nor
+either of the dups:
+
+    >>> print '\n'.join(
+    ...     sorted(user.name for user in test_bug.users_affected_with_dupes))
+    bruce-dickinson
+    napoleon-bonaparte
+    paul-dianno
+    >>> print '\n'.join(
+    ...     sorted(user.name for user in dupe_one.users_affected))
+    <BLANKLINE>
+    >>> print '\n'.join(
+    ...     sorted(user.name for user in dupe_two.users_affected))
+    <BLANKLINE>
+
+Since the user who filed the first two dups had an entry explicitly
+saying she was affected, they now claim that she is unaffected.
+
+    >>> print '\n'.join(
+    ...     sorted(user.name for user in dupe_one.users_unaffected))
+    sheila-shakespeare
+    >>> print '\n'.join(
+    ...     sorted(user.name for user in dupe_two.users_unaffected))
+    sheila-shakespeare
+
+But she didn't file the third dup, so there was never any explicit
+record saying she was affected by it.  Thus she also does not appear
+as explicitly unaffected, even after marking the master bug as not
+affecting her.
+
+    >>> print '\n'.join(
+    ...     sorted(user.name for user in dupe_three.users_unaffected))
+    <BLANKLINE>
+
+However, if a dup was not marked either way for that user, then do
+nothing to the dup when the master is marked as not affecting the
+user.
+
+    >>> print '\n'.join(
+    ...     sorted(user.name for user in dupe_three.users_affected))
+    napoleon-bonaparte
+
+
+Getting the distinct set of Bugs for a set of BugTasks
+------------------------------------------------------
+
+Sometimes we have a set of BugTasks for which we want to get only the
+distinct set of bugs, i.e. there are several BugTasks in our set which
+share a bug; we only want to work with a bug once.
+
+We can get the distinct set of Bugs for a set of BugTasks using
+BugTaskSet.getDistinctBugsForBugTasks(). This takes a set of BugTasks
+and a user and returns the set of Bugs for those BugTasks.
+
+    >>> from operator import attrgetter
+    >>> bug_tasks = [
+    ...     factory.makeBug(
+    ...         target=firefox, title="New bug %s" % i).bugtasks[0]
+    ...     for i in range(5)]
+
+    >>> bugs = getUtility(IBugSet).getDistinctBugsForBugTasks(
+    ...     bug_tasks, user=sample_person)
+    >>> bugs = sorted(bugs, key=attrgetter('title'))
+    >>> for bug in bugs:
+    ...     print bug.title
+    New bug 0
+    New bug 1
+    New bug 2
+    New bug 3
+    New bug 4
+
+If two BugTasks share a Bug, the Bug will only be returned once.
+
+    >>> new_bug_0 = bugs[0]
+    >>> new_bugtask = factory.makeBugTask(
+    ...     bug=new_bug_0, target=thunderbird)
+
+    >>> matching_bugs = getUtility(IBugSet).getDistinctBugsForBugTasks(
+    ...     [new_bugtask], user=sample_person)
+    >>> len(matching_bugs)
+    1
+
+    >>> print matching_bugs[0].title
+    New bug 0
+
+    >>> for task in sorted(matching_bugs[0].bugtasks,
+    ...     key=attrgetter('bugtargetname')):
+    ...     print task.bugtargetname
+    firefox
+    thunderbird
+
+If a bug that could be returned by getDistinctBugsForBugTasks() is
+private and the user wouldn't be able to see it, it won't be returned.
+
+    >>> new_bug_2 = bugs[2]
+    >>> new_bug_2.setPrivate(True, foobar)
+    True
+
+    >>> no_priv = personset.getByEmail('no-priv@canonical.com')
+    >>> matching_bugs = getUtility(IBugSet).getDistinctBugsForBugTasks(
+    ...     bug_tasks, user=no_priv)
+
+    >>> for bug in sorted(matching_bugs, key=attrgetter('title')):
+    ...     print bug.title
+    New bug 0
+    New bug 1
+    New bug 3
+    New bug 4
+
+If one of the bug tasks passed to getDistinctBugsForBugTasks() is on a
+bug that is a duplicate of another bug the duplicated bug will be
+returned rather than the duplicate.
+
+    >>> new_bug_3 = bugs[3]
+    >>> new_bug_4 = bugs[4]
+    >>> new_bug_3.markAsDuplicate(new_bug_4)
+    >>> matching_bugs = getUtility(IBugSet).getDistinctBugsForBugTasks(
+    ...     bug_tasks, user=no_priv)
+
+    >>> for bug in sorted(matching_bugs, key=attrgetter('title')):
+    ...     print bug.title
+    New bug 0
+    New bug 1
+    New bug 4
+
+If the duplicated bug isn't visible to the user neither it nor its
+duplicates will be returned by getDistinctBugsForBugTasks().
+
+    >>> new_bug_4.setPrivate(True, foobar)
+    True
+
+    >>> matching_bugs = getUtility(IBugSet).getDistinctBugsForBugTasks(
+    ...     bug_tasks, user=no_priv)
+
+    >>> for bug in sorted(matching_bugs, key=attrgetter('title')):
+    ...     print bug.title
+    New bug 0
+    New bug 1
+
+The number of bugs to be returned by getDistinctBugsForBugTasks() can be
+altered by setting its limit parameter, which defaults to 10.
+
+    >>> matching_bugs = getUtility(IBugSet).getDistinctBugsForBugTasks(
+    ...     bug_tasks, user=no_priv, limit=1)
+    >>> for bug in sorted(matching_bugs, key=attrgetter('title')):
+    ...     print bug.title
+    New bug 0
+
+
+Links to HWDB submissions
+-------------------------
+
+We can link a HWDB submission to a bug, indicating that the
+submission contains information that could help developers
+fix the bug.
+
+    >>> from lp.hardwaredb.interfaces.hwdb import IHWSubmissionSet
+    >>> submission = getUtility(IHWSubmissionSet).getBySubmissionKey(
+    ...     'sample-submission')
+    >>> test_bug.linkHWSubmission(submission)
+
+Bug.getHWSubmissions() returns the HWDB submissions linked to a bug.
+
+    >>> for submission in test_bug.getHWSubmissions():
+    ...     print submission.submission_key
+    sample-submission
+
+Private submissions are only included if the current user is an admin
+or the owner of a private submission.
+
+    >>> private_submission = factory.makeHWSubmission(
+    ...     emailaddress='test@canonical.com', private=True,
+    ...     submission_key='private-submission')
+    >>> test_bug.linkHWSubmission(private_submission)
+    >>> for submission in test_bug.getHWSubmissions(user=sample_person):
+    ...     print submission.submission_key
+    private-submission
+    sample-submission
+
+    >>> for submission in test_bug.getHWSubmissions(user=foobar):
+    ...     print submission.submission_key
+    private-submission
+    sample-submission
+
+Other persons do not see Sample Person's private submission.
+
+    >>> no_priv = personset.getByEmail('no-priv@canonical.com')
+    >>> for submission in test_bug.getHWSubmissions(user=no_priv):
+    ...     print submission.submission_key
+    sample-submission
+
+    >>> for submission in test_bug.getHWSubmissions():
+    ...     print submission.submission_key
+    sample-submission
+
+We can also delete links between a HWDB submission and a bug.
+
+    >>> test_bug.unlinkHWSubmission(submission)
+    >>> print test_bug.getHWSubmissions().count()
+    0
+
+
+Discovering subscription types
+------------------------------
+
+It's possible to find out how a person is subscribed to a bug by calling
+the bug's personIsDirectSubscriber(), personIsAlsoNotifiedSubscriber() or
+personIsSubscribedToDuplicate() methods.
+
+If a person isn't subscribed to a bug, all of these methods will return
+False.
+
+    >>> person = factory.makePerson()
+    >>> bug = factory.makeBug()
+
+    >>> bug.personIsDirectSubscriber(person)
+    False
+
+    >>> bug.personIsSubscribedToDuplicate(person)
+    False
+
+    >>> bug.personIsAlsoNotifiedSubscriber(person)
+    False
+
+If our person subscribes to the bug they'll show up as a direct
+subscriber.
+
+    >>> subscription = bug.subscribe(person, person)
+    >>> bug.personIsDirectSubscriber(person)
+    True
+
+    >>> bug.personIsSubscribedToDuplicate(person)
+    False
+
+    >>> bug.personIsAlsoNotifiedSubscriber(person)
+    False
+
+If the user subscribes to a duplicate of the bug,
+personIsSubscribedToDuplicate() will return True.
+
+    >>> dupe = factory.makeBug()
+    >>> subscription = dupe.subscribe(person, person)
+
+    >>> dupe.markAsDuplicate(bug)
+
+    # Re-fetch the bug so that the fact that it's a duplicate definitely
+    # registers.
+    >>> bug = getUtility(IBugSet).get(bug.id)
+    >>> bug.personIsSubscribedToDuplicate(person)
+    True
+
+personIsSubscribedToDuplicate() will return True regardless of
+the result of personIsDirectSubscriber(). personIsAlsoNotifiedSubscriber()
+will still return False.
+
+    >>> bug.personIsDirectSubscriber(person)
+    True
+
+    >>> bug.personIsAlsoNotifiedSubscriber(person)
+    False
+
+If the user is subscribed to the bug for a reason other than a direct
+BugSubscription or a subscription to a duplicate bug,
+personIsAlsoNotifiedSubscriber() will return True, for example if the
+user is the assignee for one of the bug's BugTask.
+
+    >>> new_bug = factory.makeBug()
+    >>> new_bug.default_bugtask.transitionToAssignee(person)
+    >>> new_bug.personIsAlsoNotifiedSubscriber(person)
+    True
+
+If the person subscribes directly to the bug,
+personIsAlsoNotifiedSubscriber() will return False, since direct
+subscriptions always override indirect ones.
+
+    >>> subscription = new_bug.subscribe(person, person)
+    >>> new_bug.personIsAlsoNotifiedSubscriber(person)
+    False
+
+    >>> new_bug.personIsDirectSubscriber(person)
+    True
+
+
+Most recently added patch
+-------------------------
+
+Bug.latest_patch provides the most recently added bug attachment of
+type BugAttachmentType.PATCH; the property Bug.latest_patch_uploaded
+is set to the time when the latest patch was uploaded.
+
+If a bug has no attachments, both properties are None.
+
+    >>> bug = factory.makeBug()
+    >>> print bug.latest_patch
+    None
+    >>> print bug.latest_patch_uploaded
+    None
+
+If we add an attachment that is not a patch, the value of
+latest_patch_uploaded is still None. (Since latest_patch_uploaded
+is updated via a database trigger, we'll commit() the current
+transaction in order to let the trigger run. Even if the new attachment
+does not change anything right now, let's be sure.)
+
+    >>> import transaction
+    >>> attachment_1 = factory.makeBugAttachment(bug)
+
+    >>> transaction.commit()
+    >>> print bug.latest_patch_uploaded
+    None
+
+If we declare the existing attachment to be a patch,
+latest_patch_uploaded is set to the date_created value of the Message
+record for this attachment, and we can access the attachment via
+Bug.latest_patch.
+
+    >>> from lp.bugs.interfaces.bugattachment import BugAttachmentType
+    >>> attachment_1.type = BugAttachmentType.PATCH
+    >>> transaction.commit()
+    >>> date_message_1_created = bug.attachments[0].message.datecreated
+    >>> print bug.latest_patch == attachment_1
+    True
+    >>> print bug.latest_patch_uploaded == date_message_1_created
+    True
+
+If we add another attachment, this time declared to be a patch
+at creation time, we can access this attachment via Bug.latest_patch,
+and the new value of bug.latest_patch_uploaded will change to the value
+of message.datecreated for this new attachment.
+
+    >>> attachment_2 = factory.makeBugAttachment(bug, is_patch=True)
+    >>> transaction.commit()
+    >>> date_message_2_created = bug.attachments[1].message.datecreated
+    >>> print bug.latest_patch == attachment_2
+    True
+    >>> print bug.latest_patch_uploaded == date_message_2_created
+    True
+
+If we say that attachment_1 is not a patch, the values of
+bug.latest_patch and bug.latest_patch_uploaded does not change.
+
+    >>> attachment_1.type = BugAttachmentType.UNSPECIFIED
+    >>> transaction.commit()
+    >>> print bug.latest_patch == attachment_2
+    True
+    >>> print bug.latest_patch_uploaded == date_message_2_created
+    True
+
+If we declare attachment_1 again to be a patch and if we delete
+attachment_2, bug.latest_patch references again attachment_1, and
+bug.bug.latest_patch_uploaded is its creation time.
+
+    >>> attachment_1.type = BugAttachmentType.PATCH
+    >>> attachment_2.removeFromBug(user=bug.owner)
+    >>> transaction.commit()
+    >>> print bug.latest_patch == attachment_1
+    True
+    >>> print bug.latest_patch_uploaded == date_message_1_created
+    True
+
+If we delete attachment_1 too, bug.latest_patch and
+bug.latest_patch_uploaded are again None.
+
+    >>> attachment_1.removeFromBug(user=bug.owner)
+    >>> transaction.commit()
+    >>> print bug.latest_patch
+    None
+    >>> print bug.latest_patch_uploaded
+    None

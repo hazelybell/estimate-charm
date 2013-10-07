@@ -1,0 +1,24 @@
+/* Copyright (c) 2008, Canonical Ltd. All rights reserved. */
+
+.yui3-ieditor-hidden,
+.yui3-ieditor-errors-hidden,
+.yui3-editable_text-hidden,
+.yui3-editable_text-edit_mode .yui3-editable_text-trigger,
+.yui3-editable_text-edit_mode .yui3-editable_text-text {
+    display: none;
+}
+
+/* By default, input elements don't inherit these properties, but
+ * in an inline editing context, it makes sense to do so.
+ */
+.yui3-ieditor-input textarea {
+    background-color: #fafafa;
+    border: 0;
+    color: inherit;
+    font: inherit;
+    line-height: inherit;
+}
+
+.yui3-ieditor-input textarea:focus {
+    outline: none;
+}

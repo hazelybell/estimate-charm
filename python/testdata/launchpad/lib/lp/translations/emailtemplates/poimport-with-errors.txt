@@ -1,0 +1,17 @@
+Hello %(importer)s,
+
+On %(dateimport)s (%(elapsedtime)s), you uploaded %(numberofmessages)d %(language)s translations for %(template)s in Launchpad.
+
+There were problems with %(numberoferrors)d of these translations.
+
+%(errorsdetails)s
+
+The other %(numberofcorrectmessages)d translations have been accepted.
+
+%(warnings)s
+
+To fix these problems, please upload a file containing the corrected translations.
+
+Thank you,
+
+The Launchpad team

@@ -1,0 +1,86 @@
+<html
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    xml:lang="en"
+    lang="en"
+    dir="ltr"
+    metal:use-macro="view/macro:page/main_only"
+    i18n:domain="launchpad">
+  <body>
+
+  <div metal:fill-slot="main"
+       tal:define="display_name context/fmt:displayname;
+                   sub_bugs view/subscribedBugTasks;
+                   sub_bug_batch sub_bugs/currentBatch">
+
+    <ul class="horizontal">
+      <li
+          tal:define="link context/menu:overview/structural_subscriptions"
+          tal:condition="link/enabled"
+          tal:content="structure link/fmt:link" />
+    </ul>
+
+    <div class="yui-g">
+      <div class="portlet">
+
+    <tal:no_subscribed_bugs condition="not: sub_bug_batch|nothing">
+      <p>
+        <tal:person content="display_name">Sample
+        Person</tal:person> does not have any direct bug subscriptions.
+      </p>
+    </tal:no_subscribed_bugs>
+
+    <tal:subscribed_bugs condition="sub_bug_batch|nothing">
+      <tal:multipage condition="sub_bugs/has_multiple_pages">
+        <tal:navigation
+            replace="structure sub_bugs/@@+navigation-links-upper"/>
+      </tal:multipage>
+      <table id="bug_subscriptions" class="listing">
+        <thead>
+          <tr>
+            <th colspan="3">Summary</th>
+            <th>
+              In
+            </th>
+            <th tal:condition="view/canUnsubscribeFromBugTasks">
+            </th>
+          </tr>
+        </thead>
+        <tr tal:repeat="sub_bug_task sub_bug_batch">
+          <td class="icon left">
+            <span tal:replace="structure sub_bug_task/image:icon" />
+          </td>
+          <td style="text-align: right">
+            <span tal:replace="sub_bug_task/bug/id" />
+          </td>
+          <td>
+            <a tal:attributes="href sub_bug_task/fmt:url"
+               tal:content="sub_bug_task/bug/title" />
+          </td>
+          <td tal:content="sub_bug_task/bugtargetdisplayname"
+              tal:condition="sub_bug_task/bugtargetdisplayname|nothing" />
+          <td tal:condition="view/canUnsubscribeFromBugTasks" align="center">
+            <a tal:attributes="id string:unsubscribe-subscriber-${context/id};
+                               href sub_bug_task/fmt:url/+subscribe;
+                               title string:Unsubscribe ${display_name} from bug ${sub_bug_task/bug/id};">
+              <img src="/@@/edit"
+                   tal:attributes="id string:unsubscribe-icon-${context/id};
+                                   position string:relative"/>
+            </a>
+          </td>
+        </tr>
+      </table>
+      <tal:multipage condition="sub_bugs/has_multiple_pages">
+        <tal:navigation
+            replace="structure sub_bugs/@@+navigation-links-lower"/>
+      </tal:multipage>
+    </tal:subscribed_bugs>
+
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

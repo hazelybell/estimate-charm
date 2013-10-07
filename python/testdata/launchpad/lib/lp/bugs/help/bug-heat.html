@@ -1,0 +1,81 @@
+<html>
+  <head>
+    <title>Bug heat</title>
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssreset/reset.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssfonts/fonts.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssbase/base.css" />
+  </head>
+  <body>
+    <h1>Bug heat</h1>
+
+    <p>
+      Launchpad helps you to appraise a bug by giving you a calculated measure
+      &mdash; called bug heat &mdash; of its likely significance. You can see
+      bug heat in bug listings, and also on individual bug pages, as a
+      number next to a flame icon.
+    </p>
+
+    <p>
+      Here's how Launchpad calculates the bug heat score:
+    </p>
+
+    <table width="100%">
+      <tr>
+        <th>
+          <strong>Attribute</strong>
+        </th>
+        <th>
+          <strong>Calculation</strong>
+        </th>
+      </tr>
+
+      <tr>
+        <td>
+          Private
+        </td>
+        <td>
+          Adds 150 points
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          Security issue
+        </td>
+        <td>
+          Adds 250 points
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          Duplicates
+        </td>
+        <td>
+          Adds 6 points per duplicate bug
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          Affected users
+        </td>
+        <td>
+          Adds 4 points per affected user
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          Subscribers (incl. subscribers to duplicates)
+        </td>
+        <td>
+          Adds 2 points per subscriber
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

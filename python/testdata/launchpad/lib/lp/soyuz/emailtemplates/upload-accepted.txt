@@ -1,0 +1,16 @@
+%(CHANGESFILE)s
+
+%(DATE)s%(CHANGEDBY)s%(MAINTAINER)s%(SIGNER)s%(ORIGIN)s
+%(SPR_URL)s
+
+==
+
+%(SUMMARY)s
+
+%(ANNOUNCE)s
+
+Thank you for your contribution to %(DISTRO)s.
+
+-- 
+You are receiving this email because you are the uploader, maintainer or
+signer of the above package.

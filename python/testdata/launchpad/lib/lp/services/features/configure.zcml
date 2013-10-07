@@ -1,0 +1,29 @@
+<!-- Copyright 2010 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+    <include
+        package=".browser"/>
+
+    <subscriber
+        for="zope.publisher.interfaces.IStartRequestEvent"
+        handler="lp.services.features.webapp.start_request"
+        />
+
+    <subscriber
+        for="zope.publisher.interfaces.IEndRequestEvent"
+        handler="lp.services.features.webapp.end_request"
+        />
+
+    <securedutility
+        class="lp.services.features.xmlrpc.FeatureFlagApplication"
+        provides="lp.services.features.xmlrpc.IFeatureFlagApplication">
+        <allow
+            interface="lp.services.features.xmlrpc.IFeatureFlagApplication"/>
+    </securedutility>
+
+</configure>

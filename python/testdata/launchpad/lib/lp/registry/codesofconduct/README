@@ -1,0 +1,12 @@
+= Code of Conducts Directory =
+
+This directory should store all the CoC (Code of Conducts) releases for
+within the launchpad System.
+
+The CoC release should have the following format:
+
+<version>.txt
+
+The current code will verify this format and ignore bad formatted files
+
+

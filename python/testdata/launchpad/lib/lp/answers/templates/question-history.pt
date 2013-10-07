@@ -1,0 +1,48 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<body>
+
+<metal:heading fill-slot="heading">
+    <h2><tal:heading replace="view/label" /></h2>
+</metal:heading>
+
+<div metal:fill-slot="main">
+
+  <table class="listing">
+    <thead>
+      <tr>
+        <th>When</th>
+        <th>Who</th>
+        <th>Action</th>
+        <th>New State</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr tal:repeat="message context/messages">
+        <td>
+          <span
+            tal:attributes="title message/datecreated/fmt:datetime"
+            tal:content="message/datecreated/fmt:approximatedate">
+            2005-10-16
+          </span>
+        </td>
+        <td><a tal:replace="structure message/owner/fmt:link">Foo Bar</a></td>
+        <td tal:content="message/action/title">Comment</td>
+        <td class="questionstatus"
+            tal:content="message/new_status/title"
+            tal:attributes="class string:questionstatus${message/new_status/name}"
+            >Open</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>

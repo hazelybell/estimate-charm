@@ -1,0 +1,34 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only">
+
+<body>
+
+  <div metal:fill-slot="main">
+
+    <form action="+upload" method="POST" enctype="multipart/form-data"
+          class="translations">
+      <h2>Choose a file to upload</h2>
+      <div class="fields">
+        <input id="file_input" name="file" type="file" />
+        <div class="lesser">This should be a <code>.po</code> file that
+          was previously exported from Launchpad and contains updated
+          translations.<br />
+          (<a href="/+help-translations/pofile-upload.html" target="help">More about uploading updated translations</a>)
+        </div>
+      </div>
+
+      <div class="actions">
+        <p>
+          <input name="pofile_upload" type="submit" value="Upload" />
+          or <a tal:attributes="href view/cancel_url">Cancel</a>
+        </p>
+      </div>
+    </form>
+  </div>
+
+</body>
+</html>

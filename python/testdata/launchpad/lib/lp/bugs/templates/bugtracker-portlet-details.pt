@@ -1,0 +1,32 @@
+<div
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    class="portlet" id="portlet-details">
+  <h2>Details</h2>
+  <dl>
+    <dt>Location:</dt>
+    <dd>
+      <ul id="bugtracker-urls">
+        <li>
+          <strong>
+            <a tal:replace="structure context/fmt:external-link">
+              http://bugs.example.com/
+            </a>
+          </strong>
+        </li>
+        <li tal:repeat="alias context/fmt:aliases">
+          <strong tal:content="alias" /> (Alias)
+        </li>
+      </ul>
+    </dd>
+    <dt>Tracker type:</dt>
+    <dd tal:content="context/bugtrackertype/title" />
+    <tal:contact-details condition="context/contactdetails">
+      <dt>Contact details:</dt>
+      <dd tal:content="context/contactdetails" />
+    </tal:contact-details>
+    <dt>Created by:</dt>
+    <dd tal:content="structure context/owner/fmt:link" />
+  </dl>
+</div>

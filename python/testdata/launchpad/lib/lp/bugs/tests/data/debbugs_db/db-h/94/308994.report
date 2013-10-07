@@ -1,0 +1,111 @@
+Received: (at submit) by bugs.debian.org; 13 May 2005 16:38:11 +0000
+From jbuhl_nospam@gmx.de Fri May 13 09:38:11 2005
+Return-path: <jbuhl_nospam@gmx.de>
+Received: from pop.gmx.de (mail.gmx.net) [213.165.64.20] 
+	by spohr.debian.org with smtp (Exim 3.35 1 (Debian))
+	id 1DWdAw-0001pN-00; Fri, 13 May 2005 09:38:10 -0700
+Received: (qmail invoked by alias); 13 May 2005 16:37:38 -0000
+Received: from p50888D1F.dip0.t-ipconnect.de (EHLO [192.168.1.10]) [80.136.141.31]
+  by mail.gmx.net (mp005) with SMTP; 13 May 2005 18:37:38 +0200
+X-Authenticated: #23386520
+Message-ID: <4284D7D1.6010208@gmx.de>
+Date: Fri, 13 May 2005 18:37:37 +0200
+From: josh <jbuhl_nospam@gmx.de>
+User-Agent: Debian Thunderbird 1.0.2 (X11/20050329)
+X-Accept-Language: en-us, en
+MIME-Version: 1.0
+To: submit@bugs.debian.org
+Subject: gnome-volume-manager: dvd+rw unreadable when automounted in burner
+ because mounted read/write
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+X-Y-GMX-Trusted: 0
+Delivered-To: submit@bugs.debian.org
+X-Spam-Checker-Version: SpamAssassin 2.60-bugs.debian.org_2005_01_02 
+	(1.212-2003-09-23-exp) on spohr.debian.org
+X-Spam-Status: No, hits=-8.0 required=4.0 tests=BAYES_00,HAS_PACKAGE 
+	autolearn=no version=2.60-bugs.debian.org_2005_01_02
+X-Spam-Level: 
+
+Package: gnome-volume-manager
+Version: 1.2.0-1
+Severity: important
+
+When gnome-volume-manager automounts a dvd+rw containing an fs in my dvd
+burner on my system, the volume is unreadable, since it gets pmounted
+rw, and blocks get changed. unmounting the volume reports a dirty
+dvd+rw. the same volume is readable if mounted by hand with the
+read-only flag.
+
+
+I've filed a bug upstream for this, which is here:
+
+http://bugzilla.gnome.org/show_bug.cgi?id=304070
+
+but wanted it in the debian bug database for user and maintainer reference.
+
+
+-j
+
+
+-- System Information:
+Debian Release: 3.1
+  APT prefers testing
+  APT policy: (990, 'testing')
+Architecture: i386 (i686)
+Kernel: Linux 2.6.10
+Locale: LANG=en_US.UTF-8, LC_CTYPE=en_US.UTF-8 (charmap=UTF-8)
+
+Versions of packages gnome-volume-manager depends on:
+ii  dbus-1               0.23.2-3            simple interprocess
+messaging syst
+ii  dbus-glib-1          0.23.2-3            simple interprocess
+messaging syst
+ii  gconf2               2.8.1-5             GNOME configuration
+database syste
+ii  hal                  0.4.7-3             Hardware Abstraction Layer
+ii  libart-2.0-2         2.3.17-1            Library of functions for 2D
+graphi
+ii  libatk1.0-0          1.8.0-4             The ATK accessibility toolkit
+ii  libbonobo2-0         2.8.1-2             Bonobo CORBA interfaces library
+ii  libbonoboui2-0       2.8.1-2             The Bonobo UI library
+ii  libc6                2.3.2.ds1-21        GNU C Library: Shared
+libraries an
+ii  libgconf2-4          2.8.1-5             GNOME configuration
+database syste
+ii  libglade2-0          1:2.4.2-2           library to load .glade
+files at ru
+ii  libglib2.0-0         2.6.4-1             The GLib library of C routines
+ii  libgnome2-0          2.8.1-2             The GNOME 2 library -
+runtime file
+ii  libgnomecanvas2-0    2.8.0-1             A powerful object-oriented
+display
+ii  libgnomeui-0         2.8.1-3             The GNOME 2 libraries (User
+Interf
+ii  libgnomevfs2-0       2.8.4-2             The GNOME virtual
+file-system libr
+ii  libgtk2.0-0          2.6.4-1             The GTK+ graphical user
+interface
+ii  libhal0              0.4.7-3             Hardware Abstraction Layer
+- share
+ii  libice6              4.3.0.dfsg.1-12.0.1 Inter-Client Exchange library
+ii  liborbit2            1:2.12.1-1          libraries for ORBit2 - a
+CORBA ORB
+ii  libpango1.0-0        1.8.1-1             Layout and rendering of
+internatio
+ii  libpopt0             1.7-5               lib for parsing cmdline
+parameters
+ii  libsm6               4.3.0.dfsg.1-12.0.1 X Window System Session
+Management
+ii  libx11-6             4.3.0.dfsg.1-12.0.1 X Window System protocol
+client li
+ii  libxml2              2.6.16-4            GNOME XML library
+ii  pmount               0.7.1-1             mount removable devices as
+normal
+ii  xlibs                4.3.0.dfsg.1-12     X Keyboard Extension (XKB)
+configu
+ii  zlib1g               1:1.2.2-3           compression library - runtime
+
+-- no debconf information
+
+

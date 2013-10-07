@@ -1,0 +1,6 @@
+<!-- This message id also occurs elsewhere in this file -->
+<!ENTITY foozilla.regular.message "A non-clashing message.">
+<!ENTITY foozilla.clashing.key "This message is in the main DTD.">
+
+<!-- Clashing msgid within same file.  Should be ignored. -->
+<!ENTITY foozilla.regular.message "This message should be ignored.">

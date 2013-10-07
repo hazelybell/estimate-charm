@@ -1,0 +1,119 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  metal:use-macro="view/macro:page/main_only">
+
+  <head>
+  <div metal:fill-slot="head_epilogue">
+    <metal:languages-table-js
+      use-macro="context/@@+translations-macros/languages-table-js" />
+    <tal:robots
+      condition="not:context/translations_usage/enumvalue:LAUNCHPAD">
+      <meta name="robots" content="noindex,nofollow" />
+    </tal:robots>
+  </div>
+  </head>
+  <body>
+
+    <div metal:fill-slot="main"
+         tal:define="admin_user context/required:launchpad.TranslationsAdmin">
+      <div class="translation-help-links">
+        <a href="https://help.launchpad.net/Translations"
+           id="link-to-translations-help"
+           >Help for translations
+        </a>
+        <div></div><!-- to clear-up all floats -->
+      </div>
+      <div class="top-portlet notice">
+
+        <tal:message
+          condition="not: context/translations_usage/enumvalue:LAUNCHPAD"
+          replace="structure context/@@+portlet-not-using-launchpad"/>
+        <tal:translations-configuration
+          condition="view/can_configure_translations"
+          replace="structure context/@@+portlet-configuration"/>
+        <tal:not-launchpad
+          condition="not: context/translations_usage/enumvalue:LAUNCHPAD">
+          <tal:translations-packages
+            condition="not: view/is_translations_admin"
+            replace="structure context/@@+portlet-not-using-launchpad-extra"/>
+        </tal:not-launchpad>
+
+        <div tal:condition="view/no_translations_available">
+          There are no translations for this project.
+        </div>
+      </div>
+
+      <!-- Not sure this should be shown at all if translations is off. -->
+      <tal:page_content condition="view/show_page_content">
+        <tal:translatable define="target view/primary_translatable">
+
+          <div class="yui-g">
+            <div class="yui-u first">
+              <div class="portlet">
+                <h3>Translation details</h3>
+                <p tal:condition="target" id="translation-recommendation">
+                  Launchpad currently recommends translating
+                  <tal:target replace="structure target/fmt:link"
+                              >trunk</tal:target>.
+                  <span tal:condition="context/required:launchpad.AnyPerson">
+                    You can also
+                    <a tal:attributes="href target/fmt:url:translations/+export"
+                       >download</a>
+                    <tal:owner-or-admin condition="admin_user">
+                      or
+                      <a tal:attributes="
+                          href target/fmt:url:translations/+translations-upload"
+                       >upload</a>
+                    </tal:owner-or-admin>
+                    translations for
+                    <tal:target replace="structure target/name"
+                                >trunk</tal:target>.
+                  </span>
+                </p>
+                <p>To see all the translation files that are waiting to be
+                  imported, please look at
+                  <a tal:attributes="href context/fmt:url:translations/+imports"
+                     tal:content="string:${context/displayname} import queue">
+                    import queue</a>.
+                </p>
+              </div>
+              <div class="portlet">
+                <h3>Permissions</h3>
+                <p>
+                  <tal:permissions replace="
+                     structure
+                     context/@@+portlet-translation-groups-and-permission"/>
+                </p>
+              </div>
+            </div>
+            <div class="yui-u">
+              <div>
+                <tal:registrant-or-admin
+                   condition="admin_user">
+                  <tal:has-obsolete-entries
+                     condition="context/obsolete_translatable_series">
+                    <div tal:replace="
+                        structure
+                        context/@@+portlet-obsolete-translatables" />
+                  </tal:has-obsolete-entries>
+                </tal:registrant-or-admin>
+              </div>
+              <div tal:replace="structure context/@@+portlet-translatables" />
+            </div>
+          </div>
+
+          <div class="yui-b"
+               tal:condition="target">
+            <h2>Translation for
+              <span tal:replace="target/displayname">main</span></h2>
+            <div tal:replace="structure target/@@+languages" />
+            <div style="height:1em;"></div>
+            <div tal:replace="structure context/@@+rosetta-status-legend" />
+          </div>
+        </tal:translatable>
+      </tal:page_content>
+    </div>
+  </body>
+</html>

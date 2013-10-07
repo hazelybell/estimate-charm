@@ -1,0 +1,114 @@
+= Editing Questions =
+
+To edit the title and description of question, one uses the 'Edit Question'
+menu item. You need to be logged in to perform that action:
+
+    >>> anon_browser.open('http://launchpad.dev/firefox/+question/2')
+    >>> anon_browser.getLink('Edit question').click()
+    Traceback (most recent call last):
+    ...
+    Unauthorized...
+
+    >>> user_browser.open('http://launchpad.dev/firefox/+question/2')
+    >>> user_browser.getLink('Edit question').click()
+    >>> print user_browser.url
+    http://answers.launchpad.dev/firefox/+question/2/+edit
+
+There is a cancel link should the user decide otherwise:
+
+    >>> print user_browser.getLink('Cancel').url
+    http://answers.launchpad.dev/firefox/+question/2
+
+When we post the form, we should be redirected back to the question page.
+
+    >>> description = (
+    ...   "Hi! I'm trying to learn about SVG but I can't get it to work at "
+    ...   "all in firefox. Maybe there is a plugin? Help! Thanks. Mark")
+    >>> user_browser.getControl('Description').value = description
+    >>> summary = "Problem showing the SVG demo on W3C web site"
+    >>> user_browser.getControl('Summary').value = summary
+    >>> user_browser.getControl('Save Changes').click()
+
+    >>> print user_browser.url
+    http://answers.launchpad.dev/firefox/+question/2
+
+And viewing that page should show the updated information.
+
+    >>> soup = find_main_content(user_browser.contents)
+    >>> print soup.first('div', 'report').renderContents().strip()
+    <p>Hi! I&#x27;m trying to learn about SVG but I can&#x27;t get it to
+    work at all in firefox. Maybe there is a plugin? Help! Thanks.
+    Mark</p>
+    >>> print soup.first('h1').renderContents()
+    Problem showing the SVG demo on W3C web site
+
+You can even modify the title and description of 'Answered' and
+'Invalid' questions:
+
+    >>> def print_question_status(browser):
+    ...     print extract_text(
+    ...         find_tag_by_id(browser.contents, 'question-status'))
+
+    >>> user_browser.open('http://launchpad.dev/ubuntu/+question/3')
+    >>> print_question_status(user_browser)
+    Status: Invalid
+
+    >>> user_browser.getLink('Edit question')
+    <Link...>
+
+
+== Source Package ==
+
+Distribution questions can have a source package associated with them.
+Any logged in user can change the question source package on the
+'Edit Question' page.
+
+    >>> user_browser.open('http://launchpad.dev/ubuntu/+question/5')
+    >>> user_browser.getLink('Edit question').click()
+    >>> user_browser.getControl(
+    ...     name='field.target.package').value = 'linux-source-2.6.15'
+    >>> user_browser.getControl('Save Changes').click()
+
+Product questions ignore sourcepackage information if it is submitted:
+
+    >>> user_browser.open('http://launchpad.dev/firefox/+question/2')
+    >>> user_browser.getLink('Edit question').click()
+    >>> user_browser.getControl(
+    ...     name='field.target.package').value = 'linux-source-2.6.15'
+    >>> user_browser.getControl('Save Changes').click()
+
+
+== Changing Other Metadata ==
+
+A user with 'launchpad.Admin' privilege (usually the product or
+distribution owner) can also change the question Assignee, and
+edit the Status Whiteboard using the 'Edit Question' page.
+
+    >>> browser.addHeader(
+    ...   'Authorization', 'Basic jeff.waugh@ubuntulinux.com:test')
+    >>> browser.open('http://localhost/ubuntu/+question/5')
+    >>> browser.getLink('Edit question').click()
+
+    >>> browser.getControl('Assignee').value = 'name16'
+    >>> browser.getControl('Status Whiteboard').value = 'Some note'
+    >>> browser.getControl('Save Changes').click()
+
+    >>> soup = find_main_content(browser.contents)
+    >>> print extract_text(find_tag_by_id(soup, 'question-whiteboard'))
+    Whiteboard: Some note
+    >>> portlet_details = find_tag_by_id(browser.contents, 'portlet-details')
+
+These fields cannot be modified by a non-privileged user:
+
+    >>> user_browser.open('http://localhost/ubuntu/+question/5')
+    >>> user_browser.getLink('Edit question').click()
+    >>> user_browser.getControl('Assignee')
+    Traceback (most recent call last):
+    ...
+    LookupError...
+    >>> user_browser.getControl('Status Whiteboard')
+    Traceback (most recent call last):
+    ...
+    LookupError...
+
+

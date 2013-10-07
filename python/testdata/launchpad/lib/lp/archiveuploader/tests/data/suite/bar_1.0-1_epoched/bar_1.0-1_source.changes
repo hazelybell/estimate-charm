@@ -1,0 +1,20 @@
+Format: 1.7
+Date: Thu, 14 Jun 2007 09:01:09 -0300
+Source: bar
+Binary: bar
+Architecture: source
+Version: 1:1.0-1
+Distribution: breezy
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Celso Providelo <cprov@canonical.com>
+Description: 
+ bar        - Stuff for testing
+Changes: 
+ bar (1:1.0-1) breezy; urgency=low
+ .
+   * bumping epoch
+Files: 
+ 4f7d673dbc687647c880d7e990f0ade7 277 devel optional bar_1.0-1.dsc
+ fc1464e5985b962a042d5354452f361d 164 devel optional bar_1.0.orig.tar.gz
+ 2fb1d34676b2e0e89d16744310be58c0 587 devel optional bar_1.0-1.diff.gz

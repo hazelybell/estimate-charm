@@ -1,0 +1,74 @@
+<html
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    metal:use-macro="view/macro:page/main_only"
+    i18n:domain="launchpad">
+  <metal:head-epilogue fill-slot="head_epilogue">
+    <style type="text/css">
+      .yui3-js-enabled .javascript-disabled { display: none; }
+    </style>
+  </metal:head-epilogue>
+  <body>
+    <div metal:fill-slot="main">
+
+      <tal:enabled condition="view/show_derivation_form">
+      <div class="top-portlet">
+        This page allows you to initialize a distribution series.
+        <a href="/+help-registry/init-series-title-help.html" target="help"
+           class="sprite maybe action-icon">Initialization help</a>
+      </div>
+      <p class="error message javascript-disabled">
+        Javascript is required to use this page. Please enable
+        Javascript in your browser and reload this page. Alternatively,
+        please use the <code>initDerivedDistroSeries</code> API call via the
+        web service.
+      </p>
+      <div class="hidden" id="initseries-form-container">
+        <metal:form use-macro="context/@@launchpad_form/form" />
+      </div>
+      <script type="text/javascript">
+        LPJS.use('lp.registry.distroseries.initseries', function(Y) {
+          Y.on('domready', Y.lp.registry.distroseries.initseries.setup);
+        });
+      </script>
+      <p class="formHelp">
+        Note that initialization is not instantaneous; initializing with
+        many thousands of packages is likely to take hours to complete.
+      </p>
+      </tal:enabled>
+
+      <tal:previous_series_none
+        condition="view/show_previous_series_empty_message">
+      <p class="error message">
+        Unable to initialize series: the distribution already has
+        initialized series and this distroseries has no previous series.
+      </p>
+      </tal:previous_series_none>
+
+      <tal:already-initialized condition="view/show_already_initialized_message">
+      <p class="error message">
+        This series already contains source packages and cannot be
+        initialized again.
+      </p>
+      </tal:already-initialized>
+
+      <tal:already-initializing
+          condition="view/show_already_initializing_message">
+      <p class="error message">
+        This series is already being initialized.
+      </p>
+      </tal:already-initializing>
+
+      <tal:no-publisher
+          condition="view/show_no_publisher_message">
+      <p class="error message">
+        The series' distribution has no publisher configuration.
+        Please ask an administrator to set this up.
+      </p>
+      </tal:no-publisher>
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,119 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<body>
+
+<div metal:fill-slot="main"
+     tal:define="speclinks view/spec_links">
+
+  <p class="documentDescription">
+    This page allows you to accept or decline topics for discussion at
+    <span tal:replace="context/title">Ubuntu Below Zero</span>.
+  </p>
+
+  <p class="error message"
+     tal:condition="view/status_message"
+     tal:content="view/status_message" />
+
+  <p tal:condition="not: speclinks">
+    <i>There are no specifications currently proposed as topics for
+    discussion at
+    <span tal:replace="context/title">Ubuntu Below Zero</span>. You can
+    check the list of specifications
+    <a href="+specs?acceptance=declined">previously declined</a> for the
+    agenda.</i>
+  </p>
+
+  <form tal:attributes="action request/URL" method="POST">
+
+    <table tal:condition="speclinks" id="speclisting">
+      <tbody>
+        <tr tal:repeat="speclink speclinks">
+        <tal:spec define="spec speclink/specification">
+          <td align="right">
+            <input type="checkbox" name="speclink"
+                   tal:attributes="
+                     value speclink/id;
+                     id string:speclink_${speclink/id}" /><br />
+              <span tal:attributes="
+                    class string:specpriority${spec/priority/name}"
+                    tal:content="spec/priority/title">High</span><br />
+              <span tal:attributes="
+                    class string:specstatus${spec/definition_status/name}"
+                    tal:content="spec/definition_status/title">New</span><br />
+              <span tal:attributes="
+                    class string:specdelivery${spec/implementation_status/name}"
+                    tal:content="spec/implementation_status/title">New</span><br />
+          </td>
+          <td>
+            <label tal:attributes="
+                for string:speclink_${speclink/id};
+                title spec/name">
+              <strong tal:content="spec/title/fmt:shorten/60">
+                Fix It Here
+              </strong>
+            </label>
+
+            <div>
+              <img src="/@@/blueprint" />&nbsp;<a
+                   tal:attributes="href spec/fmt:url"
+                   >Details</a >
+              <tal:weblink condition="spec/specurl">
+                <img src="/@@/link" />&nbsp;<a
+                     tal:attributes="href spec/specurl"
+                     >Blueprint</a>
+              </tal:weblink>
+            </div>
+            <div>
+              <span tal:replace="spec/summary">summary</span>
+            </div>
+            <div>
+              <tal:registrant condition="speclink/registrant">
+                Proposed by
+                <a tal:replace="structure speclink/registrant/fmt:link" />
+                <span tal:condition="python: speclink.registrant.id not in view.attendee_ids">
+                  (not attending)
+                </span>
+                <span
+                  tal:attributes="title speclink/date_created/fmt:datetime"
+                  tal:content="speclink/date_created/fmt:displaydate">
+                  2006-01-12
+                </span>
+              </tal:registrant>
+            </div>
+          </td>
+        </tal:spec>
+        </tr>
+      </tbody>
+    </table>
+
+    <p tal:condition="speclinks">
+      Select the specifications that you wish to accept or decline.
+    </p>
+
+    <div class="actions">
+      <input type="submit"
+             name="SUBMIT_CANCEL"
+             value="Cancel" />
+      <input tal:condition="speclinks"
+             type="submit"
+             name="SUBMIT_ACCEPT"
+             value="Accept" />
+      <input tal:condition="speclinks"
+             type="submit"
+             name="SUBMIT_DECLINE"
+             value="Decline" />
+    </div>
+
+  </form>
+
+</div>
+
+</body>
+</html>

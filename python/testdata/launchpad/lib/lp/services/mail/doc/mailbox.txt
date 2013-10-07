@@ -1,0 +1,111 @@
+All mails sent to Launchpad can be accessed with the IMailBox utility.
+There are three different IMailBox utilities available. One, TestMailBox,
+is configured for tests, and operates on stub.test_emails. This means
+that every mail you send in a test can be accessed by using this mail
+box.
+
+There's also an IMailBox which interfaces with a POP3 server. It can be
+configured in ZCML with:
+
+    <mail:pop3MailBox host="somehost" user="someuser" password="secret" />
+
+It also supports POP3 over ssl:
+
+    <mail:pop3MailBox
+        host="somehost" user="someuser" password="secret" ssl="true" />
+
+The third is the DirectoryMailBox and can be configured to operate for
+interactive testing of the email processing.  There is an example config
+located at: configs/development/directory-testing-mailbox.zcml.example.  To
+get this picked up by the process email cronscript, you need to copy it to the
+directory above the working tree and call it +testing-mailbox.zcml (actually
+you could call it anything that matches +*.zcml loaded from script.zcml).
+
+There is a helper function create_mail_for_directoryMailBox that can be
+run with something like this::
+
+    make harness
+    from lp.testing import mail
+    mail.create_mail_for_directoryMailBox(
+        'me@example.com',
+        'new@bugs.launchpad.net',
+        'help',
+        'message body',
+        )
+
+Let's look at the one we use in tests:
+
+    >>> from lp.services.mail.mailbox import IMailBox
+    >>> mailbox = getUtility(IMailBox)
+
+Now it's empty, so let's add some mails to it by using simple_sendmail:
+
+    >>> import transaction
+    >>> from lp.services.mail.sendmail import simple_sendmail
+    >>> msgid = simple_sendmail('test@canonical.com',
+    ...                         '123@bugs.canonical.com',
+    ...                         'Hello',
+    ...                         'bla bla bla',
+    ...                         headers={'Message-ID': '<test1>'})
+    >>> transaction.commit()
+    >>> msgid = simple_sendmail('test@canonical.com',
+    ...                         '456@bugs.canonical.com',
+    ...                         'Hello',
+    ...                         'bla bla bla',
+    ...                         headers={'Message-ID': '<test2>'})
+    >>> transaction.commit()
+
+Before we can use it, it has to be opened.
+
+    >>> mailbox.open()
+
+To prevent two threads opening it the same time, if it's already open,
+we can't open it again:
+
+    >>> mailbox.open()
+    Traceback (most recent call last):
+    ...
+    MailBoxError: The mail box is already open.
+
+There's only one mail in the mail box, and it's the same as we sent
+before:
+
+    >>> mails = list(mailbox.items())
+    >>> len(mails)
+    2
+    >>> id, raw_mail = mails[0]
+    >>> import email
+    >>> mail = email.message_from_string(raw_mail)
+    >>> print mail['Message-ID']
+    <test1>
+
+When we're done using the mail box we have to close it:
+
+    >>> mailbox.close()
+
+Since we didn't delete the mail, it's still in there:
+
+    >>> mailbox.open()
+    >>> mails = list(mailbox.items())
+    >>> len(mails)
+    2
+    >>> id, raw_mail = mails[0]
+    >>> mail = email.message_from_string(raw_mail)
+    >>> print mail['Message-ID']
+    <test1>
+
+Let's delete all mails in the mail box:
+
+    >>> for id, mail in mailbox.items():
+    ...     mailbox.delete(id)
+    >>> list(mailbox.items())
+    []
+
+If we try to delete a mail that doesn't exist we get an error:
+
+    >>> mailbox.delete(-1)
+    Traceback (most recent call last):
+    ...
+    MailBoxError: No such id: -1
+
+    >>> mailbox.close()

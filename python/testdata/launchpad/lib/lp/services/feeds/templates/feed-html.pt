@@ -1,0 +1,47 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xml:lang="en"
+  lang="en"
+  i18n:domain="launchpad">
+
+<head>
+    <title tal:content="view/title">Feed Title</title>
+</head>
+
+<body>
+    <h1 tal:content="view/title">My Title</h1>
+    <div tal:repeat="item view/getItems"
+         style="border: 5px ridge black; padding: 10px; margin: 10px">
+        <table>
+            <tr><th>Title:</th>
+                <td>
+                <a tal:content="item/title/content"
+                    tal:attributes="href item/link_alternate">
+                Bug Title</a>
+                </td>
+            </tr>
+            <tr tal:repeat="author item/authors">
+                <th>Author:</th>
+                <td><a tal:content="author/name"
+                       tal:attributes="href author/uri">Author</a>
+                </td>
+            </tr>
+            <tr tal:condition="item/date_published"><th>Published:</th>
+                <td tal:content="item/date_published">
+                </td>
+            </tr>
+            <tr tal:condition="item/date_updated"><th>Updated:</th>
+                <td tal:content="item/date_updated">
+                </td>
+            </tr>
+        </table>
+        <tal:comment condition="nothing">
+            FeedEntry.content is a FeedTypedData object
+            which has a content attribute
+        </tal:comment>
+        <div tal:replace="structure item/content/content">
+            Bug Content from Atom Feed
+        </div>
+    </div>
+</body>
+</html>

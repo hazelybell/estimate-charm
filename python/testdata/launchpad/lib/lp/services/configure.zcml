@@ -1,0 +1,36 @@
+<!-- Copyright 2010-2011 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure xmlns="http://namespaces.zope.org/zope">
+  <include package=".webapp" />
+  <include package=".authserver" />
+  <include package=".comments" />
+  <include package=".database" />
+  <include package=".features" />
+  <include package=".feeds" />
+  <include package=".fields" />
+  <include package=".geoip" />
+  <include package=".googlesearch" />
+  <include package=".gpg" />
+  <include package=".identity" />
+  <include package=".inlinehelp" file="meta.zcml" />
+  <include package=".job" />
+  <include package=".librarian" />
+  <include package=".longpoll" />
+  <include package=".mail" />
+  <include package=".memcache" />
+  <include package=".messages" />
+  <include package=".messaging" />
+  <include package=".oauth" />
+  <include package=".openid" />
+  <include package=".profile" />
+  <include package=".salesforce" />
+  <include package=".scripts" />
+  <include package=".session" />
+  <include package=".statistics" />
+  <include package=".temporaryblobstorage" />
+  <include package=".verification" />
+  <include package=".webservice" />
+  <include package=".worlddata" />
+</configure>

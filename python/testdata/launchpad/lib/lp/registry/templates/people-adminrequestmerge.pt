@@ -1,0 +1,65 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+<body>
+
+<div metal:fill-slot="main">
+
+  <div metal:use-macro="context/@@launchpad_form/form">
+    <tal:extra_info metal:fill-slot="extra_info">
+      <tal:confirmation-for-people
+        condition="view/should_confirm_email_reassignment">
+        <p>Are you sure you want to merge
+          <strong tal:content="structure view/dupe_person/fmt:unique_displayname">
+            name12
+          </strong> into
+          <strong tal:content="structure view/target_person/fmt:unique_displayname">
+            name16
+          </strong>?
+        </p>
+        <div class="informational message">
+          The following email addresses are owned by
+          <tal:dupe_displayname replace="view/dupe_person/fmt:displayname" />
+          and are going to be transferred to
+          <tal:target_displayname replace="view/target_person/fmt:displayname" />:
+          <ul>
+            <li tal:repeat="email view/dupe_person_emails">
+              <strong tal:content="email/email"/>
+            </li>
+          </ul>
+          <tal:confirm-button
+            replace="structure view/reassign_emails_and_merge_action/render" />
+        </div>
+      </tal:confirmation-for-people>
+
+      <tal:confirmation-for-teams
+          condition="view/should_confirm_member_deactivation">
+        <p>Are you sure you want to merge
+          <strong tal:content="structure view/dupe_person/fmt:unique_displayname">
+            name12
+          </strong> into
+          <strong tal:content="structure view/target_person/fmt:unique_displayname">
+            name16
+          </strong>?
+        </p>
+        <div class="informational message">
+          <tal:dupe_name replace="view/dupe_person/fmt:displayname" /> has
+          <tal:member_count replace="view/dupe_person/activemembers/count" />
+          active members which will have to be deactivated before the teams
+          can be merged.
+          <tal:confirm-button
+            replace="structure view/deactivate_members_and_merge_action/render" />
+        </div>
+      </tal:confirmation-for-teams>
+    </tal:extra_info>
+  </div>
+
+</div>
+
+</body>
+</html>

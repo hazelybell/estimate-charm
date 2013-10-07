@@ -1,0 +1,17 @@
+= Distribution Source Package Bugs =
+
+This page is like most bug listing pages, but it also has a portlet
+"portlet-publishing-details" giving information about the latest published
+versions in each distroseries it's published in.
+
+The portlet itself is demonstrated in
+pagtests/soyuz/xx-portlet-publishing-details.  Here, we just show that it
+is present on the page.
+
+    >>> anon_browser.open(
+    ...     'http://bugs.launchpad.dev/ubuntu/+source/alsa-utils/')
+    >>> portlet = find_portlet(anon_browser.contents,
+    ...     '"alsa-utils" versions published in Ubuntu')
+    >>> print portlet
+    <div class="portlet" id="portlet-publishing-details">
+    ...

@@ -1,0 +1,24 @@
+@import url("../../../../canonical/launchpad/icing/import.css");
+@import url("../../../../canonical/launchpad/icing/yui/assets/skins/sam/skin.css");
+@import url("../../../../canonical/launchpad/icing/yui/cssreset/reset.css");
+@import url("../../../../canonical/launchpad/icing/yui/cssfonts/fonts.css");
+@import url("../../../../canonical/launchpad/icing/yui/cssbase/base.css");
+
+/* Taken and customized from testlogger.css */
+.yui-console-entry-src { display:none; }
+
+.yui-console-entry.yui-console-entry-pass .yui-console-entry-cat {
+  background-color: green;
+  font-weight: bold;
+  color: white;
+}
+.yui-console-entry.yui-console-entry-fail .yui-console-entry-cat {
+  background-color: red;
+  font-weight: bold;
+  color: white;
+}
+.yui-console-entry.yui-console-entry-ignore .yui-console-entry-cat {
+  background-color: #666;
+  font-weight: bold;
+  color: white;
+}

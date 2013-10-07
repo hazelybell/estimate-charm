@@ -1,0 +1,58 @@
+Logging into a Mantis instance
+------------------------------
+
+Mantis is... special. In a headless/batch environment we must do a
+little dance in order to log in. Thankfully, we can encapsulate this
+neatly in a urllib2-style handler.
+
+
+MantisLoginHandler
+==================
+
+    >>> from lp.bugs.externalbugtracker import (
+    ...     MantisLoginHandler)
+    >>> handler = MantisLoginHandler()
+
+It has one simple responsibility, which is to intercept redirections
+to the login page, at which point it rewrites the URL to go straight
+to the login form handler with a default user name and password.
+
+MantisLoginHandler.redirect_request is a standard urllib2-style
+method, whose only job is to call MantisLoginHandler.rewrite_url
+before calling the superclass. We're only interested in rewrite_url.
+
+Normally rewrite_url makes no modifications to the URL:
+
+    >>> handler.rewrite_url('https://mantis.example.com/')
+    'https://mantis.example.com/'
+
+    >>> handler.rewrite_url('http://mantis.example.com/view.php?id=123')
+    'http://mantis.example.com/view.php?id=123'
+
+When Mantis redirects us to the login page, rewrite_url comes into
+play. Note how Mantis adds a "return" query parameter: if we log in
+successfully, Mantis will redirect us to the page this specifies.
+
+    >>> handler.rewrite_url(
+    ...     'http://mantis.example.com/login_page.php'
+    ...     '?return=%2Fview.php%3Fid%3D3301')
+    '.../login.php?username=guest&password=guest&return=...'
+
+If Mantis does not specify a "return" query parameter an error will be
+raised.
+
+Apart from the fact that we rely on Mantis to return us to the page we
+originally requested, this can also mean that we failed to log in:
+when Mantis redirects back to the login page with an error it forgets
+the "return" parameter.
+
+    >>> handler.rewrite_url(
+    ...     'http://mantis.example.com/login_page.php')
+    Traceback (most recent call last):
+      ...
+    BugTrackerConnectError: http://mantis.example.com/login_page.php:
+    Mantis redirected us to the login page but did not set a return
+    path.
+
+In all likelihood, this warning will be followed in the log by an
+error.

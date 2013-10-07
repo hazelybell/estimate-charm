@@ -1,0 +1,5 @@
+<!-- This is a DTD file inside a subdirectory -->
+
+<!ENTITY foozilla.menu.title   "MENU">
+<!ENTITY foozilla.menu.accesskey   "M">
+<!ENTITY foozilla.menu.commandkey   "m">

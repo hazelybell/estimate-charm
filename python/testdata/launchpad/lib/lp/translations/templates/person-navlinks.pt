@@ -1,0 +1,21 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+  <ul id="navlinks" class="horizontal">
+    <li>
+      <a tal:replace="structure view/menu:navigation/overview/render"/>
+    </li>
+    <li>
+      <a tal:replace="structure view/menu:navigation/licensing/render"/>
+    </li>
+    <li>
+      <a tal:replace="structure view/menu:navigation/imports/render"/>
+    </li>
+    <li>
+      <a tal:replace="structure view/menu:navigation/translations_to_review/render"/>
+    </li>
+  </ul>
+</tal:root>

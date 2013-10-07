@@ -1,0 +1,25 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+<body>
+
+<div metal:fill-slot="main">
+
+  <div metal:use-macro="context/@@launchpad_form/form">
+    <metal:extra-info fill-slot="extra_info">
+      <p>
+        To claim this team, enter one of the e-mail addresses it is
+        associated with. (We are not showing you the list of addresses to
+        protect <span tal:replace="context/displayname" />'s privacy in case
+        you don't run it.) We will e-mail that address to ask for confirmation.
+      </p>
+    </metal:extra-info>
+  </div>
+
+</div>
+</body>
+</html>

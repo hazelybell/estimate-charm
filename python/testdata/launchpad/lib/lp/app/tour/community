@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <meta content="Find and work with the right people. Launchpad helps you build a rich social network around projects, through informative profiles of individual contributors and a powerful, unified teams system. Create teams to collaborate on your project or across projects, and use teams to control commit rights on branches or permissions on bugs. Create mailing lists for teams to help them build consensus. Map out the social structure of your project to show the world how you organise yourselves and make it easier to arrange online meetings across all the time zones where your contributors can be found." name="description"/>
+    <meta content="canonical, launchpad, tour" name="keywords"/>
+    <meta content="en-US" name="language"/>
+    <title>Launchpad tour</title>
+    <style media="all" type="text/css">
+        @import "launchpad-tour.css";
+    </style>
+    <script type="text/javascript" src="jquery-1.2.6.pack.js"></script>
+    <script type="text/javascript" src="launchpad-tour.js"></script>
+    <script type="text/javascript" src="selector.js"></script>
+</head>
+<body>
+    <div id="container">
+        <p class="page-number">5 of 11</p>
+        <ul id="navigation-drop-down">
+            <li class="button-next"><a id="btnNext" href="ppa" tabindex="1" accesskey="1" title="Read about building and distributing Ubuntu packages">Next</a></li>
+            <li class="home"><a href="index" accesskey="2">Launchpad tour home</a></li>
+            <li><a href="bugs" accesskey="3">Cross-project bug tracking</a></li>
+            <li><a href="branch-hosting-tracking" accesskey="4">Code hosting and review</a></li>
+            <li><a href="translation" accesskey="5">Web-based translation</a></li>
+            <li class="current"><a href="community" accesskey="6">Mailing lists and teams</a></li>
+            <li><a href="ppa" accesskey="7">Software distribution</a></li>
+            <li><a href="community-support" accesskey="8">Community support</a></li>
+            <li><a href="api" accesskey="9">Beta: web services API</a></li>
+            <li><a href="feature-tracking" accesskey="a">Lightweight specifications</a></li>
+            <li><a href="release-management" accesskey="b">Release management</a></li>
+            <li><a href="join-launchpad" accesskey="c">Join Launchpad!</a></li>
+        </ul>
+        <div id="page-intro-top"></div>
+        <div id="page-intro">
+            <h1>Mailing lists and teams</h1>
+            <p>
+                <img src="images/community/main-image.jpg" alt="Collaborate with free software communities." />
+            </p>
+            <p class="intro-text">
+                <strong>Find and work with the right people</strong> by using Launchpad to build a social network of individuals and teams around projects. Each action in Launchpad &mdash; a bug reported, a branch updated, a package published &mdash; is attributed to the person responsible, making it easy to get in touch with people whose work interests you.
+<br /><br />
+Launchpad also helps you organise the social structure of your community with a simple teams system, complete with mailing lists. Through teams you can share work and responsibilities, such as commit rights to a branch or supervising a project&rsquo;s bug reports.
+            </p>
+            <div id="link-holder"><a href="https://help.launchpad.net/Teams">Read about teams in our user guide &gt;</a><br /><a href="https://launchpad.net/projects/+new">Add your project to Launchpad &gt;</a></div>
+        </div>
+        <div id="page-intro-bottom"></div>
+        <ul id="secondary-navigation">
+            <li class="button-prev">
+                <a href="translation" title="Back to the translations page" accesskey="d" tabindex="2">Back</a>
+            </li>
+            <li class="button-next">
+                <a href="ppa" accesskey="e" tabindex="3" title="Read about building and distributing Ubuntu packages">Next</a>
+            </li>
+        </ul>
+        <div id="further-information">
+            <div class="furthur-information-block">
+                <div class="furthur-information-block-top"></div>
+                <div class="furthur-information-block-mid">
+                    <div class="block">
+                        <h3>Mailing lists</h3>
+                        <h4>Mailing lists are at the heart of free software discussion and consensus building.</h4>
+                        <p class="screen-holder">
+                            <img src="images/community/1.png" alt="Mailing Lists" />                        </p>
+                        <p>
+                            Teams in Launchpad can each have their own mailing list with everything you&rsquo;d expect: simple subscription management, automatic archiving and virtually no need for list administration.</p>
+                            <p>Even better, Launchpad shares the burden of administration across each mailing list community by building a global picture of how each person&rsquo;s posts are moderated across different lists.
+                        </p>
+                    </div>
+                    <div class="block odd">
+                        <h3>Team responsibility</h3>
+                        <h4>Sharing work amongst a group of people is easy in Launchpad.</h4>
+                        <p class="screen-holder">
+                            <img src="images/community/2.png" alt="Team Responsibility" />                        </p>
+                        <p>
+                            Teams are interchangable with individuals in just about any role in Launchpad, such as <a href="bugs">bug triage</a>, owning a <a href="branch-hosting-tracking">branch of code</a> or publishing software packages through a <a href="ppa">PPA</a>. You can create as many teams as you want and even arrange a hierarchy of teams so that all the members of one team are also automatically members of another. Launchpad&rsquo;s team functionality is unique among tools for free software developers.
+                        </p>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="furthur-information-block-bot"></div>
+            </div>
+            <div class="furthur-information-block">
+                <div class="furthur-information-block-top"></div>
+                <div class="furthur-information-block-mid">
+                    <div class="block">
+                        <h3>People profiles</h3>
+                        <h4>Connecting with the right people is what makes free software projects successful.</h4>
+                        <p class="screen-holder">
+                            <img src="images/community/3.png" alt="People profiles" />                        </p>
+                        <p>
+                            When you come across work that impresses you, one click on the owner&rsquo;s name lets you see at a glance what they&rsquo;ve worked on, what interests them, what timezone they&rsquo;re in and how to contact them.
+                        </p>
+                    </div>
+                    <div class="block odd">
+                         <h3>Karma</h3>
+                        <h4>Karma gives you a quick way to separate the heavy contributors from the newcomers!</h4>
+                        <p class="screen-holder">
+                            <img src="images/community/5.png" alt="Karma"  />                        </p>
+                        <p>
+                            Each person&rsquo;s karma report gives you a short-hand indication of their current activity. File a bug: get karma. Publish a branch of code: get karma. Answer a support question: get karma. Launchpad distills all recent activity down to a relative karma value but you can also peek behind the headline number to see where and how frequently people have been contributing.
+                        </p>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="furthur-information-block-bot"></div>
+            </div>
+        </div>
+        <ul id="footer-navigation">
+            <li class="button-prev">
+                <a href="translation" title="Back to the translations page" accesskey="f" tabindex="4">Back</a>
+            </li>
+            <li class="button-next">
+                <a href="ppa" accesskey="g" tabindex="5" title="Read about building and distributing Ubuntu packages">Next</a>
+            </li>
+            <li class="copyright">
+                &copy; 2004-2013 Canonical Ltd. <a href="https://help.launchpad.net/Legal" accesskey="h" tabindex="6">Terms of Use</a> &#58; <a href="https://help.launchpad.net/Feedback" accesskey="i" tabindex="7">Feedback</a> &#58; <a href="https://answers.launchpad.net/launchpad-project/+faqs" accesskey="j" tabindex="8">FAQ</a>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

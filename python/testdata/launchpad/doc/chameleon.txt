@@ -1,0 +1,37 @@
+Running Launchpad with Chameleon Template Engine
+================================================
+
+- Need to pull the following dependencies into ``sourcecode``:
+
+  - lp:sourcecodegen/trunk
+  - lp:chameleon.core/trunk
+  - lp:chameleon.zpt/trunk
+  - lp:z3c.pt/trunk
+  - lp:z3c.ptcompat/trunk
+
+- Run launchpad with ``PREFER_Z3C_PT=true make run`` to enable
+  ``z3c.pt``. Omitting it or setting to ``false`` will disable
+  ``z3c.pt`` and use ``zope.pagetemplate`` instead. Yes, it's that
+  simple. This is possible thanks to ``z3c.ptcompat``.
+
+
+Other useful environment options for ``z3c.pt``::
+
+  # in debug-mode, templates on disk are reloaded if they're modified
+  CHAMELEON_DEBUG (default: false)
+
+  # disable disk-cache to prevent the compiler from caching on disk
+  CHAMELEON_CACHE (default: true)
+
+  # if eager parsing is enabled, templates are parsed upon
+  # instantiation, rather than when first called upon; this mode is
+  # useful for verifying validity of templates across a project
+  CHAMELEON_EAGER (default: false)
+
+  # in strict mode, filled macro slots must exist in the macro that's
+  # being used.
+  CHAMELEON_STRICT (default: false)
+
+  # when validation is enabled, dynamically inserted content is
+  # validated against the XHTML standard
+  CHAMELEON_VALIDATE (default: false)

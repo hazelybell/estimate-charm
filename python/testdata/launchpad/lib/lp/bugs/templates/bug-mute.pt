@@ -1,0 +1,32 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="malone"
+>
+
+<body>
+  <div metal:fill-slot="main">
+
+    <div id="maincontent">
+      <div id="nonportlets">
+        <p>
+          If you mute a bug you will receive no mail about the bug
+          at all until you unmute it again.
+        </p>
+
+        <div metal:use-macro="context/@@launchpad_form/form">
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

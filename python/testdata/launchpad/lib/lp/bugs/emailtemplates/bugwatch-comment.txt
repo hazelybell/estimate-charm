@@ -1,0 +1,7 @@
+
+------------------------------------------------------------------------
+On %(comment_date)s %(commenter)s wrote:
+
+%(comment_text)s
+
+Reply at: %(comment_reply_url)s

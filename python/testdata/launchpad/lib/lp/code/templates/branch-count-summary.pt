@@ -1,0 +1,36 @@
+<p
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  id="branch-count-summary">
+
+  <tal:comment condition="nothing">
+    The layout of the tags below may look a little strange, but this
+    is all to make sure there isn't any whitespace between the end of
+    "person" or "team" and the comma after it.
+  </tal:comment>
+  <strong tal:content="view/branch_count">1234</strong>
+  <tal:branches replace="view/branch_text">branches</tal:branches
+  ><tal:has-branches condition="view/branch_count">
+  owned by
+  <tal:individuals condition="view/person_owner_count">
+    <strong tal:content="view/person_owner_count">42</strong>
+    <tal:people replace="view/person_text">people</tal:people
+    ></tal:individuals
+    ><tal:teams condition="view/team_owner_count">
+    <tal:individuals condition="view/person_owner_count">
+      and
+    </tal:individuals>
+    <strong tal:content="view/team_owner_count">1</strong>
+    <tal:people replace="view/team_text">team</tal:people
+    ></tal:teams></tal:has-branches>,
+
+    <strong tal:content="view/commit_count">23</strong>
+    <tal:commits replace="view/commit_text">commits</tal:commits>
+    <tal:has-committers condition="view/committer_count">
+      by
+      <strong tal:content="view/committer_count">4</strong>
+      <tal:people replace="view/committer_text">people</tal:people>
+    </tal:has-committers>
+    in the last month
+</p>

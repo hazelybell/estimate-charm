@@ -1,0 +1,49 @@
+Received: (at submit) by bugs.debian.org; 10 Sep 2005 08:59:26 +0000
+From SRS0=13jN=XM=debian.org=asac@srs.kundenserver.de Sat Sep 10 01:59:26 2005
+Return-path: <SRS0=13jN=XM=debian.org=asac@srs.kundenserver.de>
+Received: from moutng.kundenserver.de [212.227.126.171] 
+	by spohr.debian.org with esmtp (Exim 3.36 1 (Debian))
+	id 1EE1Cn-0001hg-00; Sat, 10 Sep 2005 01:59:26 -0700
+Received: from c155145.adsl.hansenet.de [213.39.155.145] (helo=senica.personalfree.com)
+	by mrelayeu.kundenserver.de with ESMTP (Nemesis),
+	id 0ML29c-1EE1Cl0AeA-0008Gk; Sat, 10 Sep 2005 10:59:23 +0200
+Received: from [10.0.1.2] (helo=hanson ident=Debian-exim)
+	by senica.personalfree.com with esmtps (TLS-1.0:RSA_AES_256_CBC_SHA:32)
+	(Exim 4.50)
+	id 1EE1Cj-00078E-DA; Sat, 10 Sep 2005 10:59:21 +0200
+Received: from alex by hanson with local (Exim 4.52)
+	id 1EE1Ci-0005kl-An; Sat, 10 Sep 2005 10:59:20 +0200
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+From: Alexander Sack <asac@debian.org>
+To: Debian Bug Tracking System <submit@bugs.debian.org>
+Subject: security issue revealed: CAN-2005-2871
+X-Mailer: reportbug 3.15
+Date: Sat, 10 Sep 2005 10:59:20 +0200
+Message-Id: <E1EE1Ci-0005kl-An@hanson>
+X-Provags-ID: kundenserver.de abuse@kundenserver.de login:cbe77bd78e1b43e9d8afa4235a070258
+Delivered-To: submit@bugs.debian.org
+X-Spam-Checker-Version: SpamAssassin 2.60-bugs.debian.org_2005_01_02 
+	(1.212-2003-09-23-exp) on spohr.debian.org
+X-Spam-Level: 
+X-Spam-Status: No, hits=-8.0 required=4.0 tests=BAYES_00,HAS_PACKAGE 
+	autolearn=no version=2.60-bugs.debian.org_2005_01_02
+
+Package: mozilla-firefox
+Version: 1.0.4-2sarge3
+Severity: critical
+Tags: security patch
+
+a security issue has been discovered. A workaround fix is available from
+the bug report. This applies to sarge/unstable and experimental version
+of firefox.
+
+The issue is named: CAN-2005-2871
+
+MFSA id is still missing.
+
+The upstream bug report is: #307259.
+
+A patch for aviary branch and HEAD is attached to the bugzilla bug.
+

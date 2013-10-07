@@ -1,0 +1,39 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+  <body>
+
+  <div metal:fill-slot="main">
+
+    <div metal:use-macro="context/@@launchpad_form/form">
+
+      <p metal:fill-slot="extra_info">
+        Thanks for adding your OpenPGP key to Launchpad. So we can confirm that the key is yours, we need you to use the key to sign some text.
+      </p>
+
+      <p>
+        <strong>Your key's fingerprint:</strong> <code tal:content="context/fingerprint"/>
+      </p>
+
+      <div metal:fill-slot="extra_top">
+        <p>
+          Please paste a clear-signed copy of the following paragraph
+          into the box beneath it.
+          (<a href="/+help-registry/pgp-key-clearsign.html" target="help">How do I do that?</a>)
+        </p>
+
+        <pre tal:content="context/validation_phrase">
+          Please register ABCDEF... to the Launchpad user joe
+          2005-04-01 10:30:42 UTC
+        </pre>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

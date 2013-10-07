@@ -1,0 +1,39 @@
+<metal:header
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  define-macro="detailed">
+  <tal:comment replace="nothing">
+    Variables to be defined for this macro.
+      :bugtask: (Required) BugTask that will be displayed.
+      :show_extra_details: (Optional) Boolean determining whether
+          to display a second line of info below the bug title.
+  </tal:comment>
+  <tr>
+    <td class="icon left" tal:content="structure bugtask/image:icon" />
+    <td>
+        #<span tal:replace="bugtask/bug/id">4</span>
+        <a tal:attributes="href bugtask/fmt:url"
+          tal:content="bugtask/bug/title">Bug Title Here
+        </a>
+    </td>
+    <td style="text-align: right">
+      <tal:badges replace="structure bugtask/image:badges" />
+    </td>
+  </tr>
+  <tr tal:condition="show_extra_details|nothing">
+    <td colspan="3" style="padding-bottom: 0.5em">
+      <div class="registered">
+        <tal:affected_pillars define="also_in bugtask/other_affected_pillars">
+          in <a tal:attributes="href bugtask/pillar/fmt:url"
+                tal:content="bugtask/pillar/displayname"
+              /><tal:comma condition="also_in">,</tal:comma>
+            <tal:per_pillar repeat="pillar also_in">
+              <a tal:attributes="href pillar/fmt:url"
+                 tal:content="pillar/displayname"
+                 /><tal:comma condition="not: repeat/pillar/end">,</tal:comma>
+            </tal:per_pillar>
+          </tal:affected_pillars>
+      </div>
+    </td>
+  </tr>
+</metal:header>

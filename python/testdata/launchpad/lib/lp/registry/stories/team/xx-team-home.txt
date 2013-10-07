@@ -1,0 +1,224 @@
+A team's home page
+==================
+
+The home page of a public team is visible to everyone.
+
+    >>> browser.open('http://launchpad.dev/~ubuntu-team')
+    >>> print browser.title
+    Ubuntu Team in Launchpad
+    >>> privacy_info = find_tag_by_id(browser.contents, 'privacy')
+    >>> print extract_text(privacy_info)
+    Public team
+
+The page contains a few interesting details about team membership.
+
+    >>> print extract_text(
+    ...     find_tag_by_id(browser.contents, 'recently-approved'))
+    Latest members
+    Warty Gnome Team
+    Daniel Silverstone
+    Celso Providelo
+    Steve Alexander...
+
+    >>> print extract_text(
+    ...     find_tag_by_id(browser.contents, 'recently-proposed'))
+    Pending approval
+    Sample Person
+    Andrew Bennetts
+
+    >>> print extract_text(
+    ...     find_tag_by_id(browser.contents, 'recently-invited'))
+    Latest invited
+    Warty Security Team
+
+    >>> print extract_text(
+    ...     find_tag_by_id(browser.contents, 'team-owner'))
+    Owner:
+    Mark Shuttleworth
+
+    >>> print extract_text(
+    ...     find_tag_by_id(browser.contents, 'team-datecreated'))
+    Created on:
+    2005-06-06
+
+    >>> print extract_text(
+    ...     find_tag_by_id(browser.contents, 'subscription-policy'))
+    Membership policy:
+    Moderated Team
+
+    >>> print extract_text(
+    ...     find_tag_by_id(browser.contents, 'membership-summary'))
+    10 active members, 1 invited member, 2 proposed members...
+
+    >>> print extract_text(
+    ...     find_tag_by_id(browser.contents, 'contact-email'))
+    Email:
+    Log in for email information.
+
+    >>> print extract_text(
+    ...     find_tag_by_id(browser.contents, 'contact-languages'))
+    Languages:
+    English
+
+The polls portlet is only shown if current polls exist.
+
+    >>> print extract_text(find_tag_by_id(browser.contents, 'polls'))
+    Polls
+    A random poll that never closes...
+    Show polls
+
+    >>> browser.open('http://launchpad.dev/~launchpad')
+    >>> print find_tag_by_id(browser.contents, 'polls')
+    None
+
+The subteam-of portlet is not shown if the team is not a subteam.
+
+    >>> browser.open('http://launchpad.dev/~ubuntu-team')
+    >>> print extract_text(
+    ...     find_tag_by_id(browser.contents, 'subteam-of'))
+    Subteam of
+    &#8220;Ubuntu Team&#8221; is a member of these teams: GuadaMen...
+
+    >>> browser.open('http://launchpad.dev/~launchpad')
+    >>> print find_tag_by_id(browser.contents, 'subteam-of')
+    None
+
+Unless the user is the owner of the team and there are invitations to
+join a team.
+
+    >>> admin_browser.open('http://launchpad.dev/~launchpad')
+    >>> print extract_text(
+    ...     find_tag_by_id(admin_browser.contents, 'subteam-of'))
+    Subteam of...
+    itself is not a member of any other team.
+    Show received invitations
+
+If the team does not have any recently approved, proposed, or invited
+members, the empty lists are hidden using the "hidden" css class:
+
+    >>> browser.open('http://launchpad.dev/~launchpad')
+    >>> tag = find_tag_by_id(browser.contents, 'recently-approved')
+    >>> print tag['class']
+    hidden
+
+    >>> tag = find_tag_by_id(browser.contents, 'recently-proposed')
+    >>> print tag['class']
+    hidden
+
+    >>> tag = find_tag_by_id(browser.contents, 'recently-invited')
+    >>> print tag['class']
+    hidden
+
+In the above case there's no user logged in, so it doesn't actually show
+what's the user's involvement with the team. If the user logs in, he'll see
+that, though.
+
+    >>> print extract_text(
+    ...     find_tag_by_id(browser.contents, 'your-involvement'))
+    You must log in to join or leave this team.
+
+    >>> browser = setupBrowser(auth='Basic foo.bar@canonical.com:test')
+    >>> browser.open('http://launchpad.dev/~guadamen')
+    >>> print extract_text(
+    ...     find_tag_by_id(browser.contents, 'your-involvement'))
+    You are the owner of this team...
+
+    >>> browser.open('http://launchpad.dev/~rosetta-admins')
+    >>> print extract_text(
+    ...     find_tag_by_id(browser.contents, 'your-involvement'))
+    You are a member of the team that owns this team.
+    You are not currently an active member...
+
+    >>> browser.open('http://launchpad.dev/~ubuntu-team')
+    >>> print extract_text(
+    ...     find_tag_by_id(browser.contents, 'your-involvement'))
+    You are a member of this team...
+
+Member can contact their team even if the team does not have a contact
+address:
+
+    >>> sample_browser = setupBrowser(auth='Basic test@canonical.com:test')
+    >>> sample_browser.open('http://launchpad.dev/~landscape-developers')
+    >>> print extract_text(
+    ...     find_tag_by_id(sample_browser.contents, 'contact-email'))
+    Email:
+    None, members emailed directly
+    Set contact address
+    >>> print extract_text(
+    ...     find_tag_by_id(sample_browser.contents, 'contact-user'))
+    Contact this team's members
+
+As teams do not have OpenID Logins, there is no link in the Contact
+details section for help.
+
+    >>> sample_browser.getLink('(What\xe2\x80\x99s\xc2\xa0this?)')
+    Traceback (most recent call last):
+     ...
+    LinkNotFoundError
+
+If the logged in user is an indirect member of the team, we'll say that and
+will even show the path from the user to the team.
+
+    >>> sample_browser.open('http://launchpad.dev/~name18')
+    >>> print extract_text(
+    ...     find_tag_by_id(sample_browser.contents, 'your-involvement'))
+    You are an indirect member of this team:
+    Sample Person &rarr; Warty Security Team &rarr; Ubuntu Gnome Team...
+
+It is also possible to view the set of mugshots of the people in the
+team.  Notice that the output of mugshots is batched.
+
+    >>> anon_browser.open('http://launchpad.dev/~ubuntu-team/')
+    >>> anon_browser.getLink('Show member photos').click()
+    >>> main_content = find_main_content(anon_browser.contents)
+    >>> print main_content
+    <...
+    <h1>Member photos</h1>
+    ...
+    1...10... of 10 results
+    ...
+
+
+Team admins
+-----------
+
+Team owners and admins can see a link to approve and decline applicants.
+
+    >>> owner_browser = setupBrowser(auth="Basic foo.bar@canonical.com:test")
+    >>> owner_browser.open('http://launchpad.dev/~ubuntu-team')
+    >>> print extract_text(
+    ...     find_tag_by_id(owner_browser.contents, 'recently-proposed'))
+    Pending approval
+    Sample Person
+    Andrew Bennetts
+    Approve or decline members
+
+    >>> owner_browser.getLink('Approve or decline members')
+    <Link text='Approve or decline members' url='.../+editproposedmembers'>
+
+
+Non members
+-----------
+
+No Privileges Person is not a member of the Ubuntu team.
+
+    >>> user_browser.open('http://launchpad.dev/~ubuntu-team')
+    >>> print extract_text(
+    ...     find_tag_by_id(user_browser.contents, 'your-involvement'))
+    Join...
+    You are not a member of this team...
+
+He can see the contact address, and the link explains the email
+will actually go to the team's administrators.
+
+    >>> print extract_text(find_tag_by_id(
+    ...     user_browser.contents, 'contact-email'))
+    Email:
+    support@ubuntu.com
+    >>> content = find_tag_by_id(user_browser.contents, 'contact-user')
+    >>> print extract_text(content)
+    Contact this team's admins
+
+    >>> content.a
+    <a href="+contactuser"...
+      title="Send an email to this team's admins through Launchpad">...

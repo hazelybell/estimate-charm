@@ -1,0 +1,323 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+  <body>
+
+    <metal:block fill-slot="head_epilogue">
+      <style type="text/css">
+        .distroseries-localdiff-search-filter input[type="radio"] {
+          margin-left: 0;
+        }
+        /* Don't show a border between the
+           difference rows and their expanded sections */
+        table.listing tr.diff-extra td { border-top: 0; }
+        table.listing .diff-extra-container {
+            padding-bottom: 15px;
+        }
+        /* Clear float without adding a vertical space */
+        table.listing .clear {
+            clear: both;
+            height: 1px;
+            width: 100%;
+            margin: 0 0 -1px;
+        }
+        table.listing .blacklist-options {
+            padding-left: 1em;
+        }
+      </style>
+    </metal:block>
+
+    <tal:heading metal:fill-slot="heading">
+      <h1 tal:content="view/label">Package differences between ...</h1>
+    </tal:heading>
+
+    <div class="top-portlet" metal:fill-slot="main"
+      tal:define="differences view/cached_differences;
+                  series_name context/displayname;
+                  can_perform_sync view/canPerformSync;">
+
+      <div class="beta">
+        <img src="/@@/beta" alt="[BETA]" />
+      </div>
+
+      <p><tal:replace replace="structure view/explanation/escapedtext" /></p>
+
+      <metal:package_filter_form
+        use-macro="context/@@+macros/distroseries-localdiff-search-form" />
+
+      <div metal:use-macro="context/@@launchpad_form/form">
+
+      <span tal:replace="nothing">
+      We override the 'buttons' slot because we want the syc button to be
+      disabled by default. The Javascript code running on top of this will
+      enable the button and open a confirmation popup when the button is
+      clicked. This is done because syncing packages is too dangerous without
+      a confirmation.
+      </span>
+      <div metal:fill-slot="buttons">
+        <script type="text/javascript">
+          LPJS.use(
+            'node', 'event', 'lp.registry.distroseriesdifferences_details',
+            'lp.app.confirmationoverlay',function(Y) {
+            Y.on('domready', function() {
+              var dsd_details = Y.lp.registry.distroseriesdifferences_details;
+              Y.all('input[name="field.actions.sync"]').each(function(button) {
+                // Cleanup the button's title which says the button is disabled if
+                // Javascript is disabled.
+                button.set('title', '');
+                // Create a function to bypass the display of the Confirmation
+                // Overlay if no package has been selected.
+                var has_synced_packages = function() {
+                  return (dsd_details.get_number_of_packages() !== 0);
+                }
+                // Create the Confirmation Overlay.
+                new Y.lp.app.confirmationoverlay.ConfirmationOverlay({
+                  button: button,
+                  display_confirmation_fn: has_synced_packages,
+                  form_content_fn: dsd_details.get_packages_summary,
+                  header_content_fn: dsd_details.get_confirmation_header_number_of_packages
+                });
+              });
+            });
+          });
+        </script>
+        <div id="launchpad-form-actions" class="actions"
+          tal:define="sync view/actions/byname/field.actions.sync|nothing;
+                      upgrade view/actions/byname/field.actions.upgrade|nothing">
+          <input class="button" type="submit" disabled="true"
+              title="Please use a Javascript-enabled browser to sync packages."
+              tal:condition="python:sync and sync.available()"
+              tal:attributes="value sync/label;
+                              name sync/__name__;
+                              id sync/__name__;" />
+          <input class="button" type="submit"
+            tal:condition="python: upgrade and upgrade.available()"
+            tal:attributes="value upgrade/label;
+                            name upgrade/__name__;
+                            id upgrade/__name__;" />
+        </div>
+      </div>
+
+      <metal:bottom fill-slot="extra_bottom">
+        <tal:sponsored-person
+            define="widget nocall:view/widgets/sponsored_person;
+                    sync view/actions/byname/field.actions.sync|nothing"
+            condition="python:sync and sync.available()">
+          <metal:widget-div use-macro="widget/@@launchpad_form/widget_div" />
+        </tal:sponsored-person>
+      </metal:bottom>
+
+      <div metal:fill-slot="widgets">
+        <tal:navigation_top
+          replace="structure differences/@@+navigation-links-upper" />
+          <table class="listing">
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th tal:condition="python: not(view.has_unique_parent) and view.show_parent">
+                Parent
+              </th>
+              <th tal:condition="view/show_parent_version">
+                <tal:one_parent condition="view/has_unique_parent">
+                  <a tal:attributes="href view/unique_parent/fmt:url"
+                     tal:content="view/unique_parent/displayname">Warty</a> version
+                </tal:one_parent>
+                <tal:multiple_parents condition="not: view/has_unique_parent">
+                  Parent version
+                </tal:multiple_parents>
+              </th>
+              <th tal:condition="view/show_derived_version">
+                <a tal:attributes="href context/fmt:url"
+                   tal:content="series_name">Deriwarty</a> version
+              </th>
+              <th tal:condition="view/show_parent_packagesets"
+                  class="parent-package-sets">
+                Parent package-sets
+              </th>
+              <th tal:condition="view/show_packagesets"
+                  class="package-sets">
+                Package-sets
+              </th>
+              <th class="last-changed">Last changed</th>
+              <th>Latest comment</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tal:difference repeat="difference differences/batch">
+            <tr tal:define="parent_source_pub difference/parent_source_pub;
+                            source_pub difference/source_pub;
+                            diff_id difference/id;
+                            src_name difference/source_package_name/name;"
+                tal:attributes="class src_name">
+
+              <td>
+                <tal:checkbox
+                    condition="can_perform_sync"
+                    define="can_request python:view.canRequestSync(difference)">
+                  <input tal:condition="can_request"
+                    name="field.selected_differences" type="checkbox"
+                    tal:attributes="
+                      value diff_id;
+                      id string:field.selected_differences.${diff_id}"/>
+                  <input
+                    tal:condition="not: can_request"
+                    type="checkbox" disabled="disabled" />
+                </tal:checkbox>
+
+                <a tal:attributes="href difference/fmt:url"
+                   class="js-action toggle-extra"
+                   tal:content="src_name">Foo</a>
+
+                <tal:activity
+                    define="activity python:view.describeJobs(difference)"
+                    condition="activity">
+                  &nbsp;&nbsp;
+                  <span class="lowlight" tal:content="structure activity"></span>
+                </tal:activity>
+              </td>
+              <td tal:condition="python: not(view.has_unique_parent) and view.show_parent">
+                <a tal:attributes="href difference/parent_series/fmt:url"
+                   tal:content="difference/parent_series/displayname"
+                   class="parent-name">Warty</a>
+              </td>
+              <td tal:condition="view/show_parent_version">
+                <a tal:condition="difference/parent_source_package_release"
+                   tal:attributes="href difference/parent_source_package_release/fmt:url"
+                   class="parent-version">
+                   <tal:replace
+                        replace="difference/parent_source_version"/></a>
+                <span class="lesser">
+                  (<a tal:define="changelog_url python:view.parent_changelog_url(difference)"
+                      tal:attributes="href changelog_url">changelog</a>)
+                </span>
+                <span tal:condition="not: difference/parent_source_package_release"
+                      class="parent-version"
+                      tal:content="difference/parent_source_version">
+                </span>
+              </td>
+
+              <td tal:condition="view/show_derived_version">
+                <a tal:condition="difference/source_package_release"
+                   tal:attributes="href difference/source_package_release/fmt:url"
+                   class="derived-version">
+                   <tal:replace
+                        replace="difference/source_version"/></a>
+                <span tal:condition="not: difference/source_package_release"
+                    class="derived-version"
+                    tal:content="difference/source_version">
+                </span>
+              </td>
+
+              <td tal:condition="view/show_parent_packagesets"
+                  class="parent-packagesets">
+                <tal:replace replace="difference/@@/parent_packagesets_names"/>
+              </td>
+
+              <td tal:condition="view/show_packagesets"
+                  class="packagesets">
+                <tal:replace replace="difference/@@/packagesets_names" />
+              </td>
+
+              <td class="last-changed">
+                <tal:parent condition="not: view/show_derived_version">
+                  <tal:published condition="parent_source_pub">
+                    <span tal:attributes="title parent_source_pub/datepublished/fmt:datetime"
+                          tal:content="parent_source_pub/datepublished/fmt:approximatedate">2005-09-16</span>
+                    <tal:creator define="spr parent_source_pub/sourcepackagerelease">
+                      <span class="nowrap">by <a tal:replace="structure spr/creator/fmt:link" /></span>
+                    </tal:creator>
+                    <tal:uploader
+                        define="uploader parent_source_pub/sourcepackagerelease/uploader;
+                                creator parent_source_pub/sourcepackagerelease/creator"
+                        condition="python: uploader not in (None, creator)">
+                      <br />
+                      <span class="lesser nowrap">
+                        (uploaded by <a tal:attributes="href uploader/fmt:url"
+                         tal:content="uploader/fmt:displayname" />)
+                      </span>
+                    </tal:uploader>
+                  </tal:published>
+                  <tal:not-published condition="not:parent_source_pub">
+                    <span tal:content="difference/parent_source_version" />
+                  </tal:not-published>
+                </tal:parent>
+                <tal:derived condition="view/show_derived_version">
+                  <tal:published condition="source_pub">
+                    <span tal:attributes="title source_pub/datepublished/fmt:datetime"
+                          tal:content="source_pub/datepublished/fmt:approximatedate">2005-09-16</span>
+                    <tal:creator define="spr source_pub/sourcepackagerelease">
+                      <span class="nowrap">by <a tal:replace="structure spr/creator/fmt:link" /></span>
+                    </tal:creator>
+                    <tal:uploader
+                        define="uploader source_pub/sourcepackagerelease/uploader;
+                                creator source_pub/sourcepackagerelease/creator"
+                        condition="python: uploader not in (None, creator)">
+                      <br />
+                      <span class="lesser nowrap">
+                        (uploaded by <a tal:attributes="href uploader/fmt:url"
+                         tal:content="uploader/fmt:displayname" />)
+                      </span>
+                    </tal:uploader>
+                  </tal:published>
+                  <tal:not-published condition="not:source_pub">
+                    <span tal:content="difference/source_version" />
+                  </tal:not-published>
+                </tal:derived>
+              </td>
+
+              <td class="latest-comment-fragment">
+                <tal:latest-comment-fragment
+                    define="comment difference/latest_comment"
+                    content="structure comment/@@+latest-comment-fragment"
+                    condition="comment" />
+              </td>
+
+            </tr>
+
+            </tal:difference>
+          </tbody>
+        </table>
+        <tal:navigation_bottom
+          replace="structure differences/@@+navigation-links-lower" />
+         <tal:selectable_differences_end
+               define="widget nocall:view/widgets/selected_differences;
+                       field_name widget/context/__name__;
+                       error python:view.getFieldError(field_name);">
+          <input tal:attributes="name string:${widget/name}-empty-marker"
+                 type="hidden" value="1" />
+          <div class="error message" tal:condition="error"
+               tal:content="structure error">Error message</div>
+           </tal:selectable_differences_end>
+      </div>
+    </div>
+<script type="text/javascript">
+LPJS.use('lp.registry.distroseriesdifferences_details', function(Y) {
+  Y.on('domready', function() {
+    Y.lp.registry.distroseriesdifferences_details.setup();
+  });
+});
+</script>
+<script type="text/javascript">
+  LPJS.use("lp.registry.distroseries.differences", function(Y) {
+    Y.on("domready", function() {
+      var form = Y.one("form#distroseries-localdiff-search-filter");
+      var differences = Y.lp.registry.distroseries.differences;
+      // Probably only one, but check for more just in case.
+      Y.all("th.package-sets").each(function(header) {
+        differences.connect_packageset_picker(header, form);
+      });
+      Y.all("th.last-changed").each(function(header) {
+        differences.connect_last_changed_picker(header, form);
+      });
+    });
+  });
+</script>
+
+    </div>
+
+  </body>
+</html>

@@ -1,0 +1,37 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+  <body>
+    <div metal:fill-slot="main">
+      <div>
+        <p>
+          When you make a translation in Launchpad, it's available for use
+          by all projects that use Launchpad.
+        </p>
+        <p>
+          To let the maximum number of projects benefit from this, we ask
+          that you agree to <strong>license all your translations under the
+          <a href="https://help.launchpad.net/Legal/BSDLicense">BSD licence</a></strong>.
+          If you change your mind later, you can return to this page
+          (“Translations licensing”) at any time.
+        </p>
+        <p>
+          If you do not agree to the BSD licence, you will not be able
+          to make translations in Launchpad.
+        </p>
+        <p>
+          For more about why we ask this from you, see our
+          <a href="https://help.launchpad.net/Translations/LicensingFAQ"
+          >translations&nbsp;licensing&nbsp;FAQ</a>.
+        </p>
+        <div metal:use-macro="context/@@launchpad_form/form" />
+      </div>
+    </div>
+  </body>
+
+</html>

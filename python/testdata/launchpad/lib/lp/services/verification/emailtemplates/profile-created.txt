@@ -1,0 +1,28 @@
+Hello!
+
+%(requester)s has created a new Launchpad profile [1] for
+you, and left the following comment as the reason for its creation:
+
+    %(comment)s
+
+If you wish to use this profile, please follow the instructions here:
+
+   %(token_url)s
+
+You can do it any time you want, either by following the instructions
+above or by visiting your Launchpad profile [1]. Note that we won't
+send you any other emails unless you follow the above instructions
+to finish the registration process.
+
+To get in touch with %(requester)s you can simply reply
+to this message.
+
+Launchpad is a suite of applications for open source developers,
+including easy Web-based translation and bug management. To learn
+more about Launchpad, check out https://launchpad.net/.
+
+[1] %(profile_url)s
+
+Thanks
+The Launchpad team
+

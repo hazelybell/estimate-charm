@@ -1,0 +1,36 @@
+<!-- Copyright 2009 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure xmlns="http://namespaces.zope.org/zope">
+    <!-- This is the HTTP server, set up to do ZODB-free publication.  -->
+    <utility
+        name="HTTP"
+        component="lp.services.webapp.servers.http"
+        provides="zope.app.server.servertype.IServerType"
+        />
+
+    <!-- This is the HTTP server, with post-mortem debugging support,
+        set up to do ZODB-free publication.  -->
+    <utility
+        name="PostmortemDebuggingHTTP"
+        component="lp.services.webapp.servers.pmhttp"
+        provides="zope.app.server.servertype.IServerType"
+        />
+
+    <!-- This is the HTTP server, but making each request have the
+        DebugLayer as the first layer searched.  Effectively, this turns
+        on the debug error pages. -->
+    <utility
+        name="DebugLayerHTTP"
+        component="lp.services.webapp.servers.debughttp"
+        provides="zope.app.server.servertype.IServerType"
+        />
+
+    <utility
+        name="PrivateXMLRPC"
+        component="lp.services.webapp.servers.privatexmlrpc"
+        provides="zope.app.server.servertype.IServerType"
+        />
+
+</configure>

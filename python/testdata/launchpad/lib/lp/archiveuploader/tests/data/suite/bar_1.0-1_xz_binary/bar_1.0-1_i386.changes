@@ -1,0 +1,34 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Format: 1.8
+Date: Thu, 16 Feb 2006 15:34:09 +0000
+Source: bar
+Binary: bar
+Architecture: i386
+Version: 1.0-1
+Distribution: breezy
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Daniel Silverstone <daniel.silverstone@canonical.com>
+Description: 
+ bar        - Stuff for testing
+Changes: 
+ bar (1.0-1) breezy; urgency=low
+ .
+   * Initial version
+Checksums-Sha1: 
+ d951408c834e72bb81590de134423bb88eabb5e0 716 bar_1.0-1_i386.deb
+Checksums-Sha256: 
+ f0e36b68d56d068663730c8f58944b4b8f70d38a4f6baefa072b87bb3d0ebfb0 716 bar_1.0-1_i386.deb
+Files: 
+ 4aa8d7b4f4be9f6cc7c237ab611a20bb 716 devel optional bar_1.0-1_i386.deb
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Colin Watson <cjwatson@debian.org> -- Debian developer
+
+iD8DBQFOHESujn63CGxkqMURApiSAJ9LbXh58wNXeX0lNftuXuC0mCZc1ACfX3zu
+NR4glHqh2jE1P3YeB+7NyO8=
+=WBnS
+-----END PGP SIGNATURE-----

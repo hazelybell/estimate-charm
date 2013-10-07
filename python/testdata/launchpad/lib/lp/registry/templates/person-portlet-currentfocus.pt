@@ -1,0 +1,57 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+  <div id="working-on" class="yui-g"
+       tal:define="bugtasks view/assigned_bugs_in_progress;
+                   specs view/assigned_specs_in_progress">
+    <div class="yui-u first">
+      <div class="portlet"
+        tal:condition="bugtasks">
+        <h2>
+          <span class="see-all">
+            <a tal:attributes="href view/getURLToAssignedBugsInProgress">
+              All bugs in progress
+            </a>
+          </span>
+          Assigned bugs
+        </h2>
+
+        <table>
+          <tr tal:repeat="bugtask bugtasks">
+            <tal:define-vars define="show_extra_details python:True">
+              <metal:task use-macro="bugtask/@@+bugtask-macros-listing/detailed" />
+            </tal:define-vars>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="yui-u">
+      <div class="portlet"
+        tal:condition="specs">
+        <h2>
+          <tal:XXX condition="nothing">
+            # XXX: Guilherme Salgado 2007-02-12:
+            # This link should point to a list of the in-progress specs
+            # assigned to this person, but we don't have a way to list that
+            # right now, so we'll have to list all incomplete specs assigned
+            # to the person.
+          </tal:XXX>
+          <span class="see-all">
+            <a tal:attributes="href string:${context/fmt:url}/+specs?role=assignee">
+              All assigned blueprints
+            </a>
+          </span>
+          Assigned blueprints
+        </h2>
+
+        <table>
+          <tr tal:repeat="spec specs"
+              tal:replace="structure spec/@@+listing-simple" />
+        </table>
+      </div>
+    </div>
+  </div>
+</tal:root>

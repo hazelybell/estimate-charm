@@ -1,0 +1,35 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<body>
+  <metal:block fill-slot="head_epilogue">
+    <metal:yui-dependencies
+      use-macro="context/@@launchpad_widget_macros/yui2calendar-dependencies" />
+  </metal:block>
+
+<div metal:fill-slot="main">
+  <div metal:use-macro="context/@@launchpad_form/form">
+    <div id="other-releases"
+         metal:fill-slot="extra_info"
+         tal:condition="context/productseries/releases/count"
+         style="border-bottom: solid 1px black">
+      The following releases have been made for the
+      <tal:series replace="context/productseries/displayname" /> series:
+      <ul>
+        <li tal:repeat="release context/productseries/releases">
+          <tal:released replace="release/datereleased/fmt:date" />
+          <tal:link replace="structure release/fmt:link"/>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

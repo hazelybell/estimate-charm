@@ -1,0 +1,281 @@
+Patches View
+============
+
+Patches View by Bug Target
+--------------------------
+
+We have a view listing patches attached to bugs that target a given
+bug target (in this case, a product).  At first, the product is new
+and has no bugs.
+
+    >>> from lp.testing import anonymous_logged_in, with_person_logged_in
+    >>> with anonymous_logged_in():
+    ...     anybody = factory.makePerson()
+    >>> with_anybody = with_person_logged_in(anybody)
+    >>> patchy_product = with_anybody(factory.makeProduct)(
+    ...     name='patchy-product-1', displayname="Patchy 1")
+    >>> transaction.commit()
+
+We don't see any patches when we open the patches view.
+
+    >>> def show_patches_view(contents):
+    ...     for tag in find_tags_by_class(contents, 'listing'):
+    ...         print extract_text(tag)
+    ...     messages = find_tags_by_class(contents, 'informational')
+    ...     if len(messages) > 0:
+    ...         print extract_text(messages[0])
+
+    >>> anon_browser.open(
+    ...     'http://bugs.launchpad.dev/patchy-product-1/+patches')
+    >>> show_patches_view(anon_browser.contents)
+    There are no patches associated with Patchy 1 at this time.
+
+After the product has a bug, it still doesn't show up in the patches
+view, because that bug has no patch attachments.
+
+    >>> from lp.bugs.interfaces.bugtask import (
+    ...     BugTaskImportance, BugTaskStatus)
+    >>> @with_anybody
+    ... def make_bug(
+    ...     title, product, importance=BugTaskImportance.UNDECIDED,
+    ...     status=BugTaskStatus.NEW):
+    ...     bug = factory.makeBug(title=title, target=product)
+    ...     transaction.commit()
+    ...     bug.default_bugtask.transitionToImportance(
+    ...         importance, product.owner)
+    ...     bug.default_bugtask.transitionToStatus(
+    ...         status, product.owner)
+    ...     transaction.commit()
+    ...     return bug
+
+    >>> bug_a = make_bug(title="bug_a title", product=patchy_product)
+    >>> transaction.commit()
+    >>> anon_browser.open(
+    ...     'http://bugs.launchpad.dev/patchy-product-1/+patches')
+    >>> show_patches_view(anon_browser.contents)
+    There are no patches associated with Patchy 1 at this time.
+
+After we add a non-patch attachment to that bug, the patches view
+still shows no patches.
+
+    >>> with_anybody(factory.makeBugAttachment)(bug=bug_a, is_patch=False)
+    <BugAttachment at...
+    >>> transaction.commit()
+    >>> anon_browser.open('http://bugs.launchpad.dev/patchy-product-1/+patches')
+    >>> show_patches_view(anon_browser.contents)
+    There are no patches associated with Patchy 1 at this time.
+
+After we add a patch attachment that's one day old, we see it in the
+patches view.
+
+    >>> patch_submitter = with_anybody(factory.makePerson)(
+    ...    name="patchy-person", displayname="Patchy Person")
+    >>> transaction.commit()
+    >>> with_anybody(factory.makeBugAttachment)(
+    ...     comment="comment about patch a",
+    ...     filename="patch_a.diff", owner=patch_submitter,
+    ...     description="description of patch a", bug=bug_a, is_patch=True)
+    <BugAttachment at...
+    >>> transaction.commit()
+    >>> anon_browser.open(
+    ...     'http://bugs.launchpad.dev/patchy-product-1/+patches')
+    >>> show_patches_view(anon_browser.contents)
+    Bug                                 Importance   Status    Patch Age
+    Bug #16: bug_a title                  Undecided     New     ...second...
+    From: Patchy Person
+    Link: patch_a.diff description of patch a
+
+The page title and other wording in the page reflects the contents.
+
+    >>> print_location(anon_browser.contents)
+    Hierarchy: Patchy 1 > Bugs > Patch attachments in Patchy 1
+    Tabs: ...
+    Main heading: Patch attachments in Patchy 1
+
+After creating some more bugs, with some non-patch and some patch
+attachments, and various statuses...
+
+    >>> bug_b = make_bug(
+    ...     title="bug_b title", product=patchy_product,
+    ...     importance=BugTaskImportance.CRITICAL,
+    ...     status=BugTaskStatus.CONFIRMED)
+    >>> bug_c = make_bug(
+    ...     title="bug_c title", product=patchy_product,
+    ...     importance=BugTaskImportance.WISHLIST,
+    ...     status=BugTaskStatus.FIXCOMMITTED)
+    >>> bug_d = make_bug(
+    ...     title="bug_d title", product=patchy_product,
+    ...     importance=BugTaskImportance.WISHLIST,
+    ...     status=BugTaskStatus.FIXRELEASED)
+    >>> with_anybody(factory.makeBugAttachment)(
+    ...     comment="comment about patch b",
+    ...     filename="patch_b.diff", owner=patch_submitter,
+    ...     description="description of patch b", bug=bug_b, is_patch=True)
+    <BugAttachment at...
+    >>> transaction.commit()
+    >>> with_anybody(factory.makeBugAttachment)(
+    ...     comment="comment about patch c",
+    ...     filename="patch_c.diff", owner=patch_submitter,
+    ...     description="description of patch c", bug=bug_b, is_patch=True)
+    <BugAttachment at...
+    >>> transaction.commit()
+    >>> with_anybody(factory.makeBugAttachment)(bug=bug_c, is_patch=False)
+    <BugAttachment at...
+    >>> transaction.commit()
+    >>> with_anybody(factory.makeBugAttachment)(
+    ...     comment="comment about patch d",
+    ...     filename="patch_d.diff", owner=patch_submitter,
+    ...     description="description of patch d", bug=bug_c, is_patch=True)
+    <BugAttachment at...
+    >>> transaction.commit()
+    >>> with_anybody(factory.makeBugAttachment)(
+    ...     comment="comment about patch e",
+    ...     filename="patch_e.diff", owner=patch_submitter,
+    ...     description="description of patch e", bug=bug_c, is_patch=True)
+    <BugAttachment at...
+    >>> transaction.commit()
+    >>> with_anybody(factory.makeBugAttachment)(
+    ...     comment="comment about patch f",
+    ...     filename="patch_f.diff", owner=patch_submitter,
+    ...     description="description of patch f", bug=bug_c, is_patch=True)
+    <BugAttachment at...
+    >>> transaction.commit()
+    >>> with_anybody(factory.makeBugAttachment)(
+    ...     comment="comment about patch g",
+    ...     filename="patch_g.diff", owner=patch_submitter,
+    ...     description="description of patch g", bug=bug_d, is_patch=True)
+    <BugAttachment at...
+    >>> transaction.commit()
+
+...the youngest patch on each bug is visible in the patch report
+(except for bugs in "Fix Released" state, which aren't shown):
+
+    >>> anon_browser.open('http://bugs.launchpad.dev/patchy-product-1/+patches')
+    >>> show_patches_view(anon_browser.contents)
+    Bug                                 Importance   Status    Patch Age
+    Bug #18: bug_c title                  Wishlist  Fix Committed ...second...
+    From: Patchy Person
+    Link: patch_f.diff description of patch f
+    Bug #17: bug_b title                  Critical    Confirmed ...second...
+    From: Patchy Person
+    Link: patch_c.diff description of patch c
+    Bug #16: bug_a title                  Undecided     New     ...second...
+    From: Patchy Person
+    Link: patch_a.diff description of patch a
+
+The default sort order is by patch age. We can sort patches by
+importance and status.
+
+    >>> anon_browser.getControl(name="orderby").value = ['-importance']
+    >>> anon_browser.getControl("sort").click()
+    >>> anon_browser.url
+    'http://bugs.launchpad.dev/patchy-product-1/+patches?orderby=-importance'
+    >>> show_patches_view(anon_browser.contents)
+    Bug                                 Importance   Status    Patch Age
+    Bug #17: bug_b title                  Critical    Confirmed ...second...
+    From: Patchy Person
+    Link: patch_c.diff description of patch c
+    Bug #18: bug_c title                  Wishlist  Fix Committed ...second...
+    From: Patchy Person
+    Link: patch_f.diff description of patch f
+    Bug #16: bug_a title                  Undecided     New     ...second...
+    From: Patchy Person
+    Link: patch_a.diff description of patch a
+
+    >>> anon_browser.getControl(name="orderby").value = ['status']
+    >>> anon_browser.getControl("sort").click()
+    >>> anon_browser.url
+    'http://bugs.launchpad.dev/patchy-product-1/+patches?orderby=status'
+    >>> show_patches_view(anon_browser.contents)
+    Bug                                 Importance   Status    Patch Age
+    Bug #16: bug_a title                  Undecided     New     ...second...
+    From: Patchy Person
+    Link: patch_a.diff description of patch a
+    Bug #17: bug_b title                  Critical    Confirmed ...second...
+    From: Patchy Person
+    Link: patch_c.diff description of patch c
+    Bug #18: bug_c title                  Wishlist  Fix Committed ...second...
+    From: Patchy Person
+    Link: patch_f.diff description of patch f
+
+But we can't sort by things that aren't validated by the view.
+
+    >>> anon_browser.open('http://bugs.launchpad.dev/patchy-product-1/+patches?orderby=star-sign')
+    Traceback (most recent call last):
+    ...
+    UnexpectedFormData: Unexpected value for field 'orderby': 'star-sign'
+
+
+Bugs in a product series show up in the patches view for that series.
+
+    >>> from zope.component import getUtility
+    >>> from lp.registry.interfaces.distribution import IDistributionSet
+
+    >>> from lp.app.interfaces.launchpad import ILaunchpadCelebrities
+
+    >>> login('admin@canonical.com')
+    >>> ubuntu = getUtility(ILaunchpadCelebrities).ubuntu
+    >>> hoary = ubuntu.getSeries('hoary')
+    >>> spph = factory.makeSourcePackagePublishingHistory(
+    ...     sourcepackagename=factory.getOrMakeSourcePackageName('a52dec'),
+    ...     distroseries=hoary)
+    >>> logout()
+
+    >>> @with_anybody
+    ... def make_bugtask(
+    ...     # Meta-factory for making bugtasks.
+    ...     #
+    ...     # In all instances where a distro is needed, defaults to
+    ...     # 'ubuntu' distro.
+    ...     #
+    ...     # :param bug: The bug with which the task is associated.
+    ...     # :param target: The target to which to attach this bug.
+    ...     #     If the target is a string, then it names the target
+    ...     #     object, and exactly one of following two boolean
+    ...     #     parameters must be set to indicate the object type.
+    ...     # :param target_is_spkg_name: If true, target is a string
+    ...     #     indicating the name of the source package for the task.
+    ...     # :param target_is_distroseries_name: If true, target is a string
+    ...     #     indicating the name of the distroseries for the task.
+    ...     # :param importance: The initial importance of the bugtask;
+    ...     #     if None, just use the default importance.
+    ...     # :param status: The initial status of the bugtask;
+    ...     #     if None, just use the default status.
+    ...     bug, target,
+    ...     target_is_spkg_name=False,
+    ...     target_is_distroseries_name=False,
+    ...     importance=None, status=None):
+    ...     ubuntu_distro = getUtility(IDistributionSet).getByName('ubuntu')
+    ...     if target_is_spkg_name:
+    ...         target = ubuntu_distro.getSourcePackage(target)
+    ...     if target_is_distroseries_name:
+    ...         target = ubuntu_distro.getSeries(target)
+    ...     bugtask = factory.makeBugTask(bug=bug, target=target)
+    ...     if importance is not None:
+    ...         bugtask.transitionToImportance(importance, ubuntu_distro.owner)
+    ...     if status is not None:
+    ...         bugtask.transitionToStatus(status, ubuntu_distro.owner)
+    >>> login(ANONYMOUS)
+    >>> patchy_product_series = patchy_product.getSeries('trunk')
+    >>> make_bugtask(bug=bug_a, target=patchy_product_series)
+    >>> make_bugtask(bug=bug_c, target=patchy_product_series)
+    >>> logout()
+    >>> anon_browser.open(
+    ...     'https://bugs.launchpad.dev/patchy-product-1/trunk/+patches')
+    >>> show_patches_view(anon_browser.contents)
+    Bug                       Importance     Status      Patch Age
+    Bug #18: bug_c title       Wishlist  Fix Committed   ...second...
+    From: Patchy Person
+    Link: patch_f.diff
+    description of patch f
+    Bug #16: bug_a title       Undecided      New        ...second...
+    From: Patchy Person
+    Link: patch_a.diff
+    description of patch a
+
+The page title and other wording in the page reflects the contents.
+
+    >>> print_location(anon_browser.contents)
+    Hierarchy: Patchy 1 > Series trunk > Bugs > Patch attachments in trunk
+    Tabs: ...
+    Main heading: Patch attachments in trunk

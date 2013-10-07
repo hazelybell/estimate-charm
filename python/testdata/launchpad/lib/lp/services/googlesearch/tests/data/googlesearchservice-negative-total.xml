@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<GSP VER="3.3">
+<TM>0.416786</TM><Q>bugs site:launchpad.net</Q>
+<PARAM name="as_sitesearch" value="launchpad.net" original_value="launchpad.net"/>
+<PARAM name="client" value="google-csbe" original_value="google-csbe"/>
+<PARAM name="cx" value="011948274177882366108:ixpjdn21yfg" original_value="011948274177882366108%3Aixpjdn21yfg"/>
+<PARAM name="ie" value="utf8" original_value="utf8"/>
+<PARAM name="num" value="20" original_value="20"/>
+<PARAM name="oe" value="utf8" original_value="utf8"/>
+<PARAM name="output" value="xml_no_dtd" original_value="xml_no_dtd"/>
+<PARAM name="q" value="bugs" original_value="bugs"/>
+<PARAM name="start" value="0" original_value="0"/>
+<PARAM name="adkw" value="AELymgURIr4plE6V5qUaesxj1S8kUSFxCVrVLNU_OeCogh9Q7W5be6lEGMcbb0q6WTDgLL7zsnlnYGLvVrsdxgx3AamFm0M6ARaxerSLvSf-1JQHrOLuhsQ" original_value="AELymgURIr4plE6V5qUaesxj1S8kUSFxCVrVLNU_OeCogh9Q7W5be6lEGMcbb0q6WTDgLL7zsnlnYGLvVrsdxgx3AamFm0M6ARaxerSLvSf-1JQHrOLuhsQ"/>
+<PARAM name="hl" value="en" original_value="en"/>
+<Context><title>Launchpad Search Engine</title></Context>
+
+<RES SN="1" EN="1">
+<M>-1</M>
+<FI/><NB><NU>/custom?q=bugs+site:launchpad.net&amp;num=20&amp;hl=en&amp;output=xml_no_dtd&amp;client=google-csbe&amp;cx=011948274177882366108:ixpjdn21yfg&amp;ie=UTF-8&amp;oe=UTF-8&amp;start=0&amp;sa=N</NU>
+</NB>
+
+<R N="1">
+  <U>https://bugs.launchpad.net/</U>
+  <UE>https://bugs.launchpad.net/</UE>
+  <T>A Title</T>
+  <RK>0</RK>
+  <CRAWLDATE>17 hours ago</CRAWLDATE>
+  <S>A 'R'esult.</S>
+  <LANG>en</LANG>
+  <Label>_cse_ixpjdn21yfg</Label>
+  <HAS><L/><RT/></HAS>
+</R>
+
+</RES>
+</GSP>

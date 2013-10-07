@@ -1,0 +1,15 @@
+Hello %(importer)s,
+
+On %(dateimport)s (%(elapsedtime)s), you uploaded a file with %(import_title)s to Launchpad.
+
+We were unable to import the file because of errors in its format:
+
+%(error)s
+
+If you use gettext, you can check your file for correct formatting with the 'msgfmt -c' command. Please fix any errors raised by msgfmt and upload the file again. If you check the file and you don't find any error in it, please look for an answer or file a question at https://answers.launchpad.net/rosetta/
+
+For your convenience, you can get the file you uploaded at: %(file_link)s
+
+Thank you,
+
+The Launchpad team

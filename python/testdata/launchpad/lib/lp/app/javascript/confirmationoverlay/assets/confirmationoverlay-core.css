@@ -1,0 +1,34 @@
+.yui3-lp-app-confirmationoverlay-hidden {
+    visibility: hidden;
+    }
+
+.yui3-lp-app-confirmationoverlay-content {
+    padding-left: 1em;
+    padding-right: 1em;
+    }
+
+/* The same as the Launchpad style, so the example represents
+ * how it will look.
+ */
+.yui3-lp-app-confirmationoverlay-form th,
+.yui3-lp-app-confirmationoverlay-form td {
+    padding-bottom: 1em;
+    }
+
+.yui3-lp-app-confirmationoverlay-form
+div.yui3-lp-app-confirmationoverlay-actions {
+    padding-top: 0;
+    padding-bottom: 0;
+    text-align: right;
+    }
+
+/* This gets rid of the 12px margin-bottom that yui specifies
+ * in its base.css.
+ */
+.yui3-lp-app-confirmationoverlay-form table {
+    margin-bottom: 0;
+    }
+
+.yui3-lp-app-confirmationoverlay-form-header {
+    margin-top: 1em;
+    }

@@ -1,0 +1,186 @@
+<html
+  xmlns:tal="http://xml.zope.org/namespaces/tal">
+  <head>
+    <title>Bug watch errors</title>
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssreset/reset.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssfonts/fonts.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssbase/base.css" />
+  </head>
+  <body tal:define="watch view/context">
+    <h1>Bug watch update errors</h1>
+    <p>
+      Bug watches don't always update successfully. When a bug watch
+      fails to update, Launchpad records what went wrong.
+    </p>
+    <a name="UNKNOWN"></a>
+    <h2>Unknown error (Launchpad couldn't import bug)</h2>
+    <h3>What went wrong?</h3>
+    <p>
+      Launchpad encountered an unexpected error when trying to retrieve
+      the bug from the remote server.
+    </p>
+    <h3>How can I help fix it?</h3>
+    <p>
+      <a href="/support">Contact us</a> and let us
+      know about the problem.
+    </p>
+    <a name="BUG_NOT_FOUND"></a>
+    <h2>Bug Not Found</h2>
+    <h3>What went wrong?</h3>
+    <p>
+      Launchpad could not find the specified bug on the remote server.
+    </p>
+    <h3>How can I help fix it?</h3>
+    <p>
+      Check that the remote bug
+      (<a tal:replace="structure watch/fmt:external-link" />)
+      exists on the external bug tracker. If it doesn't, you should try
+      to find the correct bug and
+      <a tal:attributes="href watch/fmt:url">update the watch</a> so
+      that it points to the correct remote bug.
+    </p>
+    <a name="CONNECTION_ERROR"></a>
+    <h2>Connection Error</h2>
+    <h3>What went wrong?</h3>
+    <p>
+      Launchpad was unable to connect to the remote server.
+    </p>
+    <h3>How can I help fix it?</h3>
+    <p>
+      Check that the remote bug tracker
+      (<a tal:replace="structure watch/bugtracker/fmt:external-link" />)
+      is on-line. If it is, you should
+      <a href="/support">contact us</a> and let us
+      know about the problem.
+    </p>
+    <a name="INVALID_BUG_ID"></a>
+    <h2>Invalid Bug ID</h2>
+    <h3>What went wrong?</h3>
+    <p>
+      The remote bug ID that the bug watch is linked to isn't valid on
+      the remote bug tracker.
+    </p>
+    <h3>How can I help fix it?</h3>
+    <p>
+      <a href="/support">Contact us</a> and let us
+      know about the problem.
+    </p>
+    <a name="TIMEOUT"></a>
+    <h2>Timeout</h2>
+    <h3>What went wrong?</h3>
+    <p>
+      Launchpad encountered a timeout when trying to connect to the
+      remote server and was unable to retrieve the bug's status.
+    </p>
+    <h3>How can I help fix it?</h3>
+    <p>
+      <a href="/support">Contact us</a> and let us
+      know about the problem.
+    </p>
+    <p>
+      Check that the remote bug tracker
+      (<a tal:replace="structure watch/bugtracker/fmt:external-link" />)
+      is on-line. If it is, you should
+      <a href="/support">contact us</a> and let us
+      know about the problem.
+    </p>
+    <a name="UNPARSABLE_BUG"></a>
+    <h2>Unparsable Bug</h2>
+    <h3>What went wrong?</h3>
+    <p>
+      Launchpad could not extract a status from the data it received
+      from the remote server.
+    </p>
+    <h3>How can I help fix it?</h3>
+    <p>
+      Check the <a attributes="href watch/fmt:url">bug watch page</a> to
+      see if this error has happened more than once. If it hasn't, it
+      could be due to bad data in the most recent update.
+    </p>
+    <p>
+      If the error has occurred more than once, you should
+      <a href="/support">contact us</a> and let us
+      know about the problem.
+    </p>
+    <a name="UNPARSABLE_BUG_TRACKER"></a>
+    <h2>Unparsable Bug Tracker Version</h2>
+    <h3>What went wrong?</h3>
+    <p>
+      Launchpad could not determine the version of the bug tracker
+      software running on the remote server.
+    </p>
+    <h3>How can I help fix it?</h3>
+    <p>
+      <a href="/support">Contact us</a> and let us
+      know about the problem.
+    </p>
+    <a name="UNSUPPORTED_BUG_TRACKER"></a>
+    <h2>Unsupported Bugtracker</h2>
+    <h3>What went wrong?</h3>
+    <p>
+      The remote server is using bug tracker software which Launchpad
+      does not currently support.
+    </p>
+    <h3>How can I help fix it?</h3>
+    <p>
+      <a href="https://bugs.launchpad.net/launchpad/+filebug"
+      >File a bug</a> requesting that Launchpad support interactions
+      with the remote bug tracker.
+    </p>
+    <a name="PRIVATE_REMOTE_BUG"></a>
+    <h2>Private Remote Bug</h2>
+    <h3>What went wrong?</h3>
+    <p>
+      The bug is marked as private on the remote bug tracker.  Launchpad
+      cannot import the status of private remote bugs.
+    </p>
+    <h3>How can I help fix it?</h3>
+    <p>
+      Unfortunately there isn't a lot that can be done about this.
+      You can manually update any bug task linked to the bug watch by
+      choosing "None, the status of the bug is updated manually" for
+      the Remote Watch option of each linked bug task.
+    </p>
+    <a name="COMMENT_IMPORT_FAILED"></a>
+    <h2>Unable to import comments</h2>
+    <h3>What went wrong?</h3>
+    <p>
+      The remote bug's status was synchronized successfully but comments
+      could not be imported from the remote bug.
+    </p>
+    <h3>How can I help fix it?</h3>
+    <p>
+      <a href="/support">Contact us</a> and let us
+      know about the problem.
+    </p>
+    <a name="COMMENT_PUSH_FAILED"></a>
+    <h2>Unable to push comments</h2>
+    <h3>What went wrong?</h3>
+    <p>
+      The remote bug's status was synchronized successfully and its
+      comments were successfully imported but Launchpad was unable to
+      push comments back to the remote bug.
+    </p>
+    <h3>How can I help fix it?</h3>
+    <p>
+      <a href="/support">Contact us</a> and let us
+      know about the problem.
+    </p>
+    <a name="BACKLINK_FAILED"></a>
+    <h2>Unable to set the link to the Launchpad bug on the remote server</h2>
+    <h3>What went wrong?</h3>
+    <p>
+      The remote bug's status and comments were synchronized sucessfully
+      with Launchpad but Launchpad was unable to set the remote bug's
+      link back to the relevant Launchpad bug.
+    </p>
+    <h3>How can I help fix it?</h3>
+    <p>
+      <a href="/support">Contact us</a> and let us
+      know about the problem.
+    </p>
+  </body>
+</html>

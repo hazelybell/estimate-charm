@@ -1,0 +1,11 @@
+<tr
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  class="ppa_batch_row">
+  <td><a tal:content="context/displayname/fmt:shorten/65"
+         tal:attributes="href context/fmt:url">FooBar</a></td>
+  <td tal:content="context/description/fmt:shorten/65" />
+  <td tal:content="context/sources_cached" />
+  <td tal:content="context/binaries_cached" />
+</tr>

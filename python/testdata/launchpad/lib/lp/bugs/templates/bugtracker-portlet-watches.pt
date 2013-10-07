@@ -1,0 +1,68 @@
+<div
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    class="portlet" id="portlet-watches">
+  <h2>Bug watches</h2>
+  <tal:navigation
+      replace="structure view/batchnav/@@+navigation-links-upper" />
+  <tal:block define="watches view/batchnav/batch">
+    <table class="sortable listing" id="latestwatches">
+      <thead>
+        <tr>
+          <th>Launchpad bug</th>
+          <th>Remote bug</th>
+          <th>Status</th>
+          <th>Last check</th>
+          <th>Next check</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tal:watches repeat="watch watches">
+          <tr tal:define="show watch/bug/required:launchpad.View">
+            <tal:hide-watch-details condition="not:show">
+              <td>
+                <img alt="" src="/@@/bug" />
+                #<span tal:replace="watch/bug/id">34</span>:
+                <em>(Private)</em>
+              </td>
+              <td><em>-</em></td>
+              <td></td>
+            </tal:hide-watch-details>
+            <tal:show-watch-details condition="show">
+              <td>
+                <img alt="" src="/@@/bug" />
+                <a href="#" tal:attributes="href watch/bug/fmt:url">
+                  #<span tal:replace="watch/bug/id">34</span>:
+                  <span tal:replace="watch/bug/title">
+                    Launchpad Bug Title
+                  </span>
+                </a>
+              </td>
+              <td>
+                <a tal:replace="structure watch/fmt:external-link-short">
+                  1234
+                </a>
+              </td>
+              <td><tal:status tal:replace="watch/remotestatus"/></td>
+              <td>
+                <span
+                  tal:attributes="title watch/lastchecked/fmt:datetime"
+                  tal:content="watch/lastchecked/fmt:approximatedate">
+                  13 Jan 2004
+                 </span>
+              </td>
+              <td>
+                <span tal:content="watch/next_check/fmt:datetime">
+                  13 Jan 2004
+                 </span>
+              </td>
+            </tal:show-watch-details>
+          </tr>
+        </tal:watches>
+      </tbody>
+    </table>
+  </tal:block>
+  <tal:navigation
+      replace="structure view/batchnav/@@+navigation-links-lower" />
+</div>

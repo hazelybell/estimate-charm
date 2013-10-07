@@ -1,0 +1,14 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  omit-tag="">
+
+  <tal:similar-bugs-list condition="view/similar_bugs">
+    <metal:display-similar-bugs
+        use-macro="context/@@+filebug-macros/show-similar-bugs-and-filebug-button" />
+  </tal:similar-bugs-list>
+  <tal:no-similar-bugs condition="not: view/similar_bugs">
+    <p id="no-similar-bugs">No similar bug reports were found.</p>
+  </tal:no-similar-bugs>
+
+</tal:root>

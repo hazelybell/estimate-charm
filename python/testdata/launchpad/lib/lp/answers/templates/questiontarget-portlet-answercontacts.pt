@@ -1,0 +1,26 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<tal:script
+    replace="structure
+    string:&lt;script id='milestone-script' type='text/javascript'&gt;" />
+    LPJS.use('base', 'node', 'event',
+            'lp.comments.hide', 'lp.answers.answercontacts',
+        function(Y) {
+    Y.on('domready', function() {
+        var context_name = '<tal:x replace="string:${context/name}"/>';
+        new Y.lp.answers.answercontacts.createQuestionAnswerContactsLoader(
+            {container_box: '#answer-contacts-'+context_name,
+            context_name: context_name});
+    });
+  });
+<tal:script replace="structure string:&lt;/script&gt;" />
+<div class="portlet"
+     tal:attributes="id string:portlet-answer-contacts-${context/name}">
+  <h2>Answer contacts for <span tal:replace="context/displayname"/></h2>
+  <div tal:attributes="id string:answer-contacts-${context/name}"></div>
+</div>
+</tal:root>

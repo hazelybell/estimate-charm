@@ -1,0 +1,209 @@
+/* This probably shouldn't be here, but I'm not sure where to put it yet */
+.yui-d0 {
+    margin: 10px 20px;
+    }
+.yui-t4 .yui-b {
+    width: 21%;
+    }
+.yui-t4 .yui-main {
+    clear: both;
+    float: left;
+    margin-right: -25%;
+    }
+.yui-t4 .yui-main .yui-b {
+    width: auto;
+    margin-right: 25%;
+    }
+
+
+
+/* =========================
+   Header
+*/
+.demo {
+    background-color: #fee;
+    }
+.login-logout {
+    position: absolute;
+    top: .5em;
+    right: 1.5em;
+    }
+#rendertime {
+    float: left;
+    margin: 0.1em 1.2em 0 0;
+    color: #666;
+    }
+#ajax-time {
+    float: left;
+    margin: 0 1.2em 0 0.2em;
+    position: relative;
+    }
+#ajax-time-list {
+    position: absolute;
+    z-index: 10;
+    top: 20px;
+    right: 0;
+    width: 200px;
+    background-color: #f2f2f2;
+    border: 2px solid #fff;
+    -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    }
+#ajax-time-list li {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 3px 5px;
+    }
+#ajax-time-list li:last-child {
+    border-bottom: none;
+    }
+#ajax-time-list li span {
+    color: #999;
+    font-size: 11px;
+    display: block;
+    }
+#ajax-time-list strong.warning {
+    color: #f00;
+    background-color: transparent;
+    }
+/* The actions row of the watermark is reused by our mhonarc templates,
+ * which we can't easily change. So about half of this is overcomplex to
+ * support them too. Caution is also needed to avoid breaking
+ * Product:+index's inline title edit widget.
+ */
+div.watermark-apps-portlet {
+    clear: both;
+    margin-bottom: 0.8em;
+    }
+div.watermark-apps-portlet > div {
+    display: inline-block;
+    vertical-align: middle;
+    }
+div.watermark-apps-portlet > div.wide {
+    width: 75%;
+    }
+div.watermark-apps-portlet > div > img,
+div.watermark-apps-portlet > div > a > img {
+    display: block;
+    margin: 0 1.5em 0 0;
+    }
+div.watermark-apps-portlet h1, div.watermark-apps-portlet h2 {
+    color: #000;
+    font-weight: bold;
+    font-size: 30px;
+    line-height: 34px;
+    margin: 0;
+    }
+.watermark-apps-portlet ul.facetmenu {
+    margin-top: 6px;
+    margin-left: -0.5em;
+    white-space: nowrap;
+    }
+.watermark-apps-portlet ul.facetmenu li {
+    display: inline;
+    list-style-type: none;
+    }
+.watermark-apps-portlet ul.facetmenu li a,
+.watermark-apps-portlet ul.facetmenu li span {
+    padding: 0.3em 0.5em;
+    margin-right: 0.4em;
+    }
+.watermark-apps-portlet ul.facetmenu li a:link,
+.watermark-apps-portlet ul.facetmenu li a:visited {
+    color: #000;
+    text-decoration: none;
+    }
+.watermark-apps-portlet ul.facetmenu li a:hover {
+    color: #000;
+    background-color: #f3f3f3;
+    }
+.watermark-apps-portlet ul.facetmenu li.active a,
+.watermark-apps-portlet ul.facetmenu li.active span {
+    font-weight: bold;
+    color: #fff;
+    background-color: #747474;
+    }
+.watermark-apps-portlet ul.facetmenu li.disabled-tab {
+    color: #747474;
+    }
+.context-publication {
+    margin-bottom: 1em;
+    }
+.registering {
+    /* Registered slot */
+    margin: .5em 0 1em 0;
+    font-size: 10px;
+    color: #666;
+    }
+.breadcrumbs {
+    margin-left: 0;
+    list-style-type: none;
+    clear: both;
+    font-size: 10px;
+    }
+.breadcrumbs li {
+    display: inline;
+    padding: 0;
+    }
+.breadcrumbs li a {
+    color: #494949;
+    }
+.breadcrumbs li:after {
+    content: "\00BB \0020"
+    }
+.breadcrumbs li:last-child {
+    /* The following leaves a small margin in chrome/webkit, but using none
+       doesn't hide the » in webkit either (both work for FF3.5). */
+    font-weight: bold;
+    }
+.breadcrumbs li:last-child:after {
+    content: '';
+    }
+#logincontrol {
+    /* Top right of the page is a link to log in or a button to log out: */
+    float: right;
+    }
+#logincontrol img {
+    /* align the image with the text */
+    margin-bottom: -2px;
+    }
+#logincontrol form {
+    margin: 0;
+    }
+#logincontrol input[type='submit'] {
+    /* The button lacks the right margin that buttons usually have: */
+    font-size: 10px;
+    margin-right: 0;
+    }
+
+
+/* =========================
+   Footer
+*/
+.footer {
+    clear: both;
+    margin-top: 4em;
+    padding-top: 0.5em;
+    }
+.footer .lp-arcana {
+    background: url(/@@/footer-background.png) top left repeat-x;
+    padding: 0.8em;
+    border-radius: 5px 5px 0 0;
+    height: 2em;
+    }
+.footer .lp-arcana img {
+    vertical-align: middle;
+    }
+.footer .sitemessage {
+    text-align: right;
+    }
+.footer .colophon {
+    margin: 3em 3em 1em 3em;
+    text-align: center;
+    }
+.footer .lp-branding {
+    float: left;
+    }
+.footer form {
+    display: inline;
+    }

@@ -1,0 +1,10 @@
+evolution 237001 1078820284 open [Teun Vink <teun@tux.office.luna.net>] normal 
+evolution 241742 1080932584 open [Micheas Herman <micheas@freep.org>] normal 
+evolution 280883 1100256492 done [Djoume SALVETTI <djoume@taket.org>] grave woody security
+mozilla-firefox 304014 1113132783 open [David Pottage <david@chrestomanci.org>] important 
+pmount 308994 1116002884 open [josh <jbuhl_nospam@gmx.de>] important 
+pmount 317991 1121194082 done ["Stefan J. Betz" <stefan_betz@gmx.net>] important 
+evolution 322535 1123752792 done [Moritz Muehlenhoff <jmm@inutil.org>] grave security
+pmount 326186 1125653584 open [Sören Köpping <s.koepping@gmx.de>] normal experimental patch
+mozilla-firefox 327452 1126342984 done [Alexander Sack <asac@debian.org>] critical patch security
+mozilla-firefox 327549 1126388009 open [Florian Weimer <fw@deneb.enyo.de>] important security

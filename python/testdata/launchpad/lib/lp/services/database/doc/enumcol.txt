@@ -1,0 +1,154 @@
+An example of EnumCol with EnumeratedTypes
+==========================================
+
+EnumCol is a type of column that is used in SQLBase classes where the
+database representation is an integer and the code uses an enumerated
+type.
+
+Firstly we need an example table.
+
+    >>> from lp.services.database.sqlbase import cursor
+    >>> cur = cursor()
+    >>> cur.execute('''
+    ...     CREATE TABLE FooTest (
+    ...         id serial NOT NULL,
+    ...         foo integer DEFAULT 1 NOT NULL
+    ...     );
+    ... ''')
+    >>> cur.execute('GRANT ALL ON TABLE FooTest TO launchpad;')
+    >>> cur.execute('GRANT ALL ON footest_id_seq TO launchpad;')
+    >>> import transaction
+    >>> transaction.commit()
+
+The enumerated type that is used with the EnumCol must be a
+DBEnumeratedType, with items that are instances of DBItem.
+
+Attempting to use a normal enumerated type for an enumcol will
+result in an error.
+
+    >>> from lazr.enum import EnumeratedType, Item, use_template
+    >>> class PlainFooType(EnumeratedType):
+    ...     """Enumerated type for the foo column."""
+    ...     ONE = Item("One")
+    ...     TWO = Item("Two")
+
+    >>> from lp.services.database.constants import DEFAULT
+    >>> from lp.services.database.enumcol import EnumCol
+    >>> from lp.services.database.sqlbase import SQLBase
+    >>> class BadFooTest(SQLBase):
+    ...     foo = EnumCol(enum=PlainFooType, default=DEFAULT)
+    Traceback (most recent call last):
+    ...
+    TypeError: <EnumeratedType 'PlainFooType'> must be a
+      DBEnumeratedType: <class 'lazr.enum...MetaEnum'>
+
+    >>> from lazr.enum import DBEnumeratedType, DBItem
+    >>> class FooType(DBEnumeratedType):
+    ...     """Enumerated type for the foo column."""
+    ...     ONE = DBItem(1, """
+    ...         One
+    ...
+    ...         Number one.
+    ...         """)
+    ...
+    ...     TWO = DBItem(2, """
+    ...         Two
+    ...
+    ...         Number two.
+    ...         """)
+
+The database implementation class then refers to the enumerated type.
+
+    >>> class FooTest(SQLBase):
+    ...     foo = EnumCol(enum=FooType, default=DEFAULT)
+
+Create a row in the table.
+
+    >>> t = FooTest()
+
+The value of the foo column has been set to the default defined in the
+database, because we didn't specify one in the constructor.
+
+    >>> t.foo == FooType.ONE
+    True
+
+You cannot use integers or strings as EnumCol values:
+
+    >>> t.foo = 2
+    Traceback (most recent call last):
+    ...
+    TypeError: Not a DBItem: 2
+
+    >>> t.foo = "TWO"
+    Traceback (most recent call last):
+    ...
+    TypeError: Not a DBItem: 'TWO'
+
+You can of course use items from FooType.
+
+    >>> t.foo = FooType.TWO
+    >>> t.foo
+    <DBItem FooType.TWO, (2) Two>
+
+But not items from another schema.
+
+    >>> class AnotherType(DBEnumeratedType):
+    ...     ONE = DBItem(1, """
+    ...         One
+    ...
+    ...         Number one.
+    ...         """)
+    >>> t.foo = AnotherType.ONE
+    Traceback (most recent call last):
+    ...
+    TypeError: DBItem from unknown enum, 'AnotherType' not in
+        (<DBEnumeratedType 'FooType'>,)
+
+The type assigned in must be the exact type, not a derived types.
+
+    >>> class DerivedType(FooType):
+    ...     """A derived DB enumerated type."""
+
+    >>> item = DerivedType.ONE
+    >>> t.foo = item
+    Traceback (most recent call last):
+    ...
+    TypeError: DBItem from unknown enum, 'DerivedType' not in
+        (<DBEnumeratedType 'FooType'>,)
+
+A simple way to assign in the correct item is to use the name of the derived
+item to access the correct item from the base type.
+
+    >>> t.foo = FooType.items[item.name]
+
+Sometimes its useful to serialise things from two different (but related)
+schemas into one table. This works if you tell the column about both enums:
+
+    >>> class BarType(DBEnumeratedType):
+    ...     use_template(FooType, exclude=('TWO'))
+    ...     THREE = DBItem(3, "Three")
+
+Redefine the table with awareness of BarType:
+
+    >>> class FooTest(SQLBase):
+    ...     foo = EnumCol(schema=[FooType, BarType], default=DEFAULT)
+
+We can assign items from either schema to the table;
+
+    >>> t = FooTest()
+    >>> t.foo = FooType.ONE
+    >>> t_id = t.id
+    >>> b = FooTest()
+    >>> b.foo = BarType.THREE
+    >>> b_id = b.id
+
+And reading back from the database correctly finds things from the schemas in
+the order given.
+
+    >>> from storm.store import AutoReload
+    >>> b.foo = AutoReload
+    >>> t.foo = AutoReload
+    >>> b.foo == BarType.THREE
+    True
+    >>> t.foo == FooType.ONE
+    True

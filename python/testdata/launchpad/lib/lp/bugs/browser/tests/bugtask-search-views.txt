@@ -1,0 +1,454 @@
+= Distribution Search page =
+
+In the 'Bugs' facet of a distribution we can find a list of bugs
+reported in that distribution and simple and advanced search forms.
+
+    >>> from lp.services.webapp.interfaces import IOpenLaunchBag
+    >>> from lp.registry.interfaces.distribution import IDistributionSet
+    >>> launchbag = getUtility(IOpenLaunchBag)
+    >>> debian = getUtility(IDistributionSet).getByName('debian')
+
+A helper function to make it easier to construct a view.  The function
+also adds the context object to the launchbag, which approximates what
+happens during traversal.
+
+    >>> from zope.component import getMultiAdapter
+    >>> from lp.services.webapp.servers import LaunchpadTestRequest
+    >>> def create_view(context, name, form=None):
+    ...     launchbag.clear()
+    ...     launchbag.add(context)
+    ...     view = getMultiAdapter(
+    ...         (context, LaunchpadTestRequest(form=form)), name=name)
+    ...     view.initialize()
+    ...     return view
+
+The simple search form returns only open bugtasks.
+
+    >>> form_values = {
+    ...     'search': 'Search',
+    ...     'field.searchtext': '',
+    ...     'field.orderby': '-importance'}
+
+    >>> distro_search_listingview = create_view(
+    ...     debian, "+bugs", form_values)
+
+    >>> open_bugtasks = list(distro_search_listingview.search().batch)
+    >>> [(bugtask.bug.id, bugtask.status.name, bugtask.importance.name)
+    ...  for bugtask in open_bugtasks]
+    [(3, 'NEW', 'UNKNOWN'),
+     (1, 'CONFIRMED', 'LOW'),
+     (2, 'CONFIRMED', 'LOW')]
+
+And the advanced form allows us to query for specific bug statuses.
+
+    >>> form_values = {
+    ...     'search': 'Search bugs in Debian',
+    ...     'advanced': 1,
+    ...     'field.status': 'Fix Released',
+    ...     'field.searchtext': '',
+    ...     'field.orderby': '-importance'}
+
+    >>> distro_advanced_search_listingview = create_view(
+    ...     debian, '+bugs', form_values)
+    >>> fix_released_bugtasks = list(
+    ...     distro_advanced_search_listingview.search().batch)
+    >>> [(bugtask.bug.id, bugtask.status.name)
+    ...     for bugtask in fix_released_bugtasks]
+    [(8, 'FIXRELEASED')]
+
+The advanced search page also has a widget to filter on upstream
+status.
+
+    >>> distro_advanced_search_listingview.shouldShowUpstreamStatusBox()
+    True
+
+It also allows filtering on milestones.
+
+    >>> milestones = (
+    ...     distro_advanced_search_listingview.getMilestoneWidgetValues())
+    >>> for value in milestones:
+    ...     print value['title']
+    Debian 3.1
+    Debian 3.1-rc1
+
+The same milestone will be available for a debian package.
+
+    >>> form_values = {'advanced': 1}
+
+    >>> firefox_debian = debian.getSourcePackage('mozilla-firefox')
+    >>> package_advanced_search_listingview = create_view(
+    ...     firefox_debian, '+bugs', form_values)
+    >>> milestones = (
+    ...     package_advanced_search_listingview.getMilestoneWidgetValues())
+    >>> for value in milestones:
+    ...     print value['title']
+    Debian 3.1
+    Debian 3.1-rc1
+
+A triager may find it useful to query for bugs with no package:
+
+    >>> ubuntu = getUtility(IDistributionSet).getByName('ubuntu')
+
+    >>> form_values = {
+    ...     'search': 'Search bugs in Ubuntu',
+    ...     'advanced': 1,
+    ...     'field.has_no_package': 'on',
+    ...     'field.orderby': '-importance'}
+
+    >>> distro_advanced_search_listingview = create_view(
+    ...     ubuntu, '+bugs', form_values)
+
+    >>> bugtasks_needing_packages = list(
+    ...     distro_advanced_search_listingview.search().batch)
+    >>> [bugtask.bug.id for bugtask in bugtasks_needing_packages]
+    [2]
+
+If the search query contains new line characters they'll be replaced by
+spaces.
+
+    >>> form_values = {
+    ...     'search': 'Search',
+    ...     'field.searchtext': 'blackhole\n\rtrash\n\rfolder',
+    ...     'field.orderby': '-importance'}
+
+    >>> distro_search_listingview = create_view(
+    ...     ubuntu, '+bugs', form_values)
+
+    >>> bugtasks_search_with_new_lines = list(
+    ...     distro_search_listingview.search().batch)
+    >>> [bugtask.bug.id for bugtask in bugtasks_search_with_new_lines]
+    [2]
+
+We can filter our search results by reporter
+
+    >>> form_values = {
+    ...     'search': 'Search bugs in Ubuntu',
+    ...     'advanced': 1,
+    ...     'field.bug_reporter': 'name12',
+    ...     'field.orderby': '-importance'}
+
+    >>> distro_advanced_search_listingview = create_view(
+    ...     debian, '+bugs', form_values)
+
+    >>> bugtasks_filtered_by_reporter = list(
+    ...     distro_advanced_search_listingview.search().batch)
+    >>> [(bugtask.bug.id, bugtask.bug.owner.name)
+    ...     for bugtask in bugtasks_filtered_by_reporter]
+    [(1, u'name12'), (2, u'name12')]
+
+But if we query for an invalid person, the view displays a nice error
+message.
+
+    >>> form_values = {
+    ...     'search': 'Search bugs in Ubuntu',
+    ...     'advanced': 1,
+    ...     'field.bug_reporter': 'invalid-reporter',
+    ...     'field.orderby': '-importance'}
+
+    >>> distro_advanced_search_listingview = create_view(
+    ...     debian, '+bugs', form_values)
+
+    >>> distro_advanced_search_listingview.getFieldError('bug_reporter')
+    u'There&#x27;s no person with the name or email address &#x27;invalid-reporter&#x27;.'
+
+The same if we try with an invalid assignee.
+
+    >>> form_values = {
+    ...     'search': 'Search bugs in Ubuntu',
+    ...     'advanced': 1,
+    ...     'field.assignee': 'invalid-assignee',
+    ...     'field.orderby': '-importance'}
+
+    >>> distro_advanced_search_listingview = create_view(
+    ...     debian, '+bugs', form_values)
+
+    >>> distro_advanced_search_listingview.getFieldError('assignee')
+    u'There&#x27;s no person with the name or email address &#x27;invalid-assignee&#x27;.'
+
+Searching by component is possible, as long as the context has defined a
+.currentseries.
+
+    >>> form_values = {
+    ...     'search': 'Search bugs in Ubuntu',
+    ...     'advanced': 1,
+    ...     'field.component': 1,
+    ...     'field.orderby': '-importance'}
+
+    >>> distro_advanced_search_listingview = create_view(
+    ...     ubuntu, '+bugs', form_values)
+
+    >>> distro_advanced_search_listingview.shouldShowComponentWidget()
+    True
+
+    >>> found_bugs = list(distro_advanced_search_listingview.search().batch)
+
+    >>> sorted([bug.id for bug in found_bugs])
+    [25]
+
+If the context does *not* have a currentseries, component searching is
+ambiguous, because a package may be published in a different component
+in each series. In this case, the component search widget is hidden.
+
+    >>> gentoo = getUtility(IDistributionSet).getByName('gentoo')
+
+    >>> from lp.testing import login
+    >>> login("test@canonical.com")
+
+    >>> form_values = {
+    ...     'search': 'Search bugs in Gentoo',
+    ...     'advanced': 1,
+    ...     'field.component': 1,
+    ...     'field.orderby': '-importance'}
+
+    >>> distro_advanced_search_listingview = create_view(
+    ...     gentoo, '+bugs', form_values)
+
+    >>> distro_advanced_search_listingview.shouldShowComponentWidget()
+    False
+
+
+== Distribution Series search page ==
+
+    >>> sarge = debian.getSeries('sarge')
+
+The simple search form returns only open bugtasks.
+
+    >>> form_values = {
+    ...     'search': 'Search',
+    ...     'field.searchtext': '',
+    ...     'field.orderby': '-importance'}
+
+    >>> distroseries_search_listingview = create_view(
+    ...     sarge, "+bugs", form_values)
+
+    >>> open_bugtasks = list(distroseries_search_listingview.search().batch)
+    >>> [(bugtask.id, bugtask.bug.id, bugtask.status.name, bugtask.importance.name)
+    ...  for bugtask in open_bugtasks]
+    [(19, 3, 'NEW', 'MEDIUM')]
+
+Note that because we are not in a package context, the ordering was done
+by BugTask.id and not Bug.id -- Bug IDs are not unique in the
+distribution context.
+
+And now we'll change the status of one of the bugtasks, but first we
+need to be logged in.
+
+    >>> from lp.services.database.sqlbase import flush_database_updates
+
+    >>> login("test@canonical.com")
+
+    >>> from lp.bugs.interfaces.bugtask import BugTaskStatus, IBugTaskSet
+    >>> open_bugtask = getUtility(IBugTaskSet).get(19)
+    >>> open_bugtask.status.name
+    'NEW'
+    >>> open_bugtask.bug.id
+    3
+    >>> open_bugtask.transitionToStatus(
+    ...     BugTaskStatus.INVALID, getUtility(ILaunchBag).user)
+    >>> flush_database_updates()
+
+And the advanced form allows us to query for specific bug statuses.
+
+    >>> form_values = {
+    ...     'search': 'Search bugs in sarge',
+    ...     'advanced': 1,
+    ...     'field.status': 'Invalid',
+    ...     'field.searchtext': '',
+    ...     'field.orderby': '-importance'}
+
+    >>> distroseries_advanced_search_view = create_view(
+    ...     sarge, '+bugs', form_values)
+    >>> invalid_bugtasks = list(
+    ...     distroseries_advanced_search_view.search().batch)
+    >>> [(bugtask.bug.id, bugtask.status.name)
+    ...     for bugtask in invalid_bugtasks]
+    [(3, 'INVALID')]
+
+The upstream status widget is also present here.
+
+    >>> distroseries_advanced_search_view.shouldShowUpstreamStatusBox()
+    True
+
+There are no milestones to filter on, since sarge doesn't have any
+milestones.
+
+    >>> distroseries_advanced_search_view.getMilestoneWidgetValues()
+    []
+
+The same is true for a sarge package.
+
+    >>> form_values = {'advanced': 1}
+    >>> firefox_sarge = sarge.getSourcePackage('mozilla-firefox')
+    >>> package_advanced_search_view = create_view(
+    ...     firefox_sarge, '+bugs', form_values)
+    >>> package_advanced_search_view.getMilestoneWidgetValues()
+    []
+
+
+== ProjectGroup Search Page ==
+
+    >>> from lp.registry.interfaces.projectgroup import IProjectGroupSet
+    >>> mozilla = getUtility(IProjectGroupSet).getByName('mozilla')
+
+The simple search form returns only open bugtasks.
+
+    >>> form_values = {
+    ...     'search': 'Search',
+    ...     'field.searchtext': '',
+    ...     'field.orderby': '-importance'}
+
+    >>> mozilla_search_listingview = create_view(
+    ...     mozilla, "+bugs", form_values)
+
+    >>> open_bugtasks = list(mozilla_search_listingview.search().batch)
+    >>> for bugtask in open_bugtasks:
+    ...     print bugtask.bug.id, bugtask.product.name, bugtask.status.name
+    15 thunderbird NEW
+    5 firefox NEW
+    4 firefox NEW
+    1 firefox NEW
+
+And now we'll change the status of one of the bugtasks (we are still
+logged in from earlier):
+
+    >>> previous_status = open_bugtasks[0].status
+    >>> open_bugtasks[0].transitionToStatus(
+    ...     BugTaskStatus.INVALID, getUtility(ILaunchBag).user)
+    >>> flush_database_updates()
+
+And the advanced form allows us to query for specific bug statuses.
+
+    >>> form_values = {
+    ...     'search': 'Search bugs in the Mozilla Project',
+    ...     'advanced': 1,
+    ...     'field.status': 'Invalid',
+    ...     'field.searchtext': '',
+    ...     'field.orderby': '-importance'}
+
+    >>> mozilla_search_listingview = create_view(mozilla, '+bugs', form_values)
+    >>> invalid_bugtasks = list(mozilla_search_listingview.search().batch)
+    >>> for bugtask in invalid_bugtasks:
+    ...     print bugtask.bug.id, bugtask.product.name, bugtask.status.name
+    15 thunderbird INVALID
+
+    >>> open_bugtasks[0].transitionToStatus(
+    ...     previous_status, getUtility(ILaunchBag).user)
+    >>> flush_database_updates()
+
+This view does *not* render the upstream status widget.
+
+    >>> mozilla_search_listingview.shouldShowUpstreamStatusBox()
+    False
+
+Check what milestones are displayed on the advanced search form:
+
+    >>> form_values = {
+    ...     'advanced': 1}
+
+    >>> advanced_search_view = create_view(
+    ...     mozilla, '+bugs', form_values)
+    >>> for value in advanced_search_view.getMilestoneWidgetValues():
+    ...     print value['title']
+    Mozilla Firefox 1.0
+
+
+== Searching by information type ==
+
+The advanced form allows us to query for bugs matching specific
+information types.
+
+First we'll change the information type of one of the bugtasks (we are still
+logged in from earlier):
+
+    >>> from lp.app.enums import InformationType
+    >>> previous_information_type = open_bugtasks[0].bug.information_type
+    >>> open_bugtasks[0].bug.transitionToInformationType(
+    ...     InformationType.USERDATA, getUtility(ILaunchBag).user)
+    True
+    >>> flush_database_updates()
+
+Submit the search:
+
+    >>> form_values = {
+    ...     'search': 'Search bugs in Firefox',
+    ...     'advanced': 1,
+    ...     'field.information_type': 'USERDATA',
+    ...     'field.searchtext': '',
+    ...     'field.orderby': '-importance'}
+
+    >>> mozilla_search_listingview = create_view(mozilla, '+bugs', form_values)
+    >>> userdata_bugtasks = list(mozilla_search_listingview.search().batch)
+    >>> for bugtask in userdata_bugtasks:
+    ...     print bugtask.bug.id, bugtask.product.name, bugtask.bug.information_type.name
+    15 thunderbird USERDATA
+
+    >>> open_bugtasks[0].bug.transitionToInformationType(
+    ...     previous_information_type, getUtility(ILaunchBag).user)
+    True
+    >>> flush_database_updates()
+
+
+== Constructing search filter urls ==
+
+There is a helper method, get_buglisting_search_filter_url(), which can
+be used to construct bug search URLs. It takes keyword parameters for
+the assignee, importance, status and status_upstream fields of a bug
+search and returns the correct URL for a bug listing with those
+parameters. The URL returned isn't tied to any specific bugtarget, so
+it's up to the callsite to urljoin() the results of
+get_buglisting_search_filter_url() with a bugtarget URL to make it
+useful.
+
+    >>> from lp.bugs.browser.bugtask import (
+    ...     get_buglisting_search_filter_url)
+
+Calling get_buglisting_search_filter_url() without any parameters will
+return a plain search URL which, when visited, will display all open
+bugs.
+
+    >>> print get_buglisting_search_filter_url()
+    +bugs?search=Search
+
+Passing an assignee will add an assignee field to the query string. Not
+that get_buglisting_search_filter_url() doesn't check any of the data
+that's passed to it; that's for the target search to do.
+
+    >>> print get_buglisting_search_filter_url(assignee='gmb')
+    +bugs?search=Search&field.assignee=gmb
+
+Passing an importance will add an importance field to the query string.
+
+    >>> print get_buglisting_search_filter_url(importance='UNDECIDED')
+    +bugs?search=Search&field.importance=UNDECIDED
+
+Importance can be a single item or a list of items:
+
+    >>> print get_buglisting_search_filter_url(importance=['LOW', 'HIGH'])
+    +bugs?search=Search&field.importance=LOW&field.importance=HIGH
+
+Passing a status will add a status field to the query string:
+
+    >>> print get_buglisting_search_filter_url(status='TRIAGED')
+    +bugs?search=Search&field.status=TRIAGED
+
+Status, like importance, can be a list:
+
+    >>> print get_buglisting_search_filter_url(status=['NEW', 'INCOMPLETE'])
+    +bugs?search=Search&field.status=NEW&field.status=INCOMPLETE
+
+Passing a status_upstream parameter will add a status_upstream field to
+the query string.
+
+    >>> print get_buglisting_search_filter_url(
+    ...     status_upstream='open_upstream')
+    +bugs?search=Search&field.status_upstream=open_upstream
+
+The fields will always be rendered in the order assignee, importance,
+status, status_upstream, regardless of what order they're passed to
+get_buglisting_search_filter_url().
+
+    >>> print get_buglisting_search_filter_url(
+    ...     status_upstream='open_upstream', status='NEW',
+    ...     importance='WISHLIST', assignee='mark')
+    +bugs?search=Search&field.assignee=mark&field.importance=WISHLIST&field.status=NEW&field.status_upstream=open_upstream
+

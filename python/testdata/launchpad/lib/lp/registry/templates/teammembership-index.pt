@@ -1,0 +1,314 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<tal:do-this-first tal:content="view/processForm" />
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<body>
+  <metal:block fill-slot="head_epilogue">
+    <metal:yui-dependencies
+      use-macro="context/@@launchpad_widget_macros/yui2calendar-dependencies" />
+
+    <script type="text/javascript">
+      LPJS.use('node', 'lp.app.calendar', function(Y) {
+          // Ensure that when the picker is used the radio button switches
+          // from 'Never' to 'On' and the expiry field is enabled.
+          Y.on("available", function(e) {
+              var choose_link = Y.one("#expiration-widget a.js-action");
+              var radio_on = Y.one("#date");
+              var expiration_date = Y.one(
+                  document.getElementById('membership.expirationdate'));
+              choose_link.on('click', function(e) {
+                expiration_date.set('disabled', false);
+                radio_on.set('checked', true);
+              });
+          }, "#expiration-widget a.js-action");
+      });
+    </script>
+  </metal:block>
+
+<metal:macros fill-slot="bogus">
+  <metal:macro define-macro="person">
+      <a tal:attributes="href context/person/fmt:url"
+        tal:content="string: ${context/person/displayname}
+                             (${context/person/name})"></a>
+  </metal:macro>
+  <metal:macro define-macro="error">
+    <tr><td colspan="2">
+      <p class="error message" tal:condition="view/errormessage"
+         tal:content="view/errormessage" />
+    </td></tr>
+  </metal:macro>
+  <metal:macro define-macro="comment">
+    <tr>
+      <th>Comment:</th>
+      <td>
+        <textarea cols="40" name="comment"
+          tal:content="request/comment|context/last_change_comment|default" />
+        <div class="formHelp">This comment will be sent together with the
+        notification of this change to all team administrators and this
+        member<span tal:condition="view/isActive"><span
+        tal:condition="context/required:launchpad.Admin">, unless the 'Silent'
+        option is selected</span></span>.</div>
+      </td>
+    </tr>
+  </metal:macro>
+  <metal:macro define-macro="expiry-radios">
+    <label for="never">
+      <input tal:attributes="checked view/neverExpiresIsSelected"
+        onclick="
+          document.getElementById('membership.expirationdate').disabled=true;"
+        type="radio" id="never" value="never" name="expires" />
+        Never<br />
+    </label>
+    <label for="date">
+      <input tal:attributes="
+        checked view/expiresIsSelected;"
+        onclick="document.getElementById('membership.expirationdate').disabled=false;"
+        type="radio" id="date" value="date" name="expires" />
+      On&nbsp;
+    </label>
+    <span id="expiration-widget">
+      <tal:expiration_widget replace="structure view/expiration_widget" />
+    </span>
+  </metal:macro>
+</metal:macros>
+
+<div metal:fill-slot="main">
+      <div tal:condition="view/isActive">
+        <p>
+          <metal:person use-macro="template/macros/person" />
+          is an <em>Active Member</em> of
+          <span tal:replace="context/team/displayname" />.
+        </p>
+
+        <form action="" method="POST" name="editactive">
+          <input type="hidden" name="editactive" value="1" />
+          <table>
+          <tr>
+            <th>Member since:</th>
+            <td>
+              <span
+                tal:attributes="title context/datejoined/fmt:datetime"
+                tal:content="context/datejoined/fmt:approximatedate">
+                2005-09-13
+              </span>
+            </td>
+          </tr>
+
+          <tr>
+            <th>Administrator:</th>
+            <td>
+              <input tal:attributes="checked view/adminIsSelected"
+                      type="radio" value="yes" name="admin" id="admin"/>
+              <label for="admin">Yes</label>
+              <input tal:attributes="checked view/adminIsNotSelected"
+                      type="radio" value="no" name="admin" id="notadmin"/>
+              <label for="notadmin">No</label>
+            </td>
+          </tr>
+
+          <metal:error use-macro="template/macros/error" />
+
+          <tr>
+            <th>Subscription expires:</th>
+            <td tal:condition="view/canChangeExpirationDate" style="white-space: nowrap">
+              <metal:radios use-macro="template/macros/expiry-radios" />
+            </td>
+            <td tal:condition="not: view/canChangeExpirationDate">
+              <span tal:condition="context/dateexpires"
+                    tal:attributes="title context/dateexpires/fmt:datetime"
+                    tal:content="context/dateexpires/fmt:approximatedate" />
+              <span tal:condition="not: context/dateexpires">Never</span>
+            </td>
+          </tr>
+
+          <metal:comment use-macro="template/macros/comment" />
+
+          <tr tal:condition="context/required:launchpad.Admin">
+            <th>Change silently:</th>
+            <td>
+              <input type="checkbox" value="no" name="silent" id="silent" />
+              <div class="formHelp">Do not send notifications to anyone
+                regarding this membership change.</div>
+            </td>
+          </tr>
+
+          <tr>
+            <th />
+            <td>
+              <input type="submit" value="Change" name="change" />
+              <input type="submit" value="Deactivate" name="deactivate" />
+            </td>
+          </tr>
+        </table>
+        </form>
+      </div>
+
+      <div tal:condition="view/isInactive">
+        <p tal:condition="view/isExpired">
+          <metal:person use-macro="template/macros/person" />
+          is an <em>Expired Member</em> of
+          <span tal:replace="context/team/displayname" />.
+        </p>
+
+        <p tal:condition="view/isDeactivated">
+          <metal:person use-macro="template/macros/person" />
+          is a <em>Deactivated Member</em> of
+          <span tal:replace="context/team/displayname" />.
+        </p>
+
+        <form action="" method="POST" name="editinactive">
+          <input type="hidden" name="editinactive" value="1" />
+          <table>
+          <tr>
+            <th>Became member:</th>
+            <td>
+              <span
+                tal:attributes="title context/datejoined/fmt:datetime"
+                tal:content="context/datejoined/fmt:approximatedate">
+                2005-09-13
+              </span>
+            </td>
+          </tr>
+
+          <tal:expired condition="view/isExpired">
+            <tr>
+              <th>Subscription expired:</th>
+              <td>
+                <span
+                  tal:attributes="title context/dateexpires/fmt:datetime"
+                  tal:content="context/dateexpires/fmt:approximatedate">
+                  2006-09-13
+                </span>
+              </td>
+            </tr>
+
+            <metal:error use-macro="template/macros/error" />
+
+            <tr>
+              <th>Expiration:</th>
+              <td>
+                <label for="leave">
+                  <input
+                    checked="checked"
+                    type="radio" id="leave" value="leave" name="expires"
+                    onclick="
+          document.getElementById('membership.expirationdate').disabled=true;"
+                    /> Don't change<br />
+                </label>
+                <metal:radios use-macro="template/macros/expiry-radios" />
+              </td>
+            </tr>
+          </tal:expired>
+
+          <tal:not-expired condition="not: view/isExpired">
+            <metal:error use-macro="template/macros/error" />
+            <tr><td colspan="2">&nbsp;</td></tr>
+            <tr>
+              <th>Subscription expires:</th>
+              <td>
+                <metal:radios use-macro="template/macros/expiry-radios" />
+              </td>
+            </tr>
+          </tal:not-expired>
+
+          <metal:comment use-macro="template/macros/comment" />
+
+          <tr>
+            <td colspan="2" align="right">
+              <input tal:condition="view/isExpired" type="submit" value="Renew"
+                     name="renew" />
+              <input tal:condition="view/isDeactivated" type="submit"
+                     value="Reactivate" name="reactivate" />
+            </td>
+          </tr>
+        </table>
+
+        </form>
+      </div>
+
+      <div tal:condition="view/isProposed">
+        <p>
+          <metal:person use-macro="template/macros/person" />
+          wants to join this team.
+          If this is okay, select a membership expiration date if necessary
+          before choosing <samp>Approve</samp>.
+        </p>
+
+        <form action="" method="POST" name="editproposed">
+          <input type="hidden" name="editproposed" value="1" />
+          <table>
+            <tr>
+              <th>Applied:</th>
+              <td>
+                <span
+                  tal:attributes="title context/date_created/fmt:datetime"
+                  tal:content="context/date_created/fmt:approximatedate">
+                  2005-09-13
+                </span>
+              </td>
+            </tr>
+
+            <metal:error use-macro="template/macros/error" />
+
+            <tr>
+              <th>Expires?</th>
+              <td>
+                <metal:radios use-macro="template/macros/expiry-radios" />
+              </td>
+            </tr>
+
+            <metal:comment use-macro="template/macros/comment" />
+
+            <tr>
+              <th />
+              <td>
+                <input type="submit" value="Approve" name="approve" />
+                <input type="submit" value="Decline" name="decline" />
+              </td>
+            </tr>
+          </table>
+
+        </form>
+
+      </div>
+
+      <div tal:condition="view/isDeclined">
+        <p>
+          <metal:person use-macro="template/macros/person" />
+          asked to join this team, but the request was declined.
+        </p>
+
+      </div>
+
+      <div tal:condition="view/isInvited">
+        <p id="not-responded">
+          <metal:person use-macro="template/macros/person" />
+          has been invited to join this team, but hasn't responded to the
+          invitation yet.
+        </p>
+      </div>
+
+      <div tal:condition="view/isInvitationDeclined">
+        <p>
+          <metal:person use-macro="template/macros/person" />
+          has been invited to join this team, but has declined the invitation.
+        </p>
+      </div>
+
+</div>
+
+</body>
+</html>
+</tal:root>

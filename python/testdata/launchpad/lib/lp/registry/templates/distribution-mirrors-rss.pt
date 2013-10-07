@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:mirror="https://launchpad.net/"
+     xmlns:tal="http://xml.zope.org/namespaces/tal" version="2.0" >
+  <channel>
+    <title>Ubuntu <span tal:replace="view/heading" /> Status</title>
+    <link tal:content="request/URL"></link>
+    <description>Status of Ubuntu <span tal:replace="view/heading" /></description>
+
+    <lastBuildDate tal:content="view/now/fmt:rfc822utcdatetime">
+      Tue, 10 Jun 2003 09:41:01 -0000
+    </lastBuildDate>
+
+    <item tal:repeat="mirror view/mirrors">
+      <title tal:content="mirror/title">Mirror Title</title>
+      <link tal:content="mirror/base_url">http://mirror.com/root/</link>
+
+      <description>
+        <span tal:replace="mirror/description">Description</span>
+      </description>
+
+      <mirror:bandwidth tal:content="mirror/speed/value">
+        9
+      </mirror:bandwidth>
+
+      <mirror:location>
+        <mirror:continent tal:content="mirror/country/continent/name">
+          Europe
+        </mirror:continent>
+        <mirror:country tal:content="mirror/country/name">
+          France
+        </mirror:country>
+        <mirror:countrycode tal:content="mirror/country/iso3166code2">
+          FR
+        </mirror:countrycode>
+      </mirror:location>
+
+      <pubDate tal:condition="mirror/last_probe_record"
+               tal:content="mirror/last_probe_record/date_created/fmt:rfc822utcdatetime">
+        Tue, 10 Jun 2003 09:41:01 -0000
+      </pubDate>
+
+      <guid tal:content="mirror/base_url">http://mirror.com/root</guid>
+    </item>
+  </channel>
+</rss>

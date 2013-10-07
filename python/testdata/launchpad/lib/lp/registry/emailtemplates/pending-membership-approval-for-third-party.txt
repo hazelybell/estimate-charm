@@ -1,0 +1,5 @@
+Hello %(recipient_name)s,
+
+%(reviewer_name)s wants to make %(person_name)s a member of %(team_name)s, but this is a moderated team, so that membership has to be approved.  You can approve, decline or leave it as proposed by following the link below.
+
+    %(url)s

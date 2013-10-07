@@ -1,0 +1,20 @@
+<metal:body
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  define-macro="body">
+  <p>
+    Sorry, you don't have permission to access this page or
+    the information in this page is not shared with you.
+  </p>
+  <div tal:condition="request/lp:person">
+  <p>
+    You are logged in as <span tal:content="request/lp:person/title" />.
+  </p>
+  </div>
+  <p tal:condition="not: request/lp:person">
+    You are not logged in.
+  </p>
+
+  <tal:replace tal:replace="structure view/maybeShowTraceback" />
+</metal:body>

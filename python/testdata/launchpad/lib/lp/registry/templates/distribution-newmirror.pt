@@ -1,0 +1,35 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+  <body>
+    <div metal:fill-slot="main">
+      <tal:full-functionality tal:condition="context/full_functionality">
+        <div metal:use-macro="context/@@launchpad_form/form">
+          <p id="full-functionality" metal:fill-slot="extra_info">
+            To register a new mirror you have to provide at least an HTTP or FTP
+            URL (or both).
+          </p>
+        </div>
+
+        <p>
+          Once your mirror is reviewed by the distribution's mirror
+          administrator it will be probed periodically (so that we can track
+          the content mirrored and have an estimate of the mirror's
+          &#8220;freshness&#8221;) and will be shown on public mirror listings
+          (including the one at
+          <a href="http://www.ubuntu.com/download">the Ubuntu website</a>).
+        </p>
+      </tal:full-functionality>
+
+      <tal:no-full-functionality tal:condition="not: context/full_functionality">
+        <p id="not-full-functionality" class="informational message">
+          This functionality is not yet available for all distributions.
+        </p>
+      </tal:no-full-functionality>
+    </div>
+  </body>
+</html>

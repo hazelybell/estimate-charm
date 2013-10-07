@@ -1,0 +1,41 @@
+<html>
+  <head>
+    <title>Source package recipe build schedule</title>
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssreset/reset.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssfonts/fonts.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssbase/base.css" />
+    <style type="text/css">
+      dt { font-weight: bold }
+      dd p { margin-bottom: 0.5em }
+    </style>
+  </head>
+  <body>
+    <h1>Source package recipe build schedule</h1>
+
+    <p>There are two options for when recipes get built:</p>
+    <dl>
+      <dt>Built daily</dt>
+      <dd>
+        <p>A build will be scheduled automatically once a change in any
+        of the branches used in the recipe is detected.</p>
+        <p>If there has been a build of the recipe within the previous
+          24 hours into the daily build PPA, the build will not be scheduled
+          until 24 hours since the last build into the daily build PPA.</p>
+        <p>If the recipe had been built within the last 24 hours into a
+          different PPA using the "Request build" action, this will not
+          delay the daily build.</p>
+        <p>If you really want the build to happen before the 24 hour period is up,
+          you can use the "Request build" action.</p>
+      </dd>
+      <dt>Built on request</dt>
+      <dd>
+        <p>Builds of the recipe have to be manually requested using the
+          "Request build" action.</p>
+      </dd>
+    </dl>
+
+  </body>
+</html>

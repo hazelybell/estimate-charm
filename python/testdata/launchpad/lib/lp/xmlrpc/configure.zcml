@@ -1,0 +1,210 @@
+<!-- Copyright 2009-2010 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+  xmlns="http://namespaces.zope.org/zope"
+  xmlns:browser="http://namespaces.zope.org/browser"
+  xmlns:xmlrpc="http://namespaces.zope.org/xmlrpc"
+  >
+
+  <securedutility
+      class="lp.xmlrpc.application.PrivateApplication"
+      provides="lp.xmlrpc.interfaces.IPrivateApplication">
+      <allow interface="lp.xmlrpc.interfaces.IPrivateApplication"/>
+  </securedutility>
+
+  <xmlrpc:view
+      for="lp.services.webapp.interfaces.ILaunchpadRoot"
+      interface="lp.xmlrpc.application.ISelfTest"
+      class="lp.xmlrpc.application.SelfTest"
+      permission="zope.Public"
+      />
+
+  <securedutility
+    class="lp.systemhomes.CodehostingApplication"
+    provides="lp.code.interfaces.codehosting.ICodehostingApplication">
+    <allow interface="lp.code.interfaces.codehosting.ICodehostingApplication"/>
+  </securedutility>
+
+  <xmlrpc:view
+    for="lp.code.interfaces.codehosting.ICodehostingApplication"
+    interface="lp.code.interfaces.codehosting.ICodehostingAPI"
+    class="lp.code.xmlrpc.codehosting.CodehostingAPI"
+    permission="zope.Public"
+    />
+
+  <securedutility
+    class="lp.systemhomes.CodeImportSchedulerApplication"
+    provides="lp.code.interfaces.codeimportscheduler.ICodeImportSchedulerApplication">
+    <allow interface="lp.code.interfaces.codeimportscheduler.ICodeImportSchedulerApplication"/>
+  </securedutility>
+
+  <xmlrpc:view
+    for="lp.code.interfaces.codeimportscheduler.ICodeImportSchedulerApplication"
+    interface="lp.code.interfaces.codeimportscheduler.ICodeImportScheduler"
+    class="lp.code.xmlrpc.codeimportscheduler.CodeImportSchedulerAPI"
+    permission="zope.Public"
+    />
+
+  <securedutility
+    class="lp.systemhomes.PrivateMaloneApplication"
+    provides="lp.bugs.interfaces.malone.IPrivateMaloneApplication">
+    <allow interface="lp.bugs.interfaces.malone.IPrivateMaloneApplication"/>
+  </securedutility>
+
+  <xmlrpc:view
+    for="lp.bugs.interfaces.malone.IPrivateMaloneApplication"
+    interface="lp.bugs.interfaces.externalbugtracker.IExternalBugTrackerTokenAPI"
+    class="lp.bugs.xmlrpc.bug.ExternalBugTrackerTokenAPI"
+    permission="zope.Public"
+    />
+
+  <class class="lp.xmlrpc.faults.BranchAlreadyRegistered">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.FileBugGotProductAndDistro">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class
+      class="lp.xmlrpc.faults.FileBugMissingProductOrDistribution"
+      >
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.NoSuchDistribution">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.NoSuchPackage">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.NoSuchProduct">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.NoSuchPerson">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.NoSuchPersonWithName">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.NoSuchBranch">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.NoSuchBug">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.RequiredParameterMissing">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.BranchCreationForbidden">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.InvalidBranchUrl">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.BranchUniqueNameConflict">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.NoSuchTeamMailingList">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.UnexpectedStatusReport">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.BadStatus">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.NoLinkedBranch">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.NoSuchProductSeries">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.InvalidBranchIdentifier">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.BranchNameInUse">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.CannotHaveLinkedBranch">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.InvalidProductName">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.NotInTeam">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.InvalidBranchName">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.NoBranchWithID">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.NoUrlForBranch">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.PathTranslationError">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.InvalidPath">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.PermissionDenied">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.NotFound">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.InvalidBranchUniqueName">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.NoSuchDistroSeries">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.NoSuchSourcePackageName">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+
+  <class class="lp.xmlrpc.faults.AccountSuspended">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+  <class class="lp.xmlrpc.faults.TeamEmailAddress">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+  <class class="lp.xmlrpc.faults.InvalidSourcePackageName">
+    <require like_class="xmlrpclib.Fault" />
+  </class>
+</configure>

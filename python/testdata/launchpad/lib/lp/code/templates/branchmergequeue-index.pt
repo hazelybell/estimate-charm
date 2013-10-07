@@ -1,0 +1,39 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+>
+
+<metal:side fill-slot="side">
+  <div tal:replace="structure context/@@+global-actions" />
+</metal:side>
+
+<tal:registering metal:fill-slot="registering">
+  Created by
+    <tal:registrant replace="structure context/registrant/fmt:link" />
+  on
+    <tal:created-on replace="structure context/date_created/fmt:date" />
+</tal:registering>
+
+<div metal:fill-slot="main">
+  <dl>
+    <dt>
+      Description
+    </dt>
+    <dd tal:content="context/description"></dd>
+  </dl>
+  <div tal:condition="context/branches">
+    The following branches are managed by this queue:
+    <ul>
+      <tal:branches repeat="branch context/branches">
+      <li>
+        <a tal:content="structure branch/fmt:link" />
+      </li>
+      </tal:branches>
+    </ul>
+  </div>
+</div>
+</html>

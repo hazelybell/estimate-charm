@@ -1,0 +1,66 @@
+StrippedTextLine field
+======================
+
+The StrippedTextLine field strips the leading and trailing text from the
+set value.
+
+    >>> from lp.services.fields import StrippedTextLine
+
+    >>> non_required_field = StrippedTextLine(
+    ...     __name__='field', title=u'Title',  required=False)
+
+    >>> class Thing:
+    ...     def __init__(self, field):
+    ...         self.field = field
+    >>> thing = Thing('abc')
+
+    >>> non_required_field.set(thing, '   egf   ')
+    >>> non_required_field.get(thing)
+    'egf'
+
+None is an accepted field value.
+
+    >>> non_required_field.set(thing, None)
+    >>> print non_required_field.get(thing)
+    None
+
+
+StrippedTextLine Widget
+-----------------------
+
+This custom widget is used to strip leading and trailing whitespaces.
+
+  >>> from lp.services.webapp.servers import LaunchpadTestRequest
+  >>> from lp.app.widgets.textwidgets import StrippedTextWidget
+  >>> from lp.bugs.interfaces.bugtracker import IRemoteBug
+
+We pass a string with leading and trailing whitespaces to the widget
+
+  >>> field = IRemoteBug['remotebug']
+  >>> request = LaunchpadTestRequest(
+  ...     form={'field.remotebug':'    123456    '})
+  >>> widget = StrippedTextWidget(field, request)
+
+And check that the leading and trailing whitespaces were correctly stripped.
+
+  >>> widget.getInputValue()
+  u'123456'
+
+If only whitespace is provided, the widget acts like no input was
+provided.
+
+  >>> non_required_field.missing_value is None
+  True
+  >>> request = LaunchpadTestRequest(form={'field.field':'    \n    '})
+  >>> widget = StrippedTextWidget(non_required_field, request)
+  >>> widget.getInputValue() is None
+  True
+
+  >>> required_field = StrippedTextLine(
+  ...     __name__='field', title=u'Title',  required=True)
+  >>> request = LaunchpadTestRequest(form={'field.field':'    \n    '})
+  >>> widget = StrippedTextWidget(required_field, request)
+  >>> widget.getInputValue()
+  Traceback (most recent call last):
+  ...
+  WidgetInputError: ('field', u'Title', RequiredMissing('field'))

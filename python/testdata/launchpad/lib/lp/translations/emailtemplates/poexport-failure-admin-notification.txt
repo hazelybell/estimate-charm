@@ -1,0 +1,16 @@
+Hello Launchpad administrators,
+
+Launchpad encountered problems exporting translation files
+requested by %(person)s (%(person_id)s) at
+
+  %(request_url)s
+
+This means we have a bug in Launchpad that needs to be fixed
+before this export can proceed.  Here is the error we got:
+
+%(failure_message)s
+
+%(failed_requests)s
+
+-- 
+Automatic message from Launchpad.net.

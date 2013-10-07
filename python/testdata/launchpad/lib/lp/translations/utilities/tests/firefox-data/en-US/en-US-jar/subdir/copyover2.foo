@@ -1,0 +1,7 @@
+This is another file which should be blindly copied without any
+changes in the content, no matter how much one tries.
+
+And for some binary checks, lets add some UTF-8 encoded data.  For
+example, name of "Carlos Perelló Marín" would be written as "Карлос
+Перељо Марин" in Serbian (which is phonetic, and is read exactly the
+same minus accents).

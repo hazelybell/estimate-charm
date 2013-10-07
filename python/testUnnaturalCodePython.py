@@ -16,14 +16,23 @@
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
 
 import unittest
-from unnaturalCode import *
+
 from ucUtil import *
+from unnaturalCode import *
+from sourceModel import *
 from pythonLexical import *
 from mitlmCorpus import *
 
 import os, os.path, zmq, sys, shutil
 from tempfile import *
+
 from ucTestData import *
+
+ucGlobal = None
+
+def setUpModule():
+    global ucGlobal
+    ucGlobal = unnaturalCode()
 
 class testUcUtil(unittest.TestCase):
     def testToBool(self):
@@ -36,15 +45,25 @@ class testUcUtil(unittest.TestCase):
 class testUnnaturalCode(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        self.uc = unnaturalCode()
+        #self.uc = unnaturalCode()
+        pass
+    def testSingleton(self):
+        ucA = unnaturalCode()
+        ucB = unnaturalCode()
+        self.assertEquals(ucA, ucB)
     def testEnvBools(self):
-        self.assertEquals(type(self.uc.forceTrain), bool)
-        self.assertEquals(type(self.uc.forceValidate), bool)
+        self.assertEquals(type(ucGlobal.forceTrain), bool)
+        self.assertEquals(type(ucGlobal.forceValidate), bool)
+    def testLoggingEnv(self):
+        dir=os.path.dirname(ucGlobal.logFilePath)
+        self.assertTrue(os.access(dir, os.X_OK & os.R_OK & os.W_OK))
+        self.assertTrue(os.path.isdir(dir))
     def testZctx(self):
-        self.assertEquals(type(self.uc.zctx), zmq.core.context.Context)
+        self.assertEquals(type(ucGlobal.zctx), zmq.core.context.Context)
     @classmethod
     def tearDownClass(self):
-        del self.uc
+        #del self.uc
+        pass
 
 class testMitlmCorpus(unittest.TestCase):
     def testEnvMitlm(self):
@@ -56,9 +75,6 @@ class testMitlmCorpus(unittest.TestCase):
         self.assertTrue(os.access(dir, os.X_OK & os.R_OK & os.W_OK))
         self.assertTrue(os.path.isdir(dir))
         dir=os.path.dirname(cm.writeCorpus)
-        self.assertTrue(os.access(dir, os.X_OK & os.R_OK & os.W_OK))
-        self.assertTrue(os.path.isdir(dir))
-        dir=os.path.dirname(cm.logFilePath)
         self.assertTrue(os.access(dir, os.X_OK & os.R_OK & os.W_OK))
         self.assertTrue(os.path.isdir(dir))
     def testCorpify(self):
@@ -99,7 +115,7 @@ class testPythonLexical(unittest.TestCase):
     def tearDownClass(self):
         del self.lm
             
-class testMitlmCorpusWithFiles(unittest.TestCase):
+class testSourceModelWithFiles(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.td = mkdtemp(prefix='ucUnitTest-')
@@ -107,7 +123,10 @@ class testMitlmCorpusWithFiles(unittest.TestCase):
         assert os.path.isdir(self.td)
         readCorpus = os.path.join(self.td, 'ucCorpus') 
         logFilePath = os.path.join(self.td, 'ucLogFile')
-        self.cm = mitlmCorpus(readCorpus=readCorpus, writeCorpus=readCorpus, logFilePath=logFilePath)
+        self.uc = unnaturalCode(logFilePath=logFilePath)
+        self.cm = mitlmCorpus(readCorpus=readCorpus, writeCorpus=readCorpus, uc=ucGlobal)
+        self.lm = pythonLexical()
+        self.sm = sourceModel(cm=self.cm, lm=self.lm)
     def testEnvCorpus(self):
         dir=os.path.dirname(self.cm.readCorpus)
         self.assertTrue(os.access(dir, os.X_OK & os.R_OK & os.W_OK))
@@ -117,7 +136,7 @@ class testMitlmCorpusWithFiles(unittest.TestCase):
         self.assertTrue(os.access(dir, os.X_OK & os.R_OK & os.W_OK))
         self.assertTrue(os.path.isdir(dir))
     def testEnvLog(self):
-        dir=os.path.dirname(self.cm.logFilePath)
+        dir=os.path.dirname(self.uc.logFilePath)
         self.assertTrue(os.access(dir, os.X_OK & os.R_OK & os.W_OK))
         self.assertTrue(os.path.isdir(dir))
     def testEnvSocket(self):
@@ -126,8 +145,16 @@ class testMitlmCorpusWithFiles(unittest.TestCase):
         self.assertTrue(os.path.isdir(dir))
     def testEnvMitlm(self):
         self.assertTrue(os.access(self.cm.estimateNgramPath, os.X_OK & os.R_OK))
+    def testTrainString(self):
+        self.sm.trainString(lotsOfPythonCode)
+        self.sm.trainString(somePythonCode)
     @classmethod
     def tearDownClass(self):
         shutil.rmtree(self.td)
 
-#hamburgers
+
+def tearDownModule():
+    global ucGlobal
+    del ucGlobal
+    
+# rwfubmqqoiigevcdefhmidzavjwg

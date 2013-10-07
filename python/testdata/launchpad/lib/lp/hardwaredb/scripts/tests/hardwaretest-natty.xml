@@ -1,0 +1,473 @@
+<?xml version="1.0" ?>
+<system version="1.0">
+
+  <!-- Reports coming from the checkbox version in Natty do not
+       have the tags <udev> and <dmi> inside <hardware>. Instead,
+       they store the data expected in these tags in the tags
+
+       <info command="udevadm info - -export-db"> and
+       <info command="grep -r . /sys/class/dmi/id/ 2&gt;/dev/null">
+
+       inside <
+  -->
+  <!-- summary: generic information about the submission -->
+  <summary>
+
+    <!-- live_cd: Was this submission made on a system running an Ubuntu Live
+             CD or on a regular Ubuntu/Linux installation?
+    -->
+    <live_cd value="False"/>
+
+    <!-- system_id: A hash of the "system identifier". This value is intended
+             to identify the tested computer model; the value should
+             be derived from the properties
+             system.product, system.vendor of the HAL UDI
+             /org/freedesktop/Hal/devices/computer.
+    -->
+    <system_id value="f982bb1ab536469cebfd6eaadcea0ffc"/>
+
+    <!-- distribution, distroseries: These values are retrieved from
+             /etc/lsb-release, parameters DISTRIB_ID and DISTRIB_RELEASE.
+    -->
+    <distribution value="Ubuntu"/>
+    <distroseries value="7.04"/>
+
+    <!-- architecture: The processor architecture of the operating system.
+    -->
+    <architecture value="amd64"/>
+
+    <!-- private: If False, this submission is publicly accessible from
+             Launchpad, else it is only accesible by the submitter, by
+             Launchpad administrators and by scripts running with
+             administrator rights. Submissions marked "private" should
+             only be used to gather statistical data.
+    -->
+    <private value="False"/>
+
+    <!-- contactable: If True, the owner agrees to be contacted by other
+             persons about devices which appear in his submission.
+             Example of a use case: Developers can ask device owners
+             to perform tests.
+    -->
+    <contactable value="False"/>
+
+    <!-- date_created: Date and time (UTC) of the submission.
+    -->
+    <date_created value="2007-09-28T16:09:20.126842"/>
+
+    <!-- client: The name and version of the program that created the
+             submission data.
+    -->
+    <client name="hwtest" version="0.9">
+
+      <!-- plugin: name and version of a plugin used by the client.
+               This tag may appear more than once.
+      -->
+      <plugin name="architecture_info" version="1.1"/>
+      <plugin name="find_network_controllers" version="2.34"/>
+      <plugin name="internet_ping" version="1.1"/>
+      <plugin name="harddisk_speed" version="0.7"/>
+    </client>
+
+    <!-- The kernel name and version, as shown by "uname -r"
+    -->
+    <kernel-release value="2.6.28-14-generic"/>
+  </summary>
+
+  <!-- hardware: data about the hardware the submission was made on.
+  -->
+  <hardware>
+
+    <!-- udev: The output of running "udevadm info - -export-db" -->
+
+
+    <!-- Additional data for SCSI devices: vendor, model, type
+
+         For each udev node which has DEVTYPE=scsi_device, we need
+         the content of the sysfs files vendor, model, type. The data
+         is stored in the same format as the DMI data:
+         /path/to/file:filecontent
+    -->
+    <sysfs-attributes>
+P: /devices/LNXSYSTM:00/LNXPWRBN:00/input/input0
+A: modalias=input:b0019v0000p0001e0000-e0,1,k74,ramlsfw
+A: uniq=
+A: phys=LNXPWRBN/button/input0
+A: name=Power Button
+
+P: /devices/LNXSYSTM:00/device:00/PNP0A08:00/device:03/input/input8
+A: modalias=input:b0019v0000p0006e0000-e0,1,kE0,E1,E3,F0,F1,F2,F3,F4,F5,ramlsfw
+A: uniq=
+A: phys=/video/input0
+A: name=Video Bus
+</sysfs-attributes>
+
+    <!-- processors: Data about processors installed in a system.
+             The data is retrieved from /proc/cpuinfo.
+    -->
+    <processors>
+
+      <!-- processor: Data from /proc/cpuinfo about a single processor.
+      -->
+      <processor id="123" name="0">
+
+        <!-- property: The data of one line of /proc/cpuinfo.
+                 attribute name: The name of the property
+                     (the text left of the ':' in a line of /proc/cpuinfo)
+                 attribute type: A Python type appropriate for the value.
+        -->
+        <property name="wp" type="bool">
+                True
+        </property>
+        <property name="flags" type="list">
+          <value type="str">
+                  fpu
+          </value>
+          <value type="str">
+                  vme
+          </value>
+          <value type="str">
+                  de
+          </value>
+        </property>
+        <property name="cpu_mhz" type="float">
+                1000.0
+        </property>
+      </processor>
+    </processors>
+
+      <!-- aliases: optional data provided by the user:
+               The name of a peripheral, PCI card etc as shown by a label on
+               the device. OEM devices are often sold under different names
+               by different vendors; having a set of alias names for a device
+               allows users of the HWDB to search for information by these
+               "marketing names".
+      -->
+    <aliases>
+      <!-- alias: The "label name" of a device or system.
+               attribute target: The sysfs path of a device as given
+               in <udev>.
+      -->
+      <alias target="/devices/pci0000:00/0000:00:1f.1/host3/target3:0:0/3:0:0:0">
+
+        <!-- vendor: The vendor name shown on the device label.
+        -->
+        <vendor>Medion</vendor>
+
+        <!-- model: The model name of shown on the label.
+        -->
+        <model>QuickPrint 9876</model>
+      </alias>
+    </aliases>
+  </hardware>
+
+  <!-- software: Data about the software installed on the system.
+  -->
+  <software>
+
+    <!-- lsbrelease: The data from /etc/lsb-release.
+    -->
+    <lsbrelease>
+
+      <!-- property: the data from one line of /etc/lsb-release.
+               attribute type: A Python type appropriate for this
+                   property (str).
+      -->
+      <property name="release" type="str">
+              7.04
+      </property>
+      <property name="codename" type="str">
+              feisty
+      </property>
+      <property name="distributor-id" type="str">
+              Ubuntu
+      </property>
+      <property name="description" type="str">
+              Ubuntu 7.04
+      </property>
+      <property name="dict_example" type="dict">
+          <value name="a" type="str">value for key a</value>
+          <value name="b" type="int">1234</value>
+      </property>
+    </lsbrelease>
+
+    <!-- packages: Data about the installed software packages.
+    -->
+    <packages>
+
+      <!-- package: Data about a single package.
+               The <property> sub-tags contain the DEB properties
+               "name", "priority", "section", "source", "version",
+               "installed_size", "size", "summary".
+
+               XXX Abel Deuring 2007-12-12: What about submissions
+               from RPM-based Linux versions? (And "exotic" variants
+               like Gentoo?)
+      -->
+      <package name="metacity" id="200">
+        <property name="installed_size" type="int">
+                868352
+        </property>
+        <property name="section" type="str">
+                x11
+        </property>
+        <property name="summary" type="str">
+                A lightweight GTK2 based Window Manager
+        </property>
+        <property name="priority" type="str">
+                optional
+        </property>
+        <property name="source" type="str">
+                metacity
+        </property>
+        <property name="version" type="str">
+                1:2.18.2-0ubuntu1.1
+        </property>
+        <property name="size" type="int">
+                429128
+        </property>
+      </package>
+    </packages>
+    <!-- Information extracted from Xorg.0.log.
+         HAL does not provide any information about Xorg drivers, so
+         we retrieve that from the xserver's log file.
+    -->
+    <xorg version="1.3.0">
+      <!-- driver: Data about a driver.
+               (optional)
+               attribute name: The name of the driver.
+               attribute version: The version of the driver.
+               attribute class: The module class of the driver
+               attribute device: The ID of a device driven by this driver.
+      -->
+      <driver name="fglrx" version="1.23" class="X.Org Video Driver"
+              device="12"/>
+    </xorg>
+  </software>
+
+  <!-- questions: User's answers to questions asked by the client.
+  -->
+  <questions>
+
+    <!-- question: Data of a question.
+             attribute name: The unique name of the question.
+             attribute plugin: The name of the plugin which asked
+                 the question.
+             attribute version: The version of the question.
+             attribute type: Allowed values are "manual" and "automatic".
+                 A "manual" question requires user input for the answer;
+                 an "automatic" question gets the answer automatically.
+    -->
+    <question name="detected_network_controllers"
+              plugin="find_network_controllers">
+
+      <!-- target: Information about a device or software package the
+           question is about. The attribute "id" is the sysfs path of
+           a device as given in <udev>, or the ID of a software package
+           node.
+           This node may appear multiple times.
+       -->
+      <target id="/devices/pci0000:00/0000:00:1a.0/usb3/3-0:1.0/usb_endpoint/usbdev3.1_ep81">
+        <!-- driver: The driver which controls the target device. This tag
+                 may appear more than once.
+
+                 While we are working on a project called "Hardware Database",
+                 we are not that much interested in the question, if a device
+                 works "as such", but if their Linux driver(s) work.
+
+                 It is not in every case possible to identify the used driver
+                 from HAL data, so we need another way to add this information.
+                 (example: HAL does not know, which driver is used for the
+                 graphics card.)
+
+                 Example for multiple drivers: Some scanners have a SCSI _and_
+                 a USB interface; if such a scanner is tested, we not only want
+                 to know, which Sane backend is used, but also, which interface
+                 is used.
+
+                 Also, it might be interesting to know for many USB 2.0 devices,
+                 if a USB 1 (uhci_hcd or ohci_hcd driver) or the USB 2 driver
+                 (ehci_hcd) was used. A USB 1 driver might for example explain
+                 latency problems.
+        -->
+        <driver>ipw3945</driver>
+      </target>
+
+      <!-- ID of the 88E8055 PCI-E Gigabit Ethernet Controller -->
+      <target id="/devices/pci0000:00/0000:00:1f.1"/>
+
+      <!-- command: The command line of an external command required to
+               ask this question.
+      -->
+      <command/>
+
+      <!-- answer: The answer to the question. Two types of answers are
+               defined, "multiple_choice" and "measurement". (See below
+               for an example of the latter.)
+               attribute type: Must be "multiple_choice" or "measurement".
+      -->
+      <answer type="multiple_choice">pass</answer>
+
+      <!-- answer_choices: The list of possible choices.
+               The data should only be used for consistency
+               checks and to detect variants of the question.
+      -->
+      <answer_choices>
+        <value type="str">fail</value>
+        <value type="str">pass</value>
+        <value type="str">skip</value>
+      </answer_choices>
+
+      <!-- A user comment about the device or about the test.
+      -->
+      <comment>
+        The WLAN adapter drops the connection very frequently.
+      </comment>
+    </question>
+
+    <question name="internet_ping"
+              plugin="internet_ping">
+      <target id="/devices/pci0000:00/0000:00:1f.1"/>
+      <command/>
+      <answer type="multiple_choice">pass</answer>
+      <answer_choices>
+          <value type="str">fail</value>
+          <value type="str">pass</value>
+          <value type="str">skip</value>
+      </answer_choices>
+    </question>
+
+    <!-- example for a "measurement question"
+    -->
+    <question name="harddisk_speed"
+              plugin="harddisk_speed">
+      <target id="/devices/pci0000:00/0000:00:1f.1/host3/target3:0:0/3:0:0:0"/>
+      <command>hdparm -t /dev/sda</command>
+      <!-- answer: The answer to a "measurement question".
+               attribute type: See above.
+               attribute unit: The unit of the result of the measurement.
+                   XXX Abel Deuring 2007-12-12 bug=175978 We should
+                   enumerate a list of allowed units, in order to avoid
+                   multiple units for the same dimension. e.g., B/sec,
+                   MB/sec or inch, cm, foot.
+
+                   For dimensionless values, the attribute unit is omitted.
+
+                   "Percentage" and similar "convenience pseudo-units" like
+                   ppm are _not_ allowed; instead a dimensionless
+                   value must be used, where 0 is equivalent 0% and 1.0 is
+                   equivalent to 100%.
+      -->
+      <answer type="measurement" unit="MB/sec">38.4</answer>
+    </question>
+  </questions>
+  <!-- miscellaneous additional text data.
+  -->
+  <context>
+    <info command="udevadm info --export-db">P: /devices/LNXSYSTM:00
+E: UDEV_LOG=3
+E: DEVPATH=/devices/LNXSYSTM:00
+E: MODALIAS=acpi:LNXSYSTM:
+
+P: /devices/pci0000:00/0000:00:1a.0
+E: UDEV_LOG=3
+E: DEVPATH=/devices/pci0000:00/0000:00:1a.0
+E: DRIVER=uhci_hcd
+E: PCI_CLASS=C0300
+E: PCI_ID=8086:2834
+E: PCI_SUBSYS_ID=17AA:20AA
+E: PCI_SLOT_NAME=0000:00:1a.0
+E: MODALIAS=pci:v00008086d00002834sv000017AAsd000020AAbc0Csc03i00
+
+P: /devices/pci0000:00/0000:00:1a.0/usb3
+N: bus/usb/003/001
+S: char/189:256
+E: UDEV_LOG=3
+E: DEVPATH=/devices/pci0000:00/0000:00:1a.0/usb3
+E: MAJOR=189
+E: MINOR=256
+E: DEVTYPE=usb_device
+E: DRIVER=usb
+E: DEVICE=/proc/bus/usb/003/001
+E: PRODUCT=1d6b/1/206
+E: TYPE=9/0/0
+E: BUSNUM=003
+E: DEVNUM=001
+E: DEVNAME=/dev/bus/usb/003/001
+E: DEVLINKS=/dev/char/189:256
+
+P: /devices/pci0000:00/0000:00:1a.0/usb3/3-0:1.0
+E: UDEV_LOG=3
+E: DEVPATH=/devices/pci0000:00/0000:00:1a.0/usb3/3-0:1.0
+E: DEVTYPE=usb_interface
+E: DRIVER=hub
+E: DEVICE=/proc/bus/usb/003/001
+E: PRODUCT=1d6b/1/206
+E: TYPE=9/0/0
+E: INTERFACE=9/0/0
+E: MODALIAS=usb:v1D6Bp0001d0206dc09dsc00dp00ic09isc00ip00
+
+P: /devices/pci0000:00/0000:00:1a.0/usb3/3-0:1.0/usb_endpoint/usbdev3.1_ep81
+N: usbdev3.1_ep81
+S: char/252:4
+E: UDEV_LOG=3
+E: DEVPATH=/devices/pci0000:00/0000:00:1a.0/usb3/3-0:1.0/usb_endpoint/usbdev3.1_ep81
+E: MAJOR=252
+E: MINOR=4
+E: DEVNAME=/dev/usbdev3.1_ep81
+E: DEVLINKS=/dev/char/252:4
+
+P: /devices/pci0000:00/0000:00:1f.1
+E: UDEV_LOG=3
+E: DEVPATH=/devices/pci0000:00/0000:00:1f.1
+E: DRIVER=ata_piix
+E: PCI_CLASS=1018A
+E: PCI_ID=8086:2850
+E: PCI_SUBSYS_ID=17AA:20A6
+E: PCI_SLOT_NAME=0000:00:1f.1
+E: MODALIAS=pci:v00008086d00002850sv000017AAsd000020A6bc01sc01i8a
+
+P: /devices/pci0000:00/0000:00:1f.1/host3
+E: UDEV_LOG=3
+E: DEVPATH=/devices/pci0000:00/0000:00:1f.1/host3
+E: DEVTYPE=scsi_host
+
+P: /devices/pci0000:00/0000:00:1f.1/host3/scsi_host/host3
+E: UDEV_LOG=3
+E: DEVPATH=/devices/pci0000:00/0000:00:1f.1/host3/scsi_host/host3
+
+P: /devices/pci0000:00/0000:00:1f.1/host3/target3:0:0
+E: UDEV_LOG=3
+E: DEVPATH=/devices/pci0000:00/0000:00:1f.1/host3/target3:0:0
+E: DEVTYPE=scsi_target
+
+P: /devices/pci0000:00/0000:00:1f.1/host3/target3:0:0/3:0:0:0
+E: UDEV_LOG=3
+E: DEVPATH=/devices/pci0000:00/0000:00:1f.1/host3/target3:0:0/3:0:0:0
+E: DEVTYPE=scsi_device
+E: DRIVER=sr
+E: MODALIAS=scsi:t-0x05
+</info>
+
+    <!-- The content of publicly accessible files in /sys/class/dmi/id/
+         format: filename:content
+         as for example generated by "grep -r . /sys/class/dmi/id/"
+    -->
+
+    <info command="grep -r . /sys/class/dmi/id/ 2&gt;/dev/null">/sys/class/dmi/id/bios_vendor:LENOVO
+/sys/class/dmi/id/bios_version:7LETB9WW (2.19 )
+/sys/class/dmi/id/bios_date:06/06/2008
+/sys/class/dmi/id/sys_vendor:LENOVO
+/sys/class/dmi/id/product_name:6457BAG
+/sys/class/dmi/id/product_version:ThinkPad T61
+/sys/class/dmi/id/board_vendor:LENOVO
+/sys/class/dmi/id/board_name:6457BAG
+/sys/class/dmi/id/board_version:Not Available
+/sys/class/dmi/id/chassis_vendor:LENOVO
+/sys/class/dmi/id/chassis_type:10
+/sys/class/dmi/id/chassis_version:Not Available
+/sys/class/dmi/id/chassis_asset_tag:No Asset Information
+/sys/class/dmi/id/modalias:dmi:bvnLENOVO:bvr7LETB9WW(2.19)
+</info>
+  </context>
+</system>

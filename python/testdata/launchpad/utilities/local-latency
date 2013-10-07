@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+
+__metaclass__ = type
+
+import subprocess
+import sys
+
+from script_commands import (
+    helps,
+    run_subcommand,
+    UserError,
+    )
+
+
+def tc(command):
+    """Run a tc command under sudo.
+
+    :param tc: The remainder of the command (leaving out tc).
+    """
+    subprocess.call('sudo tc ' + command, shell=True)
+
+
+@helps(delay='Length of delay in miliseconds (each way).',
+       port='Port to induce delay on.')
+def start(delay=500, port=443):
+    """Add artificial latency to the lo interface on the specified port."""
+    tc('qdisc add dev lo root handle 1: prio')
+    tc('qdisc add dev lo parent 1:3 handle 30: netem delay %dms' % delay)
+    tc('filter add dev lo protocol ip parent 1:0 prio 3 u32 match ip'
+       ' dport %d 0xffff flowid 1:3' % port)
+    tc('filter add dev lo protocol ip parent 1:0 prio 3 u32 match ip'
+       ' sport %d 0xffff flowid 1:3' % port)
+
+
+def stop():
+    """Remove latency from the lo."""
+    tc('qdisc del dev lo root')
+
+
+subcommands = {
+    'start': start,
+    'stop': stop,
+    }
+
+
+
+if __name__ == "__main__":
+    try:
+        run_subcommand(subcommands, sys.argv[1:])
+    except UserError as e:
+        sys.stderr.write(str(e)+'\n')

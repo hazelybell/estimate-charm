@@ -1,0 +1,21 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  class="portlet" id="portlet-release-critical-bugs"
+  tal:define="series_buglistings view/series_buglistings"
+  tal:condition="series_buglistings">
+
+  <h2>Series-targeted bugs</h2>
+
+  <ul class="data-list">
+    <li tal:repeat="series_openbugs series_buglistings">
+      <span tal:content="series_openbugs/count"
+            class="count">2</span>
+      <a href=""
+         tal:content="series_openbugs/title"
+         tal:attributes="href series_openbugs/url">sid</a>
+    </li>
+  </ul>
+
+</div>

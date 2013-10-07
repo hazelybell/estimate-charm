@@ -1,0 +1,114 @@
+Received: (at submit) by bugs.debian.org; 2 Apr 2004 17:57:00 +0000
+From micheas@micheas.dyns.net Fri Apr 02 09:57:00 2004
+Return-path: <micheas@micheas.dyns.net>
+Received: from mout.perfora.net [217.160.230.40] 
+	by spohr.debian.org with esmtp (Exim 3.35 1 (Debian))
+	id 1B9Sua-0000Nu-00; Fri, 02 Apr 2004 09:57:00 -0800
+Received: from [217.160.230.50] (helo=smtp.perfora.net)
+	by mout.perfora.net with esmtp (Exim 3.35 #1)
+	id 1B9SuY-00028n-00
+	for submit@bugs.debian.org; Fri, 02 Apr 2004 12:56:58 -0500
+Received: from [64.166.224.219] (helo=sol.A)
+	by smtp.perfora.net with asmtp (Exim 3.35 #1)
+	id 1B9SuY-0002lW-00; Fri, 02 Apr 2004 12:56:58 -0500
+Received: from tux.a ([10.0.0.173] helo=tux)
+	by sol.A with esmtp (Exim 3.36 #1 (Debian))
+	id 1B9SuX-0001m4-00; Fri, 02 Apr 2004 09:56:57 -0800
+Received: from micheas by tux with local (Exim 3.36 #1 (Debian))
+	id 1B9SuX-0001XW-00; Fri, 02 Apr 2004 09:56:57 -0800
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+From: Micheas Herman <micheas@freep.org>
+To: Debian Bug Tracking System <submit@bugs.debian.org>
+Subject: viewing fax tiffs crashes evolution
+X-Mailer: reportbug 2.56
+Date: Fri, 02 Apr 2004 09:56:57 -0800
+Message-Id: <E1B9SuX-0001XW-00@tux>
+Sender: Micheas Herman <micheas@micheas.dyns.net>
+Delivered-To: submit@bugs.debian.org
+X-Spam-Checker-Version: SpamAssassin 2.60-bugs.debian.org_2004_03_25 
+	(1.212-2003-09-23-exp) on spohr.debian.org
+X-Spam-Status: No, hits=-7.0 required=4.0 tests=BAYES_00,HAS_PACKAGE 
+	autolearn=no version=2.60-bugs.debian.org_2004_03_25
+X-Spam-Level: 
+
+Package: evolution
+Version: 1.4.6-2
+Severity: normal
+
+
+Viewing faxes emailed from efax crashes evolution.
+
+It seems to crash when it starts rendering the tiff.
+
+
+
+-- System Information:
+Debian Release: testing/unstable
+  APT prefers unstable
+  APT policy: (500, 'unstable')
+Architecture: i386 (i686)
+Kernel: Linux 2.6.3-1-k7
+Locale: LANG=C, LC_CTYPE=C
+
+Versions of packages evolution depends on:
+ii  gconf2                      2.4.0.1-4    GNOME configuration database syste
+ii  gtkhtml3.0                  3.0.10-1     HTML rendering/editing library - b
+ii  libart-2.0-2                2.3.16-3     Library of functions for 2D graphi
+ii  libasn1-6-heimdal           0.6-8        Libraries for Heimdal Kerberos
+ii  libatk1.0-0                 1.4.1-1      The ATK accessibility toolkit
+ii  libaudiofile0               0.2.6-3      Open-source version of SGI's audio
+ii  libbonobo2-0                2.4.3-1      Bonobo CORBA interfaces library
+ii  libbonoboui2-0              2.4.3-2      The Bonobo UI library
+ii  libc6                       2.3.2.ds1-11 GNU C Library: Shared libraries an
+ii  libcomerr2                  1.35-4       The Common Error Description libra
+ii  libdb3                      3.2.9-19     Berkeley v3 Database Libraries [ru
+ii  libesd0                     0.2.29-1     Enlightened Sound Daemon - Shared 
+ii  libfontconfig1              2.2.2-1      generic font configuration library
+ii  libfreetype6                2.1.7-2      FreeType 2 font engine, shared lib
+ii  libgail-common              1.4.1-1      GNOME Accessibility Implementation
+ii  libgail17                   1.4.1-1      GNOME Accessibility Implementation
+ii  libgal2.0-6                 1.99.11-1    G App Libs (run time library)
+ii  libgal2.0-common            1.99.11-1    G App Libs (common files)
+ii  libgconf2-4                 2.4.0.1-4    GNOME configuration database syste
+ii  libgcrypt1                  1.1.12-4     LGPL Crypto library - runtime libr
+ii  libglade2-0                 2.0.1-11     Library to load .glade files at ru
+ii  libglib2.0-0                2.2.3-1      The GLib library of C routines
+ii  libgnome-pilot2             2.0.10-4     Support libraries for gnome-pilot
+ii  libgnome2-0                 2.4.0-9      The GNOME 2 library - runtime file
+ii  libgnomecanvas2-0           2.4.0-3      A powerful object-oriented display
+ii  libgnomeprint2.2-0          2.4.2-4      The GNOME 2.2 print architecture -
+ii  libgnomeprintui2.2-0        2.4.2-2      The GNOME 2.2 print architecture U
+ii  libgnomeui-0                2.4.0.1-10   The GNOME 2 libraries (User Interf
+ii  libgnomevfs2-0              2.4.1-5      The GNOME virtual file-system libr
+ii  libgnomevfs2-common         2.4.1-5      The GNOME virtual file-system libr
+ii  libgnutls7                  0.8.12-5     GNU TLS library - runtime library
+ii  libgssapi1-heimdal          0.6-8        Libraries for Heimdal Kerberos
+ii  libgtk2.0-0                 2.2.4-3      The GTK+ graphical user interface 
+ii  libgtkhtml3.0-4             3.0.10-1     HTML rendering/editing library - r
+ii  libice6                     4.3.0-7      Inter-Client Exchange library
+ii  libjpeg62                   6b-9         The Independent JPEG Group's JPEG 
+ii  libkrb-1-kerberos4kth       1.2.2-10     Kerberos Libraries for Kerberos4 F
+ii  libkrb5-17-heimdal          0.6-8        Libraries for Heimdal Kerberos
+ii  libldap2                    2.1.26-1     OpenLDAP libraries
+ii  libnspr4                    2:1.6-3      Netscape Portable Runtime Library
+ii  libnss3                     2:1.6-3      Network Security Service Libraries
+ii  liborbit2                   1:2.8.3-2    libraries for ORBit2 - a CORBA ORB
+ii  libpango1.0-0               1.2.5-2.1    Layout and rendering of internatio
+ii  libpisock8                  0.11.8-9     Library for communicating with a P
+ii  libpisync0                  0.11.8-9     Synchronization library for PalmOS
+ii  libpopt0                    1.7-4        lib for parsing cmdline parameters
+ii  libroken16-kerberos4kth     1.2.2-10     Roken Libraries for Kerberos4 From
+ii  libsm6                      4.3.0-7      X Window System Session Management
+ii  libsoup2.0-0                1.99.28-2    an HTTP library implementation in 
+ii  libssl0.9.7                 0.9.7d-1     SSL shared libraries
+ii  libtasn1-0                  0.1.2-1      Manage ASN.1 structures (runtime)
+ii  libx11-6                    4.3.0-7      X Window System protocol client li
+ii  libxml2                     2.6.7-1      GNOME XML library
+ii  scrollkeeper                0.3.14-7     A free electronic cataloging syste
+ii  xlibs                       4.3.0-7      X Window System client libraries m
+ii  zlib1g                      1:1.2.1-5    compression library - runtime
+
+-- no debconf information
+

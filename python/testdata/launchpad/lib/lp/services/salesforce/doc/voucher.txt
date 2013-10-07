@@ -1,0 +1,294 @@
+= Subscription Vouchers =
+
+Subscription vouchers are items sold in the Canonical store.  When
+redeemed against a commercial project in Launchpad they give that
+project the right to use all of the services of Launchpad, just like
+open source projects.
+
+For testing purposes we use a custom XML-RPC transport which
+implements a mock proxy in the transport and avoids network traffic.
+
+    >>> from lp.services.salesforce.tests.proxy import (
+    ...     SalesforceXMLRPCTestTransport)
+    >>> import xmlrpclib
+    >>> test_transport = SalesforceXMLRPCTestTransport()
+    >>> server = xmlrpclib.ServerProxy("http://example.com",
+    ...                                transport=test_transport)
+
+Let's create a convenience function for displaying our voucher lists,
+which are just dictionaries in the transport.
+
+    >>> def print_vouchers(vouchers):
+    ...     for voucher in vouchers:
+    ...         print "%s,%s" % (voucher['voucher_id'], voucher['status'])
+
+
+== Test the XMLRPC transport ==
+
+All of the sample voucher data in the transport can be shown.
+
+    >>> for voucher in test_transport.vouchers:
+    ...     print voucher
+    LPCBS12-f78df324-0cc2-11dd-8b6b-000000000001,Reserved
+    LPCBS12-f78df324-0cc2-11dd-8b6b-000000000002,Reserved
+    LPCBS12-f78df324-0cc2-11dd-8b6b-000000000003,Reserved
+    LPCBS12-f78df324-0cc2-11dd-8b6b-000000000004,Reserved
+    LPCBS12-f78df324-0cc2-11dd-8b6b-000000000005,Reserved
+    LPCBS12-f78df324-0cc2-11dd-8b6b-bac000000001,Reserved
+    LPCBS12-f78df324-0cc2-11dd-8b6b-bac000000002,Reserved
+    LPCBS12-f78df324-0cc2-11dd-8b6b-bac000000003,Reserved
+    LPCBS12-f78df324-0cc2-11dd-8b6b-bac000000004,Reserved
+    LPCBS12-f78df324-0cc2-11dd-8b6b-bac000000005,Reserved
+    LPCBS12-f78df324-0cc2-11dd-8b6b-com000000001,Reserved
+    LPCBS12-f78df324-0cc2-11dd-8b6b-com000000002,Reserved
+    LPCBS12-f78df324-0cc2-11dd-8b6b-com000000003,Reserved
+    LPCBS12-f78df324-0cc2-11dd-8b6b-com000000004,Reserved
+    LPCBS12-f78df324-0cc2-11dd-8b6b-com000000005,Reserved
+
+We can retrieve all unredeemed vouchers for a person.
+
+    >>> from lp.registry.interfaces.person import (
+    ...     IPersonSet)
+    >>> from lp.registry.interfaces.product import (
+    ...     IProductSet)
+    >>> from zope.security.proxy import removeSecurityProxy
+    >>> mark = getUtility(IPersonSet).getByName('mark')
+    >>> mark_identifier = removeSecurityProxy(
+    ...     mark.account).openid_identifiers.any().identifier
+
+    >>> vouchers = server.getUnredeemedVouchers(mark_identifier)
+    >>> print_vouchers(vouchers)
+    LPCBS12-f78df324-0cc2-11dd-8b6b-000000000001,Reserved
+    LPCBS12-f78df324-0cc2-11dd-8b6b-000000000002,Reserved
+    LPCBS12-f78df324-0cc2-11dd-8b6b-000000000003,Reserved
+
+A single voucher can be retrieved using the `getVoucher` method.
+Unlike the other retrieval methods this one does the lookup based on
+the voucher id, not the owner's id.
+
+    >>> voucher = server.getVoucher(
+    ...     'LPCBS12-f78df324-0cc2-11dd-8b6b-000000000001')
+    >>> print_vouchers([voucher])
+    LPCBS12-f78df324-0cc2-11dd-8b6b-000000000001,Reserved
+
+Attempting to retrieve a non-existent voucher raises a `NotFound` fault.
+
+    >>> voucher = server.getVoucher('LPCBS12-nonexistent')
+    Traceback (most recent call last):
+      ...
+    Fault: <Fault NotFound: 'The voucher LPCBS12-nonexistent was not found.'>
+
+A single voucher can be redeemed, but must be associated with a project.
+
+    >>> firefox = getUtility(IProductSet).getByName('firefox')
+    >>> voucher = vouchers[0]['voucher_id']
+    >>> result = server.redeemVoucher(
+    ...     voucher, mark_identifier,
+    ...     firefox.id, firefox.displayname)
+    >>> print result
+    True
+    >>> vouchers = server.getUnredeemedVouchers(mark_identifier)
+    >>> print_vouchers(vouchers)
+    LPCBS12-f78df324-0cc2-11dd-8b6b-000000000002,Reserved
+    LPCBS12-f78df324-0cc2-11dd-8b6b-000000000003,Reserved
+
+The test transport can be forced to return a fault for testing.  The
+class attribute `forced_fault` can be set to a tuple of (method name,
+fault, message).  Once set, any call to the specified method will
+return the given fault.
+
+    >>> SalesforceXMLRPCTestTransport.forced_fault = (
+    ...     'getServerStatus', 'DeadServer', "He's dead, Jim.")
+    >>> status = server.getServerStatus()
+    Traceback (most recent call last):
+      ...
+    Fault: <Fault DeadServer: "He's dead, Jim.">
+
+The forced fault is set or `redeeemVoucher` and to return a `NotFound`
+fault.
+
+    >>> SalesforceXMLRPCTestTransport.forced_fault = (
+    ...     'redeemVoucher', 'NotFound','Something was not found.')
+    >>> voucher = vouchers[0]['voucher_id']
+    >>> result = server.redeemVoucher(
+    ...     voucher, mark_identifier,
+    ...     firefox.id, firefox.displayname)
+    Traceback (most recent call last):
+      ...
+    Fault: <Fault NotFound: 'Something was not found.'>
+
+Calls to other methods work as usual.
+
+    >>> status = server.getServerStatus()
+    >>> print status
+    Server is running normally
+
+Reset the class variable to disable forced faults.
+
+    >>> SalesforceXMLRPCTestTransport.forced_fault = None
+
+
+== Test the wrapper ==
+
+The interface `ISalesforceVoucherProxy` defines the interaction with
+the Salesforce proxy.
+
+    >>> from lp.services.salesforce.interfaces import (
+    ...     ISalesforceVoucher, ISalesforceVoucherProxy)
+    >>> from lp.testing import verifyObject
+    >>> voucher_proxy = getUtility(ISalesforceVoucherProxy)
+    >>> verifyObject(ISalesforceVoucherProxy, voucher_proxy)
+    True
+
+The status of the proxy server can be checked.
+
+    >>> status = voucher_proxy.getServerStatus()
+    >>> print status
+    Server is running normally
+
+All of the unredeemed vouchers for a Launchpad user can be retrieved.
+
+If the user has no matching vouchers an empty list is returned.
+
+    >>> foobar = getUtility(IPersonSet).getByName('name16')
+    >>> vouchers = voucher_proxy.getUnredeemedVouchers(foobar)
+    >>> len(vouchers)
+    0
+
+Similarly the call to get all of a user's vouchers returns the empty
+list when she has none.
+
+    >>> vouchers = voucher_proxy.getAllVouchers(foobar)
+    >>> len(vouchers)
+    0
+
+Get a single voucher by id.
+
+    >>> voucher = voucher_proxy.getVoucher(
+    ...     'LPCBS12-f78df324-0cc2-11dd-8b6b-000000000003')
+    >>> print voucher
+    LPCBS12-f78df324-0cc2-11dd-8b6b-000000000003,Reserved,12,unassigned
+    >>> verifyObject(ISalesforceVoucher, voucher)
+    True
+
+Mark has some vouchers and they can be retrieved.
+
+    >>> vouchers = voucher_proxy.getUnredeemedVouchers(mark)
+    >>> for voucher in vouchers:
+    ...     print voucher
+    LPCBS12-f78df324-0cc2-11dd-8b6b-000000000001,Reserved,12,unassigned
+    LPCBS12-f78df324-0cc2-11dd-8b6b-000000000002,Reserved,12,unassigned
+    LPCBS12-f78df324-0cc2-11dd-8b6b-000000000003,Reserved,12,unassigned
+
+Get a single voucher with an invalid id.
+
+    >>> voucher = voucher_proxy.getVoucher('LPCBS12-nonexistent')
+    Traceback (most recent call last):
+      ...
+    SVPNotFoundException: The voucher LPCBS12-nonexistent was not found.
+
+Redeem the first voucher for firefox.
+
+    >>> voucher_id = vouchers[0].voucher_id
+    >>> result = voucher_proxy.redeemVoucher(voucher_id, mark, firefox)
+    >>> print result
+    True
+    >>> vouchers = voucher_proxy.getUnredeemedVouchers(mark)
+    >>> for voucher in vouchers:
+    ...     print voucher
+    LPCBS12-f78df324-0cc2-11dd-8b6b-000000000002,Reserved,12,unassigned
+    LPCBS12-f78df324-0cc2-11dd-8b6b-000000000003,Reserved,12,unassigned
+
+If we get all of the vouchers the redeemed one is shown.
+
+    >>> vouchers = voucher_proxy.getAllVouchers(mark)
+    >>> for voucher in vouchers:
+    ...     print voucher
+    LPCBS12-f78df324-0cc2-11dd-8b6b-000000000001,Redeemed,12,firefox
+    LPCBS12-f78df324-0cc2-11dd-8b6b-000000000002,Reserved,12,unassigned
+    LPCBS12-f78df324-0cc2-11dd-8b6b-000000000003,Reserved,12,unassigned
+
+Attempting to redeem an already redeemed voucher is unsuccessful.
+
+    >>> result = voucher_proxy.redeemVoucher(voucher_id, mark, firefox)
+    Traceback (most recent call last):
+      ...
+    SVPAlreadyRedeemedException: Voucher LPCBS12-f78df324-0cc2-11dd-8b6b-000000000001 is already redeemed
+
+Attempting to redeem a bogus voucher is also unsuccessful.
+
+    >>> voucher_id = "hownowbrowncow"
+    >>> result = voucher_proxy.redeemVoucher(voucher_id, mark, firefox)
+    Traceback (most recent call last):
+      ...
+    SVPNotFoundException: No such voucher hownowbrowncow
+
+A user cannot redeem a voucher if it is owned by someone else.
+
+    >>> cprov = getUtility(IPersonSet).getByName('cprov')
+    >>> vouchers = voucher_proxy.getUnredeemedVouchers(cprov)
+    >>> voucher = vouchers[0]
+    >>> result = voucher_proxy.redeemVoucher(voucher.voucher_id, mark, firefox)
+    Traceback (most recent call last):
+      ...
+    SVPNotAllowedException: Voucher is not owned by named user
+
+Using None for the project results in an error.
+
+    >>> result = voucher_proxy.redeemVoucher(voucher_id, mark, None)
+    Traceback (most recent call last):
+      ...
+    AttributeError:...
+
+Using None for the person results in an error.
+
+    >>> result = voucher_proxy.redeemVoucher(voucher_id, None, firefox)
+    Traceback (most recent call last):
+      ...
+    AttributeError:...
+
+If a project's name changes we can communicate that to Salesforce.
+
+    >>> from zope.security.proxy import removeSecurityProxy
+    >>> naked_firefox = removeSecurityProxy(firefox)
+    >>> print naked_firefox.displayname
+    Mozilla Firefox
+    >>> naked_firefox.displayname = 'Super Mozilla Firefox'
+    >>> print naked_firefox.displayname
+    Super Mozilla Firefox
+    >>> result = voucher_proxy.updateProjectName(naked_firefox)
+    >>> print result
+    1
+
+Attempting to rename a project that does not exist in the Salesforce
+voucher data results in an error.
+
+    >>> jokosher = getUtility(IProductSet).getByName('jokosher')
+    >>> result = voucher_proxy.updateProjectName(jokosher)
+    Traceback (most recent call last):
+      ...
+    SVPNotFoundException: No vouchers matching product id...
+
+A voucher can be created and assigned to a user.
+
+    >>> vouchers = voucher_proxy.getUnredeemedVouchers(cprov)
+    >>> for voucher in vouchers:
+    ...     print voucher
+    LPCBS12-f78df324-0cc2-11dd-8b6b-000000000004,Reserved,12,unassigned
+    LPCBS12-f78df324-0cc2-11dd-8b6b-000000000005,Reserved,12,unassigned
+
+    >>> voucher_id = voucher_proxy.grantVoucher(mark, mark, cprov, 12)
+    >>> print voucher_id
+    LPCBS12-f78df324-0cc2-11dd-0000-000000000001
+
+    >>> voucher_id = voucher_proxy.grantVoucher(mark, mark, cprov, 6)
+    >>> print voucher_id
+    LPCBS06-f78df324-0cc2-11dd-0000-000000000002
+
+    >>> vouchers = voucher_proxy.getUnredeemedVouchers(cprov)
+    >>> for voucher in vouchers:
+    ...     print voucher
+    LPCBS12-f78df324-0cc2-11dd-8b6b-000000000004,Reserved,12,unassigned
+    LPCBS12-f78df324-0cc2-11dd-8b6b-000000000005,Reserved,12,unassigned
+    LPCBS12-f78df324-0cc2-11dd-0000-000000000001,Reserved,12,unassigned
+    LPCBS06-f78df324-0cc2-11dd-0000-000000000002,Reserved,6,unassigned

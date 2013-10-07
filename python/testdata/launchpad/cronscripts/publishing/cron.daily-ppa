@@ -1,0 +1,17 @@
+#!/bin/bash
+#
+# Copyright 2009 Canonical Ltd.  This software is licensed under the
+# GNU Affero General Public License version 3 (see the file LICENSE).
+
+set -x
+
+# Try to acquire the lockfile forever. It has to run once a day,
+# no matter what.
+LOCKFILEOPTIONS="-r-1"
+
+# Variables, lockfile and exit handler for PPA scripts.
+source `dirname $0`/cron.base-ppa
+
+# Clear out empty and thus redundant dirs.
+find $PPAROOT -type d -empty | xargs -r rmdir
+find $P3AROOT -type d -empty | xargs -r rmdir

@@ -1,0 +1,8 @@
+Format-Version: 2
+Done: Sjoerd Simons <sjoerd@spring.luon.net>
+Subject: gnome-volume-manager: USB Stick only read-only
+Date: 1121194082
+Submitter: "Stefan J. Betz" <stefan_betz@gmx.net>
+Package: pmount
+Message-Id: <200507121832.j6CIWvSC017443@athlon.hornynet>
+Severity: important

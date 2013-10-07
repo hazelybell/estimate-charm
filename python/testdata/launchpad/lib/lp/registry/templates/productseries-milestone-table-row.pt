@@ -1,0 +1,104 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  define="milestone_menu view/milestone/menu:overview;
+          milestone view/milestone;
+          release view/release">
+  <tr>
+    <td>
+      <img src="/@@/milestone" alt="" />
+      <a tal:content="milestone/title"
+         tal:attributes="href milestone/fmt:url">version</a>
+    </td>
+    <td tal:condition="view/show_series_context">
+      <a
+        tal:condition="milestone/series_target"
+        tal:attributes="href milestone/series_target/fmt:url"
+        tal:content="milestone/series_target/displayname">trunk</a>
+        <tal:can-edit condition="context/required:launchpad.Edit">
+          <tal:missing-series tal:condition="not: milestone/series_target">
+            <a title="Set the series"
+              tal:attributes="href milestone_menu/edit/fmt:url">Set</a>
+            <a
+              tal:replace="structure milestone_menu/edit/fmt:icon" />
+          </tal:missing-series>
+        </tal:can-edit>
+    </td>
+    <td>
+      <span
+        tal:attributes="title milestone/dateexpected/fmt:datetime"
+        tal:content="milestone/dateexpected/fmt:approximatedate">
+        2005-12-13
+      </span>
+      <tal:empty-date condition="not: milestone/dateexpected">
+        <tal:cannot-edit condition="not: context/required:launchpad.Edit">
+          None
+        </tal:cannot-edit>
+        <tal:can-edit condition="context/required:launchpad.Edit">
+          <a title="Set the expected date the milestone will be complete"
+            tal:attributes="href milestone_menu/edit/fmt:url">Set date</a>
+          <a tal:replace="structure milestone_menu/edit/fmt:icon" />
+        </tal:can-edit>
+      </tal:empty-date>
+    </td>
+    <td tal:condition="not: view/is_distroseries_milestone">
+      <span
+        tal:condition="release"
+        tal:attributes="title release/datereleased/fmt:datetime"
+        tal:content="release/datereleased/fmt:approximatedate">
+        2005-12-13
+      </span>
+      <tal:no-release condition="not: release">
+        <em tal:condition="not: milestone/active">
+          <img src="/@@/info"/> This is an inactive milestone
+        </em>
+        <tal:not-yet condition="milestone/active">
+        <tal:cannot-edit condition="not: context/required:launchpad.Edit">
+          not yet released
+        </tal:cannot-edit>
+        <tal:can-edit
+          define="link milestone_menu/create_release"
+          condition="link/enabled">
+          <a style="white-space: nowrap"
+            tal:attributes="href link/fmt:url;
+                            title link/summary;
+                            class string:sprite ${link/icon}">Release now</a>
+        </tal:can-edit>
+        </tal:not-yet>
+      </tal:no-release>
+    </td>
+    <td tal:condition="view/is_distroseries_milestone"
+        tal:content="structure milestone/summary/fmt:shorten/80"
+        />
+    <td tal:condition="not: view/is_distroseries_milestone">
+      <tal:summary
+        content="structure milestone/summary/fmt:shorten/80" />
+      <tal:bug-blueprint-details
+          condition="view/should_show_bugs_and_blueprints">
+      <tal:bugtasks condition="view/bugtasks">
+        <br tal:omit-tag="not: view/milestone/summary" />
+        Bugs targeted:
+        <tal:statuses repeat="count_status view/bugtask_status_counts">
+          <span tal:attributes="class string:status${count_status/status/name}">
+            <strong tal:content="count_status/count">2</strong>
+            <tal:status replace="count_status/status/title" /><tal:comma
+              condition="not: repeat/count_status/end">,</tal:comma>
+          </span>
+        </tal:statuses>
+      </tal:bugtasks>
+      <tal:blueprints condition="view/specifications">
+        <br tal:omit-tag="not: view/bugtasks" />
+        Blueprints targeted:
+        <tal:statuses repeat="count_status view/specification_status_counts">
+          <span tal:attributes="class string:specdelivery${count_status/status/name}">
+            <strong tal:content="count_status/count">2</strong>
+            <tal:status replace="count_status/status/title" /><tal:comma
+              condition="not: repeat/count_status/end">,</tal:comma>
+          </span>
+        </tal:statuses>
+      </tal:blueprints>
+      </tal:bug-blueprint-details>
+    </td>
+  </tr>
+</tal:root>

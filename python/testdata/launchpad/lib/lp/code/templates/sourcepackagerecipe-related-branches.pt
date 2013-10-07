@@ -1,0 +1,76 @@
+<fieldset id="related-branches"
+              xmlns:tal="http://xml.zope.org/namespaces/tal"
+              class="collapsible" style="width: 60em"
+              tal:define="seriesBranches view/related_series_branch_info;
+                          packageBranches view/related_package_branch_info"
+              tal:condition="python: seriesBranches or packageBranches">
+  <legend>Related branches</legend>
+  <div class="extra-options hide-on-load">
+
+    <div tal:condition="packageBranches" id="related-package-branches">
+      <h2>Source package branches</h2>
+      <table class="listing" id="related-package-branches-listing">
+        <thead>
+          <tr>
+            <th>Branch URL</th>
+            <th>Distro series</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr tal:repeat="branch_info packageBranches">
+            <tal:defines define="branch python:branch_info[0];
+                    distro_series python:branch_info[1];">
+            <td width="80%">
+              <a href="#"
+                 tal:content="branch/displayname"
+                 tal:attributes="href branch/fmt:url">
+                source package branch
+              </a>
+            </td>
+            <td>
+              <a href="#"
+                 tal:attributes="href distro_series/fmt:url"
+                 tal:content="distro_series/name">
+                distro series
+              </a>
+            </td>
+            </tal:defines>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div tal:condition="seriesBranches" id="related-series-branches">
+      <h2>Project series branches</h2>
+      <table class="listing" id="related-series-branches-listing">
+        <thead>
+          <tr>
+            <th>Branch URL</th>
+            <th>Project series</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr tal:repeat="branch_info seriesBranches">
+            <tal:defines define="branch python:branch_info[0];
+                                product_series python:branch_info[1];">
+            <td width="80%">
+              <a href="#"
+                 tal:content="branch/displayname"
+                 tal:attributes="href branch/fmt:url">
+                project series branch
+              </a>
+            </td>
+            <td>
+              <a href="#"
+                 tal:content="product_series/name"
+                 tal:attributes="href product_series/fmt:url">
+                project series
+              </a>
+            </td>
+            </tal:defines>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</fieldset>

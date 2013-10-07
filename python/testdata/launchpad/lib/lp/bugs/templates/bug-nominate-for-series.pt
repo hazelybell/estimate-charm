@@ -1,0 +1,57 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<body>
+
+<div metal:fill-slot="main">
+  <div class="top-portlet">
+    <div metal:use-macro="context/@@launchpad_form/form">
+
+      <div metal:fill-slot="extra_info">
+        <tal:targeting-mode condition="view/userIsReleaseManager">
+          <p>
+          Series targeting allows you to track the status, assignee, and
+          importance of a bug in one or more official series.
+          </p>
+        </tal:targeting-mode>
+
+        <tal:nomination-mode condition="not:view/userIsReleaseManager">
+          <p>
+          Bug nominations are evaluated by release managers and accepted
+          or declined for fixing in a series.
+          </p>
+        </tal:nomination-mode>
+
+        <p tal:condition="view/getReleaseManager"
+           tal:define="release_context view/getReleaseContext;
+                       release_manager view/getReleaseManager">
+          The
+          <a href="#"
+             tal:condition="view/userCanChangeDriver"
+             tal:content="string:${release_context/displayname} release manager"
+             tal:attributes="href string:${release_context/fmt:url}/+driver">
+             Ubuntu release manager
+          </a>
+          <span tal:condition="not:view/userCanChangeDriver"
+                tal:content="string:${release_context/displayname} release manager">
+             Ubuntu release manager
+          </span>
+          is
+          <a tal:replace="structure release_manager/fmt:link">
+             Foo Bar
+          </a>.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,91 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+>
+  <body>
+    <h1 metal:fill-slot="heading">Project groups</h1>
+
+    <tal:side metal:fill-slot="side">
+      <tal:menu replace="structure view/@@+global-actions" />
+      <tal:menu replace="structure context/@@+related-pages" />
+    </tal:side>
+
+    <div metal:fill-slot="main">
+      <p>There are
+      <strong tal:content="context/count_all">5</strong>
+      project groups registered in Launchpad.
+      </p>
+
+      <form id="projectgroup-search" class="central" method="get" accept-charset="UTF-8">
+      <input size="30" name="text" tal:attributes="value view/search_string" />
+        <input
+          tal:condition="view/search_requested"
+          type="submit" value="Search Again" />
+        <input
+          tal:condition="not: view/search_requested"
+          type="submit" value="Search project groups" />
+      </form>
+      <script type="text/javascript">
+          LPJS.use('lp', function (Y) {
+              setFocusByName('text');
+          });
+      </script>
+
+      <div tal:condition="view/search_requested">
+          <tal:searching condition="view/search_results">
+            <p class="search-results">
+              <span tal:replace="view/matches">3</span>
+              <span tal:condition="python: view.matches == 1">project
+                group found</span>
+              <span tal:condition="python: view.matches != 1">project
+                groups found</span>
+              matching
+              &#8220;<tal:string replace="view/search_string" />&#8221;
+            </p>
+          </tal:searching>
+
+          <table tal:condition="view/search_results"
+                 tal:define="results view/search_results"
+                 class="search-results">
+            <tbody>
+              <tr tal:repeat="product results">
+                <td tal:content="structure product/@@+listing-detailed" />
+              </tr>
+            </tbody>
+         </table>
+
+          <p class="application-summary"
+             tal:condition="not: view/search_results">
+             <span class="sprite error-icon">No project groups matching</span>
+             &#8220;<span tal:replace="view/search_string">moz</span>&#8221;
+             were found.
+          </p>
+      </div>
+
+      <p class="application-summary">
+          In Launchpad, <dfn>project groups</dfn> are special groups of
+          software projects that share a development community.  Examples
+          include <a href="gnome">Gnome</a>,
+          <a href="kde"><abbr>KDE</abbr></a>, and
+          <a href="mozilla">Mozilla</a>.  Launchpad allows you to group
+          several projects together into a project group, to make coordination
+          and tracking simpler.
+      </p>
+
+      <p class="application-summary">
+          Only the Launchpad administrators and registry experts can register
+          new project groups. You can register an individual application (what
+          we call a project). To do so, first <a href="/projects/">search to
+          see if your project is already in Launchpad</a>.
+      </p>
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,163 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+  <body>
+    <metal:block fill-slot="head_epilogue">
+      <script type="text/javascript">
+        LPJS.use('lp.translations.sourcepackage_sharing_details', function(Y) {
+          Y.on('domready', function() {
+              Y.lp.translations.sourcepackage_sharing_details.prepare(
+                LP.cache);
+          });
+        });
+      </script>
+    </metal:block>
+    <div metal:fill-slot="heading">
+      <h1>Translation sharing details</h1>
+    </div>
+    <div metal:fill-slot="main">
+      <dl id="sharing-checklist">
+        <dt><span tal:attributes="class view/configuration_incomplete_class"
+                  id="configuration-incomplete">
+            Translation sharing configuration is incomplete.
+          </span>
+          <span tal:attributes="class view/configuration_complete_class"
+                id="configuration-complete">
+            Translation sharing with upstream is active.
+          </span>
+        </dt>
+        <dd>
+          <ul>
+            <li tal:attributes="class view/packaging_incomplete_class"
+                id="packaging-incomplete">
+                No upstream project series has been linked.
+                <span id="packaging-incomplete-picker">
+                  <a tal:replace="structure view/set_packaging_link/escapedtext" />
+                </span>
+                <img src="/@@/spinner" class="hidden"
+                     id="packaging-incomplete-spinner"/>
+            </li>
+            <li tal:attributes="class view/packaging_complete_class"
+                id="packaging-complete">
+              Linked upstream series is
+              <span class="link">
+                  <a tal:replace="structure context/productseries/fmt:link">
+                      Gimp trunk</a>
+                  <a tal:condition="not:context/productseries" href="#"></a>
+              </span>.
+              <span id="packaging-complete-picker">
+                <a tal:replace="structure view/change_packaging_link/escapedtext" />
+              </span>
+              <img src="/@@/spinner" class="hidden"
+                   id="packaging-complete-spinner"/>
+              <a tal:replace="structure view/remove_packaging_link/escapedtext" />
+            </li>
+            <li tal:attributes="class view/branch_incomplete_class"
+                id="branch-incomplete">
+              No source branch exists for the upstream series.
+              <span id="branch-incomplete-picker">
+                <a tal:replace="structure view/new_branch_link/escapedtext" />
+              </span>
+              <img src="/@@/spinner" class="hidden"
+                   id="branch-incomplete-spinner"/>
+            </li>
+            <li tal:attributes="class view/branch_complete_class"
+                id="branch-complete">
+            Upstream source branch is
+            <span class="link">
+                <a tal:replace="structure view/branch_link/escapedtext">lp:gimp</a>
+</span>
+              <span id="branch-complete-picker">
+                <a tal:replace="structure view/change_branch_link/escapedtext" />
+              </span>
+              <img src="/@@/spinner" class="hidden"
+                   id="branch-complete-spinner"/>
+            </li>
+            <li tal:attributes="class view/translations_disabled_class"
+                id="translation-incomplete">
+                Translations are not enabled on the upstream project.
+              <span id="translation-incomplete-picker">
+                  <a tal:replace="structure view/configure_translations_link_unconfigured/escapedtext" />
+              </span>
+              <img src="/@@/spinner" class="hidden"
+                   id="translation-incomplete-spinner"/>
+            </li>
+            <li tal:attributes="class view/translations_enabled_class"
+                id="translation-complete">
+                Translations are enabled on the upstream project.
+              <span id="translation-complete-picker">
+              <a tal:replace="structure view/configure_translations_link_configured/escapedtext" />
+             </span>
+              <img src="/@@/spinner" class="hidden"
+                   id="translation-complete-spinner"/>
+            </li>
+            <li tal:attributes="class view/upstream_sync_disabled_class"
+                id="upstream-sync-incomplete">
+              Automatic synchronization of translations is not enabled.
+              <span id="upstream-sync-incomplete-picker">
+              <a tal:replace="structure view/translation_sync_link_unconfigured/escapedtext" />
+              </span>
+              <img src="/@@/spinner" class="hidden"
+                   id="upstream-sync-incomplete-spinner"/>
+            </li>
+            <li tal:attributes="class view/upstream_sync_enabled_class"
+                id="upstream-sync-complete">
+              Automatic synchronization of translations is enabled.
+              <span id="upstream-sync-complete-picker">
+              <a tal:replace="structure view/translation_sync_link_configured/escapedtext" />
+              </span>
+              <img src="/@@/spinner" class="hidden"
+                   id="upstream-sync-complete-spinner"/>
+            </li>
+          </ul>
+        </dd>
+      </dl>
+      <table class="listing" id="template-table">
+        <thead>
+          <tr>
+            <th class="name_column" rowspan="2">Template name</th>
+            <th class="state_column" rowspan="2">State</th>
+            <th style="text-align: center" colspan="2">Ubuntu</th>
+            <th style="text-align: center" colspan="3">Upstream</th>
+          </tr>
+          <tr>
+            <th class="length_ubuntu_column">Length</th>
+            <th class="updated_ubuntu_column">Updated</th>
+            <th class="length_upstream_column">Length</th>
+            <th class="updated_upstream_column">Updated</th>
+            <th class="upstream_link_column">Upstream template</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr tal:repeat="info view/template_info">
+            <td class="name_column">
+              <a tal:content="info/name"
+                 tal:attributes="href info/package_template/fmt:url"
+                 tal:omit-tag="not:info/package_template">gimp20</a></td>
+            <td class="state_column" tal:content="info/status">sharing</td>
+            <td class="length_ubuntu_column">
+                <tal:content tal:condition="info/package_template"
+                             tal:content="info/package_template/messagecount">82</tal:content></td>
+            <td class="updated_ubuntu_column">
+                <tal:content tal:condition="info/package_template"
+                             tal:content="info/package_template/date_last_updated/fmt:approximatedate">2 minutes ago</tal:content></td>
+            <td class="length_upstream_column">
+                <tal:content tal:condition="info/upstream_template"
+                             tal:content="info/upstream_template/messagecount">85</tal:content></td>
+            <td class="updated_upstream_column">
+                <tal:content tal:condition="info/upstream_template"
+                             tal:content="info/upstream_template/date_last_updated/fmt:approximatedate">2 minutes ago</tal:content></td>
+            <td class="upstream_link_column">
+              <a tal:condition="info/upstream_template"
+                 tal:attributes="href info/upstream_template/fmt:url">View upstream</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

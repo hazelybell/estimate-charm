@@ -1,0 +1,81 @@
+X-Loop: owner@bugs.debian.org
+Subject: Bug#237001: evolution mail crashes on opening an email with a TIFF attachment
+Reply-To: Teun Vink <teun@tux.office.luna.net>, 237001@bugs.debian.org
+Resent-From: Teun Vink <teun@tux.office.luna.net>
+Resent-To: debian-bugs-dist@lists.debian.org
+Resent-CC: Takuo KITAME <kitame@debian.org>
+Resent-Date: Tue, 09 Mar 2004 08:18:04 UTC
+Resent-Message-ID: <handler.237001.B.10788200765412@bugs.debian.org>
+Resent-Sender: owner@bugs.debian.org
+X-Debian-PR-Message: report 237001
+X-Debian-PR-Package: evolution
+X-Debian-PR-Keywords: 
+Received: via spool by submit@bugs.debian.org id=B.10788200765412
+          (code B ref -1); Tue, 09 Mar 2004 08:18:04 UTC
+Received: (at submit) by bugs.debian.org; 9 Mar 2004 08:14:36 +0000
+Received: from smtp1.email.luna.net [217.77.129.33] 
+	by spohr.debian.org with esmtp (Exim 3.35 1 (Debian))
+	id 1B0cNn-0001P7-00; Tue, 09 Mar 2004 00:14:35 -0800
+Received: from tux (tux.office.luna.net [217.77.129.183])
+	by smtp1.email.luna.net (Luna.nl mail server) with ESMTP id D4166133A26
+	for <submit@bugs.debian.org>; Tue,  9 Mar 2004 09:14:30 +0100 (CET)
+Received: by tux (Postfix, from userid 1000)
+	id 98BF411EE67; Tue,  9 Mar 2004 09:14:30 +0100 (CET)
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+From: Teun Vink <teun@tux.office.luna.net>
+To: Debian Bug Tracking System <submit@bugs.debian.org>
+X-Mailer: reportbug 2.50
+Date: Tue, 09 Mar 2004 09:14:30 +0100
+Message-Id: <20040309081430.98BF411EE67@tux>
+Delivered-To: submit@bugs.debian.org
+X-Spam-Checker-Version: SpamAssassin 2.60-bugs.debian.org_2004_03_08 
+	(1.212-2003-09-23-exp) on spohr.debian.org
+X-Spam-Status: No, hits=-5.0 required=4.0 tests=HAS_PACKAGE autolearn=no 
+	version=2.60-bugs.debian.org_2004_03_08
+X-Spam-Level: 
+
+Things happen.
+
+--
+
+X-Loop: owner@bugs.debian.org
+Subject: Bug#237001: evolution mail crashes on opening an email with a TIFF attachment
+Reply-To: Teun Vink <teun@tux.office.luna.net>, 237001@bugs.debian.org
+Resent-From: Teun Vink <teun@tux.office.luna.net>
+Resent-To: debian-bugs-dist@lists.debian.org
+Resent-CC: Takuo KITAME <kitame@debian.org>
+Resent-Date: Tue, 09 Mar 2004 08:18:04 UTC
+Resent-Message-ID: <handler.237001.B.10788200765412@bugs.debian.org>
+Resent-Sender: owner@bugs.debian.org
+X-Debian-PR-Message: report 237001
+X-Debian-PR-Package: evolution
+X-Debian-PR-Keywords: 
+Received: via spool by submit@bugs.debian.org id=B.10788200765412
+          (code B ref -1); Tue, 09 Mar 2004 08:18:04 UTC
+Received: (at submit) by bugs.debian.org; 9 Mar 2004 08:14:36 +0000
+Received: from smtp1.email.luna.net [217.77.129.33] 
+	by spohr.debian.org with esmtp (Exim 3.35 1 (Debian))
+	id 1B0cNn-0001P7-00; Tue, 09 Mar 2004 00:14:35 -0800
+Received: from tux (tux.office.luna.net [217.77.129.183])
+	by smtp1.email.luna.net (Luna.nl mail server) with ESMTP id D4166133A26
+	for <submit@bugs.debian.org>; Tue,  9 Mar 2004 09:14:30 +0100 (CET)
+Received: by tux (Postfix, from userid 1000)
+	id 98BF411EE67; Tue,  9 Mar 2004 09:14:30 +0100 (CET)
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+From: Teun Vink <teun@tux.office.luna.net>
+To: Debian Bug Tracking System <submit@bugs.debian.org>
+X-Mailer: reportbug 2.50
+Date: Tue, 09 Mar 2004 09:14:30 +0100
+Message-Id: <20040309081430.98BF411EE67@tux>
+Delivered-To: submit@bugs.debian.org
+X-Spam-Checker-Version: SpamAssassin 2.60-bugs.debian.org_2004_03_08 
+	(1.212-2003-09-23-exp) on spohr.debian.org
+X-Spam-Status: No, hits=-5.0 required=4.0 tests=HAS_PACKAGE autolearn=no 
+	version=2.60-bugs.debian.org_2004_03_08
+X-Spam-Level: 
+
+Things happen.

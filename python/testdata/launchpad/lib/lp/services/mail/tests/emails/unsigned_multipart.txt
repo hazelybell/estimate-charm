@@ -1,0 +1,25 @@
+Date: Tue, 12 Apr 2005 12:13:33 -0400
+From: Foo Bar <foo.bar@canonical.com>
+To: someone@somehost
+Subject: Signed Email
+Message-ID: <20050412161333.GA8553@localhost.localdomain>
+Mime-Version: 1.0
+Content-Type: multipart/signed; boundary="LZvS9be/3tNcYl/X"
+Content-Disposition: inline
+
+
+--LZvS9be/3tNcYl/X
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Some unsigned content.
+
+--LZvS9be/3tNcYl/X
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Some more unsigned content.
+
+--LZvS9be/3tNcYl/X--
+
+

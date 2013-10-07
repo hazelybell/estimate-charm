@@ -1,0 +1,70 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<body>
+
+<div metal:fill-slot="heading">
+  <h1 tal:content="view/page_title"/>
+</div>
+
+<div metal:fill-slot="main">
+  <div class="top-portlet">
+    <tal:navlinks replace="structure context/@@+related-software-navlinks"/>
+  </div>
+
+
+  <div id="teams" class="top-portlet">
+    <p>
+      Team owners are not always team members. The
+      <a tal:attributes="href context/menu:overview/memberships/fmt:url">team
+      participation</a> page shows the teams that
+      <tal:name replace="context/displayname" /> is a member of.
+    </p>
+
+    <tal:navigation_top
+         replace="structure view/batchnav/@@+navigation-links-upper" />
+
+    <tal:maintained-packages define="teams view/batch">
+
+      <table id="owned-teams" class="listing"
+        tal:condition="teams">
+        <cols><col width="30%" /><col width="auto" /></cols>
+
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Summary</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr tal:repeat="team teams">
+            <td>
+              <a tal:replace="structure team/fmt:link" />
+            </td>
+            <td>
+              <tal:summary replace="team/description/fmt:shorten/60"/>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <tal:navigation_bottom
+           replace="structure view/batchnav/@@+navigation-links-lower" />
+
+      <p id="no-teams"
+        tal:condition="not: teams">
+        <span tal:replace="context/displayname">Foo Bar</span>
+        doesn't own any teams.
+      </p>
+    </tal:maintained-packages>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+  <body>
+
+<div metal:fill-slot="main">
+
+  <div metal:use-macro="context/@@launchpad_form/form">
+
+    <div metal:fill-slot="extra_info"
+         tal:define="answer view/getAnswerMessage;
+                     answerDisplayView nocall:answer/@@+display">
+
+      <p class="documentDescription">To confirm that the following answer
+        solved your question, click the 'This Solved My Problem' button. You
+        can enter comments along your confirmation.
+      </p>
+
+      <input
+        tal:replace="structure answerDisplayView/renderAnswerIdFormElement" />
+
+      <div class="boardComment"
+           tal:replace="structure answerDisplayView/renderWithoutConfirmButton" />
+    </div>
+
+    <div class="actions" metal:fill-slot="buttons">
+      <input tal:replace="structure view/confirm_action/render" />
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
+

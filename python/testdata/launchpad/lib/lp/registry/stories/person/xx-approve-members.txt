@@ -1,0 +1,77 @@
+= Reviewing proposed members =
+
+We have one page in which a team admin can review (approve/decline/hold) all
+proposed members at once.
+
+    >>> browser = setupBrowser(auth='Basic mark@example.com:test')
+    >>> browser.open('http://launchpad.dev/~ubuntu-team/+members')
+    >>> browser.getLink('Approve or decline members').click()
+    >>> browser.url
+    'http://launchpad.dev/~ubuntu-team/+editproposedmembers'
+
+Let's have a look at the proposed members that we have.
+
+    >>> print extract_text(find_tag_by_id(browser.contents, 'member-list'))
+    Andrew Bennetts (Applied on ...)     Approve Decline Hold
+    Sample Person (Applied on ...)       Approve Decline Hold
+
+The team admin approves Andrew Bennetts' membership and declines Sample
+Person's. A comment is also sent to the applying users and the team admins.
+
+    >>> from lp.services.mail import stub
+    >>> browser.getControl(name='action_12').value = ['decline']
+    >>> browser.getControl(name='action_7').value = ['approve']
+    >>> browser.getControl(name='comment').value = 'Thanks for your interest'
+    >>> browser.getControl('Save changes').click()
+    >>> from lp.testing.mail_helpers import run_mail_jobs
+    >>> login(ANONYMOUS)
+    >>> run_mail_jobs()
+    >>> len(stub.test_emails)
+    12
+    >>> for from_addr, to_addrs, raw_msg in sorted(stub.test_emails):
+    ...     print to_addrs
+    ['andrew.bennetts@ubuntulinux.com']
+    ['colin.watson@ubuntulinux.com']
+    ['colin.watson@ubuntulinux.com']
+    ['foo.bar@canonical.com']
+    ['foo.bar@canonical.com']
+    ['jeff.waugh@ubuntulinux.com']
+    ['jeff.waugh@ubuntulinux.com']
+    ['limi@plone.org']
+    ['limi@plone.org']
+    ['mark@example.com']
+    ['mark@example.com']
+    ['test@canonical.com']
+    >>> print raw_msg
+    Content-Type: text/plain; charset="utf-8"
+    ...
+    Mark Shuttleworth said:
+     Thanks for your interest
+
+As we can see, Andrew is now listed among the active members and Sample Person
+as an inactive one.
+
+    >>> browser.url
+    'http://launchpad.dev/~ubuntu-team/+members'
+    >>> print extract_text(find_tag_by_id(browser.contents, 'activemembers'))
+    Name Member since Expires Status
+    ...
+    Andrew Bennetts
+    ...
+
+    # Need to do this check manually because the declined members are not
+    # listed anywhere.
+    >>> from lp.registry.model.person import Person
+    >>> from lp.registry.model.teammembership import TeamMembershipSet
+    >>> membership = TeamMembershipSet().getByPersonAndTeam(
+    ...     Person.byName('name12'), Person.byName('ubuntu-team'))
+    >>> membership.status.title
+    'Declined'
+
+And now we see that there are no pending members left.
+
+    >>> browser.getLink('Approve or decline members')
+    Traceback (most recent call last):
+    ...
+    LinkNotFoundError
+

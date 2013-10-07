@@ -1,0 +1,619 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<tal:language-code
+  define="language_code context/language/code">
+<tr class="translation">
+  <td class="icon left right">
+    <a tal:attributes="
+          href view/zoom_url;
+          title view/zoom_alt;
+          id view/zoom_link_id">
+    <span tal:attributes="class string:sprite ${view/zoom_icon}"></span>
+    </a>
+  </td>
+  <td style="text-align: right;">
+    <div tal:attributes="id string:${view/html_id}">
+      <span tal:replace="view/sequence">1</span>.
+      <input
+        type="hidden"
+        tal:condition="view/form_is_writeable"
+        tal:attributes="name string:${view/html_id}"
+        />
+    </div>
+  </td>
+  <th>
+    <label class="language-code" tal:condition="not:view/is_plural">
+      English:
+    </label>
+    <label class="language-code" tal:condition="view/is_plural">
+      English singular:
+    </label>
+  </th>
+  <td class="icon left right">
+    <span
+      tal:condition="context/potmsgset/is_translation_credit"
+      class="sprite read-only"
+      title="This message is handled automatically by Launchpad."
+    ></span>
+    <tal:form-writeable condition="view/form_is_writeable">
+      <a href=""
+         tal:condition="not:context/potmsgset/is_translation_credit"
+         tal:attributes="
+           id string:${view/html_id}_singular_copy_text;
+         "><img alt="Copy text" title="Copy text" src="/@@/copy" /></a>
+    </tal:form-writeable>
+  </td>
+  <td>
+    <div tal:content="structure view/singular_text"
+         tal:attributes="id string:${view/html_id}_singular">
+      The original text.
+    </div>
+  </td>
+</tr>
+<tr class="secondary translation" tal:condition="view/is_plural">
+  <th colspan="3">
+    <label>English plural:</label>
+  </th>
+  <td class="icon left right">
+    <tal:form-writeable condition="view/form_is_writeable">
+    <a href=""
+       tal:attributes="
+         id string:${view/html_id}_plural_copy_text;
+      "><img alt="Copy text" title="Copy text" src="/@@/copy" /></a>
+    </tal:form-writeable>
+  </td>
+  <td>
+    <div tal:content="structure view/plural_text"
+         tal:attributes="id string:${view/html_id}_plural">
+      plural source
+    </div>
+  </td>
+</tr>
+<tr class="lesser secondary translation"
+    tal:condition="context/potmsgset/context">
+  <th colspan="3">Context:</th>
+  <td />
+  <td>
+    <div tal:content="context/potmsgset/context"
+         tal:attributes="id string:${view/html_id}_context">
+      Context
+    </div>
+  </td>
+</tr>
+<tr
+  tal:condition="view/source_comment"
+  class="lesser secondary translation">
+  <td colspan="3" />
+  <th class="icon left right">
+    <span class="sprite info" title="Developer's note to translators"></span>
+  </th>
+  <td>
+    <pre class="lesser" tal:content="view/source_comment">
+      This refers to the content type.
+    </pre>
+  </td>
+</tr>
+<tr
+  tal:condition="view/text_has_tab"
+  class="lesser secondary translation">
+  <td colspan="3" />
+  <th class="icon left right">
+    <span class="sprite info" title="Note to translators"></span>
+  </th>
+  <td>
+    <code>[tab]</code> represents a tab character.
+    Please write it exactly the same way, <code>[tab]</code>, in your
+    translation.
+  </td>
+</tr>
+<tr
+  tal:condition="view/text_has_newline"
+  class="lesser secondary translation"
+>
+  <td colspan="3" />
+  <th class="icon left right">
+    <span class="sprite info" title="Note to translators"></span>
+  </th>
+  <td>
+    <img
+      alt="There are line breaks here. Each one"
+      src="/@@/translation-newline"
+    />
+    represents a line break.
+    Start a new line in the equivalent position in the translation.
+  </td>
+</tr>
+<tr
+  tal:condition="view/text_has_leading_or_trailing_space"
+  class="lesser secondary translation"
+>
+  <td colspan="3" />
+  <th class="icon left right">
+    <span class="sprite info" title="Note to translators"></span>
+  </th>
+  <td>
+    <img
+      alt="There are leading/trailing spaces here. Each one"
+      src="/@@/translation-space"
+    />
+    represents a space character.
+    Enter a space in the equivalent position in the translation.
+  </td>
+</tr>
+<tr class="error translation" tal:condition="view/error">
+  <th colspan="3" >
+    <strong>Error in Translation:</strong>
+  </th>
+  <td />
+  <td>
+    <div>
+        <span tal:replace="view/error" />
+      </div>
+  </td>
+</tr>
+<tr class="secondary">
+  <tal:comment condition="nothing">
+    Add some vertical space.
+  </tal:comment>
+  <td colspan="4" style="padding-top: 1em"></td>
+</tr>
+  <tal:translation-dictionaries
+       repeat="translation_dictionary view/translation_dictionaries">
+  <tal:plural-form define="plural_index translation_dictionary/plural_index">
+    <tr tal:attributes="class string:secondary translation ${view/html_id}">
+      <th colspan="3">
+        <label class="language-code">Current
+          <span tal:replace="context/language/englishname">
+            Welsh
+          </span><span tal:replace="string:[${plural_index}]"
+                       tal:condition="view/is_plural">[0]</span>:
+        </label>
+      </th>
+      <tal:not-locked condition="not:context/potmsgset/is_translation_credit">
+        <tal:with-content
+             condition="translation_dictionary/current_translation">
+          <td class="icon left right">
+            <tal:form-writeable condition="view/form_is_writeable">
+            <tal:user-is-official-translator condition="view/user_is_official_translator">
+              <input
+                type="radio"
+                checked="true"
+                tal:attributes="
+                  name string:${translation_dictionary/html_id_translation}_radiobutton;
+                  id string:${translation_dictionary/html_id_translation}_radiobutton;
+                  class string:${view/html_id}_current;
+                  value string:${translation_dictionary/html_id_translation};
+                " />
+            </tal:user-is-official-translator>
+            <tal:is-not-editor condition="not:view/user_is_official_translator">
+              <a href=""
+                 tal:attributes="
+                   id string:${translation_dictionary/html_id_translation}_singular_copy_text;
+                 "><img alt="Copy text" title="Copy text" src="/@@/copy" /></a>
+            </tal:is-not-editor>
+            </tal:form-writeable>
+          </td>
+          <td>
+            <div tal:content="structure translation_dictionary/current_translation"
+                 tal:condition="not: view/user_is_official_translator"
+                 tal:attributes="
+                   lang context/language/dashedcode;
+                   dir context/language/abbreviated_text_dir;
+                   id string:${translation_dictionary/html_id_translation}">
+              current translation
+            </div>
+            <label
+              style="white-space: normal"
+              tal:content="structure translation_dictionary/current_translation"
+              tal:condition="view/user_is_official_translator"
+              tal:attributes="
+                lang context/language/dashedcode;
+                dir context/language/abbreviated_text_dir;
+                id string:${translation_dictionary/html_id_translation};
+                for string:${translation_dictionary/html_id_translation}_radiobutton">
+              current translation
+            </label>
+          </td>
+        </tal:with-content>
+        <tal:without-content
+          condition="not: translation_dictionary/current_translation">
+          <td class="icon left right">
+            <tal:user-is-official-translator condition="view/user_is_official_translator">
+              <input
+                type="radio"
+                checked="true"
+                tal:attributes="
+                  name string:${translation_dictionary/html_id_translation}_radiobutton;
+                  id string:${translation_dictionary/html_id_translation}_radiobutton;
+                  class string:${view/html_id}_current;
+                  value string:${translation_dictionary/html_id_translation}
+              " />
+            </tal:user-is-official-translator>
+          </td>
+          <td>
+            <div class="no-translation"
+                 tal:condition="not: view/user_is_official_translator"
+                 tal:attributes="
+                   id string:${translation_dictionary/html_id_translation}">
+              (no translation yet)
+            </div>
+            <label class="no-translation"
+                   tal:condition="view/user_is_official_translator"
+                   tal:attributes="
+                     id string:${translation_dictionary/html_id_translation};
+                     for string:${translation_dictionary/html_id_translation}_radiobutton">
+              (no translation yet)
+            </label>
+          </td>
+        </tal:without-content>
+      </tal:not-locked>
+      <tal:locked condition="context/potmsgset/is_translation_credit">
+        <td class="icon left right" />
+        <td>
+          <tal:not-hidden condition="not:view/message_must_be_hidden">
+            <tal:automatic condition="view/translation_credits">
+              <div tal:condition="not: view/user_is_official_translator"
+                   tal:attributes="
+                     id string:${translation_dictionary/html_id_translation}"
+                   tal:content="structure view/translation_credits">
+                translation credits
+              </div>
+              <label tal:condition="view/user_is_official_translator"
+                     tal:attributes="
+                       id string:${translation_dictionary/html_id_translation};
+                       for string:${translation_dictionary/html_id_translation}_radiobutton"
+                     tal:content="structure view/translation_credits">
+                translation credits
+              </label>
+            </tal:automatic>
+            <tal:no-automatic condition="not:view/translation_credits">
+              <div class="no-translation"
+                   tal:condition="not:view/user_is_official_translator"
+                   tal:attributes="
+                     id string:${translation_dictionary/html_id_translation}">
+                (no translation yet)
+              </div>
+              <label class="no-translation"
+                     tal:condition="view/user_is_official_translator"
+                     tal:attributes="
+                       id string:${translation_dictionary/html_id_translation};
+                        for string:${translation_dictionary/html_id_translation}_radiobutton">
+                (no translation yet)
+              </label>
+            </tal:no-automatic>
+          </tal:not-hidden>
+          <tal:hidden condition="view/message_must_be_hidden">
+            <tal:comment condition="nothing">
+              Display the "privacy issues" message generated by the view.
+            </tal:comment>
+            <div tal:attributes="
+                   id string:${translation_dictionary/html_id_translation}"
+                 tal:content="structure translation_dictionary/current_translation">
+              translation credits
+            </div>
+          </tal:hidden>
+        </td>
+      </tal:locked>
+    </tr>
+      <tr tal:define="name_id string:${view/html_id}_dismiss"
+          tal:condition="view/can_confirm_and_dismiss"
+          tal:attributes="
+            class string:secondary confirm_and_dismiss ${view/html_id}">
+        <td colspan="4"></td>
+        <td>
+          <label class="fuzzy-checkbox" tal:attributes="for name_id">
+            <input class="dismiss_action"
+               type="checkbox"
+               value="dismiss_suggestions"
+               tal:attributes="name name_id; id name_id;"
+               />
+                 Confirm this translation and dismiss all suggestions.
+               </label>
+        </td>
+      </tr>
+    <tal:has-submitter
+      define="submitter context/submitter" condition="submitter">
+      <tr tal:condition=
+            "not:translation_dictionary/same_translator_and_reviewer"
+          class="lesser secondary translation">
+        <td colspan="4" />
+        <td id="translated_by" style="overflow: auto;">
+          Translated by
+          <a tal:content="submitter/displayname"
+             tal:attributes="href submitter/fmt:url">Foo Bar</a>
+          <span
+            tal:attributes="title context/date_created/fmt:datetime"
+            tal:content="context/date_created/fmt:displaydate">
+            on 2006-08-05
+          </span>
+        </td>
+      </tr>
+      <tr class="lesser secondary translation"
+          tal:condition="context/reviewer">
+        <td colspan="4" />
+        <td tal:condition="translation_dictionary/same_translator_and_reviewer"
+            id="translated_and_reviewed_by"
+            style="overflow: auto">
+          Translated and reviewed by
+          <a tal:content="context/reviewer/displayname"
+             tal:attributes="href context/reviewer/fmt:url">Foo Bar</a>
+          <span
+            tal:attributes="title context/date_reviewed/fmt:datetime"
+            tal:content="context/date_reviewed/fmt:displaydate">
+            on 2006-08-05
+          </span>
+        </td>
+        <td tal:condition=
+              "not:translation_dictionary/same_translator_and_reviewer"
+            id="reviewed_by"
+            style="overflow: auto">
+          Reviewed by
+          <a tal:content="context/reviewer/displayname"
+             tal:attributes="href context/reviewer/fmt:url">Foo Bar</a>
+          <span
+            tal:attributes="title context/date_reviewed/fmt:datetime"
+            tal:content="context/date_reviewed/fmt:displaydate">
+            on 2006-08-05
+          </span>
+        </td>
+      </tr>
+    </tal:has-submitter>
+
+    <tal:other_translation
+      define="
+        section_title view/other_title;
+        submission translation_dictionary/other_translation_message;
+        dismissable view/dismissable_class_other;
+        form_is_writeable view/form_is_writeable;
+        user_is_official_translator view/user_is_official_translator;
+        ">
+      <metal:suggestion
+         use-macro="context/@@+translations-macros/render-suggestion" />
+    </tal:other_translation>
+    <tal:shared_translation
+      condition="translation_dictionary/shared_translation_message"
+      define="
+        section_title string:Shared:;
+        submission translation_dictionary/shared_translation_message;
+        dismissable view/dismissable_class_other;
+        form_is_writeable view/form_is_writeable;
+        user_is_official_translator view/user_is_official_translator;
+        ">
+      <metal:suggestion
+         use-macro="context/@@+translations-macros/render-suggestion" />
+    </tal:shared_translation>
+    <tal:locked condition="not:context/potmsgset/is_translation_credit">
+      <tal:suggestions-title
+         condition="translation_dictionary/suggestions_count">
+    <tr class="secondary">
+       <tal:comment condition="nothing">
+       Add some vertical space.
+       </tal:comment>
+       <td colspan="4" style="padding-top: 1em"></td>
+     </tr>
+      <tr class="secondary">
+        <th colspan="3">
+            Suggestions:</th>
+      </tr>
+      </tal:suggestions-title>
+      <tal:suggestion_block
+           define="suggestion_block translation_dictionary/suggestion_block">
+        <tal:suggestions repeat="suggestions suggestion_block">
+          <div tal:condition="suggestions"
+               tal:replace="structure suggestions/@@+display" />
+        </tal:suggestions>
+      </tal:suggestion_block>
+      <tr class="secondary dismiss_on_empty"
+          tal:define="name_id string:${view/html_id}_dismiss"
+          tal:condition="view/can_dismiss_on_empty">
+        <td colspan="4"></td>
+        <td>
+          <label class="fuzzy-checkbox" tal:attributes="for name_id">
+            <input class="dismiss_action"
+               type="checkbox"
+               value="dismiss_suggestions"
+               tal:attributes="name name_id; id name_id"
+               />
+                 Dismiss all suggestions above.
+               </label>
+        </td>
+      </tr>
+      <tr class="secondary"
+         tal:condition="view/form_is_writeable">
+         <tal:comment condition="nothing">
+         Add some vertical space.
+         </tal:comment>
+         <td colspan="4" style="padding-top: 1em"></td>
+     </tr>
+      <tr tal:condition="view/form_is_writeable"
+          tal:attributes="class string:secondary translation
+                                       ${view/dismissable_class}">
+        <tal:comment condition="nothing">
+          Normally table cells align the baselines of their first lines of
+          text. This doesn't work here because one of the cells sometimes
+          starts with a textarea. So, we override the vertical-alignment.
+        </tal:comment>
+        <th colspan="3" style="vertical-align: top;">
+          <label
+            class="translation-input-label"
+            tal:condition="not:view/user_is_official_translator"
+            tal:attributes="
+              for string:${translation_dictionary/html_id_translation}_new_select;
+              " >New suggestion:</label>
+          <label
+            class="translation-input-label"
+            tal:condition="view/user_is_official_translator"
+            tal:attributes="
+              for string:${translation_dictionary/html_id_translation}_new_select;
+              " >New translation:</label>
+        </th>
+        <td class="icon left right">
+          <tal:user-is-official-translator condition="view/user_is_official_translator">
+            <input
+              type="radio"
+              tal:attributes="
+                name string:${translation_dictionary/html_id_translation}_radiobutton;
+                id string:${translation_dictionary/html_id_translation}_new_select;
+                value string:${translation_dictionary/html_id_translation}_new;
+                onClick string:javascript:setFocusByName('${translation_dictionary/html_id_translation}_new');
+              " />
+          </tal:user-is-official-translator>
+          <tal:user-is-not-official-translator condition="not:view/user_is_official_translator">
+            <input
+              type="checkbox"
+              tal:attributes="
+                checked translation_dictionary/store_flag;
+                name string:${translation_dictionary/html_id_translation}_new_checkbox;
+                id string:${translation_dictionary/html_id_translation}_new_select;
+                onClick string:javascript:setFocusByName('${translation_dictionary/html_id_translation}_new');
+              " />
+          </tal:user-is-not-official-translator>
+        </td>
+        <td>
+          <input
+            type="text"
+            tal:condition="not:translation_dictionary/is_multi_line"
+            tal:attributes="
+              name string:${translation_dictionary/html_id_translation}_new;
+              id string:${translation_dictionary/html_id_translation}_new;
+              lang context/language/dashedcode;
+              dir context/language/abbreviated_text_dir;
+              value translation_dictionary/submitted_translation;
+            "
+            class="translate expandable"
+          />
+          <tal:multi-line condition="translation_dictionary/is_multi_line">
+            <tal:with-content
+              condition="translation_dictionary/submitted_translation">
+              <tal:comment tal:replace="nothing">
+                We don't use textarea's tal:content tag because tal is not
+                generating the right html tags for translations (new lines
+                matter). Also, the lack of indentation for tal:content is
+                deliberate or we would add extra whitespaces to the textarea,
+                which causes us to potentially corrupt translations. You can
+                read more about this on:
+                https://bugzilla.mozilla.org/show_bug.cgi?id=299009
+              </tal:comment>
+              <textarea
+                rows="6"
+                tal:attributes="
+                  id string:${translation_dictionary/html_id_translation}_new;
+                  name string:${translation_dictionary/html_id_translation}_new;
+                  lang context/language/dashedcode;
+                  dir context/language/abbreviated_text_dir;
+                ">
+<tal:content replace="translation_dictionary/submitted_translation" /></textarea>
+            </tal:with-content>
+            <tal:without-content
+              condition="not: translation_dictionary/submitted_translation">
+              <tal:comment tal:replace="nothing">
+                We are using an special case if we don't have any content for this
+                textarea because tal expressions leave empty lines behind so we
+                get new lines added to the textarea for free and that causes
+                erroneous translations.
+              </tal:comment>
+              <textarea
+                rows="6"
+                tal:attributes="
+                  id string:${translation_dictionary/html_id_translation}_new;
+                  name string:${translation_dictionary/html_id_translation}_new;
+                  lang context/language/dashedcode;
+                  dir context/language/abbreviated_text_dir;
+                "></textarea>
+            </tal:without-content>
+          </tal:multi-line>
+        </td>
+    </tr>
+  </tal:locked>
+  </tal:plural-form>
+  </tal:translation-dictionaries>
+  <tal:official_translator condition="view/allow_diverging">
+    <tr class="secondary" tal:condition="view/zoomed_in_view">
+      <td colspan="4" />
+      <td>
+         <label class="diverge-checkbox">
+           <input
+             type="checkbox"
+             value="diverge_translation"
+             tal:attributes="
+               checked view/force_diverge;
+               name string:${view/html_id}_diverge;
+               id string:${view/html_id}_diverge"
+             />
+           <tal:block condition="not:view/is_plural">
+             Make this translation specific to
+             <a tal:content="view/current_series_title"
+                tal:attributes="href view/current_series/fmt:url"/>
+           </tal:block>
+           <tal:block condition="view/is_plural">
+             Make these translations specific to
+             <a tal:content="view/current_series_title"
+                tal:attributes="href view/current_series/fmt:url"/>
+           </tal:block>
+         </label>
+      </td>
+    </tr>
+  </tal:official_translator>
+  <tr tal:attributes="class string:secondary ${view/dismissable_class}"
+      tal:condition="not:context/potmsgset/is_translation_credit">
+    <td colspan="4" />
+    <td>
+      <div tal:condition="view/user_is_official_translator">
+         <label class="fuzzy-checkbox">
+           <input
+             type="checkbox"
+             value="force_suggestion"
+             tal:attributes="
+               checked view/force_suggestion;
+               name string:${view/html_id}_${language_code}_needsreview;
+               id string:${view/html_id}_force_suggestion;"
+             />
+           <tal:block condition="not:view/is_plural">
+             Someone should review this translation
+           </tal:block>
+           <tal:block condition="view/is_plural">
+             Someone should review these translations
+           </tal:block>
+         </label>
+      </div>
+    </td>
+  </tr>
+  <tr class="secondary"
+    tal:define="name_id string:${view/html_id}_dismiss"
+    tal:condition="view/can_dismiss_on_plural">
+    <td colspan="4">
+    </td>
+    <td>
+      <input class="dismiss_action"
+        type="checkbox"
+        value="dismiss_suggestions"
+        tal:attributes="name name_id; id name_id"
+        />
+      <label class="fuzzy-checkbox" tal:attributes="for name_id">
+        Dismiss all suggestions.
+      </label>
+    </td>
+  </tr>
+<tr tal:condition="view/comment" class="secondary">
+  <th colspan="3"><label>Translator note:</label></th>
+  <td />
+  <td tal:content="view/comment">
+    Translator comment.
+  </td>
+</tr>
+<tr class="lesser secondary" tal:condition="view/file_references">
+  <td colspan="4" />
+  <td style="padding-bottom: 1em; overflow: auto;">
+    Located in
+    <tal:location content="view/file_references">
+      ./plone_forms/discussion_reply_form.pt
+    </tal:location>
+  </td>
+</tr>
+</tal:language-code>
+
+</tal:root>

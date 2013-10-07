@@ -1,0 +1,175 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/searchless"
+  i18n:domain="launchpad"
+>
+<body>
+
+<div metal:fill-slot="heading">
+  <h2>Search packages in <tal:title replace="context/title" /></h2>
+</div>
+
+<div metal:fill-slot="main">
+  <div class="top-portlet">
+    <form name="search" method="GET">
+      <div>
+        <label for="text">
+          Show <span tal:replace="context/title" /> packages containing:
+        </label>
+      </div>
+
+      <input type="text" name="text" size="35"
+        tal:attributes="value request/text|nothing" />
+
+      <input type="submit" value="Search"
+          tal:condition="not: view/search_requested" />
+
+      <input type="submit" value="Search Again"
+          tal:condition="view/search_requested" />
+    </form>
+  </div>
+
+  <tal:search_requested condition="view/search_requested">
+
+        <div id="search-results" tal:condition="view/has_matches">
+          <tal:has_exact_matches condition="view/display_exact_matches">
+
+            <div class="search-batch" style="padding:4px;">
+              <strong class="batch-navigation-index">Exact match</strong>
+            </div>
+
+            <ul class="exact-matches">
+              <li tal:repeat="package_cache view/exact_matches">
+                <tal:project define="package package_cache/distributionsourcepackage;
+                                     project package/upstream_product">
+                <div>
+                  <a tal:attributes="href package/fmt:url" class="search-result-link">
+                    <tal:project-icon content="structure project/image:icon"
+                         condition="project"/>
+                    <tal:package-title content="structure package/name" />
+                  </a>
+                  <tal:source-name-different
+                    condition="python: package.name != view.text">
+                    (The binary '<strong tal:content="view/text" />' is part of
+                    the <tal:source-name content="package/name" /> package)
+                  </tal:source-name-different>
+                </div>
+                <div class="summary">
+                  <tal:project_only condition="project">
+                  <p tal:content="structure project/summary" />
+                  </tal:project_only>
+                  <p>Available in: 
+                    <tal:distroseries_list
+                      content="python: view.distroseries_names[package.name]" />
+                  </p>
+                  <div class="actions"
+                    tal:define="distribution package/distribution">
+                    <a
+                      tal:define="link package/menu:bugs/filebug"
+                      tal:condition="distribution/bug_tracking_usage/enumvalue:LAUNCHPAD"
+                      tal:attributes="href link/url">
+                      <img
+                        tal:attributes="alt link/text"
+                        src="/+icing/but-sml-reportabug.gif" />
+                    </a>
+                    <a
+                      tal:define="link package/menu:answers/new"
+                      tal:condition="distribution/answers_usage/enumvalue:LAUNCHPAD"
+                      tal:attributes="href link/url">
+                    <img
+                      tal:attributes="alt link/text"
+                      src="/+icing/but-sml-askaquestion.gif" />
+                  </a>
+                </div>
+                </div>
+                </tal:project>
+              </li>
+            </ul>
+          </tal:has_exact_matches>
+
+          <tal:batch
+            define="batchnav view/batchnav;batch batchnav/currentBatch|nothing"
+            condition="batchnav">
+
+            <div style="margin-top:0" class="upper-batch-nav search-batch">
+              <strong class="batch-navigation-index">
+                All packages
+                  <tal:binaries condition="view/search_by_binary_name">
+                    with binaries whose name includes
+                  </tal:binaries>
+                  <tal:sources condition="not: view/search_by_binary_name">
+                    with sources matching your query
+                  </tal:sources>
+                  &ldquo;<tal:query content="view/text">query text</tal:query>&rdquo;
+              </strong>
+              <tal:navigation
+                 replace="structure batchnav/@@+navigation-links-upper"/>
+            </div>
+
+            <ul class="package-matches" tal:condition="batch">
+              <li class="pagematch"
+                  tal:repeat="package_cache batch">
+                <tal:project
+                  define="package package_cache/distributionsourcepackage;
+                          project package/upstream_product">
+                <div>
+                  <tal:project-icon content="structure project/image:icon"
+                                    condition="project"/>
+
+                  <a
+                    tal:attributes="href package/fmt:url"
+                    tal:content="structure package/name"
+                    class="search-result-link">Package name</a>
+                </div>
+                <div class="summary">
+                  <p>
+                  <tal:summary
+                    tal:condition="project"
+                    tal:content="structure project/summary">
+                      A snippet of search result summary text.
+                  </tal:summary>
+                  <tal:binary-search-only condition="view/search_by_binary_name">
+                    <tal:matching-binaries
+                      define="binary_names python:view.matching_binary_names[package.name]"
+                      condition="binary_names"
+                      content="string:(Matching binaries: ${binary_names}.)">
+                      (Matching binaries: bin-one, bin-two.)
+                    </tal:matching-binaries>
+                  </tal:binary-search-only>
+                  </p>
+                </div>
+                </tal:project>
+              </li>
+            </ul>
+
+            <div class="lower-batch-nav search-batch">
+              <tal:navigation
+                 replace="structure batchnav/@@+navigation-links-lower" />
+            </div>
+
+          </tal:batch>
+        </div>
+
+        <p id="no-results" tal:condition="not:view/has_matches">
+          Your search for
+          &ldquo;<span
+            class="text"
+            tal:content="view/text">some text</span>&rdquo;
+          did not return any results.
+          <tal:search_by_source condition="view/search_by_binary_name">
+            You can
+            <a tal:attributes="href view/source_search_url" id="source-search">
+              search again including package descriptions</a>.
+          </tal:search_by_source>
+        </p>
+
+  </tal:search_requested>
+
+</div>
+
+</body>
+
+</html>

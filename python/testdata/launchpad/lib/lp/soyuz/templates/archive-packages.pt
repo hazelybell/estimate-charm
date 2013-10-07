@@ -1,0 +1,247 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+  >
+<body>
+    <metal:block fill-slot="head_epilogue">
+      <style type="text/css">
+        .failed {color: red; font-weight: bold;}
+        .non-failed {color: green; font-weight: bold;}
+        .copy-job-message {
+          border-radius: 5px;
+          background: url("/+icing/blue-fade-to-grey") repeat scroll 0 0 #D4E8FF;
+          border-color: #666666;
+          border-style: solid;
+          border-width: 1px 2px 2px 1px;
+          padding: 5px;
+          width: 60em;
+        }
+      </style>
+
+      <script type="text/javascript" id="repository-size-update"
+              tal:condition="view/archive_url">
+LPJS.use('io-base', 'lp.anim', 'node', 'lp.soyuz.base',
+          'lp.soyuz.update_archive_build_statuses', function(Y) {
+
+
+/*
+ * Update the page based on the XHR response.
+ */
+function doUpdate(transaction_id, response, args) {
+    args.container.set('innerHTML', response.responseText);
+}
+
+
+/*
+ * Communicate the update has failed and allow the user to retry
+ * the operation.
+ */
+function informFailure(transaction_id, response, args) {
+    function retry_handler (e) {
+        e.preventDefault();
+        dispatchUpdate();
+    };
+
+    var failure_message = Y.lp.soyuz.base.makeFailureNode(
+        'Failed to fetch repository size ...', retry_handler);
+
+    args.container.set('innerHTML', '');
+    args.container.appendChild(failure_message);
+
+    var anim = Y.lp.anim.red_flash({
+        node: failure_message
+        });
+    anim.run();
+}
+
+
+/*
+ * Communicate an update is in progress and fire the XHR.
+ */
+function dispatchUpdate () {
+    var in_progress_message = Y.lp.soyuz.base.makeInProgressNode(
+        'Fetching repository size ...')
+
+    var container = Y.one('#package-counters');
+    container.set('innerHTML', '');
+    container.appendChild(in_progress_message);
+
+    var uri = '+repository-size';
+    var xhr_config = {
+        on: {
+            success: doUpdate,
+            failure: informFailure
+        },
+        arguments: {
+            'container': container
+        }
+    };
+
+    Y.io(uri, xhr_config);
+}
+
+Y.on("domready", dispatchUpdate);
+
+});
+      </script>
+      <script type="text/javascript" id="repository-size-update">
+LPJS.use('lp.soyuz.archive_packages',
+          'lp.app.widgets.expander.Expander', function(Y) {
+
+Y.on('domready', function() {
+    Y.all('.pending-job').each(function(node) {
+        var widget = new Y.lp.soyuz.archive_packages.PendingCopyJobWidget(
+            {srcNode: node, archive_uri: LP.cache['context'].self_link });
+        widget.render();
+
+        var expander = new Y.lp.app.widgets.expander.Expander(
+            node.one('.job-summary'), node.one('.job-details'));
+        expander.setUp();
+
+    });
+});
+
+});
+      </script>
+      <style type="text/css" media="screen, print">
+tr#package-counters p{
+    margin-bottom: 3.4em;
+}
+      </style>
+    </metal:block>
+
+    <div metal:fill-slot="main"
+         tal:define="archive_active view/has_sources;
+                     archive_label  view/archive_label;"
+         tal:attributes="class string:archive">
+
+      <div class="top-portlet">
+
+        <div class="ppa-packaging-tmp-actions"
+             tal:content="structure view/@@+global-actions" />
+
+        <p tal:condition="not: context/enabled"
+           style="clear: right;" class="warning message"
+           tal:content="view/disabled_warning_message">
+          This archive has been disabled.
+        </p>
+
+        <div tal:condition="view/has_pending_copy_jobs">
+          <div class="copy-job-message">
+            <span tal:condition="view/pending_copy_jobs_text"
+              tal:content="view/pending_copy_jobs_text"/>
+            <tal:jobs tal:repeat="job view/package_copy_jobs">
+            <div class="pending-job" tal:attributes="job_id job/id">
+              <a href="" class="job-summary js-action">
+                Copying <span class="job-status"
+                  tal:attributes="class python: 'failed' if job.status.title=='Failed' else 'non-failed'"
+                  tal:content="job/status/title/lower">in progress</span> of <span
+                tal:content="job/package_name" /> (<span
+                tal:content="job/package_version" />)
+              </a>&nbsp;
+              <span tal:condition="view/has_append_perm">
+                <a href="#" class="js-action remove-notification"
+                   tal:condition="python: job.status.title=='Failed'">
+                  Remove notification
+                  <img src="/@@/remove" alt="Remove notification" /></a>
+              </span>
+              <div class="job-details">
+                Copied from: <a class="copied-from"
+                  tal:content="job/source_archive/displayname"
+                  tal:attributes="href job/source_archive/fmt:url">PPA for Fred
+                  </a>.
+                <tal:copied-by tal:condition="context/owner/is_team">
+                  Copied by: <a class="copied-by"
+                     tal:content="job/job/requester/displayname"
+                     tal:attributes="href job/job/requester/fmt:url">Jimmy Neutron
+                  </a>
+                </tal:copied-by>
+                Target series: <tal:target
+                  tal:replace="job/target_distroseries/displayname">Oneiric
+                  </tal:target>
+                <div class="job-failed-error-msg"
+                  tal:condition="job/error_message"
+                  tal:content="job/error_message">
+                </div>
+              </div>
+            </div>
+          </tal:jobs>
+        </div>
+      </div>
+
+      <br />
+
+        <p>This
+          <tal:archive_label replace="archive_label">PPA</tal:archive_label>
+          currently publishes packages for
+          <tal:series_list replace="view/series_list_string">
+            Gutsy, Hardy and Karmic
+          </tal:series_list>.
+        </p>
+
+      </div>
+
+      <div class="yui-g">
+        <div class="first yui-u"><div class="portlet">
+          <h2>Package totals</h2>
+          <p>The following information is related to the total published
+             packages in the repository (not on your system).</p>
+          <div id="package-counters">
+            <p>
+              Package counters and estimated archive size temporarily
+              unavailable.
+            </p>
+          </div>
+        </div></div> <!-- portlet, yui-u -->
+        <div class="yui-u">
+          <div tal:define="archive context"
+               tal:condition="archive_active"
+               id="build-status-summary"
+               class="portlet">
+            <h2>
+              <span class="see-all"><a
+                tal:replace="structure context/menu:overview/builds/fmt:link" />
+              </span>
+              Package build summary
+            </h2>
+
+            <metal:build-status-summary
+                use-macro="archive/@@+macros/build-status-summary" />
+          </div>
+        </div>
+
+      </div> <!-- yui-g -->
+
+      <div class="portlet">
+        <h2>Packages</h2>
+        <tal:package-copy-request-list tal:condition="context/is_copy">
+          <metal:package-copy-request-list
+              use-macro="context/@@+macros/package-copy-request-list" />
+        </tal:package-copy-request-list>
+
+        <p tal:condition="not: archive_active">
+          This <tal:archive_label replace="archive_label" /> does not contain
+          any packages yet. Find more information about how to upload
+          packages in the <a href="https://help.launchpad.net/Packaging/PPA"
+          >PPA help page</a>
+        </p>
+
+        <tal:active_archive condition="archive_active">
+
+        <metal:package_filter_form
+          use-macro="context/@@+macros/package-filter-form" />
+
+        <metal:package-list
+            use-macro="context/@@+macros/source-package-list" />
+
+        </tal:active_archive>
+      </div> <!-- portlet -->
+    </div> <!--main -->
+
+  </body>
+
+</html>

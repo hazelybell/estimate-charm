@@ -1,0 +1,177 @@
+= Bug Counts For Open Bugs on Packages =
+
+BugTaskset has a method, getBugCountsForPackages(), which returns counts
+for open bugs on each package.
+
+    >>> from lp.bugs.interfaces.bugtask import IBugTaskSet
+    >>> getUtility(IBugTaskSet).getBugCountsForPackages(
+    ...     user=None, packages=[])
+    []
+
+It's possible to get some basic statistics of the open bugs on each
+package using this method which returns a list of dicts, containing the
+package, and the number of open bugs in various states.
+
+    >>> from lp.registry.interfaces.distribution import (
+    ...     IDistributionSet)
+    >>> from lp.registry.interfaces.distributionsourcepackage import (
+    ...     IDistributionSourcePackage)
+    >>> def print_package_counts(package_count):
+    ...     for key, value in sorted(package_count.items()):
+    ...         if IDistributionSourcePackage.providedBy(value):
+    ...             value = value.bugtargetdisplayname
+    ...         print "%s: %s" % (key, value)
+    ...     print # Blank line, to make output more readable.
+    >>> ubuntu = getUtility(IDistributionSet).getByName('ubuntu')
+    >>> debian = getUtility(IDistributionSet).getByName('debian')
+    >>> packages = [
+    ...     ubuntu.getSourcePackage('pmount'),
+    ...     ubuntu.getSourcePackage('mozilla-firefox'),
+    ...     debian.getSourcePackage('mozilla-firefox'),
+    ...     ]
+
+    >>> package_counts = getUtility(IBugTaskSet).getBugCountsForPackages(
+    ...     user=None, packages=packages)
+    >>> for package_count in package_counts:
+    ...     print_package_counts(package_count)
+    open: 3
+    open_critical: 0
+    open_high: 0
+    open_inprogress: 0
+    open_unassigned: 2
+    package: mozilla-firefox (Debian)
+    <BLANKLINE>
+    open: 1
+    open_critical: 0
+    open_high: 0
+    open_inprogress: 0
+    open_unassigned: 1
+    package: mozilla-firefox (Ubuntu)
+    <BLANKLINE>
+    open: 0
+    open_critical: 0
+    open_high: 0
+    open_inprogress: 0
+    open_unassigned: 0
+    package: pmount (Ubuntu)
+
+If we file a new unassigned bug on mozilla-firefox both the open and
+open_unassigned count will increase by one.
+
+    >>> ubuntu_firefox = ubuntu.getSourcePackage('mozilla-firefox')
+    >>> ubuntu_firefox.bugtargetdisplayname
+    u'mozilla-firefox (Ubuntu)'
+
+    >>> login('foo.bar@canonical.com')
+    >>> from lp.bugs.interfaces.bug import CreateBugParams
+    >>> from lp.registry.interfaces.person import IPersonSet
+    >>> foo_bar = getUtility(IPersonSet).getByEmail('foo.bar@canonical.com')
+    >>> bug = ubuntu_firefox.createBug(CreateBugParams(
+    ...     foo_bar, 'Critical Bug', comment='Critical bug.'))
+
+    >>> package_counts = getUtility(IBugTaskSet).getBugCountsForPackages(
+    ...     user=None, packages=packages)
+    >>> print_package_counts(package_counts[1])
+    open: 2
+    open_critical: 0
+    open_high: 0
+    open_inprogress: 0
+    open_unassigned: 2
+    package: mozilla-firefox (Ubuntu)
+
+If we mark the bug as critical, the open_critical count will increase.
+
+    >>> login('foo.bar@canonical.com')
+    >>> from lp.bugs.interfaces.bugtask import BugTaskImportance
+    >>> [ubuntu_firefox_bugtask] = bug.bugtasks
+    >>> ubuntu_firefox_bugtask.transitionToImportance(
+    ...     BugTaskImportance.CRITICAL, getUtility(ILaunchBag).user)
+
+    >>> package_counts = getUtility(IBugTaskSet).getBugCountsForPackages(
+    ...     user=None, packages=packages)
+    >>> print_package_counts(package_counts[1])
+    open: 2
+    open_critical: 1
+    open_high: 0
+    open_inprogress: 0
+    open_unassigned: 2
+    package: mozilla-firefox (Ubuntu)
+
+If we assign the bug to someone, the open_unassigned count will
+decrease.
+
+    >>> ubuntu_firefox_bugtask.transitionToAssignee(foo_bar)
+
+    >>> package_counts = getUtility(IBugTaskSet).getBugCountsForPackages(
+    ...     user=None, packages=packages)
+    >>> print_package_counts(package_counts[1])
+    open: 2
+    open_critical: 1
+    open_high: 0
+    open_inprogress: 0
+    open_unassigned: 1
+    package: mozilla-firefox (Ubuntu)
+
+If we mark the bug as In Progress, the open_inprogress will increase.
+
+    >>> from lp.bugs.interfaces.bugtask import BugTaskStatus
+    >>> ubuntu_firefox_bugtask.transitionToStatus(
+    ...     BugTaskStatus.INPROGRESS, getUtility(ILaunchBag).user)
+
+    >>> package_counts = getUtility(IBugTaskSet).getBugCountsForPackages(
+    ...     user=None, packages=packages)
+    >>> print_package_counts(package_counts[1])
+    open: 2
+    open_critical: 1
+    open_high: 0
+    open_inprogress: 1
+    open_unassigned: 1
+    package: mozilla-firefox (Ubuntu)
+
+== Privacy ==
+
+Only those bugs that the user has access to are shown, so if we mark the
+bug as private, No Privileges Person will only see that there is one
+open bug, even though there are two.
+
+    >>> bug.setPrivate(True, getUtility(ILaunchBag).user)
+    True
+
+    >>> no_priv = getUtility(IPersonSet).getByEmail('no-priv@canonical.com')
+    >>> package_counts = getUtility(IBugTaskSet).getBugCountsForPackages(
+    ...     user=no_priv, packages=packages)
+    >>> print_package_counts(package_counts[1])
+    open: 1
+    open_critical: 0
+    open_high: 0
+    open_inprogress: 0
+    open_unassigned: 1
+    package: mozilla-firefox (Ubuntu)
+
+Foo Bar still can see all the bugs, though.
+
+    >>> package_counts = getUtility(IBugTaskSet).getBugCountsForPackages(
+    ...     user=foo_bar, packages=packages)
+    >>> print_package_counts(package_counts[1])
+    open: 2
+    open_critical: 1
+    open_high: 0
+    open_inprogress: 1
+    open_unassigned: 1
+    package: mozilla-firefox (Ubuntu)
+
+== Duplicate Bugs ==
+
+Duplicates bugs are omitted from the counts.
+
+    >>> from lp.bugs.interfaces.bug import IBugSet
+    >>> bug.markAsDuplicate(getUtility(IBugSet).get(1))
+    >>> package_counts = getUtility(IBugTaskSet).getBugCountsForPackages(
+    ...     user=foo_bar, packages=packages)
+    >>> print_package_counts(package_counts[1])
+    open: 1
+    open_critical: 0
+    open_high: 0
+    open_inprogress: 0
+    open_unassigned: 1
+    package: mozilla-firefox (Ubuntu)

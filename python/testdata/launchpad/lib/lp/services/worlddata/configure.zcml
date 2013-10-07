@@ -1,0 +1,62 @@
+<!-- Copyright 2009 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:webservice="http://namespaces.canonical.com/webservice"
+    i18n_domain="launchpad">
+    <include file="vocabularies.zcml"/>
+
+    <class class=".model.country.Country">
+        <allow
+            interface=".interfaces.country.ICountry" />
+    </class>
+
+    <class class=".model.country.CountrySet">
+        <allow
+            interface=".interfaces.country.ICountrySet" />
+    </class>
+
+    <securedutility
+        class=".model.country.CountrySet"
+        provides=".interfaces.country.ICountrySet">
+        <allow
+            interface=".interfaces.country.ICountrySet" />
+    </securedutility>
+
+    <class class=".model.country.Continent">
+        <allow
+            interface=".interfaces.country.IContinent" />
+    </class>
+
+    <class class=".model.language.Language">
+        <allow interface=".interfaces.language.ILanguage"/>
+        <require
+            permission="launchpad.Admin"
+            set_schema=".interfaces.language.ILanguage" />
+    </class>
+
+    <adapter
+        provides="lp.services.webapp.interfaces.IBreadcrumb"
+        for="lp.services.worlddata.interfaces.language.ILanguage"
+        factory="lp.translations.browser.language.LanguageBreadcrumb"
+        permission="zope.Public"/>
+
+    <securedutility
+        class=".model.language.LanguageSet"
+        provides=".interfaces.language.ILanguageSet">
+        <allow interface=".interfaces.language.ILanguageSet" />
+    </securedutility>
+
+    <adapter
+        provides="lp.services.webapp.interfaces.IBreadcrumb"
+        for="lp.services.worlddata.interfaces.language.ILanguageSet"
+        factory="lp.translations.browser.language.LanguageSetBreadcrumb"
+        permission="zope.Public"/>
+
+    <include package=".browser"/>
+
+   <webservice:register module="lp.services.worlddata.interfaces.webservice" />
+</configure>

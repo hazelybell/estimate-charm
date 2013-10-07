@@ -1,0 +1,33 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+<body>
+  <metal:block fill-slot="head_epilogue">
+    <metal:yui-dependencies
+      use-macro="context/@@launchpad_widget_macros/yui2calendar-dependencies" />
+  </metal:block>
+
+  <div metal:fill-slot="main">
+
+    <div metal:use-macro="context/@@launchpad_form/form">
+      <div metal:fill-slot="extra_info">
+        <p>By registering a sprint in Launchpad, users can propose
+          specifications they would like to discuss at the sprint, and
+          register their attendance at the sprint.  This information can
+          help you organise a schedule for the sprint.</p>
+
+        <p>Note that the start and end dates for the sprint are treated as
+          local time for the sprint.</p>
+      </div>
+    </div>
+
+  </div>
+
+
+</body>
+</html>
+

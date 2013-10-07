@@ -1,0 +1,30 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Format: 1.7
+Date: Tue, 18 May 2006 15:48:14 -0300
+Source: bar
+Binary: bar-bin
+Architecture: i386
+Version: 1.0-6
+Distribution: breezy
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Celso Providelo <cprov@ubuntu.com>
+Description: 
+ bar-bin    - Stuff for testing
+Changes: 
+ bar (1.0-6) breezy; urgency=low
+ .
+   * Change the binary name to check bogus creation of sourcepackagename when
+     processing binaries.
+Files: 
+ 0c683c54c856d4c565e9da8a0e56b145 652 devel optional bar-bin_1.0-6_i386.deb
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.3 (GNU/Linux)
+
+iD8DBQFFt75njn63CGxkqMURAp2OAJ4nQBl892uA7XFa5f4JPbm8/HD9fwCeNoS5
+FF6eo2plyVF15v4qAPqgzIU=
+=wrjK
+-----END PGP SIGNATURE-----

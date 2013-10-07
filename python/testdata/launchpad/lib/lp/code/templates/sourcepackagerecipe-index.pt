@@ -1,0 +1,164 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+>
+
+<metal:block fill-slot="head_epilogue">
+  <style type="text/css">
+    .binary-build .indent {
+      padding-left: 2em;
+    }
+    div#edit-recipe_text, div#edit-description {
+      font-family: "Ubuntu Mono",monospace;
+      margin: 1em 0;
+    }
+    div#edit-recipe_text.yui3-editable_text-content,
+    div#edit-description.yui3-editable_text-content {
+      margin-top: -15px;
+    }
+    .build-informational,
+    .build-error {
+        background: #d4e8ff url('/+icing/blue-fade-to-grey');
+        border: solid #666;
+        border-width: 1px 2px 2px 1px;
+        color: black;
+        padding: 5px 5px 5px 5px;
+        margin-right: 40px
+    }
+    .build-informational::before {
+        padding-right: 5px;
+        content: url('/@@/info');
+    }
+    .build-error::before {
+        padding-right: 5px;
+        content: url('/@@/error');
+    }
+    .popup-build-informational {
+        color: black;
+    }
+    .popup-build-informational::before {
+        padding-right: 5px;
+        content: url('/@@/info');
+    }
+  </style>
+</metal:block>
+
+<body>
+
+<tal:registering metal:fill-slot="registering">
+  Created by
+    <tal:registrant replace="structure context/registrant/fmt:link" />
+  on
+    <tal:created-on replace="structure context/date_created/fmt:date" />
+  and last modified on
+    <tal:last-modified replace="structure context/date_last_modified/fmt:date" />
+</tal:registering>
+
+
+<metal:side fill-slot="side">
+  <div tal:replace="structure context/@@+global-actions" />
+</metal:side>
+
+<metal:heading fill-slot="heading">
+  <h1 tal:replace="structure view/name_widget">
+    recipe name
+  </h1>
+</metal:heading>
+
+<div metal:fill-slot="main">
+  <div class="yui-g first">
+    <div class="yui-u first">
+      <div class="portlet">
+        <h2 class="lazr-multiline-edit-header">Description</h2>
+        <tal:description replace="structure view/description_widget"/>
+      </div>
+    </div>
+    <div class="yui-u">
+      <div class="portlet">
+        <h2>Recipe information</h2>
+        <div class="two-column-list">
+          <dl id="build_daily">
+            <dt>Build schedule:
+              <a href="/+help-code/recipe-build-frequency.html" target="help"
+                 class="sprite maybe action-icon">(?)</a>
+            </dt>
+            <dd tal:content="structure view/daily_build_widget"/>
+            <dd
+              tal:define="link context/menu:context/request_daily_build"
+              tal:condition="link/enabled"
+              >
+              <form action="+request-daily-build"
+                    method="post"
+                    id="request-daily-build-form">
+                  <input type="submit" name="field.actions.build"
+                      id="field.actions.build" value="Build now" />
+              </form>
+              <a id="request-daily-build"
+                 class="sprite source-package-recipe js-action hidden"
+                 tal:attributes="href link/url"
+                 tal:content="link/text"/>
+            </dd>
+          </dl>
+
+          <dl id="owner">
+            <dt>Owner:</dt>
+            <dd tal:content="structure view/person_picker"/>
+          </dl>
+          <dl id="base-branch">
+            <dt>Base branch:</dt>
+            <dd tal:content="structure context/base_branch/fmt:link" />
+          </dl>
+          <dl id="debian-version">
+            <dt>Debian version:</dt>
+            <dd tal:content="context/deb_version_template" />
+          </dl>
+          <dl id="daily_build_archive">
+            <dt>Daily build archive:</dt>
+            <dd tal:content="structure view/archive_picker"/>
+          </dl>
+          <dl id="distroseries">
+            <tal:distroseries tal:replace="structure view/distroseries_widget"/>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="yui-g">
+    <div id="builds-target" tal:content="structure context/@@+builds" />
+  </div>
+  <div
+    tal:define="link context/menu:context/request_builds"
+    tal:condition="link/enabled"
+    >
+    <a id="request-builds"
+       class="sprite add"
+       tal:attributes="href link/url"
+       tal:content="link/text" />
+  </div>
+  <div class='portlet'>
+    <h2>Recipe contents</h2>
+    <tal:widget replace="structure view/recipe_text_widget"/>
+  </div>
+
+  <script type="text/javascript">
+    LPJS.use('io-base', 'lp.deprecated.ui', 'lp.code.requestbuild_overlay', function(Y) {
+
+        Y.on('lp:context:deb_version_template:changed', function(e) {
+            Y.lp.deprecated.ui.update_field('#debian-version dd', e.new_value);
+        });
+        Y.on('lp:context:base_branch_link:changed', function(e) {
+            Y.lp.deprecated.ui.update_field('#base-branch dd', e.new_value_html);
+        });
+        Y.on('load', function() {
+            Y.lp.code.requestbuild_overlay.hookUpDailyBuildsSchedule();
+        }, window);
+      });
+    </script>
+</div>
+</body>
+</html>

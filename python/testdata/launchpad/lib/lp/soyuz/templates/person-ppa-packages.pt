@@ -1,0 +1,104 @@
+
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<body>
+
+<div metal:fill-slot="heading">
+  <h1 tal:content="view/page_title"/>
+</div>
+
+<div metal:fill-slot="main">
+  <div class="top-portlet">
+    <tal:navlinks replace="structure context/@@+related-software-navlinks"/>
+  </div>
+
+  <div id="packages" class="top-portlet">
+
+  <tal:navigation_top
+       replace="structure view/batchnav/@@+navigation-links-upper" />
+
+  <tal:ppa-packages
+    define="sourcepackagereleases view/batch">
+
+  <table class="listing" condition="sourcepackagereleases">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Uploaded to</th>
+        <th>Version</th>
+        <th>When</th>
+        <th>Failures</th>
+      </tr>
+    </thead>
+    <tbody>
+      <div metal:use-macro="template/macros/sourcepackagerelease-ppa-rows" />
+    </tbody>
+  </table>
+
+  <tal:navigation_bottom
+       replace="structure view/batchnav/@@+navigation-links-lower" />
+
+  <tal:no_packages condition="not: sourcepackagereleases">
+    <tal:name replace="context/fmt:displayname"/> has no related PPA packages.
+  </tal:no_packages>
+
+  </tal:ppa-packages>
+
+  </div>
+</div>
+
+<metal:macros fill-slot="bogus">
+<metal:macro define-macro="sourcepackagerelease-ppa-rows">
+  <tal:comment replace="nothing">
+    This macro expects the following variables defined:
+    :sourcepackagereleases: A list of SourcePackageRelease objects
+  </tal:comment>
+  <tr tal:repeat="sourcepackagerelease sourcepackagereleases"
+      class="ppa_row">
+  <tal:block define="spr sourcepackagerelease;
+                     distroseries spr/upload_distroseries;
+                     ppa spr/upload_archive">
+    <td tal:content="spr/sourcepackagename/name">
+      iceweasel
+    </td>
+    <td>
+      <a tal:attributes="href ppa/fmt:url" tal:content="ppa/displayname" /> -
+      <a class="distroseries" tal:attributes="href distroseries/fmt:url"
+         tal:content="distroseries/fullseriesname" />
+    </td>
+    <td tal:content="spr/version">
+      1.0
+    </td>
+    <td
+      tal:attributes="title spr/dateuploaded/fmt:datetime"
+      tal:content="spr/dateuploaded/fmt:approximatedate">
+      2005-10-24
+    </td>
+    <td>
+      <tal:block condition="spr/needs_building">
+          Not yet built
+      </tal:block>
+      <tal:block condition="not: spr/needs_building">
+          <tal:block repeat="build spr/failed_builds">
+             <a tal:attributes="href build/fmt:url"
+                tal:content="build/distro_arch_series/architecturetag" />
+          </tal:block>
+          <tal:block condition="not: spr/failed_builds">
+             None
+          </tal:block>
+      </tal:block>
+    </td>
+  </tal:block>
+  </tr>
+</metal:macro>
+</metal:macros>
+
+</body>
+</html>

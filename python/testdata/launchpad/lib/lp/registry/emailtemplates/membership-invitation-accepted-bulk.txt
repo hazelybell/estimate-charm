@@ -1,0 +1,5 @@
+Hello %(recipient_name)s,
+
+%(reviewer_name)s has accepted the invitation to make %(member_name)s a member of %(team_name)s.
+<%(team_url)s>
+%(comment)s

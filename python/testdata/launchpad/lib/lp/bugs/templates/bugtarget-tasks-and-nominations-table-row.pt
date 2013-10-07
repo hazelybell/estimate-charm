@@ -1,0 +1,11 @@
+<tal:bugtarget xmlns:tal="http://xml.zope.org/namespaces/tal">
+  <tr style="opacity: 0.5">
+    <td></td>
+    <td>
+      <a tal:attributes="href context/fmt:url;
+                         class context/image:sprite_css"
+         tal:content="context/bugtargetdisplayname" />
+    </td>
+    <td colspan="5"></td>
+  </tr>
+</tal:bugtarget>

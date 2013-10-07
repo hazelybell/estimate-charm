@@ -1,0 +1,102 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+<script type="text/javascript">
+  LPJS.use('lp.app.licence', function(Y) {
+      Y.on('domready', function() {
+        var widget = new Y.lp.app.licence.LicenceWidget();
+        widget.render();
+      });
+  });
+</script>
+<div style="color: black">
+  <tal:copyright condition="view/source_package_release">
+    <div class="collapsible">
+    <legend>Copyright info from source package</legend>
+    <div id="copyright" class="hide-on-load">
+      <div tal:content="structure view/source_package_release/@@+copyright"
+        style="overflow-x: hidden; overflow-y: auto;
+               max-width: 60em; max-height: 32em; background: #f7f7f7"
+        />
+    </div>
+    </div>
+  </tal:copyright>
+
+  Select the licence(s) under which you release your project.
+  <div tal:condition="view/allow_pending_license"
+       tal:define="is_empty not:view/_getFormInput">
+    <input id="license_pending" name="license_status" type="radio"
+           tal:attributes="checked is_empty"/>
+    <label for="license_pending">I haven't specified the licence yet</label>
+    <br/>
+
+    <input id="license_complete" name="license_status" type="radio"
+          tal:attributes="checked not:is_empty" />
+    <label for="license_complete">
+      This project consists of code licensed under:
+    </label>
+  </div>
+
+  <div id="pending-div" style="padding-left: 20px">
+    <div class="collapsible">
+    <legend>Recommended open source licences</legend>
+    <input tal:replace="structure view/recommended" />
+    </div>
+
+    <div class="collapsible">
+    <legend>More open source licences</legend>
+    <input tal:replace="structure view/more" />
+    </div>
+    <div tal:condition="view/deprecated_count">
+    <div class="collapsible">
+    <legend>Deprecated licences</legend>
+    <input tal:replace="structure view/deprecated" />
+    </div>
+    </div>
+
+    <div class="collapsible">
+    <legend>Other choices</legend>
+    <input tal:replace="structure view/special" />
+    </div>
+    <div id="license-details" class="hide-on-load" style="margin-top: 10px">
+      <label for="field.license_info">Licence details:</label>
+      <input tal:replace="structure view/license_info_widget" />
+      <p class="formHelp">Additional licence details are required.
+      Please include the URL to the licence, or other
+      detailed information.</p>
+   </div>
+  </div>
+  <p/>
+    Launchpad.net is free to use for software projects that share
+    their source code and comply with these
+    <a tal:define="config modules/lp.services.config/config"
+       tal:attributes="href config/commercial/licensing_policy_url">
+      licensing policies.
+    </a>
+    <br/>
+    <div id="proprietary" class="hidden">
+      Commercial and proprietary projects do not qualify for free hosting;
+      therefore a subscription needs to be purchased in order to host this
+      project on Launchpad.
+      <p>Here are the steps to obtain a commercial subscription:</p>
+      <ol>
+        <li>Purchase a Launchpad subscription in the
+          <a tal:define="config modules/lp.services.config/config"
+             tal:attributes="href config/commercial/purchase_subscription_url">
+            Canonical Shop</a>.
+        </li>
+        <li>You will receive an email that your order has been processed.</li>
+        <li>Then you may apply the purchased subscription to this project
+            on your
+          <a href="/people/+me/+vouchers"
+             tal:attributes="href string:${request/lp:person/fmt:url}/+vouchers">
+            voucher management page</a>.
+        </li>
+      </ol>
+      <a href="mailto:commercial@launchpad.net">Contact us</a>
+      for more information regarding commercial subscriptions.
+    </div>
+</div>
+</tal:root>

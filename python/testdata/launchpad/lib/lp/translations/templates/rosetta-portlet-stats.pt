@@ -1,0 +1,20 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<div>
+  <strong tal:content="context/pomsgid_count" /> strings
+  in <strong tal:content="context/potemplate_count" /> translation templates
+</div>
+<div>
+  <a tal:attributes="href context/languages/fmt:url">
+     <strong tal:content="context/language_count" /> languages,</a>
+  <strong tal:content="context/translator_count" /> translators and
+  <a tal:attributes="href context/translation_groups/fmt:url">
+    <strong tal:content="context/translation_groups/getGroupsCount" />
+    translation groups
+  </a>
+</div>
+</tal:root>

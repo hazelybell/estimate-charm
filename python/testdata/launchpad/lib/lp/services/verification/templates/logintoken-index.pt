@@ -1,0 +1,24 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<body>
+
+<div metal:fill-slot="main">
+
+  <p>
+    You reached this page probably because you followed a link received by
+    email. That link was sent to confirm you have access to the email
+    address it was sent to, but this confirmation was already concluded, so
+    you don't need to do anything else.
+  </p>
+
+</div>
+</body>
+</html>
+

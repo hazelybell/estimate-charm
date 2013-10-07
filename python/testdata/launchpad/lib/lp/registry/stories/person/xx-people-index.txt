@@ -1,0 +1,13 @@
+
+  Test /people.
+
+  >>> print http(r"""
+  ... GET /people HTTP/1.1
+  ... """)
+  HTTP/1.1 200 Ok
+  Content-Length: ...
+  Content-Type: text/html;charset=utf-8
+  <BLANKLINE>
+  ...
+  ...<h1>People and teams</h1>...
+  ...

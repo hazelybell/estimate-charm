@@ -1,0 +1,19 @@
+Format: 1.7
+Date: Wed, 14 Feb 2007 22:17:14 -0200
+Source: bar
+Binary: bar-bin
+Architecture: source
+Version: 1:1.0-7
+Distribution: breezy
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Celso Providelo <cprov@ubuntu.com>
+Description: 
+ bar-bin    - Stuff for testing
+Changes: 
+ bar (1:1.0-7) breezy; urgency=low
+ .
+   * let's check epochs
+Files: 
+ a1f5178ce6e668514e858c3eb1c1d935 281 devel optional bar_1.0-7.dsc
+ 8c9453890a967c5c4382f960161d7cbd 812 devel optional bar_1.0-7.diff.gz

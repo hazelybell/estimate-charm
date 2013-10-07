@@ -1,0 +1,101 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  id="code-review-votes">
+
+<table tal:condition="view/show_table" class="listing compressed">
+  <thead>
+    <tr>
+      <th>Reviewer</th>
+      <th>Review Type</th>
+      <th>Date Requested</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Current reviews -->
+    <tr tal:repeat="review view/current_reviews"
+        tal:attributes="id string:review-${review/reviewer/name}">
+      <td>
+        <tal:reviewer replace="structure review/reviewer/fmt:link:mainsite">
+        Eric the Reviewer</tal:reviewer>
+        <tal:community condition="not: review/trusted">
+        (community)</tal:community></td>
+      <td tal:content="review/review_type" />
+      <td>
+        <tal:date-requested condition="review/show_date_requested">
+          <span tal:attributes="title string:Requested by ${review/registrant/displayname}">
+            <tal:date replace="review/date_requested/fmt:approximatedate"/>
+          </span>
+        </tal:date-requested>
+      </td>
+      <td>
+        <span tal:attributes="class string:vote${review/comment/vote/name}"
+              tal:content="review/status_text">
+          Approved
+        </span>
+        <tal:date replace="review/date_of_comment/fmt:displaydate" />
+        <a tal:condition="review/can_change_review" href="+review">
+          <img src="/@@/edit" title="Vote again" alt="vote"/>
+        </a>
+      </td>
+    </tr>
+    <!-- Pending reviews -->
+    <tr tal:repeat="review view/requested_reviews"
+        tal:attributes="id string:review-${review/reviewer/name}">
+      <td>
+        <tal:reviewer
+          tal:replace="structure review/reviewer/fmt:link:mainsite" />
+          <a tal:condition="review/user_can_reassign"
+             tal:attributes="href string:reviews/${review/id}/+reassign"><img
+             src="/@@/edit" title="Reassign reviewer" alt="Reassign" /></a>
+      </td>
+      <td tal:content="review/review_type" />
+      <td>
+        <tal:date-requested condition="review/show_date_requested">
+          <span tal:attributes="title string:Requested by ${review/registrant/displayname}">
+            <tal:date replace="review/date_requested/fmt:approximatedate"/>
+          </span>
+        </tal:date-requested>
+      </td>
+      <td>
+        <span class="votePENDING">Pending</span>
+        <tal:vote-link condition="review/user_can_review">
+          <a tal:attributes="href string:+review?claim=${review/reviewer/name}&amp;review_type=${review/review_type_str}">[Review]</a>
+        </tal:vote-link>
+          <form method="POST" tal:condition="review/user_can_claim">
+            <input type="submit" name="field.actions.claim"
+                id="field.actions.claim" value="Claim review" />
+            <input type="hidden" name="field.review_id" id="field.claim"
+                tal:attributes="value string:${review/id}" />
+          </form>
+      </td>
+    </tr>
+    <tr id="email-review">
+      <td colspan="4" style="padding-top: 1em; patting-bottom: 0.5em">
+        Review <a href="https://help.launchpad.net/Code/Review"
+                  class="help">via email</a>:
+        <img src="/@@/mail" style="padding-left:0.5em"/>
+        <a tal:attributes="href string:mailto:${context/address}"
+           tal:content="context/address">mp-x@launchpad.net</a>
+      </td>
+    </tr>
+
+    <tal:request-review define="link context/menu:context/request_review"
+                        condition="link/enabled">
+    <tr>
+      <td colspan="4" style="text-align:right">
+        <div>
+          <a id="request-review"
+             class="sprite add"
+             tal:attributes="href link/url"
+             tal:content="link/text">Request a review</a>
+        </div>
+      </td>
+    </tr>
+    </tal:request-review>
+  </tbody>
+</table>
+
+</div>

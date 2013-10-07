@@ -1,0 +1,32 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  tal:define="addserieslink context/menu:overview/addseries"
+  tal:condition="view/latest_derivatives"
+  class="portlet" id="derivatives">
+    <h2>Latest derivatives</h2>
+    <ul tal:condition="not: view/latest_derivatives/is_empty">
+      <tal:per_series repeat="derivative view/latest_derivatives">
+        <li>
+          <strong>
+          <a tal:attributes="href derivative/fmt:url" class="sprite distribution">
+            <tal:version replace="derivative/version">3.0</tal:version>
+            &#8220;<tal:codename replace="derivative/displayname" />&#8221; series
+          </a>
+          </strong>
+          (from <a tal:attributes="href derivative/previous_series/fmt:url"
+                    tal:content="derivative/previous_series/displayname" />)
+        <br/>
+        </li>
+      </tal:per_series>
+    </ul>
+    <span tal:condition="view/latest_derivatives/is_empty">
+      No derivatives.
+    </span>
+    <ul class="horizontal">
+      <li tal:condition="not: view/latest_derivatives/is_empty">
+        <a tal:replace="structure context/menu:overview/derivatives/fmt:link" />
+      </li>
+    </ul>
+</div>

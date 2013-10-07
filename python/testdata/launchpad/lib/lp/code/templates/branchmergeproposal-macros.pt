@@ -1,0 +1,70 @@
+ <tal:root
+   xmlns:tal="http://xml.zope.org/namespaces/tal"
+   xmlns:metal="http://xml.zope.org/namespaces/metal"
+   omit-tag="">
+
+<metal:vote-summary define-macro="vote-summary">
+  <tal:comment condition="nothing">
+    This macro requires the following defined variables:
+      proposal - a BranchMergeProposalListingItem
+
+      The subsequent text is somewhat mashed up due to bug 22993.
+  </tal:comment><tal:vote repeat="ref proposal/vote_summary_items"><tal:comma condition="not: repeat/ref/start">,</tal:comma> <span title="" tal:attributes="class string:vote${ref/name}; title ref/reviewers" tal:content="structure string:${ref/title}:&nbsp;${ref/count}">Approved: 2</span></tal:vote><tal:comma condition="python:proposal.vote_type_count and proposal.comment_count">,</tal:comma>
+  <tal:comments condition="proposal/comment_count"
+                replace="structure string:Comments:&nbsp;${proposal/comment_count}"/>
+  <em tal:condition="proposal/has_no_activity">None</em>
+
+</metal:vote-summary>
+
+<metal:active-reviews define-macro="active-reviews">
+
+  <tal:comment condition="nothing">
+    This macro requires the following defined variables:
+      proposals - the list of proposals
+      heading - the heading to use before the table
+  </tal:comment>
+
+  <tbody>
+
+    <tr tal:condition="heading">
+      <td class="section-heading"
+          tal:content="heading"
+          colspan="4">
+        Section heading
+      </td>
+    </tr>
+
+    <tr class="thead">
+      <th>Branch Merge Proposal</th>
+      <th>Requested By</th>
+      <th>Lines</th>
+      <th>Activity</th>
+    </tr>
+
+    <tr tal:repeat="proposal proposals">
+      <td>
+        <a tal:attributes="href proposal/fmt:url">
+          <strong>
+            <tal:source-branch replace="proposal/source_branch/bzr_identity"/>
+          </strong>
+          &rArr;
+          <tal:source-branch replace="proposal/target_branch/bzr_identity"/>
+        </a>
+      </td>
+      <td>
+        <tal:registrant replace="structure proposal/registrant/fmt:link" />
+        <tal:date replace="proposal/date_review_requested/fmt:displaydate"/>
+      </td>
+      <td style="text-align: right">
+        <tal:size replace='proposal/preview_diff/diff_lines_count' condition="proposal/preview_diff"/>
+      </td>
+      <td>
+        <metal:votes use-macro="proposal/@@+bmp-macros/vote-summary"/>
+      </td>
+    </tr>
+
+  </tbody>
+
+</metal:active-reviews>
+
+</tal:root>

@@ -1,0 +1,51 @@
+<div
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    tal:omit-tag="">
+  <div tal:condition="view/patches" class="portlet" id="portlet-patches">
+    <h2>Patches</h2>
+    <ul>
+      <li class="download-attachment"
+          tal:repeat="attachment view/patches">
+        <a tal:attributes="href attachment/file/http_url"
+           tal:content="attachment/attachment/title"
+           class="sprite haspatch-icon">
+          Attachment Title
+        </a>
+        <small>
+          (<a tal:attributes="href attachment/attachment/fmt:url">edit</a>)
+        </small>
+      </li>
+    </ul>
+    <ul>
+      <li>
+        <a tal:attributes="href string:${view/current_bugtask/fmt:url/+addcomment}?field.patch=on"
+           class="sprite add">Add patch</a>
+      </li>
+    </ul>
+  </div>
+  <div tal:condition="view/regular_attachments" class="portlet"
+       id="portlet-attachments">
+    <h2>Bug attachments</h2>
+    <ul>
+      <li class="download-attachment"
+          tal:repeat="attachment view/regular_attachments">
+        <a tal:attributes="href attachment/file/http_url"
+           tal:content="attachment/attachment/title"
+           class="sprite download-icon">
+          Attachment Title
+        </a>
+        <small>
+          (<a tal:attributes="href attachment/attachment/fmt:url">edit</a>)
+        </small>
+      </li>
+    </ul>
+    <ul>
+      <li>
+        <a tal:attributes="href view/current_bugtask/fmt:url/+addcomment"
+           class="sprite add">Add attachment</a>
+      </li>
+    </ul>
+  </div>
+</div>

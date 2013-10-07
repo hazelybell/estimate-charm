@@ -1,0 +1,42 @@
+/* Copyright (c) 2011, Canonical Ltd. All rights reserved. */
+
+.yui3-orderbybar {
+    border: 1px solid #EEE;
+    float: left;
+    min-width: 600px;
+    width: 100%;
+    }
+
+.yui3-orderbybar p {
+    float: left;
+    margin: 5px;
+    }
+
+.yui3-orderbybar ul li {
+    float: left;
+    margin: 5px 3px;
+    padding: 0 8px;
+    background: #DDD;
+    border-radius: 10px;
+    cursor: pointer;
+    }
+
+.yui3-orderbybar ul li.active-sort {
+    background: #B8B8B8;
+    }
+
+.yui3-orderbybar .sort-arr .sprite {
+    vertical-align: middle;
+    margin-left: 2px;
+    padding-left: 12px;
+    line-height: 14px;
+    }
+
+.yui3-orderbybar .config-widget {
+    float: left;
+    border-right: 1px solid #EEE;
+    margin: 4px 3px;
+    padding-right: 4px;
+    min-width: 20px;
+    min-height: 20px;
+    }

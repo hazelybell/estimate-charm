@@ -1,0 +1,631 @@
+<?xml version="1.0"?>
+<!DOCTYPE owl [
+<!ENTITY foaf "http://xmlns.com/foaf/0.1/">
+<!ENTITY dc "http://purl.org/dc/elements/1.1/">
+<!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
+<!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<!ENTITY owl "http://www.w3.org/2002/07/owl#">
+<!ENTITY launchpad "https://launchpad.net/rdf-spec/launchpad#">
+<!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
+<!ENTITY doaml "http://ns.balbinus.net/doaml#">
+]>
+
+<!-- Copyright 2009 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE). -->
+
+<rdf:RDF
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:launchpad="https://launchpad.net/rdf/launchpad#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:doaml="http://ns.balbinus.net/doaml#"
+    xml:base="https://launchpad.net/rdf/launchpad"
+>
+
+<owl:Ontology rdf:about="https://launchpad.net/rdf/launchpad">
+    <owl:versionInfo>0.1</owl:versionInfo>
+    <rdfs:comment>Software project ontology</rdfs:comment>
+    <rdfs:label>Launchpad</rdfs:label>
+    <owl:imports rdf:resource="http://purl.org/dc/elements/1.1/"/>
+    <owl:imports rdf:resource="http://ns.balbinus.net/doaml"/>
+    <owl:imports rdf:resource="http://xmlns.com/foaf/0.1/"/>
+    <owl:imports rdf:resource="http://www.w3.org/2000/01/rdf-schema"/>
+</owl:Ontology>
+
+<!-- Classes -->
+
+<owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+    <rdfs:comment>A software product.</rdfs:comment>
+    <rdfs:label>Product</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductRelease">
+    <rdfs:comment>A release of an instance of a product series.</rdfs:comment>
+    <rdfs:label>Product release</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductSeries">
+    <rdfs:comment>
+        A collection of releases of a Product, following a
+        particular stream of development.
+    </rdfs:comment>
+    <rdfs:label>Product Series</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Project">
+    <rdfs:subClassOf>
+        <owl:Class rdf:about="http://xmlns.com/foaf/0.1/Project">
+        </owl:Class>
+    </rdfs:subClassOf>
+    <rdfs:label>Project</rdfs:label>
+    <rdfs:comment>An coherent collection of software products.</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="https://launchpad.net/rdf/launchpad#RegistryEntry">
+    <rdfs:label>Registry Entry</rdfs:label>
+    <rdfs:comment>
+        A description of an entry in an online software repository.
+    </rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="http://ns.balbinus.net/doaml#PublicMailingList">
+</owl:Class>
+
+<owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Literal">
+</owl:Class>
+
+<owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Resource">
+</owl:Class>
+
+<owl:Class rdf:about="http://xmlns.com/foaf/0.1/Agent">
+</owl:Class>
+
+<owl:Class rdf:about="http://xmlns.com/foaf/0.1/Person">
+</owl:Class>
+
+<owl:Class rdf:about="http://xmlns.com/foaf/0.1/Project">
+</owl:Class>
+
+<!-- Properties -->
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#changelog">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductRelease">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Literal">
+        </owl:Class>
+    </rdfs:range>
+    <rdfs:label>Changelog</rdfs:label>
+    <rdfs:comment>
+        Plain text description of what's new in this release.
+    </rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#creationDate">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Project">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductRelease">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Literal">
+        </owl:Class>
+    </rdfs:range>
+    <rdfs:label>Creation date</rdfs:label>
+    <rdfs:comment>
+        Date of creation in UTC time zone, in the form YYYY-MM-DD
+    </rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#description">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Project">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductRelease">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Literal">
+        </owl:Class>
+    </rdfs:range>
+    <rdfs:comment>A plaintext prose description.</rdfs:comment>
+    <rdfs:label>Description</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#displayName">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductSeries">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Project">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Literal">
+        </owl:Class>
+    </rdfs:range>
+    <rdfs:label>Display name</rdfs:label>
+    <rdfs:comment>A short name suitable for display to humans.</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#download">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductSeries">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Resource">
+        </owl:Class>
+    </rdfs:range>
+    <rdfs:comment>
+        URL of a directory with further download information. Not the actual file itself.
+    </rdfs:comment>
+    <rdfs:label>Download</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#foreignProject">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Project">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#RegistryEntry">
+        </owl:Class>
+    </rdfs:range>
+    <rdfs:comment xml:lang="en">
+        Details of the entry for this Project or Product in a software
+        registry.
+    </rdfs:comment>
+    <rdfs:label xml:lang="en">Software registry entry</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#freshmeatProject">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Project">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Literal">
+        </owl:Class>
+    </rdfs:range>
+    <rdfs:comment>
+        Name of corresponding project entry on Freshmeat.net.
+    </rdfs:comment>
+    <rdfs:label>Freshmeat Project</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#homepage">
+    <rdf:type rdf:resource="&owl;InverseFunctionalProperty" />
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductSeries">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Project">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Resource">
+        </owl:Class>
+    </rdfs:range>
+    <rdfs:comment>URI of homepage.</rdfs:comment>
+    <rdfs:label>Homepage</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#inProduct">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductSeries">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+        </owl:Class>
+    </rdfs:range>
+    <owl:inverseOf rdf:resource="https://launchpad.net/rdf/launchpad#series" />
+    <rdfs:label>In product</rdfs:label>
+    <rdfs:comment>Relates a product series to the parent product.</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#inProductSeries">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductRelease">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductSeries">
+        </owl:Class>
+    </rdfs:range>
+    <owl:inverseOf rdf:resource="https://launchpad.net/rdf/launchpad#release" />
+    <rdfs:label>in series</rdfs:label>
+    <rdfs:comment>Specifies the product series of which a release is part.</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#inProject">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Project">
+        </owl:Class>
+    </rdfs:range>
+    <owl:inverseOf rdf:resource="https://launchpad.net/rdf/launchpad#product" />
+    <rdfs:comment>Relates a product with a project in which it is contained.</rdfs:comment>
+    <rdfs:label>In project</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#name">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductSeries">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#RegistryEntry">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Project">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Literal">
+        </owl:Class>
+    </rdfs:range>
+    <rdfs:comment>A short lowercase name intended as part of a filename or URL to indicate the project, product or series.</rdfs:comment>
+    <rdfs:label>Name</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#owner">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Project">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductRelease">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="http://xmlns.com/foaf/0.1/Agent">
+        </owl:Class>
+    </rdfs:range>
+    <rdfs:label>Owner</rdfs:label>
+    <rdfs:comment>Owner of the project or product in the Launchpad system.</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#product">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Project">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+        </owl:Class>
+    </rdfs:range>
+    <owl:inverseOf rdf:resource="https://launchpad.net/rdf/launchpad#inProject" />
+    <rdfs:label>"Has product."</rdfs:label>
+    <rdfs:comment>A product that forms part of a project.</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#programmingLanguage">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Literal">
+        </owl:Class>
+    </rdfs:range>
+    <rdfs:label>Programming language</rdfs:label>
+    <rdfs:comment>Comma separated list of significant programming languages used in the product.</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#publicMailingList">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="http://ns.balbinus.net/doaml#PublicMailingList">
+        </owl:Class>
+    </rdfs:range>
+    <rdfs:label>Public mailing list</rdfs:label>
+    <rdfs:comment>Public mailing list</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#registryHomepage">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#RegistryEntry">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Resource">
+        </owl:Class>
+    </rdfs:range>
+    <rdfs:comment>URL giving home page of an online software repository.</rdfs:comment>
+    <rdfs:label>Registry home page</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#release">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductSeries">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:subPropertyOf rdf:resource="https://launchpad.net/rdf/launchpad#description" />
+    <rdfs:comment>Relates a product release to a product series.</rdfs:comment>
+    <rdfs:label>Release</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#screenshot">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Resource">
+        </owl:Class>
+    </rdfs:range>
+    <rdfs:label>Screenshot</rdfs:label>
+    <rdfs:comment>URI of screenshot</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#series">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductSeries">
+        </owl:Class>
+    </rdfs:range>
+    <owl:inverseOf rdf:resource="https://launchpad.net/rdf/launchpad#inProduct" />
+    <rdfs:comment>Indicates a series of releases of a product.</rdfs:comment>
+    <rdfs:label>Product series</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#shortDescription">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductSeries">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Project">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductRelease">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Literal">
+        </owl:Class>
+    </rdfs:range>
+    <rdfs:comment>A brief, one-sentence, text-only description.</rdfs:comment>
+    <rdfs:label>Short description</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#sourceforgeProject">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Project">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Literal">
+        </owl:Class>
+    </rdfs:range>
+    <rdfs:label>Sourceforge Project</rdfs:label>
+    <rdfs:comment>Name of corresponding project on Sourceforge.</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#specifiedAt">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductSeries">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Project">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductRelease">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Resource">
+        </owl:Class>
+    </rdfs:range>
+    <rdfs:comment>The URI of an RDF description of the resource.</rdfs:comment>
+    <rdfs:label>Specified at</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#status">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductSeries">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="http://ns.balbinus.net/doaml#PublicMailingList">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Project">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Literal">
+        </owl:Class>
+    </rdfs:range>
+    <rdfs:label>Status</rdfs:label>
+    <rdfs:comment>Indicator of the status of a resource's "liveness".</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#title">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Project">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductRelease">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Literal">
+        </owl:Class>
+    </rdfs:range>
+    <rdfs:label>Title</rdfs:label>
+    <rdfs:comment>Natural language title of a thing</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#version">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductRelease">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Literal">
+        </owl:Class>
+    </rdfs:range>
+    <rdfs:label>Version</rdfs:label>
+    <rdfs:comment>Version identifier</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#wiki">
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Project">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:domain>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+        </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+        <owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Resource">
+        </owl:Class>
+    </rdfs:range>
+    <rdfs:comment>URI of wiki</rdfs:comment>
+    <rdfs:label>Wiki</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#seeAlso">
+</owl:ObjectProperty>
+
+<owl:DatatypeProperty rdf:about="http://purl.org/dc/elements/1.1/title">
+</owl:DatatypeProperty>
+
+
+<owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductRelease">
+    <owl:disjointWith>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Project">
+        </owl:Class>
+    </owl:disjointWith>
+</owl:Class>
+
+<owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+    <owl:disjointWith>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductSeries">
+        </owl:Class>
+    </owl:disjointWith>
+</owl:Class>
+
+<owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductRelease">
+    <owl:disjointWith>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductSeries">
+        </owl:Class>
+    </owl:disjointWith>
+</owl:Class>
+
+<owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Project">
+    <owl:disjointWith>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductSeries">
+        </owl:Class>
+    </owl:disjointWith>
+</owl:Class>
+
+<owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+    <owl:disjointWith>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Project">
+        </owl:Class>
+    </owl:disjointWith>
+</owl:Class>
+
+<owl:Class rdf:about="https://launchpad.net/rdf/launchpad#ProductRelease">
+    <owl:disjointWith>
+        <owl:Class rdf:about="https://launchpad.net/rdf/launchpad#Product">
+        </owl:Class>
+    </owl:disjointWith>
+</owl:Class>
+
+<owl:ObjectProperty rdf:about="https://launchpad.net/rdf/launchpad#specifiedAt">
+    <rdfs:subPropertyOf>
+        <owl:ObjectProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#seeAlso">
+        </owl:ObjectProperty>
+    </rdfs:subPropertyOf>
+</owl:ObjectProperty>
+
+</rdf:RDF>

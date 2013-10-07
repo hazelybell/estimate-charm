@@ -1,0 +1,16 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  id="proposal-heading">
+
+  <div>
+    <div style="float: right">
+      Proposed <tal:modified replace="context/date_created/fmt:displaydate" />
+
+    </div>
+    <tal:merge-fragment tal:replace="structure context/@@+link-summary" />
+  </div>
+
+</div>
+

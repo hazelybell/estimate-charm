@@ -1,0 +1,11 @@
+Format-Version: 2
+Found-In: mozilla-firefox/1.0.4-2sarge3 mozilla-firefox/1.0.99+deerpark-alpha1-1
+Done: Mike Hommey <mh@glandium.org>
+Subject: security issue revealed: CAN-2005-2871
+Date: 1126342984
+Submitter: Alexander Sack <asac@debian.org>
+Fixed-In: mozilla-firefox/1.0.6-5 mozilla-firefox/1.4.99+1.5beta1-2
+Package: mozilla-firefox
+Tags: patch security
+Message-Id: <E1EE1Ci-0005kl-An@hanson>
+Severity: critical

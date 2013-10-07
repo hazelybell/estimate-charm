@@ -1,0 +1,35 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+>
+
+<body>
+
+  <metal:unsupported_lang define-macro="unsupported_languages_warning"
+                          tal:condition="view/shouldWarnAboutUnsupportedLanguage">
+    <p class="warning message">
+      <strong tal:content="view/chosen_language/displayname">
+	Xhoza</strong> doesn't seem to be
+	a language spoken by any answer contacts in this community. If you
+	go ahead and ask a question in that language, no answer
+	contacts will be able to read it. Currently, the languages spoken
+	by at least one answer contact are:
+	<tal:languages>
+	  <tal:language_loop repeat="lang view/supported_languages">
+	    <span tal:replace="lang/englishname"
+		  /><tal:comma
+		  condition="not: repeat/lang/end">,</tal:comma><tal:period
+		  condition="repeat/lang/end">.</tal:period>
+	  </tal:language_loop>
+	</tal:languages>
+    </p>
+    <input type="hidden" name="chosen_language" value="en"
+            tal:attributes="value view/chosen_language/code" />
+  </metal:unsupported_lang>
+
+</body>
+</html>

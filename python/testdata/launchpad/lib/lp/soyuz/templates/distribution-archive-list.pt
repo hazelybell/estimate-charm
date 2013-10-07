@@ -1,0 +1,74 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+<body>
+
+  <div metal:fill-slot="heading">
+    <h1>Copy Archives related to <tal:title replace="context/title" /></h1>
+  </div>
+
+  <div metal:fill-slot="main">
+  <div class="top-portlet">
+
+    <p>'Copy' archives containing packages copied from other archives (the
+       main archive or PPAs) for a distribution.
+    </p>
+
+    <tal:batch define="batch view/batchnav/currentBatch">
+
+      <tal:navigation_top
+         replace="structure view/batchnav/@@+navigation-links-upper" />
+
+      <table class="listing" tal:condition="batch">
+        <thead>
+          <th>Created</th>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Total packages</th>
+          <th>Total builds</th>
+          <th>Built</th>
+          <th>Failed</th>
+          <th>Pending</th>
+        </thead>
+        <tbody>
+          <tal:batch_repeat repeat="archive batch">
+          <tr tal:attributes="class python:not archive.enabled and 'greyed-out'"
+              tal:define="build_counts archive/getBuildCounters">
+              <td tal:content="archive/date_created/fmt:approximatedate" />
+              <td>
+                <a tal:attributes="href archive/fmt:url"
+                   tal:content="archive/name">my-name
+                </a>
+              </td>
+              <td tal:content="archive/description/fmt:shorten/65" />
+              <td tal:content="archive/number_of_sources" />
+              <td tal:content="build_counts/total" />
+              <td tal:content="build_counts/succeeded" />
+              <td tal:content="build_counts/failed" />
+              <td tal:content="build_counts/pending" />
+            </tr>
+          </tal:batch_repeat>
+        </tbody>
+      </table>
+
+      <tal:navigation_bottom
+        replace="structure view/batchnav/@@+navigation-links-lower" />
+
+      <div id="empty-result" tal:condition="not: batch">
+         There are currently no copy archives for
+         <tal:title replace="context/title" />.
+      </div>
+
+    </tal:batch>
+
+  </div>
+  </div>
+
+</body>
+</html>
+

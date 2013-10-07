@@ -1,0 +1,13 @@
+Hello %(importer)s,
+
+On %(dateimport)s (%(elapsedtime)s), you uploaded %(numberofmessages)d
+%(language)s translations for %(template)s in Launchpad.
+
+This mail is to notify you that all translations have now been
+imported.
+
+%(warnings)s
+
+Thank you,
+
+The Launchpad team

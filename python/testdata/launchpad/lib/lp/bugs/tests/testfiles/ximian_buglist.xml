@@ -1,0 +1,5 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE bugzilla SYSTEM "http://bugzilla.ximian.com/bugzilla.dtd">
+<bugzilla version="2.10" urlbase="http://bugzilla.ximian.com/" maintainer="bugmaster@ximian.com">
+%(bug_li_items)s
+</bugzilla>

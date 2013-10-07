@@ -1,0 +1,26 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+  <body>
+    <div class="top-portlet"  metal:fill-slot="main">
+      <h1 class="exception">No <code>REFERER</code> Header</h1>
+      <p>Launchpad requires a <code>REFERER</code> header to perform
+      this action. There is no <code>REFERER</code> header present.
+      This can be caused by configuring your browser to block
+      <code>REFERER</code> headers.</p>
+      <p>Unblock <code>REFERER</code> headers for launchpad.net and try
+      again, or see <a
+      href="https://answers.launchpad.net/launchpad/+faq/1024">the
+      FAQ <em>Why does Launchpad require a REFERER header?</em></a> for
+      more information.</p>
+      <p>You can also join <a href="irc://irc.freenode.net/launchpad">the
+      #launchpad IRC support channel on irc.freenode.net</a> for further
+      assistance.</p>
+    </div>
+  </body>
+</html>

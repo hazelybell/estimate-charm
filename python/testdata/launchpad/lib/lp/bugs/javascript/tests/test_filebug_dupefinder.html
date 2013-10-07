@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<!--
+Copyright 2012 Canonical Ltd.  This software is licensed under the
+GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<html>
+  <head>
+      <title>Test filebug_dupefinder</title>
+
+      <!-- YUI and test setup -->
+      <script type="text/javascript"
+              src="../../../../../build/js/yui/yui/yui.js">
+      </script>
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/console/assets/console-core.css" />
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/test-console/assets/skins/sam/test-console.css" />
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/test/assets/skins/sam/test.css" />
+
+      <script type="text/javascript"
+              src="../../../../../build/js/lp/app/testing/testrunner.js"></script>
+
+      <link rel="stylesheet" href="../../../app/javascript/testing/test.css" />
+
+      <!-- Dependencies -->
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/client.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/error.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/effects/effects.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/overlay/overlay.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/formwidgets/resizing_textarea.js"></script>
+
+      <!-- The module under test. -->
+      <script type="text/javascript" src="../filebug_dupefinder.js"></script>
+
+      <!-- Any css assert for this module. -->
+      <!-- <link rel="stylesheet" href="../assets/filebug_dupefinder-core.css" /> -->
+
+      <!-- The test suite. -->
+      <script type="text/javascript" src="test_filebug_dupefinder.js"></script>
+
+      <!-- Pretty up the sample html -->
+      <style type="text/css">
+          div#sample {margin:15px; width:200px; border:1px solid #999; padding:10px;}
+      </style>
+
+    </head>
+    <body class="yui3-skin-sam">
+        <ul id="suites">
+            <!-- <li>lp.large_indicator.test</li> -->
+            <li>lp.bugs.filebug_dupefinder.test</li>
+        </ul>
+
+        <!-- Example markup required by test suite -->
+        <div id="test-root">
+            <form id="filebug-search-form" enctype="multipart/form-data" method="post" action="">
+            <table>
+                <tr id="search-field">
+                    <td>
+                        <div>
+                            <label for="field.title">Summary:</label>
+                            <input type="text" value="" size="40" name="field.title" id="field.title"/>
+                        </div>
+                    </td>
+                    <td>
+                        <input type="submit" class="button" value="Next" name="field.actions.search" id="field.actions.search"/>
+                    </td>
+                </tr>
+            </table>
+            </form>
+            <div id='spinner'></div>
+            <div id='possible-duplicates'></div>
+            <div style="opacity: 0; display: none" class="transparent" id="filebug-form-container">
+                <div id="bug-reporting-form">
+                    <label for="field.title">Summary:</label>
+                    <input type="text" value="" size="40" name="field.title" id="field.title"/>
+                    <div>
+                        <form id="filebug-form" method="post" action="#">
+                            <label for="field.comment">Comment:</label>
+                            <input type="text" value="" size="40" name="field.comment" id="field.comment"/>
+                            <div id="extra-filebug-details"></div>
+                            <div class="actions">
+                                <input type="submit" class="button" value="Submit Bug Report" name="field.actions.submit_bug" id="field.actions.submit_bug"/>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <p style="display: none">
+                <a id="filebug-base-url" href="https://bugs.launchpad.dev/"></a>
+                <a id="filebug-form-url" href="https://bugs.launchpad.dev/foo/+filebug-inline-form"></a>
+                <a id="duplicate-search-url" href="https://bugs.launchpad.dev/foo/+filebug-show-similar"></a>
+            </p>
+        </div>
+    </body>
+</html>

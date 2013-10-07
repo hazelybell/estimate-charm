@@ -1,0 +1,154 @@
+
+Ensure that notifications are being displayed and propogated correctly.
+
+This first page adds notifications itself before being rendered.
+
+>>> print http(r"""
+... GET /+notificationtest1 HTTP/1.1
+... Authorization: Basic Y2FybG9zQGNhbm9uaWNhbC5jb206dGVzdA==
+... """)
+HTTP/1.1 200 Ok
+Content-Length: ...
+Content-Type: text/html;charset=utf-8
+...
+...<div class="error message">Error notification <b>1</b></div>
+...<div class="error message">Error notification <b>2</b></div>
+...<div class="warning message">Warning notification <b>1</b></div>
+...<div class="warning message">Warning notification <b>2</b></div>
+...<div class="informational message">Info notification <b>1</b></div>
+...<div class="informational message">Info notification <b>2</b></div>
+...<div class="debug message">Debug notification <b>1</b></div>
+...<div class="debug message">Debug notification <b>2</b></div>
+...
+
+This second page adds notifications, and then redirects to another page.
+The notification messages should be propogated.
+
+>>> result = http(r"""
+... GET /+notificationtest2 HTTP/1.1
+... Authorization: Basic Y2FybG9zQGNhbm9uaWNhbC5jb206dGVzdA==
+... """)
+>>> print result
+HTTP/1.1 303 See Other
+...
+Location: /
+...
+>>> import re
+>>> destination_url = re.search('(?m)^Location:\s(.*)$', str(result)).group(1)
+>>> launchpad_session_cookie = re.search(
+...     '(?m)^Set-Cookie:\slaunchpad_tests=(.*?);', str(result)).group(1)
+...     )
+>>> print http(r"""
+... GET %(destination_url)s HTTP/1.1
+... Authorization: Basic Y2FybG9zQGNhbm9uaWNhbC5jb206dGVzdA==
+... Cookie: launchpad_tests=%(launchpad_session_cookie)s
+... """ % vars())
+HTTP/1.1 200 Ok
+...
+...<div class="error message">Error notification <b>1</b></div>
+...<div class="error message">Error notification <b>2</b></div>
+...<div class="warning message">Warning notification <b>1</b></div>
+...<div class="warning message">Warning notification <b>2</b></div>
+...<div class="informational message">Info notification <b>1</b></div>
+...<div class="informational message">Info notification <b>2</b></div>
+...<div class="debug message">Debug notification <b>1</b></div>
+...<div class="debug message">Debug notification <b>2</b></div>
+...
+
+
+Our third test page adds notifications and then redirects to a page that
+adds further notifications. This demonstrates that notifications are
+combined.
+
+>>> result = http(r"""
+... GET /+notificationtest3 HTTP/1.1
+... Authorization: Basic Y2FybG9zQGNhbm9uaWNhbC5jb206dGVzdA==
+... """)
+>>> print result
+HTTP/1.1 303 See Other
+...
+Content-Length: 0
+...
+Location: /+notificationtest1
+...
+
+>>> destination_url = re.search('(?m)^Location:\s(.*)$', str(result)).group(1)
+>>> launchpad_session_cookie = re.search(
+...     '(?m)^Set-Cookie:\slaunchpad_tests=(.*?);', str(result)).group(1)
+...     )
+>>> print http(r"""
+... GET %(destination_url)s HTTP/1.1
+... Authorization: Basic Y2FybG9zQGNhbm9uaWNhbC5jb206dGVzdA==
+... Cookie: launchpad_tests=%(launchpad_session_cookie)s
+... """ % vars())
+HTTP/1.1 200 Ok
+...
+...<div class="error message">+notificationtest3 error</div>
+...<div class="error message">Error notification <b>1</b></div>
+...<div class="error message">Error notification <b>2</b></div>
+...<div class="warning message">Warning notification <b>1</b></div>
+...<div class="warning message">Warning notification <b>2</b></div>
+...<div class="informational message">Info notification <b>1</b></div>
+...<div class="informational message">Info notification <b>2</b></div>
+...<div class="debug message">Debug notification <b>1</b></div>
+...<div class="debug message">Debug notification <b>2</b></div>
+...
+
+
+Our fourth test page adds notifications, redirects to a page that
+adds further notifications which redirects to a final page that adds
+notifications. This demonstrates that notifications are preserved and
+combined across multiple redirects. Hopefully this functionality won't
+be needed.
+
+>>> result = http(r"""
+... GET /+notificationtest4 HTTP/1.1
+... Authorization: Basic Y2FybG9zQGNhbm9uaWNhbC5jb206dGVzdA==
+... """)
+>>> print result
+HTTP/1.1 303 See Other
+...
+Content-Length: 0
+...
+Location: /+notificationtest3
+...
+
+>>> destination_url = re.search('(?m)^Location:\s(.*)$', str(result)).group(1)
+>>> launchpad_session_cookie = re.search(
+...     '(?m)^Set-Cookie:\slaunchpad_tests=(.*?);', str(result)).group(1)
+...     )
+>>> result = http(r"""
+... GET %(destination_url)s HTTP/1.1
+... Authorization: Basic Y2FybG9zQGNhbm9uaWNhbC5jb206dGVzdA==
+... Cookie: launchpad_tests=%(launchpad_session_cookie)s
+... """ % vars())
+>>> print result
+HTTP/1.1 303 See Other
+...
+Content-Length: 0
+...
+Location: /+notificationtest1
+...
+
+>>> destination_url = re.search('(?m)^Location:\s(.*)$', str(result)).group(1)
+>>> launchpad_session_cookie = re.search(
+...     '(?m)^Set-Cookie:\slaunchpad_tests=(.*?);', str(result)).group(1)
+...     )
+>>> print http(r"""
+... GET %(destination_url)s HTTP/1.1
+... Authorization: Basic Y2FybG9zQGNhbm9uaWNhbC5jb206dGVzdA==
+... Cookie: launchpad_tests=%(launchpad_session_cookie)s
+... """ % vars())
+HTTP/1.1 200 Ok
+...
+...<div class="error message">+notificationtest4 error</div>
+...<div class="error message">+notificationtest3 error</div>
+...<div class="error message">Error notification <b>1</b></div>
+...<div class="error message">Error notification <b>2</b></div>
+...<div class="warning message">Warning notification <b>1</b></div>
+...<div class="warning message">Warning notification <b>2</b></div>
+...<div class="informational message">Info notification <b>1</b></div>
+...<div class="informational message">Info notification <b>2</b></div>
+...<div class="debug message">Debug notification <b>1</b></div>
+...<div class="debug message">Debug notification <b>2</b></div>
+...

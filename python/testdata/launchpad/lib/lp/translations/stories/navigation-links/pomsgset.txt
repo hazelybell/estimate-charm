@@ -1,0 +1,46 @@
+IPOMsgSet objects have IProductSeries or ISourcePackage as its direct
+structural object.
+
+Taking an IPOMsgSet for IProductSeries context:
+
+  >>> browser.open(
+  ...     'http://translations.launchpad.dev/evolution/trunk/+pots/'
+  ...     'evolution-2.2/es/1')
+
+We get a +translate page because that's the only page for an IPOMsgSet and the
+system forwards automatically there.
+
+  >>> print browser.url
+  http://translations.launchpad.dev/evolution/trunk/+pots/evolution-2.2/es/1/+translate
+
+The Application tabs should point to IProductSeries URLs.
+
+    >>> print_location_apps(browser.contents)
+    * Overview - http://launchpad.dev/evolution/trunk
+    * Code - http://code.launchpad.dev/evolution
+    * Bugs - http://bugs.launchpad.dev/evolution/trunk
+    * Blueprints - http://blueprints.launchpad.dev/evolution/trunk
+    * Translations (selected) - http://translations.launchpad.dev/evolution/trunk
+    * Answers - not linked
+
+Taking an IPOMsgSet for ISourcePackage context:
+
+  >>> browser.open(
+  ...     'http://translations.launchpad.dev/ubuntu/hoary/+source/evolution/'
+  ...     '+pots/evolution-2.2/es/1')
+
+We get a +translate page because that's the only page for an IPOMsgSet and the
+system forwards automatically there.
+
+  >>> print browser.url
+  http://translations.launchpad.dev/ubuntu/hoary/+source/evolution/+pots/evolution-2.2/es/1/+translate
+
+The Application tabs should point to ISourcePackage URLs.
+
+    >>> print_location_apps(browser.contents)
+    * Overview - http://launchpad.dev/ubuntu/hoary/+source/evolution
+    * Code - http://code.launchpad.dev/ubuntu/hoary/+source/evolution
+    * Bugs - http://bugs.launchpad.dev/ubuntu/hoary/+source/evolution
+    * Blueprints - not linked
+    * Translations (selected) - http://translations.launchpad.dev/ubuntu/hoary/+source/evolution
+    * Answers - not linked

@@ -1,0 +1,22 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<tr>
+  <td colspan="2">
+    <div>
+      <strong><a tal:attributes="
+           href context/fmt:url;
+           title context/name;
+           class context/image:sprite_css"
+         tal:content="context/title">Spec Title Here</a></strong>
+      for <strong tal:content="context/target/displayname" />
+    </div>
+    <div>
+      <tal:spec_summary replace="context/summary/fmt:shorten/320" />
+    </div>
+  </td>
+</tr>
+</tal:root>

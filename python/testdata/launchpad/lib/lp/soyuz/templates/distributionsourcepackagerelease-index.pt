@@ -1,0 +1,193 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<body>
+
+<div metal:fill-slot="main">
+
+  <div id="source-changelog" class="top-portlet">
+    <h2>Changelog</h2>
+    <tal:changelog
+      replace="structure context/sourcepackagerelease/@@+changelog"
+      >Changelog...</tal:changelog>
+  </div>
+
+  <div class="yui-g">
+
+   <div class="yui-u first">
+    <div id="upload-details" class="portlet">
+      <h2>Upload details</h2>
+      <div class="two-column-list">
+        <dl>
+          <dt>Uploaded by:</dt>
+            <dd>
+             <span tal:replace="structure context/creator/fmt:link"
+               >Foo Bar</span>
+             <span tal:content="context/dateuploaded/fmt:displaydate"
+                   tal:attributes="title context/dateuploaded/fmt:datetime"
+               >on </span>
+            </dd>
+        </dl>
+        <dl tal:condition="view/sponsor">
+          <dt>Sponsored by:</dt>
+            <dd>
+              <span tal:replace="structure view/sponsor/fmt:link"
+               >Foo Bar</span>
+            </dd>
+        </dl>
+        <dl>
+          <dt>Uploaded to:</dt>
+            <dd tal:define="series context/upload_distroseries">
+              <a tal:content="series/displayname"
+                 tal:attributes="href series/fmt:url">Hoary</a>
+            </dd>
+        </dl>
+
+        <dl>
+          <dt>Original maintainer:</dt>
+            <dd tal:content="structure context/maintainer/fmt:link"
+              >Foo Bar</dd>
+        </dl>
+        <dl>
+          <dt>Component:</dt>
+            <dd tal:content="context/component/name">main</dd>
+        </dl>
+        <dl>
+          <dt>Architectures:</dt>
+            <dd tal:content="context/architecturehintlist">i386, ppc</dd>
+        </dl>
+        <dl>
+          <dt>Section:</dt>
+            <dd tal:content="context/section/name">devel</dd>
+        </dl>
+        <dl>
+          <dt>Urgency:</dt>
+            <dd tal:content="context/urgency/title">High</dd>
+        </dl>
+      </div>
+    </div> <!-- upload-details-->
+   </div> <!-- yui-u -->
+
+   <div class="yui-u">
+    <div id="source-publishing" class="portlet">
+      <h2>
+        <span class="see-all">
+          <a href="+publishinghistory">See full publishing history</a>
+        </span>
+        Publishing
+      </h2>
+      <table class="listing">
+       <thead>
+        <tr>
+         <th>Series</th>
+         <th>Pocket</th>
+         <th>Published</th>
+         <th>Component</th>
+         <th>Section</th>
+        </tr>
+       </thead>
+       <tbody>
+         <tr tal:repeat="publishing view/currently_published">
+          <td>
+            <a tal:attributes="href publishing/distroseries/fmt:url"
+               tal:content="publishing/distroseries/displayname">Hoary Mock</a>
+          </td>
+          <td tal:content="publishing/pocket/title/fmt:lower">release</td>
+          <td>
+            <span tal:content="publishing/datepublished/fmt:displaydate"
+                  tal:attributes="title
+                                  publishing/datecreated/fmt:datetime"
+              >two minutes ago</span>
+          </td>
+          <td tal:content="publishing/component/name">main</td>
+          <td tal:content="publishing/section/name">devel</td>
+         </tr>
+       </tbody>
+      </table>
+    </div> <!-- source-publishing -->
+   </div> <!-- yui-u -->
+
+   <div class="yui-u">
+    <div id="source-builds" class="portlet">
+      <h2>Builds</h2>
+      <tal:series tal:repeat="series_builds view/grouped_builds">
+        <p><a tal:attributes="href series_builds/distroseries/fmt:url"
+              tal:content="series_builds/distroseries/displayname"
+             >Hoary Mock</a>:
+          <tal:builds tal:repeat="build series_builds/builds">
+            <tal:icon replace="structure build/image:icon" />
+            <a tal:attributes="href build/fmt:url"
+               tal:content="build/distro_arch_series/architecturetag">i386</a>
+            <tal:upload define="upload build/package_upload"
+                        condition="upload">
+              <tal:not-done condition="not: upload/status/enumvalue:DONE">
+                (<span tal:replace="upload/status/title">New</span>)
+              </tal:not-done>
+            </tal:upload>
+          </tal:builds>
+        </p>
+      </tal:series>
+    </div> <!-- source-builds -->
+   </div> <!-- yui-u -->
+
+  </div> <!-- yui-g -->
+
+  <div id="source-files" class="portlet">
+   <h2>Downloads</h2>
+   <table class="narrow listing">
+    <thead>
+     <tr>
+      <th>File</th>
+      <th>Size</th>
+      <th>MD5 Checksum</th>
+     </tr>
+    </thead>
+    <tbody>
+      <tr tal:repeat="file view/files">
+       <tal:file_available condition="not:file/deleted">
+         <td>
+           <a class="sprite download"
+              tal:attributes="href file/http_url"
+              tal:content="file/filename">foo_1.0.dsc</a>
+         </td>
+         <td tal:content="file/content/filesize/fmt:bytes">10 bytes</td>
+         <td tal:content="file/content/md5">DEADBEEF</td>
+       </tal:file_available>
+       <tal:file_unavailable condition="file/deleted">
+         <td span=3>
+           <span tal:replace="file/filename">foo.dsc</span> (deleted)
+         </td>
+       </tal:file_unavailable>
+      </tr>
+    </tbody>
+   </table>
+   <tal:diffs
+     replace="structure context/sourcepackagerelease/@@+diffs"
+     >Diffs...</tal:diffs>
+  </div> <!-- source-files -->
+
+  <div id="source-binaries" class="portlet">
+   <h2>Binary packages built by this source</h2>
+   <div class="two-column-list">
+     <dl tal:repeat="binary context/sample_binary_packages">
+      <dt>
+        <a class="sprite package-binary"
+           tal:content="binary/name"
+           tal:attributes="href binary/fmt:url">foo-bin</a>:
+        <span tal:replace="binary/summary">solves the problem.</span>
+      </dt>
+        <dd tal:content="structure binary/description/fmt:text-to-html"
+          >Actually, does nothing.</dd>
+     </dl>
+   </div>
+  </div> <!-- source-binaries -->
+
+</div>
+</body>
+</html>

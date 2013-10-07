@@ -1,0 +1,101 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+>
+
+<head>
+  <tal:block metal:fill-slot="head_epilogue">
+    <link
+        tal:condition="not:context/hide_email_addresses"
+        rel="meta" type="application/rdf+xml"
+        title="FOAF" href="+rdf"
+        />
+  </tal:block>
+</head>
+
+<body>
+
+<div metal:fill-slot="side"
+     tal:define="overview_menu context/menu:overview">
+
+  <div id="privacy"
+       tal:attributes="class view/visibility_portlet_class">
+    <span tal:content="view/visibility_info">Private team</span>
+  </div>
+
+  <metal:contact use-macro="context/@@+person-macros/contact">
+    Contact this team
+  </metal:contact>
+
+  <tal:menu replace="structure view/@@+global-actions" />
+  <tal:polls replace="structure context/@@+portlet-polls" />
+
+</div>
+
+<div metal:fill-slot="main"
+     tal:define="overview_menu context/menu:overview">
+
+  <div class="description">
+      <tal:widget replace="structure view/description_widget" />
+  </div>
+
+  <ul class="horizontal">
+    <tal:comment condition="nothing">
+      This link name is different from the menu, since it refers
+      to several pages that are all accessible when you click on this link.
+    </tal:comment>
+    <li
+      tal:define="link context/menu:overview/related_software_summary"
+      tal:condition="link/enabled">
+      <a class="sprite info" tal:attributes="href link/fmt:url">
+        Related packages
+      </a>
+    </li>
+      <li
+        tal:define="link context/menu:overview/projects"
+        tal:condition="link/enabled">
+        <a class="sprite info" tal:attributes="href link/fmt:url">
+          Related projects
+        </a>
+      </li>
+    <li
+      tal:define="link context/menu:overview/upcomingwork"
+      tal:condition="link/enabled">
+      <a class="sprite info" tal:attributes="href link/fmt:url">
+        Upcoming work assigned to members of this team
+      </a>
+    </li>
+  </ul>
+
+  <div class="yui-g">
+    <div class="first yui-u">
+      <metal:details use-macro="context/@@+person-macros/team-details" />
+    </div>
+    <div class="yui-u">
+      <div tal:content="structure context/@@+portlet-membership" />
+    </div>
+  </div>
+
+  <div class="yui-g">
+    <!-- First portlet column. -->
+    <div class="first yui-u">
+      <div tal:content="structure context/@@+portlet-ppas" />
+      <div tal:content="structure context/@@+portlet-mailinglist" />
+    </div>
+
+    <!-- Second portlet column. -->
+    <div class="yui-u">
+      <div tal:content="structure context/@@+portlet-related-projects" />
+      <metal:subteam-of use-macro="context/@@+person-macros/subteam-of" />
+    </div>
+  </div>
+</div>
+</body>
+</html>

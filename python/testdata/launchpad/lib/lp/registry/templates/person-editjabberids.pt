@@ -1,0 +1,51 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+<body>
+<div metal:fill-slot="main">
+<div metal:use-macro="context/@@launchpad_form/form">
+  <div metal:fill-slot="widgets">
+
+    <table>
+
+      <tal:existing_jabber condition="context/jabberids">
+
+        <tr>
+          <td><label>Existing Jabber IDs:</label></td>
+        </tr>
+
+        <tr tal:repeat="jabber context/jabberids">
+          <td tal:content="jabber/jabberid"
+              class="jabberid">
+          </td>
+
+          <td>
+            <label>
+              <input type="checkbox" value="Remove"
+                     tal:attributes="name string:remove_${jabber/jabberid}" />
+              Remove
+            </label>
+          </td>
+        </tr>
+      </tal:existing_jabber>
+
+      <tal:widget define="widget nocall:view/widgets/jabberid">
+        <metal:block use-macro="context/@@launchpad_form/widget_row" />
+      </tal:widget>
+
+      <tr>
+        <td class="formHelp">Example: yourname@jabber.org</td>
+      </tr>
+    </table>
+
+  </div>
+</div>
+</div>
+
+</body>
+</html>

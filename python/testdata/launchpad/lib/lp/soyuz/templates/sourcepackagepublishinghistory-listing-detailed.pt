@@ -1,0 +1,44 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<div class="boardComment">
+
+  <tal:XXX condition="nothing">
+   # XXX: cprov 20071018 bug=153885
+   #   The template should be kept in sync with its respective binary
+   #   replacement (binarypackagepublishinghistory-listing-detailed.pt).
+   #   In the future we should be able to refactor both in a single
+   #   template macro.
+  </tal:XXX>
+
+  <div class="boardCommentDetails">
+    <strong>
+      <a tal:content="context/meta_distroseriessourcepackagerelease/version"
+         tal:attributes="href context/meta_distroseriessourcepackagerelease/fmt:url"
+      >2.0.39</a>
+    </strong>
+    <table>
+      <tbody>
+        <tr>
+         <td>
+           <strong tal:content="context/status/name">PUBLISHED</strong>:
+           <a tal:attributes="href context/meta_sourcepackage/fmt:url"
+              tal:content="context/distroseries/displayname">warty</a>
+           pocket <strong tal:content="context/pocket/title">Release</strong>
+           in component <strong tal:content="context/component/name">main</strong>
+           and section <strong tal:content="context/section/name">x11</strong>
+         </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="boardCommentBody">
+     <tal:block replace="structure context/@@+record-details" />
+  </div>
+
+</div>
+</tal:root>

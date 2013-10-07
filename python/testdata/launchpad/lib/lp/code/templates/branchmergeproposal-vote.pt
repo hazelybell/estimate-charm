@@ -1,0 +1,24 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+<body>
+
+<div metal:fill-slot="main">
+
+  <div metal:use-macro="context/@@launchpad_form/form">
+    <tal:hidden-input metal:fill-slot="extra_info">
+      <input type="hidden" name="reviewer"
+             tal:attributes="value view/reviewer"/>
+      <input type="hidden" name="review_type"
+             tal:attributes="value view/initial_values/review_type"/>
+    </tal:hidden-input>
+  </div>
+
+</div>
+
+</body>
+</html>

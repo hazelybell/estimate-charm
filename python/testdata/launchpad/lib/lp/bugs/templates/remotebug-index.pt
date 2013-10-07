@@ -1,0 +1,44 @@
+<bug-tracker-remote-bug-index
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+
+  <metal:heading fill-slot="heading">
+    <h1 tal:content="context/title" />
+  </metal:heading>
+
+  <metal:leftportlets fill-slot="side">
+    <div tal:replace="structure context/bugtracker/@@+portlet-details" />
+  </metal:leftportlets>
+
+  <div metal:fill-slot="main">
+    <div class="top-portlet">
+      <p>
+        The following bugs in Launchpad are watching bug #<span
+        tal:replace="context/remotebug">1234</span> in <span
+        tal:replace="context/bugtracker/title">some bugtracker</span>.
+        You can make other Launchpad bugs watch this remote bug by
+        using &ldquo;Also affects project&rdquo; or &ldquo;Also
+        affects distribution&rdquo; on the bug page.
+      </p>
+      <ul id="watchedbugs">
+        <tal:bugs repeat="bug context/bugs">
+          <li tal:define="visible bug/required:launchpad.View">
+            <tal:visible condition="visible">
+              <a tal:replace="structure bug/fmt:link" />
+            </tal:visible>
+            <tal:hidden condition="not:visible">
+              <span class="sprite bug">
+                Bug #<span tal:replace="bug/id" />: <em>(Private)</em>
+              </span>
+            </tal:hidden>
+          </li>
+        </tal:bugs>
+      </ul>
+    </div>
+  </div>
+
+</bug-tracker-remote-bug-index>

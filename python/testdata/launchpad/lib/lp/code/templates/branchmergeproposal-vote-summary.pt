@@ -1,0 +1,52 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+
+  <tal:comment condition="nothing">
+    <!--
+        Yet again we are bitten by white space issues, so some tags in this
+        template have closing brackets on following lines, and not breaks
+        between some tags.
+    -->
+  </tal:comment>
+
+<dl class="reviews">
+  <dd tal:condition="not: view/reviews">
+    No reviews requested
+  </dd>
+  <dd tal:repeat="review view/current_reviews">
+    <tal:reviewer replace="structure review/reviewer/fmt:link:mainsite">
+    Eric the Reviewer</tal:reviewer
+    ><tal:community condition="not: review/trusted">
+    (community)</tal:community>:
+    <span tal:attributes="class string:vote${review/comment/vote/name}"
+          tal:content="review/status_text">
+      Approved
+    </span>
+    <tal:vote-tags condition="review/review_type_str">
+      (<tal:tag replace="review/review_type_str"/>)
+    </tal:vote-tags>
+    <tal:date replace="review/date_of_comment/fmt:displaydate" />
+  </dd>
+  <dd tal:repeat="review view/requested_reviews"
+      tal:attributes="id string:review-${review/reviewer/name}">
+    <tal:reviewer
+        tal:replace="structure review/reviewer/fmt:link:mainsite" />:
+
+    <span class="votePENDING">Pending</span>
+    <tal:vote-tags condition="review/review_type_str">
+      (<tal:tag replace="review/review_type_str"/>)
+    </tal:vote-tags>
+    requested
+    <tal:date replace="review/date_requested/fmt:approximatedate"/>
+  </dd>
+  <dd tal:condition="context/preview_diff"
+      tal:attributes="class string:popup-diff mp-${context/id}">
+    Diff: <tal:diff replace="structure context/preview_diff/fmt:link"/>
+    <a class="api-ref hidden"
+       tal:attributes="href context/preview_diff/fmt:api_url">api</a>
+  </dd>
+
+</dl>
+</tal:root>

@@ -1,0 +1,15 @@
+Hello %(importer)s,
+
+On %(dateimport)s (%(elapsedtime)s), you uploaded a file with %(import_title)s to Launchpad.
+
+The file could not be imported because of text encoding problems.  This may indicate that the file does not specify the correct encoding, or that it contains garbled or truncated text data.
+
+The specific error message was:
+
+%(error)s
+
+For your convenience, you can find the file you uploaded at: %(file_link)s
+
+Thank you,
+
+The Launchpad team

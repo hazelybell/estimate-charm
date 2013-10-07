@@ -1,0 +1,54 @@
+= Demonstrate import of Firefox XPI file =
+
+To import translations into Firefox product, we must first import en-US.xpi
+file, which is an equivalent of a PO Template.
+
+Lets start with Firefox product inside trunk revision.
+
+  >>> browser = setupBrowser(auth='Basic carlos@canonical.com:test')
+  >>> browser.open('http://translations.launchpad.dev/firefox/trunk')
+
+Since we still don't have any POTemplates assigned, we must use the general
+translations upload link.
+
+  >>> browser.getLink('upload').click()
+  >>> print browser.url
+  http://translations.launchpad.dev/firefox/trunk/+translations-upload
+
+Get the XPI file we are going to upload.
+
+  >>> from lp.translations.utilities.tests import test_xpi_import
+  >>> xpifile = test_xpi_import.get_en_US_xpi_file_to_import('en-US')
+
+Now, lets upload this file.
+
+  >>> browser.getControl('File:').add_file(
+  ...     xpifile, 'application/zip', 'en-US.xpi')
+  >>> browser.getControl('Upload').click()
+
+  >>> print browser.url
+  http://translations.launchpad.dev/firefox/trunk/+translations-upload
+  >>> for tag in find_tags_by_class(browser.contents, 'message'):
+  ...     print extract_text(tag.renderContents())
+  Thank you for your upload.  It will be automatically reviewed...
+
+Lets check the import queue to edit this entry and set the name.
+
+  >>> browser.getLink('Translation Import Queue').click()
+  >>> print browser.getLink(url='en-US.xpi').url
+  http://.../en-US.xpi
+  >>> browser.getLink(url='imports/3').click()
+  >>> print browser.url
+  http://translations.launchpad.dev/+imports/3
+
+All new entries need to get a template name to identify them in the context
+where will be imported. In this case, it's 'firefox'.
+
+  >>> browser.getControl('File Type').value = ['POT']
+  >>> browser.getControl('Name').value = 'firefox'
+  >>> browser.getControl('Translation domain').value = 'firefox'
+  >>> browser.getControl('Approve').click()
+  >>> print browser.url
+  http://translations.launchpad.dev/firefox/trunk/+imports
+  >>> browser.getControl(name='field.status_3').value
+  ['APPROVED']

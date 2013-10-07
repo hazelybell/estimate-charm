@@ -1,0 +1,618 @@
+=====================
+Google Search Service
+=====================
+
+The GoogleSearchService is a Google Custom Service Business Edition
+(cs-be) client. Given one or more terms, it will retrieve an XML
+summary of the matching launchpad.net pages.
+
+
+GoogleSearchService
+===================
+
+The GoogleSearchService implements the ISearchService interface.
+
+    >>> from zope.component import getUtility
+    >>> from zope.interface.verify import verifyObject
+    >>> from lp.services.googlesearch.interfaces import (
+    ...     ISearchService)
+
+    >>> google_search = getUtility(ISearchService)
+    >>> verifyObject(ISearchService, google_search)
+    True
+    >>> google_search
+    <...GoogleSearchService ...>
+
+
+----------------------------
+GoogleSearchService search()
+----------------------------
+
+The search method accepts a string argument of terms and an optional int
+argument of start. The terms are the same as the text that would be
+entered in Google search form; the terms should not be escaped.
+
+    >>> from lp.services.googlesearch.interfaces import (
+    ...     ISearchResults)
+
+    >>> first_page_matches = google_search.search(terms='bug')
+    >>> first_page_matches
+    <...PageMatches ...>
+
+The start parameter specifies the index (starting at 0) of the first
+result returned in the overall set of matches. Since 20 results are
+returned, to get the second batch of matches, you would use start=20.
+
+    >>> second_page_matches = google_search.search(terms='bug', start=20)
+    >>> second_page_matches
+    <...PageMatches ...>
+
+
+PageMatches
+===========
+
+The PageMatches object returned by GoogleSearchService.search()
+implements ISearchResults.
+
+    >>> verifyObject(ISearchResults, first_page_matches)
+    True
+
+The 'total' attribute is the total number of matches that the search
+found. If that number is higher than 20, it means that multiple requests
+would be needed to retrieve the entire result set.
+
+The 'start' attribute is the index of the first returned item within the
+entire collection of matches. The 'length' attribute contains the number
+of returned results.
+
+The first search for 'bugs' returned a subset of items in the
+ISearchResult. There are 25 total items, but the results contains the
+first 20 matches (because they start at index 0).
+
+    >>> first_page_matches.start
+    0
+    >>> first_page_matches.total
+    25
+    >>> len(first_page_matches)
+    20
+
+The second search for 'bugs' returned the remainder of the 25 matches.
+They start from index 20.
+
+    >>> verifyObject(ISearchResults, second_page_matches)
+    True
+
+    >>> second_page_matches.start
+    20
+    >>> second_page_matches.total
+    25
+    >>> len(second_page_matches)
+    5
+
+An item can be retrieved from an ISearchResults object using its
+index. All the items in the collection can be iterated.
+
+    >>> second_page_matches[1].url
+    'http://bugs.launchpad.dev/debian/+source/mozilla-firefox/+bug/2'
+
+    >>> for page_match in second_page_matches:
+    ...     page_match.url
+    'http://bugs.launchpad.dev/ubuntu/hoary/+bug/2'
+    'http://bugs.launchpad.dev/debian/+source/mozilla-firefox/+bug/2'
+    'http://bugs.launchpad.dev/debian/+source/mozilla-firefox/+bug/3'
+    'http://bugs.launchpad.dev/bugs/bugtrackers'
+    'http://bugs.launchpad.dev/bugs/bugtrackers/debbugs'
+
+An empty PageMatches is returns if there are no results.
+
+    >>> no_page_matches = google_search.search(terms='fnord')
+    >>> no_page_matches.start
+    0
+    >>> no_page_matches.total
+    0
+    >>> len(no_page_matches)
+    0
+
+
+PageMatch
+=========
+
+The PageMatch object represents a single result from a search result
+set. It is created by passing a title, url, and a summary. It is
+an implementation of ISearchResult.
+
+    >>> from lp.services.googlesearch.interfaces import ISearchResult
+    >>> from lp.services.googlesearch import PageMatch
+
+    >>> page_match = PageMatch(
+    ...     u'Unicode Titles in Launchpad',
+    ...     'https://launchpad.net/unicode-titles',
+    ...     u'Unicode Titles is a modest project dedicated to using Unicode.')
+
+    >>> verifyObject(ISearchResult, page_match)
+    True
+
+The title and summary attributes contain the same text that
+initialized the object.
+
+    >>> page_match.title
+    u'Unicode Titles in Launchpad'
+    >>> page_match.summary
+    u'Unicode Titles is a modest project dedicated to using Unicode.'
+
+The URL's domain is rewitten to the so that links from launchpad.net are
+mapped to the local environment.
+
+    >>> page_match.url
+    'http://launchpad.dev/unicode-titles'
+
+
+Search configuration
+====================
+
+The google search service is configured by the google section in
+lazr.config. All requests are made to Google's site, but the
+configuration may set a testing site.
+
+    >>> from lp.services.config import config
+    >>> from lp.services.googlesearch import GoogleSearchService
+
+    >>> google_search = GoogleSearchService()
+    >>> config.google.site == google_search.site
+    True
+    >>> google_search.site
+    'http://launchpad.dev:.../cse'
+
+The client_id is the client-id issued by Google for the
+GoogleSearchService to connect to the Custom Search Engine service.
+
+    >>> config.google.client_id == google_search.client_id
+    True
+    >>> google_search.client_id
+    'ABCDEF2323'
+
+Several default query parameters are constant. They are kept in the
+_default_values dict. All csbe clients must set the client param to
+'google-csbe'. GoogleSearchService always requests 20 matches (the
+maximum number allowed by Google) for launchpad.net. The input and
+output encoding is UTF-8. The request states that the response XML
+should not contain a DTD. The 'cx' parameter is provided by the
+client_id config value. The q (terms) and start params are provided at
+the time of the search.
+
+    >>> for key in sorted(google_search._default_values):
+    ...     print key, ':', repr(google_search._default_values[key])
+    client : 'google-csbe'
+    cx : None
+    ie : 'utf8'
+    num : 20
+    oe : 'utf8'
+    output : 'xml_no_dtd'
+    q : None
+    start : 0
+
+
+create_search_url()
+===================
+
+The search url used inside the search() method is created by
+create_search_url(). It accepts two optional arguments: terms and start.
+An error is raised if any of the parameters are None.
+
+    >>> google_search.create_search_url('')
+    Traceback (most recent call last):
+     ...
+    AssertionError: Missing value for parameter 'q'.
+
+    >>> google_search.create_search_url(None)
+    Traceback (most recent call last):
+     ...
+    AssertionError: Missing value for parameter 'q'.
+
+    >>> google_search.create_search_url('bugs', start='true')
+    Traceback (most recent call last):
+     ...
+    AssertionError: Value for parameter 'start' is not an int.
+
+The term parameter in this example can be defined by passing the term
+argument to the method. The argument is url encoded and used as the
+value for the 'q' (query) parameter.
+
+    >>> google_search.create_search_url(terms='svg +bugs').replace('&', ' ')
+    'http://launchpad.dev:.../cse?client=google-csbe
+    cx=ABCDEF2323
+    ie=utf8
+    num=20
+    oe=utf8
+    output=xml_no_dtd
+    q=svg+%2Bbugs
+    start=0'
+
+Unicode characters are escaped correctly in the google request URL.
+
+    >>> google_search.create_search_url(terms=u'Carlos Perell\xf3 Mar\xedn')
+    'http://launchpad.dev:.../...q=Carlos+Perell%C3%B3+Mar%C3%ADn&start=0'
+
+The start parameter can be changed by passing a start int argument.
+
+    >>> google_search.create_search_url(terms='svg +bugs', start=20)
+    'http://launchpad.dev:.../...q=svg+%2Bbugs&start=20'
+
+
+Google Search Protocol parsing
+==============================
+
+The GoogleSearchService's _parse_google_search_protocol() requires a
+subset of the GSP 3.2 markup to create the PageMatch and PageMatches
+objects. An error is raised when the XML document cannot be parsed into
+objects. The probable cause of an error is that Google returned a new
+and incompatible version of GSP.
+
+The PageMatches's start attribute comes from the GSP XML element
+'<PARAM name="start" value="0" original_value="0"/>'. When it cannot
+be found and the value cast to an int, an error is raised. There is
+nothing in the value attribute in the next test, so an error is raised.
+
+    >>> from os import path
+
+    >>> base_path = path.normpath(path.join(
+    ...         path.dirname(__file__), '..', 'tests', 'data'))
+    >>> gsp_xml_file_name = path.join(
+    ...     base_path, 'googlesearchservice-incompatible-param.xml')
+    >>> gsp_xml_file = open(gsp_xml_file_name, 'r')
+    >>> gsp_xml = gsp_xml_file.read()
+    >>> gsp_xml_file.close()
+    >>> print gsp_xml
+    <...
+    <PARAM name="start" value="" original_value="0"/>...
+
+    >>> google_search._parse_google_search_protocol(gsp_xml)
+    Traceback (most recent call last):
+     ...
+    GoogleWrongGSPVersion: Could not get the 'start' from the
+                           GSP XML response.
+
+The PageMatches's total attribute comes from the GSP XML element
+'<M>5</M>'. When it cannot be found and the value cast to an int,
+an error is raised. If Google were to redefine the meaning of the M
+element to use a '~' to indicate an approximate total, an error would
+be raised.
+
+    >>> gsp_xml_file_name = path.join(
+    ...     base_path, 'googlesearchservice-incompatible-matches.xml')
+    >>> gsp_xml_file = open(gsp_xml_file_name, 'r')
+    >>> gsp_xml = gsp_xml_file.read()
+    >>> gsp_xml_file.close()
+    >>> print gsp_xml
+    <...
+    <RES SN="1" EN="1">
+    <M>~1</M>...
+
+    >>> google_search._parse_google_search_protocol(gsp_xml)
+    Traceback (most recent call last):
+     ...
+    GoogleWrongGSPVersion: Could not get the 'total' from the
+                           GSP XML response.
+
+On the other hand, if the total is ever less than zero (see bug 683115),
+this is expected: we simply return a total of 0.
+
+    >>> gsp_xml_file_name = path.join(
+    ...     base_path, 'googlesearchservice-negative-total.xml')
+    >>> gsp_xml_file = open(gsp_xml_file_name, 'r')
+    >>> gsp_xml = gsp_xml_file.read()
+    >>> gsp_xml_file.close()
+    >>> print gsp_xml
+    <...
+    <RES SN="1" EN="1">
+    <M>-1</M>...
+
+    >>> google_search._parse_google_search_protocol(gsp_xml).total
+    0
+
+A PageMatch requires a title, url, and a summary. If those elements
+('<T>', '<U>', '<S>') cannot be found nested in an '<R>' a PageMatch
+cannot be made. A missing title (<T>) indicates a bad page on Launchpad,
+so it is ignored. In this example, The first match is missing a title,
+so only the second page is present in the PageMatches.
+
+    >>> gsp_xml_file_name = path.join(
+    ...     base_path, 'googlesearchservice-missing-title.xml')
+    >>> gsp_xml_file = open(gsp_xml_file_name, 'r')
+    >>> gsp_xml = gsp_xml_file.read()
+    >>> gsp_xml_file.close()
+    >>> print gsp_xml
+    <...
+    <RES SN="1" EN="2">
+    <M>2</M>
+    ...
+    <R N="1">
+    <U>https://launchpad.net/gc</U>
+    <UE>https://launchpad.net/gc</UE>
+    <RK>0</RK>
+    <S>
+    </S>
+    <LANG>en</LANG>
+    <Label>_cse_ixpjdn21yfg</Label>
+    <HAS>
+    <L/>
+    <RT/>
+    </HAS>
+    </R>...
+    <R N="2">
+    <U>https://bugs.launchpad.net/bugs/205991</U>
+    <UE>https://bugs.launchpad.net/bugs/205991</UE>
+    <T>Bug #205991 in Ubuntu: ... pair Bluetooth Logitech ...</T>...
+
+    >>> page_matches = google_search._parse_google_search_protocol(gsp_xml)
+    >>> len(page_matches)
+    1
+    >>> page_matches[0].title
+    u'Bug #205991 in Ubuntu: ... Bluetooth Logitech ...'
+    >>> page_matches[0].url
+    'http://bugs.launchpad.dev/bugs/205991'
+
+When a match is missing a summary (<S>), the match is skipped because
+there is no information about why it matched. This appears to relate to
+pages that are in the index, but should be removed. In this example
+taken from real data, the links are to the same page on different
+vhosts. The edge vhost has no summary, so it is skipped.
+
+    >>> gsp_xml_file_name = path.join(
+    ...     base_path, 'googlesearchservice-missing-summary.xml')
+    >>> gsp_xml_file = open(gsp_xml_file_name, 'r')
+    >>> gsp_xml = gsp_xml_file.read()
+    >>> gsp_xml_file.close()
+    >>> print gsp_xml
+    <...
+    <RES SN="1" EN="2">
+    <M>2</M>
+    ...
+    <R N="1">
+    <U>https://blueprints.edge.launchpad.net/ubuntu/+spec/gobuntu-hardy</U>
+    <UE>https://blueprints.edge.launchpad.net.../%2Bspec/gobuntu-hardy</UE>
+    <T>Blueprint: &lt;b&gt;gobuntu&lt;/b&gt; hardy</T>
+    <RK>0</RK>
+    <S></S>
+    <LANG>en</LANG>
+    <Label>_cse_ixpjdn21yfg</Label>
+    <HAS>
+    <L/>
+    <RT/>
+    </HAS>
+    </R>...
+    <R N="2">
+    <U>https://blueprints.launchpad.net/ubuntu/+spec/gobuntu-hardy</U>
+    <UE>https://blueprints.launchpad.net/ubuntu/%2Bspec/gobuntu-hardy</UE>
+    <T>Blueprint: &lt;b&gt;Gobuntu&lt;/b&gt; 8.04</T>
+    <RK>0</RK>
+    <S>Discuss what needs to be done for &lt;b&gt;Gobuntu&lt;/b&gt;...
+
+    >>> page_matches = google_search._parse_google_search_protocol(gsp_xml)
+    >>> len(page_matches)
+    1
+    >>> page_matches[0].title
+    'Blueprint: <b>Gobuntu</b> 8.04'
+    >>> page_matches[0].url
+    'http://blueprints.launchpad.dev/ubuntu/+spec/gobuntu-hardy'
+
+When the URL (<U>) cannot be found the match is skipped. There are no
+examples of this. We do not want this hypothetical situation to give
+users a bad experience.
+
+    >>> gsp_xml_file_name = path.join(
+    ...     base_path, 'googlesearchservice-missing-url.xml')
+    >>> gsp_xml_file = open(gsp_xml_file_name, 'r')
+    >>> gsp_xml = gsp_xml_file.read()
+    >>> gsp_xml_file.close()
+    >>> print gsp_xml
+    <...
+    <RES SN="1" EN="2">
+    <M>2</M>
+    ...
+    <R N="1">
+    <!-- Non public URL -->
+    <T>Blueprint: &lt;b&gt;gobuntu&lt;/b&gt; hardy</T>
+    <RK>0</RK>
+    <S>Discuss what needs to be done for &lt;b&gt;Gobuntu&lt;/b&gt;...</S>
+    <LANG>en</LANG>
+    <Label>_cse_ixpjdn21yfg</Label>
+    <HAS>
+    <L/>
+    <RT/>
+    </HAS>
+    </R>...
+    <R N="2">
+    <U>https://blueprints.launchpad.net/ubuntu/+spec/gobuntu-hardy</U>
+    <UE>https://blueprints.launchpad.net/ubuntu/%2Bspec/gobuntu-hardy</UE>
+    <T>Blueprint: &lt;b&gt;Gobuntu&lt;/b&gt; 8.04</T>...
+
+    >>> page_matches = google_search._parse_google_search_protocol(gsp_xml)
+    >>> len(page_matches)
+    1
+    >>> page_matches[0].title
+    'Blueprint: <b>Gobuntu</b> 8.04'
+    >>> page_matches[0].url
+    'http://blueprints.launchpad.dev/ubuntu/+spec/gobuntu-hardy'
+
+If no matches are found in the response, and there are 20 or fewer results,
+an Empty PageMatches is returned. This happens when the results are missing
+titles and summaries. This is not considered to be a problem because the
+small number implies that Google did a poor job of indexing pages or indexed
+the wrong Launchpad server. In this example, there is only one match, but
+the results is missing a title so there is not enough information to make
+a PageMatch.
+
+    >>> gsp_xml_file_name = path.join(
+    ...     base_path, 'googlesearchservice-no-meaningful-results.xml')
+    >>> gsp_xml_file = open(gsp_xml_file_name, 'r')
+    >>> gsp_xml = gsp_xml_file.read()
+    >>> gsp_xml_file.close()
+    >>> print gsp_xml
+    <...
+    <RES SN="1" EN="1">
+    <M>1</M>
+    ...
+    <R N="1">
+      <U>https://bugs.launchpad.net/</U>
+      <UE>https://bugs.launchpad.net/</UE>
+      <T></T>
+      <RK>0</RK>
+      <CRAWLDATE>17 hours ago</CRAWLDATE>
+      <S>This 'R'esult does not have a title.</S>
+      <LANG>en</LANG>
+      <Label>_cse_ixpjdn21yfg</Label>
+      <HAS><L/><RT/></HAS>
+    </R>...
+
+If no matches are found in the response, and there are more than 20
+possible matches, an error is raised. Unlike the previous example, there
+are lots of results; there is a possibility that the GSP version is
+incompatible. This example says it has 1000 matches, but none of the R
+tags can be parsed (because the markup was changed to use RESULT).
+
+    >>> gsp_xml_file_name = path.join(
+    ...     base_path, 'googlesearchservice-incompatible-result.xml')
+    >>> gsp_xml_file = open(gsp_xml_file_name, 'r')
+    >>> gsp_xml = gsp_xml_file.read()
+    >>> gsp_xml_file.close()
+    >>> print gsp_xml
+    <...
+    <RES SN="1" EN="1">
+    <M>1000</M>
+    ...
+    <RESULT N="1">
+      <url>https://bugs.launchpad.net/</url>
+      <UE>https://bugs.launchpad.net/</UE>
+      <T>Launchpad Bugs</T>
+      <RK>0</RK>
+      <CRAWLDATE>17 hours ago</CRAWLDATE>
+      <S>This 'R'esult is missing a 'U' element, it has a 'url' instead.</S>
+      <LANG>en</LANG>
+      <Label>_cse_ixpjdn21yfg</Label>
+      <HAS><L/><RT/></HAS>
+    </RESULT>...
+
+    >>> google_search._parse_google_search_protocol(gsp_xml)
+    Traceback (most recent call last):
+     ...
+    GoogleWrongGSPVersion: Could not get any PageMatches from the
+                           GSP XML response.
+
+The parser removes escaped <br> tags from the summary (S tag) so that
+there are no layout instructions in the data. Google inserts the <br>
+tags about every 40 characters.
+
+    >>> gsp_xml_file_name = path.join(
+    ...     base_path, 'googlesearchservice-bugs-1.xml')
+    >>> gsp_xml_file = open(gsp_xml_file_name, 'r')
+    >>> gsp_xml = gsp_xml_file.read()
+    >>> gsp_xml_file.close()
+    >>> print gsp_xml.replace('><', '> <')
+    <...
+    <R N="1">
+      <U>https://bugs.launchpad.net/</U>
+      <UE>https://bugs.launchpad.net/</UE>
+      <T>Launchpad Bugs</T>
+      <RK>0</RK>
+      <CRAWLDATE>17 hours ago</CRAWLDATE>
+      <S>&lt;b&gt;Bug&lt;/b&gt; tracking &lt;b&gt;...&lt;/b&gt;
+         Search &lt;b&gt;bugs&lt;/b&gt; reports &lt;b&gt;...&lt;/b&gt;
+         Launchpad’s &lt;b&gt;bug&lt;/b&gt;
+         &lt;br&gt;
+         tracker allows collaboration</S>...
+
+    >>> page_matches = google_search._parse_google_search_protocol(gsp_xml)
+    >>> page_match = page_matches[0]
+    >>> page_match.summary
+    u'<b>Bug</b> tracking <b>...</b> Search
+      <b>bugs</b> reports <b>...</b> Launchpad...s
+      <b>bug</b>
+      tracker allows collaboration'
+
+
+-------------
+URL rewriting
+-------------
+
+The URL scheme used in the rewritten URL is configured in
+config.google.url_rewrite_scheme. The hostname is set in the shared
+key config.vhost.mainsite.hostname.
+
+    >>> config.vhosts.use_https
+    False
+    >>> page_match.url_rewrite_scheme
+    'http'
+
+    >>> config.vhost.mainsite.hostname == page_match.url_rewrite_hostname
+    True
+    >>> page_match.url_rewrite_hostname
+    'launchpad.dev'
+
+URLs are rewritten to map public URL to the private hostname.
+The vhost name is preserved when the URL is rewritten.
+
+    >>> page_match = PageMatch(
+    ...     u'Bug #456 in Unicode title: "testrunner hates Unicode"',
+    ...     'https://bugs.launchpad.net/unicode-titles/+bug/456',
+    ...     u'The Zope testrunner likes ASCII more than Unicode.')
+    >>> page_match.url
+    'http://bugs.launchpad.dev/unicode-titles/+bug/456'
+
+A URL's trailing slash is removed; Launchpad does not use trailing
+slashes.
+
+    >>> page_match = PageMatch(
+    ...     u'Ubuntu in Launchpad',
+    ...     'https://launchpad.net/ubuntu/',
+    ...     u'Ubuntu also includes more software than any other operating')
+    >>> page_match.url
+    'http://launchpad.dev/ubuntu'
+
+There is a list of URLs that are not rewritten configured in
+config.google.url_rewrite_exceptions. For example, help.launchpad.net
+is only run in one environment, so links to that site will be preserved.
+
+    >>> config.google.url_rewrite_exceptions
+    'help.launchpad.net'
+    >>> page_match.url_rewrite_exceptions
+    ['help.launchpad.net']
+
+    >>> page_match = PageMatch(
+    ...     u'OpenID',
+    ...     'https://help.launchpad.net/OpenID',
+    ...     u'Launchpad uses OpenID.')
+    >>> page_match.url
+    'https://help.launchpad.net/OpenID'
+
+
+-----------------------------
+Graceful handling of timeouts
+-----------------------------
+
+The external service (Google Search Engine) may not be available, or
+is not responding quickly because there are network issues. In these
+cases a TimeoutError is issued.
+
+    >>> from socket import socket
+    >>> from textwrap import dedent
+    >>> from lp.services.timeout import (
+    ...     get_default_timeout_function, set_default_timeout_function)
+
+    >>> server = socket()
+    >>> server.bind(('127.0.0.01', 0))
+    >>> server.listen(1)
+    >>> config.push('timeout_data', dedent("""
+    ...     [google]
+    ...     site: http://%s:%d/cse
+    ...     """ % server.getsockname()))
+    >>> old_timeout_function = get_default_timeout_function()
+    >>> set_default_timeout_function(lambda: 0.1)
+    >>> google_search.search(terms='bug')
+    Traceback (most recent call last):
+     ...
+    GoogleResponseError: ... timeout exceeded.
+
+    # Restore the configuration and the timeout state.
+    >>> timeout_data = config.pop('timeout_data')
+    >>> set_default_timeout_function(old_timeout_function)

@@ -1,0 +1,8 @@
+The message you sent included commands to modify a bug,
+but no bug was specified. Please supply a bug before the command
+to modify it.
+
+For example:
+
+    bug 4
+    summary "This is a new summary"

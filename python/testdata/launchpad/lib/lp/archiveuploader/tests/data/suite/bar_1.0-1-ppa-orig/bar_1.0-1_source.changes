@@ -1,0 +1,31 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Format: 1.7
+Date: Thu, 16 Feb 2006 15:34:09 +0000
+Source: bar
+Binary: bar
+Architecture: source
+Version: 1.0-1
+Distribution: breezy
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Daniel Silverstone <daniel.silverstone@canonical.com>
+Description: 
+ bar        - Stuff for testing
+Changes: 
+ bar (1.0-1) breezy; urgency=low
+ .
+   * Initial version
+Files: 
+ 7008230e582a2688624980cde1a327a7 512 devel optional bar_1.0-1.dsc
+ ba14c6d3df9faa606d520a896ac46b5b 285 devel optional bar_1.0.orig.tar.gz
+ 9c2929dbd591833c235cef561a050c2a 537 devel optional bar_1.0-1.diff.gz
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+
+iD8DBQFHTu4njn63CGxkqMURAiILAJ9CVW/F6hvBNF+C0OqPnRsYTAnjAwCgmnNj
+0kTt7TDwvJy2OchGXW+1CTM=
+=N6X3
+-----END PGP SIGNATURE-----

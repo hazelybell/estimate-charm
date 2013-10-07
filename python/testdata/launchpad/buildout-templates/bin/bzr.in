@@ -1,0 +1,15 @@
+#!${buildout:executable} -S
+
+# Initialize our paths.
+${python-relative-path-setup}
+import sys
+sys.path.insert(0, ${scripts:parts-directory|path-repr})
+import site
+
+# Run the script.
+import pkg_resources
+
+bzr_distribution = pkg_resources.get_distribution(
+    pkg_resources.Requirement.parse('bzr'))
+
+bzr_distribution.run_script('bzr', globals().copy())

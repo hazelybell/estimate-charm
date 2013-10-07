@@ -1,0 +1,77 @@
+<tal:assigneewidget
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  define="widget_name string:${view/name}.option">
+
+  <table>
+    <tr tal:condition="view/showUnassignOption">
+      <td style="padding: 0 2px 2px 0">
+        <input type="radio"
+               tal:attributes="name widget_name;
+                               id view/assign_to_nobody;
+                               value view/assign_to_nobody;
+                               checked python:view.selectedRadioButton() ==
+                                              view.assign_to_nobody" />
+      </td>
+      <td style="padding: 0">
+        <label style="font-weight: normal"
+               tal:attributes="for view/assign_to_nobody">
+          Nobody
+        </label>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 0 2px 2px 0">
+        <input type="radio"
+               tal:attributes="name widget_name;
+                               id view/assign_to_me;
+                               value view/assign_to_me;
+                               checked python:view.selectedRadioButton() ==
+                                              view.assign_to_me" />
+      </td>
+      <td style="padding: 0">
+        <label style="font-weight: normal"
+               tal:attributes="for view/assign_to_me">
+          Me
+        </label>
+      </td>
+    </tr>
+    <tal:assigned condition="view/getAssigneeDisplayValue">
+      <tal:assigned_to_another_user condition="view/assignedToAnotherUser">
+        <tr>
+          <td style="padding: 0 2px 2px 0">
+              <input type="radio"
+                     tal:attributes="name widget_name;
+                                     id view/assigned_to;
+                                     value view/assigned_to;
+                                     checked python:view.selectedRadioButton() ==
+                                                    view.assigned_to" />
+          </td>
+          <td style="padding: 0">
+            <label style="font-weight: normal"
+                   tal:attributes="for view/assigned_to">
+              <tal:assignee content="view/getAssigneeDisplayValue" />
+            </label>
+          </td>
+        </tr>
+      </tal:assigned_to_another_user>
+    </tal:assigned>
+    <tr tal:condition="view/showPersonChooserWidget">
+      <td style="padding: 2px 2px 0 0;">
+        <input type="radio"
+               tal:attributes="name widget_name;
+                               id view/assign_to;
+                               value view/assign_to;
+                               checked python:view.selectedRadioButton() ==
+                                              view.assign_to" />
+      </td>
+      <td style="padding: 0">
+        <tal:assignee_chooser define="widget nocall:view/assignee_chooser_widget">
+          <metal:content
+            use-macro="context/@@launchpad_widget_macros/display_raw_widget" />
+        </tal:assignee_chooser>
+      </td>
+    </tr>
+  </table>
+
+</tal:assigneewidget>

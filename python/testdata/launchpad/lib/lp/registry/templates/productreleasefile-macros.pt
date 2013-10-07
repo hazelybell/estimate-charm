@@ -1,0 +1,52 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<metal:detailed_display define-macro="detailed_display">
+  <tal:comment replace="nothing">
+    This macro expects two variables to be defined:
+      - 'file': The ProductReleaseFile
+      - 'has_edit': A boolean saying whether the user has edit rights on this
+                    ProductReleaseFile.
+      - checkbox_index: A unique string to be appended to the name of the
+                        checkbox included in this macro.
+  </tal:comment>
+
+  <tal:define-lfa define="lfa file/libraryfile">
+    <td>
+      <tal:link replace="structure file/fmt:link" />
+    </td>
+    <td tal:content="file/description">
+      Installer for i386
+    </td>
+    <td style="text-align: center;">
+      <tal:downloaded condition="lfa/hits"
+                      define="last_downloaded lfa/last_downloaded">
+        <span tal:replace="lfa/hits/fmt:intcomma">10</span>
+        <br />
+        <span class="lesser greyed-out">
+          last downloaded
+          <strong tal:condition="not:last_downloaded/days">
+            today
+          </strong>
+          <strong tal:condition="last_downloaded/days">
+            <span tal:replace="last_downloaded/fmt:approximateduration" />
+            ago
+          </strong>
+        </span>
+      </tal:downloaded>
+      <tal:not-downloaded condition="not:lfa/hits">
+        -
+      </tal:not-downloaded>
+    </td>
+    <td tal:condition="has_edit"
+        align="center">
+      <input type="checkbox"
+        tal:attributes="value lfa/id; name string:checkbox_${checkbox_index}" />
+    </td>
+  </tal:define-lfa>
+
+</metal:detailed_display>
+</tal:root>

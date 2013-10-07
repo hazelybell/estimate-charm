@@ -1,0 +1,33 @@
+<?xml version="1.0"?><!--*- mode: nxml -*-->
+<schedule xmlns:tal="http://xml.zope.org/namespaces/tal">
+  <!--
+      This sprint info export format is not a stable interface and
+      is subject to change without notice.  Use at your own risk
+  -->
+
+  <attendees>
+    <person tal:repeat="attendance view/attendees"
+            tal:attributes="name attendance/name;
+                            displayname attendance/displayname;
+                            start attendance/start;
+                            end attendance/end" />
+  </attendees>
+
+  <unscheduled>
+    <meeting tal:repeat="spec view/specifications"
+             tal:attributes="id spec/spec/id;
+                             name spec/spec/name;
+                             status spec/spec/definition_status/name;
+                             lpurl spec/spec/fmt:url;
+                             specurl spec/spec/specurl;
+                             assignee spec/spec/assignee/name|nothing;
+                             drafter spec/spec/drafter/name|nothing;
+                             approver spec/spec/approver/name|nothing;
+                             priority spec/spec/priority/value">
+      <person tal:repeat="person spec/interested"
+              tal:attributes="name person/name;
+                              required person/required" />
+    </meeting>
+  </unscheduled>
+
+</schedule>

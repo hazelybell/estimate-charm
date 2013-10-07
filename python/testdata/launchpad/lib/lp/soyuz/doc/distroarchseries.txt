@@ -1,0 +1,376 @@
+==================
+Distro Arch Series
+==================
+
+    >>> from lp.testing import verifyObject
+
+    >>> from lp.soyuz.interfaces.distroarchseriesbinarypackage import (
+    ...     IDistroArchSeriesBinaryPackage,
+    ...     )
+    >>> from lp.soyuz.interfaces.publishing import (
+    ...     IBinaryPackagePublishingHistory
+    ...     )
+    >>> from lp.soyuz.interfaces.section import ISectionSet
+
+    >>> from lp.registry.interfaces.distribution import IDistributionSet
+    >>> ubuntu = getUtility(IDistributionSet).getByName('ubuntu')
+    >>> hoary = ubuntu.getSeries('hoary')
+
+DistroArchSeries are retrieved via __getitem__:
+
+    >>> hoary_i386 = hoary['i386']
+
+or getDistroArchSeries():
+
+    >>> hoary_hppa = hoary.getDistroArchSeries('hppa')
+
+# XXX: daniels 2005-10-17 bug=3257:
+#      This needs many more tests to be effective.
+
+
+Properties
+==========
+
+Enabled is a boolean flag that says whether the arch will receive new builds
+and publish them.
+
+    >>> print hoary_i386.enabled
+    True
+
+`DistroSeries.enabled_architectures` is a `ResultSet` containing the
+architectures with that flag set.
+
+    >>> hoary_i386 in hoary.enabled_architectures
+    True
+    >>> from lp.testing import celebrity_logged_in
+    >>> with celebrity_logged_in('admin'):
+    ...     hoary_i386.enabled = False
+    >>> hoary_i386 in hoary.enabled_architectures
+    False
+
+
+DistroArchSeries can tell you about their published releases
+============================================================
+
+DistroArchSeries has a number of releases of any given binary
+package in them. This can be due to various reasons such as uploads in
+progress, superseding in progress, or simply that there is more than
+one version spread across the pockets. getReleasedPackages lets us
+interrogate this information.
+
+    >>> for p in hoary_i386.getReleasedPackages("pmount"):
+    ...     print p.binarypackagerelease.binarypackagename.name
+    pmount
+
+See more information about getReleasePackages below.
+
+Check the behavior of the provided search method, which returns a
+list of IDARBPR instances containing the matching packages.
+
+    >>> results = hoary_i386.searchBinaryPackages(text=u'pmount')
+    >>> results.count()
+    1
+    >>> pmount = results[0]
+
+The method works even when we are searching for packages whose names are
+not fti-matchable, such as "linux-2.6.12", and substrings:
+
+    >>> warty = ubuntu.getSeries('warty')
+    >>> warty_i386 = warty['i386']
+    >>> results = warty_i386.searchBinaryPackages(text=u'linux-2.6.12')
+    >>> results.count()
+    1
+    >>> results = warty_i386.searchBinaryPackages(text=u'a')
+    >>> for dasbp in results:
+    ...     print "%s: %s" % (dasbp.__class__.__name__, dasbp.name)
+    DistroArchSeriesBinaryPackageRelease: at
+    DistroArchSeriesBinaryPackageRelease: mozilla-firefox
+    DistroArchSeriesBinaryPackageRelease: mozilla-firefox
+    DistroArchSeriesBinaryPackageRelease: mozilla-firefox-data
+
+    # XXX cprov 2006-03-21: Broken implementation, missing enhances attribute.
+    verifyObject(IDistroArchSeriesBinaryPackageRelease, pmount)
+    True
+
+Check IDARBP provider
+
+    >>> pmount_hoary_i386 = hoary_i386.getBinaryPackage('pmount')
+
+    >>> verifyObject(IDistroArchSeriesBinaryPackage, pmount_hoary_i386)
+    True
+
+    >>> pmount_hoary_i386.name
+    u'pmount'
+
+
+Check some properties of DARBP meta class
+
+Entire publishing history:
+
+    >>> pmount_hoary_i386.publishing_history.count()
+    2
+
+Most recent published history row:
+
+    >>> bpph = pmount_hoary_i386.current_published
+
+    # XXX cprov 2006-03-22: The object doesn't pass verifyObject()
+    # due the lack of distroarchseriesbinarypackagerelease attribute.
+
+    >>> IBinaryPackagePublishingHistory.providedBy(bpph)
+    True
+
+    >>> bpph.section.name
+    u'editors'
+
+Perform `post publication` override:
+
+    >>> new_section = getUtility(ISectionSet)['base']
+    >>> version = bpph.binarypackagerelease.version
+    >>> pmount_hoary_i386_released = pmount_hoary_i386[version]
+
+    >>> from lp.testing import person_logged_in
+    >>> pmount_i386_pub = pmount_hoary_i386_released.current_publishing_record
+    >>> with person_logged_in(ubuntu.main_archive.owner):
+    ...     override = pmount_i386_pub.changeOverride(
+    ...         new_section=new_section)
+    >>> override.section == new_section
+    True
+    >>> override.status.name
+    'PENDING'
+    >>> pub_hist = pmount_hoary_i386.publishing_history
+    >>> pub_hist.count()
+    3
+
+Override information about 'pmount' is pending publication:
+
+    >>> pub_hist[0].status.name, pub_hist[0].section.name
+    ('PENDING', u'base')
+
+Supersede current publication:
+
+    >>> pub = pmount_hoary_i386_released.current_publishing_record
+    >>> pub.supersede()
+    >>> pmount_hoary_i386.publishing_history.count()
+    3
+
+    >>> print pub.status.name, pub.datesuperseded is not None
+    SUPERSEDED True
+
+
+Binary publishing lookups
+=========================
+
+IDistroArchseries allows binary publishing lookup via
+getReleasedPackages method which returns a shortlist of
+IBinaryPackagePublishingHistory ordered by descending ID.
+
+In order to test its behavior we will create a bunch of sample
+publishing records with different (status, pocket, archive) in
+ubuntu/breezy-autotest/i386, which is empty:
+
+    >>> from lp.registry.interfaces.distribution import IDistributionSet
+    >>> from lp.registry.interfaces.person import IPersonSet
+    >>> from lp.registry.interfaces.pocket import PackagePublishingPocket
+    >>> from lp.soyuz.model.publishing import (
+    ...     BinaryPackagePublishingHistory)
+
+    >>> ubuntu = getUtility(IDistributionSet)['ubuntu']
+    >>> breezy_autotest = ubuntu['breezy-autotest']
+    >>> bt_i386 = breezy_autotest['i386']
+    >>> cprov_archive = getUtility(IPersonSet).getByName('cprov').archive
+
+We will use a 'at' binarypackage because it's not published yet in the
+architecture we want to test, this will help to make the tests as clear
+as possible.
+
+    >>> warty = ubuntu['warty']
+    >>> at_warty_i386 = warty['i386'].getBinaryPackage('at')
+    >>> sample_bpr = at_warty_i386.currentrelease.binarypackagerelease
+
+    >>> BinaryPackagePublishingHistory.selectBy(
+    ...     distroarchseries=bt_i386, binarypackagerelease=sample_bpr).count()
+    0
+
+Create and collect several binary publishing records in a variety of
+states, pockets and archives:
+
+    >>> from lp.soyuz.tests.soyuz import SoyuzTestHelper
+
+    >>> soyuz_helper = SoyuzTestHelper()
+    >>> sample_pub = soyuz_helper.createPublishingForDistroArchSeries(
+    ...      sample_bpr, bt_i386)
+
+    >>> [pub_main_release_pending, pub_main_release_published,
+    ...  pub_main_updates_pending, pub_main_proposed_published,
+    ...  pub_ppa_release_pending, pub_ppa_release_published,
+    ...  pub_ppa_updates_pending, pub_ppa_proposed_published] = sample_pub
+
+Looking for all PUBLISHED publications in main_archive and all
+pockets:
+
+    >>> all_published_main_pubs = [
+    ...     pub_main_proposed_published,
+    ...     pub_main_release_published,
+    ...     ]
+
+    >>> import operator
+    >>> all_published_main_pubs = sorted(
+    ...    all_published_main_pubs, key=operator.attrgetter('id'),
+    ...    reverse=True)
+
+    >>> result = bt_i386.getReleasedPackages('at')
+    >>> soyuz_helper.checkPubList(all_published_main_pubs, result)
+    True
+
+Looking for all PUBLISHED or PENDING publications in main_archive and all
+pockets.
+
+    >>> all_main_pubs = [
+    ...     pub_main_proposed_published,
+    ...     pub_main_updates_pending,
+    ...     pub_main_release_published,
+    ...     pub_main_release_pending,
+    ...     ]
+
+    >>> all_main_pubs = sorted(
+    ...    all_main_pubs, key=operator.attrgetter('id'),
+    ...    reverse=True)
+
+    >>> result = bt_i386.getReleasedPackages('at', include_pending=True)
+    >>> soyuz_helper.checkPubList(all_main_pubs, result)
+    True
+
+Using 'pocket' filter:
+
+    >>> updates_main_pubs = [
+    ...     pub_main_updates_pending,
+    ...     ]
+
+    >>> result = bt_i386.getReleasedPackages(
+    ...     'at', include_pending=True,
+    ...     pocket=PackagePublishingPocket.UPDATES)
+
+    >>> soyuz_helper.checkPubList(updates_main_pubs, result)
+    True
+
+Looking for all PUBLISHED or PENDING publications in cprov PPA and all
+pockets.
+
+    >>> all_ppa_pubs = [
+    ...     pub_ppa_proposed_published,
+    ...     pub_ppa_updates_pending,
+    ...     pub_ppa_release_published,
+    ...     pub_ppa_release_pending,
+    ...     ]
+
+    >>> all_ppa_pubs = sorted(
+    ...    all_ppa_pubs, key=operator.attrgetter('id'), reverse=True)
+
+    >>> result = bt_i386.getReleasedPackages(
+    ...    'at', include_pending=True, archive=cprov_archive)
+    >>> soyuz_helper.checkPubList(all_ppa_pubs, result)
+    True
+
+DistroArchSeries Lookup
+=======================
+
+The architectures related to a specific distroseries can be retrieved
+via the 'architectures' property.
+
+    >>> ubuntu = getUtility(IDistributionSet)['ubuntu']
+    >>> warty = ubuntu['warty']
+    >>> hoary = ubuntu['hoary']
+
+    >>> def print_architectures(architectures):
+    ...     for arch in architectures:
+    ...         result = arch.title
+    ...         if arch.official or arch.supports_virtualized:
+    ...             result += ' ('
+    ...         if arch.official:
+    ...             result += 'official'
+    ...             if arch.supports_virtualized:
+    ...                 result += ', '
+    ...         if arch.supports_virtualized:
+    ...             result += 'ppa'
+    ...         if arch.official or arch.supports_virtualized:
+    ...             result += ')'
+    ...         print result
+
+    >>> print_architectures(warty.architectures)
+    The Warty Warthog Release for hppa (hppa)
+    The Warty Warthog Release for i386 (386) (official, ppa)
+
+DistroArchSeries for which we support PPA building can be obtained via
+another distroseries method called 'virtualized_architectures'.
+
+For testing purposes we can compare the results of a
+manually-calculated set of warty architectures for which we support
+PPA  and the actual value returned from the 'ppa_architecture'
+property.
+
+    >>> expected_ppa_archs = [arch for arch in warty.architectures
+    ...                       if arch.supports_virtualized is True]
+    >>> print_architectures(expected_ppa_archs)
+    The Warty Warthog Release for i386 (386) (official, ppa)
+
+    >>> print_architectures(warty.virtualized_architectures)
+    The Warty Warthog Release for i386 (386) (official, ppa)
+
+Let's activate ppa support for hoary/hppa and check if
+'virtualized_architectures' will include it this time.
+
+    >>> print_architectures(hoary.virtualized_architectures)
+    The Hoary Hedgehog Release for i386 (386) (official, ppa)
+
+    >>> from lp.services.database.sqlbase import flush_database_updates
+    >>> login('foo.bar@canonical.com')
+
+    >>> hoary['hppa'].supports_virtualized = True
+    >>> flush_database_updates()
+
+    >>> print_architectures(hoary.virtualized_architectures)
+    The Hoary Hedgehog Release for hppa (hppa) (ppa)
+    The Hoary Hedgehog Release for i386 (386) (official, ppa)
+
+There is also `DistroSeries.buildable_architectures` which returns a
+`ResultSet` containing only the `DistroArchSeries` with available
+chroots tarballs (the ones for which we can build packages).
+
+In the sampledata, none of the hoary architectures have chroot
+tarballs. Once it is available the corresponding architecture is
+returned.
+
+    >>> hoary.buildable_architectures.count()
+    0
+
+    # Create a chroot tarball for hoary/hppa.
+    >>> chroot = factory.makeLibraryFileAlias()
+    >>> unused = hoary.getDistroArchSeries('hppa').addOrUpdateChroot(chroot)
+
+    >>> print_architectures(hoary.buildable_architectures)
+    The Hoary Hedgehog Release for hppa (hppa) (ppa)
+
+The architecture also has a 'chroot_url' attribute directly referencing
+the file.
+
+    >>> print hoary.getDistroArchSeries('hppa').chroot_url
+    http://.../filename...
+    >>> hoary.getDistroArchSeries('hppa').chroot_url == \
+    ...     chroot.http_url
+    True
+
+If there is no chroot, chroot_url will be None.
+
+    >>> print hoary.getDistroArchSeries('i386').chroot_url
+    None
+
+`DistroSeries.buildable_architectures` results are ordered
+alphabetically by 'architecturetag'.
+
+    # Create a chroot tarball for hoary/i386.
+    >>> unused = hoary.getDistroArchSeries('i386').addOrUpdateChroot(chroot)
+
+    >>> print_architectures(hoary.buildable_architectures)
+    The Hoary Hedgehog Release for hppa (hppa) (ppa)
+    The Hoary Hedgehog Release for i386 (386) (official, ppa)

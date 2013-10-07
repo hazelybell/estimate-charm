@@ -1,0 +1,426 @@
+<?xml version="1.0" ?>
+<system version="1.0">
+
+  <!-- summary: generic information about the submission -->
+  <summary>
+
+    <!-- live_cd: Was this submission made on a system running an Ubuntu Live
+             CD or on a regular Ubuntu/Linux installation?
+    -->
+    <live_cd value="False"/>
+
+    <!-- system_id: A hash of the "system identifier". This value is intended
+             to identify the tested computer model; the value should 
+             be derived from the properties 
+             system.product, system.vendor of the HAL UDI 
+             /org/freedesktop/Hal/devices/computer.
+    -->
+    <system_id value="f982bb1ab536469cebfd6eaadcea0ffc"/>
+
+    <!-- distribution, distroseries: These values are retrieved from
+             /etc/lsb-release, parameters DISTRIB_ID and DISTRIB_RELEASE.
+    -->
+    <distribution value="Ubuntu"/>
+    <distroseries value="7.04"/>
+
+    <!-- architecture: The processor architecture of the operating system.
+    -->
+    <architecture value="amd64"/>
+
+    <!-- private: If False, this submission is publicly accessible from
+             Launchpad, else it is only accesible by the submitter, by 
+             Launchpad administrators and by scripts running with 
+             administrator rights. Submissions marked "private" should
+             only be used to gather statistical data.
+    -->
+    <private value="False"/>
+
+    <!-- contactable: If True, the owner agrees to be contacted by other
+             persons about devices which appear in his submission. 
+             Example of a use case: Developers can ask device owners
+             to perform tests.
+    -->
+    <contactable value="False"/>
+
+    <!-- date_created: Date and time (UTC) of the submission.
+    -->
+    <date_created value="2007-09-28T16:09:20.126842"/>
+
+    <!-- client: The name and version of the program that created the
+             submission data.
+    -->
+    <client name="hwtest" version="0.9">
+ 
+      <!-- plugin: name and version of a plugin used by the client.
+               This tag may appear more than once.
+      -->
+      <plugin name="architecture_info" version="1.1"/>
+      <plugin name="find_network_controllers" version="2.34"/>
+      <plugin name="internet_ping" version="1.1"/>
+      <plugin name="harddisk_speed" version="0.7"/>
+    </client>
+  </summary>
+
+  <!-- hardware: data about the hardware the submission was made on.
+  -->
+  <hardware>
+
+    <!-- hal: data collected from HAL.
+             attribute version: The version of the HAL daemon.
+    -->
+    <hal version="0.5.8.1">
+
+      <!-- device: The data of a HAL device object.
+               attribute id: A unique identifier created by th client.
+               attribute udi: the HAL UDI of the device. Privacy sensitive
+                   UDIs (e.g., those containing UUID, MAC addresses, serial
+                   numbers) should be obscured.
+               attribute parent: The ID of the parent HAL node of this
+                   device
+      -->
+      <device id="0" parent="130" udi="/org/freedesktop/Hal/devices/platform_bluetooth">
+        <!-- property: A HAL device property.
+                 attribute name: The name of the property.
+                 attribute type: The DBus type of the property.
+
+                 The value of a property is stored as CTEXT, except
+                 for properties of the dictionary- and list-like 
+                 types.
+
+                 For list-like types, the values are stored in sub-tags
+                 <value>, which have the required attribute "type".
+
+                 For dictionary-like types, the values are stored in
+                 sub-tags value, which have the required attributes
+                 "type" and "name".
+
+                 The "type" attribute contains the DBus type of a value.
+        -->
+        <property name="info.parent" type="dbus.String">
+                /org/freedesktop/Hal/devices/computer
+        </property>
+        <property name="info.bus" type="dbus.String">
+                platform
+        </property>
+        <property name="button.has_state" type="dbus.Boolean">
+                False
+        </property>
+        <property name="info.capabilities" type="dbus.Array">
+          <value type="dbus.String">
+                button
+          </value>
+        </property>
+        <property name="linux.acpi_type" type="dbus.Int32">
+                11
+        </property>
+
+        <property name="storage.size" type="dbus.UInt64">
+                0
+        </property>
+        <!-- pure theory/for possible new feature in future HAL versions: 
+             The data type dbus.Dictionary is at present (Nov 2007) not 
+             used by HAL.
+        -->
+        <property name="test.only" type="dbus.Dictionary">
+            <value name="foo" type="dbus.String">bar</value>
+            <value name="blah" type="dbus.Int32">1234</value>
+        </property>
+      </device>
+      <device id="130" udi="/org/freedesktop/Hal/devices/computer">
+        <property name="info.bus" type="dbus.String">
+            unknown
+        </property>
+      </device>
+    </hal>
+
+    <!-- processors: Data about processors installed in a system.
+             The data is retrieved from /proc/cpuinfo.
+    -->
+    <processors>
+
+      <!-- processor: Data from /proc/cpuinfo about a single processor.
+      -->
+      <processor id="123" name="0">
+
+        <!-- property: The data of one line of /proc/cpuinfo.
+                 attribute name: The name of the property
+                     (the text left of the ':' in a line of /proc/cpuinfo)
+                 attribute type: A Python type appropriate for the value.
+        -->
+        <property name="wp" type="bool">
+                True
+        </property>
+        <property name="flags" type="list">
+          <value type="str">
+                  fpu
+          </value>
+          <value type="str">
+                  vme
+          </value>
+          <value type="str">
+                  de
+          </value>
+        </property>
+        <property name="cpu_mhz" type="float">
+                1000.0
+        </property>
+      </processor>
+    </processors>
+
+      <!-- aliases: optional data provided by the user:
+               The name of a peripheral, PCI card etc as shown by a label on
+               the device. OEM devices are often sold under different names
+               by different vendors; having a set of alias names for a device
+               allows users of the HWDB to search for information by these
+               "marketing names".
+      -->
+    <aliases>
+      <!-- alias: The "label name" of a device or system. 
+               attribute target: The ID of the HAL node of the device
+               or system.
+      -->
+      <alias target="65">
+
+        <!-- vendor: The vendor name shown on the device label.
+        -->
+        <vendor>Medion</vendor>
+
+        <!-- model: The model name of shown on the label.
+        -->
+        <model>QuickPrint 9876</model>
+      </alias>
+    </aliases>
+  </hardware>
+
+  <!-- software: Data about the software installed on the system.
+  -->
+  <software>
+
+    <!-- lsbrelease: The data from /etc/lsb-release.
+    -->
+    <lsbrelease>
+
+      <!-- property: the data from one line of /etc/lsb-release.
+               attribute type: A Python type appropriate for this
+                   property (str).
+      -->
+      <property name="release" type="str">
+              7.04
+      </property>
+      <property name="codename" type="str">
+              feisty
+      </property>
+      <property name="distributor-id" type="str">
+              Ubuntu
+      </property>
+      <property name="description" type="str">
+              Ubuntu 7.04
+      </property>
+      <property name="dict_example" type="dict">
+          <value name="a" type="str">value for key a</value>
+          <value name="b" type="int">1234</value>
+      </property>
+    </lsbrelease>
+
+    <!-- packages: Data about the installed software packages.
+    -->
+    <packages>
+
+      <!-- package: Data about a single package.
+               The <property> sub-tags contain the DEB properties
+               "name", "priority", "section", "source", "version",
+               "installed_size", "size", "summary".
+
+               XXX Abel Deuring 2007-12-12: What about submissions 
+               from RPM-based Linux versions? (And "exotic" variants
+               like Gentoo?)
+      -->
+      <package name="metacity" id="200">
+        <property name="installed_size" type="int">
+                868352
+        </property>
+        <property name="section" type="str">
+                x11
+        </property>
+        <property name="summary" type="str">
+                A lightweight GTK2 based Window Manager
+        </property>
+        <property name="priority" type="str">
+                optional
+        </property>
+        <property name="source" type="str">
+                metacity
+        </property>
+        <property name="version" type="str">
+                1:2.18.2-0ubuntu1.1
+        </property>
+        <property name="size" type="int">
+                429128
+        </property>
+      </package>
+    </packages>
+    <!-- Information extracted from Xorg.0.log.
+         HAL does not provide any information about Xorg drivers, so 
+         we retrieve that from the xserver's log file.
+    -->
+    <xorg version="1.3.0">
+      <!-- driver: Data about a driver.
+               (optional)
+               attribute name: The name of the driver.
+               attribute version: The version of the driver.
+               attribute class: The module class of the driver
+               attribute device: The ID of a device driven by this driver.
+      -->
+      <driver name="fglrx" version="1.23" class="X.Org Video Driver"
+              device="12"/>
+    </xorg>
+  </software>
+
+  <!-- questions: User's answers to questions asked by the client.
+  -->
+  <questions>
+
+    <!-- question: Data of a question.
+             attribute name: The unique name of the question.
+             attribute plugin: The name of the plugin which asked
+                 the question.
+             attribute version: The version of the question.
+             attribute type: Allowed values are "manual" and "automatic".
+                 A "manual" question requires user input for the answer;
+                 an "automatic" question gets the answer automatically.
+    -->
+    <question name="detected_network_controllers"
+              plugin="find_network_controllers">
+
+      <!-- target: Information about a device or software package the
+           question is about. The attribute "id" is the ID of a HAL device
+           node or of a software package.
+           This node may appear multiple times.
+       -->
+      <target id="42">
+        <!-- driver: The driver which controls the target device. This tag
+                 may appear more than once. 
+
+                 While we are working on a project called "Hardware Database",
+                 we are not that much interested in the question, if a device 
+                 works "as such", but if their Linux driver(s) work.
+
+                 It is not in every case possible to identify the used driver
+                 from HAL data, so we need another way to add this information.
+                 (example: HAL does not know, which driver is used for the 
+                 graphics card.)
+
+                 Example for multiple drivers: Some scanners have a SCSI _and_
+                 a USB interface; if such a scanner is tested, we not only want
+                 to know, which Sane backend is used, but also, which interface
+                 is used.
+
+                 Also, it might be interesting to know for many USB 2.0 devices,
+                 if a USB 1 (uhci_hcd or ohci_hcd driver) or the USB 2 driver
+                 (ehci_hcd) was used. A USB 1 driver might for example explain 
+                 latency problems.
+        -->
+        <driver>ipw3945</driver>
+      </target>
+
+      <!-- ID of the 88E8055 PCI-E Gigabit Ethernet Controller -->
+      <target id="43"/>
+
+      <!-- command: The command line of an external command required to
+               ask this question.
+      -->
+      <command/>
+
+      <!-- answer: The answer to the question. Two types of answers are
+               defined, "multiple_choice" and "measurement". (See below
+               for an example of the latter.)
+               attribute type: Must be "multiple_choice" or "measurement".
+      -->
+      <answer type="multiple_choice">pass</answer>
+
+      <!-- answer_choices: The list of possible choices.
+               The data should only be used for consistency
+               checks and to detect variants of the question.
+      -->
+      <answer_choices>
+        <value type="str">fail</value>
+        <value type="str">pass</value>
+        <value type="str">skip</value>
+      </answer_choices>
+
+      <!-- A user comment about the device or about the test.
+      -->
+      <comment>
+        The WLAN adapter drops the connection very frequently.
+      </comment>
+    </question>
+
+    <question name="internet_ping"
+              plugin="internet_ping">
+      <target id="23"/>
+      <command/>
+      <answer type="multiple_choice">pass</answer>
+      <answer_choices>
+          <value type="str">fail</value>
+          <value type="str">pass</value>
+          <value type="str">skip</value>
+      </answer_choices>
+    </question>
+
+    <!-- example for a "measurement question"
+    -->
+    <question name="harddisk_speed"
+              plugin="harddisk_speed">
+      <target id="87"/>
+      <command>hdparm -t /dev/sda</command>
+      <!-- answer: The answer to a "measurement question".
+               attribute type: See above.
+               attribute unit: The unit of the result of the measurement.
+                   XXX Abel Deuring 2007-12-12 bug=175978 We should 
+                   enumerate a list of allowed units, in order to avoid
+                   multiple units for the same dimension. e.g., B/sec, 
+                   MB/sec or inch, cm, foot. 
+
+                   For dimensionless values, the attribute unit is omitted.
+
+                   "Percentage" and similar "convenience pseudo-units" like
+                   ppm are _not_ allowed; instead a dimensionless
+                   value must be used, where 0 is equivalent 0% and 1.0 is
+                   equivalent to 100%.
+      -->
+      <answer type="measurement" unit="MB/sec">38.4</answer>
+    </question>
+  </questions>
+  <!-- miscellaneous additional text data.
+  -->
+  <context>
+    <!-- info: The text output of the command specified in the "command"
+             attribute. The "commmand" attribute must contain the complote
+             command line used to produce the text output, including
+             parameters used to invoke a program.
+    -->
+    <info command="dmidecode">
+# dmidecode 2.9
+SMBIOS 2.4 present.
+73 structures occupying 2436 bytes.
+Table at 0x000E0010.
+
+Handle 0x0000, DMI type 0, 24 bytes
+BIOS Information
+        Vendor: LENOVO
+    </info>
+
+    <info command="lspci -vvn">
+00:00.0 0600: 8086:2a00 (rev 0c)
+        Subsystem: 17aa:20b1
+        Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop-
+        Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- &gt;TAbort- &lt;TAbort-
+        Latency: 0
+        Capabilities: [e0] Vendor Specific Information &gt;?&lt;
+        Kernel modules: intel-agp
+
+00:01.0 0604: 8086:2a01 (rev 0c)
+        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV-
+    </info>
+  </context>
+</system>

@@ -1,0 +1,28 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  class="portlet" id="malone-stats">
+  <h2>Statistics</h2>
+  <ul>
+    <li>
+      <strong tal:content="context/bug_count">5</strong> bugs reported
+      across <strong tal:content="context/projects_with_bugs_count" />
+      projects
+    </li>
+    <li>
+      including <strong tal:content="context/bugwatch_count" /> links
+      to <strong tal:content="context/bugtracker_count">5</strong> <a
+      href="/bugs/bugtrackers">bug trackers</a>
+    </li>
+    <li>
+      <strong tal:content="context/shared_bug_count">7</strong> bugs are
+      <a href="https://help.launchpad.net/CrossProjectBugTracking">shared
+      across multiple projects</a>
+    </li>
+    <li>
+      and <strong tal:content="view/getCveBugLinkCount">5</strong>
+      bugs are related to <a href="/bugs/cve">CVE entries</a>
+    </li>
+  </ul>
+</div>

@@ -1,0 +1,29 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+<tal:do-this-first tal:content="view/processForm" />
+
+<html
+  metal:use-macro="view/macro:page/main_only"
+>
+<body>
+  <div class="top-portlet" metal:fill-slot="main">
+    <h1>Merge accounts</h1>
+    <div tal:condition="not: view/successfullyProcessed">
+
+      <p>You&#8217;re trying to merge the Launchpad account named
+      <code tal:content="view/dupe/name">foo</code> into the
+      account named <code tal:content="context/requester/name">bar</code>.</p>
+
+      <form name="merge" action="" method="POST">
+        <input type="submit" name="VALIDATE" value="Confirm" />
+      </form>
+    </div>
+
+</div>
+
+</body>
+</html>
+</tal:root>

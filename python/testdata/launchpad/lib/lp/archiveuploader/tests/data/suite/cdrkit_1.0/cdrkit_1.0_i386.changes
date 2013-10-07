@@ -1,0 +1,18 @@
+Format: 1.7
+Date: Wed, 25 Apr 2007 14:14:09 -0300
+Source: cdrkit
+Binary: cdrkit
+Architecture: i386
+Version: 1.0
+Distribution: autobuild
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Celso Providelo <cprov@canonical.com>
+Description: 
+ cdrkit     - Stuff for testing
+Changes: 
+ cdrkit (1.0) breezy; urgency=low
+ .
+   * Initial version
+Files: 
+ f3e35d9e9ed136929c6e1e5d7c6d7915 646 devel optional cdrkit_1.0_i386.deb

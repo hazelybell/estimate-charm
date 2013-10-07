@@ -1,0 +1,32 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Format: 1.7
+Date: Thu, 15 Sep 2005 00:11:44 -0500
+Source: quodlibet
+Binary: quodlibet quodlibet-ext
+Architecture: all i386
+Version: 0.13.1-1
+Distribution: breezy
+Urgency: low
+Maintainer: Ubuntu/i386 Build Daemon <buildd@terranova.buildd>
+Changed-By: Joe Wreschnig <piman@debian.org>
+Description: 
+ quodlibet  - audio library manager and player for GTK+
+ quodlibet-ext - extensions for the Quod Libet audio player
+Changes: 
+ quodlibet (0.13.1-1) unstable; urgency=low
+ .
+   * New upstream release.
+   * Suggest quodlibet-plugins.
+Files: 
+ bb3a8a76b7c48dc663a9b5b1892e1bd8 219160 sound optional quodlibet_0.13.1-1_all.deb
+ c4908a901e44d6d5282f7889cd0b7cb0 11884 sound optional quodlibet-ext_0.13.1-1_i386.deb
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.3 (GNU/Linux)
+
+iD8DBQFFt5w12yWXVgK6XvYRAtNuAKCNkrqZ5bGzldumu3oEDlTVFXp7agCgplGW
+euW2qrOlvY5R5tq5r64pL0Y=
+=8LAm
+-----END PGP SIGNATURE-----

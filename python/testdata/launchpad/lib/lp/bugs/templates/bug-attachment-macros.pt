@@ -1,0 +1,32 @@
+<fieldset
+    style="border: 1px solid #999; padding: 0.5em"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    metal:define-macro="attachment-form">
+
+  <legend style="margin-left: 1em; font-weight: normal;">
+    <span class="fieldOptional">Include an attachment (Optional)</span>
+  </legend>
+
+  <table>
+    <tal:filecontent
+        tal:define="widget nocall:view/widgets/filecontent|nothing"
+        tal:condition="widget">
+      <metal:widget metal:use-macro="context/@@launchpad_form/widget_row" />
+    </tal:filecontent>
+
+    <tal:patch
+        tal:define="widget nocall:view/widgets/patch|nothing"
+        tal:condition="widget">
+      <metal:widget metal:use-macro="context/@@launchpad_form/widget_row" />
+    </tal:patch>
+
+    <tal:attachment_description
+        tal:define="widget nocall:view/widgets/attachment_description|nothing"
+        tal:condition="widget">
+      <metal:widget metal:use-macro="context/@@launchpad_form/widget_row" />
+    </tal:attachment_description>
+
+  </table>
+</fieldset>
+

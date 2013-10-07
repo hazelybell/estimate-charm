@@ -1,0 +1,15 @@
+<span
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="launchpad">
+  <span tal:condition="view/is_error" class="sprite error-icon"></span>
+  <tal:text tal:replace="context/body_text/fmt:shorten/50">
+    I'm on this.
+  </tal:text>
+  <br />
+  <span class="greyed-out greylink"><tal:date
+    replace="context/comment_date/fmt:approximatedate">2005-09-16</tal:date>
+  by
+  <tal:author replace="structure context/comment_author/fmt:link" /></span>
+</span>

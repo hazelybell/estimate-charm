@@ -1,0 +1,74 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<body>
+
+<div metal:fill-slot="main">
+  <p>
+    This page lists the specifications that
+    <tal:name replace="context/displayname" /> is expected to work on, or
+    is its creator.
+  </p>
+
+  <tal:team_definition define="is_team context/is_team" >
+
+    <tal:is_not_team condition="not: is_team">
+      <div tal:replace="structure context/@@+table-specworkload" />
+    </tal:is_not_team>
+
+    <tal:is_team condition="is_team"
+                 define="members_batch nocall:view/members/currentBatch">
+
+      <tal:first condition="not: view/members/firstBatchURL">
+        <div tal:replace="structure context/@@+table-specworkload" />
+      </tal:first>
+
+      <h2>Team member workload</h2>
+
+      <p>
+        The following people are all members of the
+        <span tal:replace="context/displayname">Admins</span> team in
+        Launchpad. We list each of their specification workloads so that you
+        can get a sense of the overall workload balance.
+      </p>
+
+      <div id="top-navigation" style="margin-bottom: 1em;">
+        <tal:navigation content="structure view/members/@@+navigation-links-upper" />
+      </div>
+
+      <tal:participants repeat="member members_batch">
+
+        <tal:specs define="specifications member/@@+specworkload/specifications">
+
+          <div style="margin-bottom: 1em;" tal:condition="not: specifications/is_empty">
+            <p>
+              <a tal:replace="structure member/fmt:link">Foo Bar</a>'s
+              specifications:
+            </p>
+
+            <div tal:replace="structure member/@@+table-specworkload" />
+          </div>
+
+          <p tal:condition="specifications/is_empty">
+            <a tal:replace="structure member/fmt:link">Foo Bar</a>
+            has no outstanding specifications.<br />
+          </p>
+
+        </tal:specs>
+      </tal:participants>
+
+      <div>
+        <tal:navigation content="structure view/members/@@+navigation-links-lower" />
+      </div>
+
+    </tal:is_team>
+  </tal:team_definition>
+</div>
+</body>
+</html>

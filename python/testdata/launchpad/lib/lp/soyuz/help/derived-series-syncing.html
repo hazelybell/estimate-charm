@@ -1,0 +1,87 @@
+<html>
+  <head>
+    <title>Syncing software from a parent series</title>
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssreset/reset.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssfonts/fonts.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssbase/base.css" />
+  </head>
+  <body>
+    <h1>Syncing software from a parent series</h1>
+
+    <p>
+      Syncing software from a parent series will take the package that's
+      currently published in it, and upload it to the derived series without
+      you having to use command line tools such as <em>dput</em> or 
+      <em>ftp</em>.
+    </p>
+
+    <p>
+      <strong>Important:</strong> Syncing a package from the parent
+      series will supersede any changes made in the derived version. If there
+      are local changes you don't wish to lose, you will need to manually
+      merge the changes into the upstream package and upload that to the
+      derived series.
+    </p>
+
+    <h2>Checking the differences</h2>
+
+    <p>
+    Each row in the table shows a package that has different versions in
+    the derived series and the parent(s).  Clicking the package name
+    will expand the row to show more details about the package and allow 
+    you to take some actions:
+      <ul>
+        <li>Add a comment about this package.</li>
+        <li>Request debdiffs</li>
+        <li>Ignoring this difference, or all differences for this package</li>
+      </ul>
+    </p>
+
+    <h3>Adding comments</h3>
+    <p>
+    Click the green "Add comment" button and enter the comment inline.
+    All previous comments are shown here also.
+    </p>
+
+    <h3>Requesting debdiffs</h3>
+    <p>
+    Click the "Compute differences from last common version".  A request is
+    sent to the server to initiate the debdiff calculation.  While you wait
+    for the calculation the icon will flash. The page will update
+    automatically when the debdiff becomes available, giving you a link to
+    download the debdiff file.
+    </p>
+
+    <h3>Ignoring differences</h3>
+    <p>
+    If you don't care about this package you have the option of setting it to
+    <em>ignored</em>, which means that it will no longer appear in the list.   
+    You can choose to ignore just "These versions", which means if a new 
+    version is uploaded it will re-appear, or "All Versions" which means 
+    you won't see it again unless you search explicitly for ignored 
+    packages in the search criteria at the top of the page.
+    </p>
+
+    <h2>Requesting a sync</h2>
+    <p>
+    There are two methods of syncing:
+      <ul>
+        <li><strong>A mass-sync:</strong>  This grabs all packages in all 
+            parents that have a higher version and uploads them to the 
+            derived series by clicking the mass-sync button at the bottom 
+            of the page.  To do this you need to have archive administrator 
+            permissions.</li>
+        <li><strong>A selective sync:</strong>  You can check the box next 
+            to each package and then click the sync button at the bottom of
+            the page. To do this you need to have permissions to upload 
+            each package.</li>
+      </ul>
+    After you request a sync the operation will complete in the background
+    and the package(s) will flow into the distribution just like a normal 
+    upload, including being held in the upload queue as appropriate.
+    </p>
+  </body>
+</html>

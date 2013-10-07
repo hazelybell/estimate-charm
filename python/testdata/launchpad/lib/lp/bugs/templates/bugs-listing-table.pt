@@ -1,0 +1,42 @@
+<div id='bugs-table-listing'
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+>
+  <tal:no-results condition="not: context/batch">
+    <tal:search-performed condition="request/search|nothing">
+      <p>No results for search
+        <strong tal:content="request/field.searchtext|nothing" /></p>
+    </tal:search-performed>
+
+    <tal:no-search-performed condition="not: request/search|nothing">
+      <p>There are currently no open bugs.</p>
+    </tal:no-search-performed>
+  </tal:no-results>
+
+  <tal:results condition="context/batch">
+    <div class="lesser"
+        tal:content="structure context/@@+navigation-links-upper" />
+    <tal:mustache>
+        <div id="bugs-orderby"></div>
+        <div id="client-listing" tal:content="structure context/mustache" />
+        <script tal:content="structure context/mustache_listings" />
+    </tal:mustache>
+    <div class="lesser"
+         tal:content="structure context/@@+navigation-links-lower" />
+  </tal:results>
+
+  <tal:comment
+    tal:condition="request/features/ajax.batch_navigator.enabled"
+    replace='structure string:&lt;script type="text/javascript"&gt;
+    LPJS.use("lp.app.batchnavigator",
+        function(Y) {
+            Y.on("domready", function () {
+                var config = {
+                    contentBox: "#bugs-table-listing",
+                };
+                new Y.lp.app.batchnavigator.BatchNavigatorHooks(config);
+            });
+        });
+  &lt;/script&gt;'/>
+</div>

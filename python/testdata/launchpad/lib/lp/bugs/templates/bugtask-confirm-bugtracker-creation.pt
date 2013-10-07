@@ -1,0 +1,32 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+  <body>
+
+    <div metal:fill-slot="main">
+
+      <div id="maincontent">
+
+      <p tal:content="structure context/fmt:link" />
+
+      <div metal:use-macro="context/@@launchpad_form/form">
+        <p metal:fill-slot="extra_info" class="informational message">
+          The bug tracker with the given URL is not registered in
+          Launchpad. Would you like to register it now?
+        </p>
+      </div>
+
+      </div>
+
+    </div>
+
+  </body>
+</html>

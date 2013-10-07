@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xml:lang="en"
+      tal:attributes="xml:lang string:en">
+
+  <title tal:content="view/title">Recently opened bugs</title>
+
+    <id tal:content="view/feed_id">tag:launchpad.net,2008-01-02:/bugs/ubuntu</id>
+    <link rel="self" tal:attributes="href view/link_self" />
+    <link rel="alternate" tal:attributes="href view/link_alternate" />
+  <logo tal:condition="view/logo"
+        tal:content="view/logo" />
+  <icon tal:condition="view/icon"
+        tal:content="view/icon" />
+    <updated tal:content="view/date_updated/fmt:isodate">
+          2007-05-26T12:45:01Z</updated>
+
+  <entry tal:repeat="entry view/getItems">
+      <metal:entry metal:use-macro="entry/@@feed-entry-atom/feed-entry" />
+  </entry>
+</feed>

@@ -1,0 +1,23 @@
+<!-- Copyright 2011 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure xmlns="http://namespaces.zope.org/zope">
+    <!-- Override lazr-restful marshallers for test field to enable
+         automatic obfuscation of email addresses for anonymous users. -->
+
+     <adapter
+        for="zope.schema.interfaces.IASCII
+             zope.publisher.interfaces.http.IHTTPRequest"
+        provides="lazr.restful.interfaces.IFieldMarshaller"
+        factory="lp.app.webservice.marshallers.TextFieldMarshaller"
+        />
+
+    <adapter
+        for="zope.schema.interfaces.IText
+             zope.publisher.interfaces.http.IHTTPRequest"
+        provides="lazr.restful.interfaces.IFieldMarshaller"
+        factory="lp.app.webservice.marshallers.TextFieldMarshaller"
+        />
+
+</configure>

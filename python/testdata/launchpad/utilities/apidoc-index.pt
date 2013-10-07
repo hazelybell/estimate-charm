@@ -1,0 +1,56 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  i18n:domain="launchpad"
+>
+  <head>
+    <title>Launchpad Web Service API</title>
+
+    <style type="text/css">
+            body {
+                font-family: Ubuntu, 'Bitstream Vera Sans', 'DejaVu Sans', Tahoma, sans-serif;
+                font-size: 0.85em;
+                margin: 2em 8em;
+            }
+            h1 {
+                font-size: 2.5em;
+            }
+            h2 {
+                border-bottom: 1px solid black;
+                margin-top: 1em;
+                margin-bottom: 0.5em;
+                font-size: 2em;
+               }
+            ul {
+                padding-left: 1.75em;
+            }
+            p + ul, p + ol, p + dl {
+                margin-top: 0em;
+            }
+    </style>
+  </head>
+
+  <body>
+
+    <h1>Launchpad web service API documentation</h1>
+
+    <p tal:content="structure options/config/service_description">
+      Description of the Launchpad web service.
+    </p>
+
+    <h2>Active versions</h2>
+
+    <ul>
+      <li tal:repeat="version options/config/active_versions">
+        <a tal:attributes="href string:$version.html"
+           tal:content="version">Version name</a>:
+        <tal:description
+           replace="options/config/version_descriptions/?version" />
+      </li>
+    </ul>
+
+  </body>
+
+</html>

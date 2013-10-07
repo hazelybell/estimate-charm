@@ -1,0 +1,63 @@
+div#client-listing {
+    float: left;
+    width: 100%;
+    color: #666;
+    }
+
+div.buglisting-row {
+    float: left;
+    margin-top: 5px;
+    padding: 0 0 5px 10px;
+    border-bottom: 1px solid #EEE;
+    min-width: 585px;
+    width: 100%;
+    }
+
+div.buglisting-col1 {
+    float: left;
+    padding-right: 10px;
+    }
+
+div.buglisting-col2 {
+    float: left;
+    margin-top: 2px;
+    width: 68%;
+    }
+
+div#client-listing .status,
+div#client-listing .importance,
+div#client-listing .information_type {
+    float: left;
+    height: 1.4em;
+    font-size: 0.8em;
+    border-radius: 2px;
+    text-transform: uppercase;
+    line-height: 12px;
+    text-align: center;
+    padding-top: 0.1em;
+    margin: 5px 10px 0 0;
+    }
+
+div#client-listing .importance {
+    width: 65px;
+    }
+
+div#client-listing .status {
+    width: 90px;
+    }
+
+div#client-listing .information_type {
+    width: 165px;
+    background-color: #dcdcdc;
+    }
+
+div#client-listing .field {
+    display: inline-block;
+    min-width: 13em;
+    line-height: 16px;
+    margin-right: 5px;
+    }
+
+div#client-listing .field a {
+    color: #333;
+    }

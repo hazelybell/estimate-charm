@@ -1,0 +1,33 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  class="portlet" id="portlet-latest-faqs"
+  tal:define="faqs view/latest_faqs"
+  tal:condition="faqs">
+  <h2>
+    <span class="see-all"><a
+      tal:replace="structure view/menu:answers/list_all/fmt:link" /></span>
+    FAQs for <tal:name replace="context/displayname" />
+  </h2>
+
+  <form id="question-search-form" method="get" accept-charset="UTF-8"
+    tal:attributes="action view/portlet_action">
+    <p>
+      <tal:searchbox replace="structure view/widgets/search_text" />
+      <input tal:replace="structure view/search_action/render" />
+    </p>
+  </form>
+
+  <ul tal:condition="faqs">
+    <li tal:repeat="faq faqs">
+      <a class="sprite faq"
+        tal:attributes="href faq/fmt:url"
+        tal:content="faq/title">How do I do this?</a>
+    </li>
+  </ul>
+
+  <ul class="horizontal">
+    <li>
+      <a tal:replace="structure view/menu:answers/create_faq/fmt:link" />
+    </li>
+  </ul>
+</div>

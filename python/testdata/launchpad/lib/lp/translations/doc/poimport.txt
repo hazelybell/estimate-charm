@@ -1,0 +1,742 @@
+PO Imports
+==========
+
+The tale of a PO template and a PO file and how they get imported into
+Rosetta.
+
+Test Setup
+----------
+
+Here are some imports we need to get this test running.
+
+    >>> from lp.app.interfaces.launchpad import ILaunchpadCelebrities
+    >>> from lp.registry.interfaces.person import IPersonSet
+    >>> from lp.translations.enums import RosettaImportStatus
+    >>> from lp.translations.interfaces.translationimportqueue import (
+    ...     ITranslationImportQueue)
+    >>> import datetime
+    >>> import pytz
+    >>> UTC = pytz.timezone('UTC')
+    >>> rosetta_experts = getUtility(ILaunchpadCelebrities).rosetta_experts
+
+We need this for the Librarian to work properly.
+
+    >>> import transaction
+
+Here's a fake logger to capture any errors that happen.
+
+    >>> from lp.services.log.logger import FakeLogger
+
+Login as an admin to be able to do changes to the import queue.
+
+    >>> login('carlos@canonical.com')
+
+
+Importing a Template
+--------------------
+
+Normal procedure is to import a template, followed by translations. A
+template is created first.  After that, imports are done using the
+POFile.importFromQueue and POTemplate.importFromQueue methods.
+
+    >>> distroseries = factory.makeUbuntuDistroSeries()
+    >>> sourcepackagename = factory.makeSourcePackageName()
+
+Here's the person who'll be doing the import.
+
+    >>> person_set = getUtility(IPersonSet)
+    >>> person = person_set.getByName('mark')
+
+And this is the POTemplate where the import will be done.
+
+    >>> potemplate = factory.makePOTemplate(
+    ...     distroseries=distroseries, sourcepackagename=sourcepackagename,
+    ...     owner=person)
+    >>> potemplate_id = potemplate.id
+
+This is the file that'll get imported.
+
+    >>> potemplate_contents = r'''
+    ... msgid ""
+    ... msgstr ""
+    ... "POT-Creation-Date: 2004-07-11 16:16+0900\n"
+    ... "Content-Type: text/plain; charset=CHARSET\n"
+    ... "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+    ... "X-Rosetta-Export-Date: %s\n"
+    ...
+    ... msgid "foo"
+    ... msgstr ""
+    ...
+    ... msgid "bar"
+    ... msgstr ""
+    ...
+    ... #: test.c:13
+    ... msgid "baz"
+    ... msgstr ""
+    ...
+    ... #, c-format
+    ... msgid "Foo %%s"
+    ... msgstr ""
+    ...
+    ... #, c-format
+    ... msgid "Singular %%d"
+    ... msgid_plural "Plural %%d"
+    ... msgstr[0] ""
+    ... msgstr[1] ""
+    ...
+    ... msgid "translator-credits"
+    ... msgstr ""
+    ... ''' % datetime.datetime.now(UTC).isoformat()
+
+We sometimes saw deadlocks as POFile statistics were updated after
+importing a template.  The operation would read all translation messages
+for the entire template in the same transaction that did the import. To
+prevent this, the importer now does intermediate commits while
+recomputing statistics.
+
+    >>> from lp.testing.faketransaction import FakeTransaction
+
+Attach the import to the translations import queue:
+
+    >>> translation_import_queue = getUtility(ITranslationImportQueue)
+    >>> entry = translation_import_queue.addOrUpdateEntry(
+    ...     potemplate.path, potemplate_contents, True, potemplate.owner,
+    ...     distroseries=distroseries, sourcepackagename=sourcepackagename,
+    ...     potemplate=potemplate)
+
+The file data is stored in the Librarian, so we have to commit the
+transaction to make sure it's stored properly.
+
+    >>> transaction.commit()
+
+The entry gets approved, so it can be imported.
+
+    >>> entry.setStatus(RosettaImportStatus.APPROVED, rosetta_experts)
+
+    >>> import datetime
+    >>> import pytz
+    >>> UTC = pytz.timezone('UTC')
+    >>> saved_date = datetime.datetime.now(UTC)
+
+Now, we tell the PO template to import from the file data it has.
+
+    >>> (subject, body) = potemplate.importFromQueue(
+    ...     entry, FakeLogger(), txn=FakeTransaction())
+
+Our request has now been serviced.
+
+    >>> print entry.status.name
+    IMPORTED
+
+The last update date is the one we got.
+
+    >>> potemplate.date_last_updated > saved_date
+    True
+
+We don't send mail about successful imports.
+
+    >>> print subject
+    None
+
+Since there was no error, the queue entry's error_output is blank.
+
+    >>> print entry.error_output
+    None
+
+The correct message IDs now show up in the template.
+
+    >>> potmsgsets = list(potemplate.getPOTMsgSets())
+    >>> [potmsgset.msgid_singular.msgid for potmsgset in potmsgsets]
+    [u'foo', u'bar', u'baz', u'Foo %s', u'Singular %d', u'translator-credits']
+
+The file references field should be there
+
+    >>> potmsgsets[2].filereferences
+    u'test.c:13'
+
+
+Import Preconditions
+....................
+
+The API for POTemplate.importFromQueue demands a translation import
+queue entry to import.
+
+    >>> potemplate.importFromQueue(None)
+    Traceback (most recent call last):
+    ...
+    AssertionError: Attempt to import None entry.
+
+The entry must have been approved for import.
+
+    >>> potemplate.importFromQueue(entry)
+    Traceback (most recent call last):
+    ...
+    AssertionError: Attempt to import non-approved entry.
+
+The entry indicates what file it is to be imported to; importing it to
+any other file would be an error.
+
+    >>> entry.setStatus(RosettaImportStatus.APPROVED, rosetta_experts)
+    >>> other_template = factory.makePOTemplate()
+    >>> other_template.importFromQueue(entry)
+    Traceback (most recent call last):
+    ...
+    AssertionError: Attempt to import entry to POTemplate it doesn't belong
+    to.
+
+
+Importing a Translation
+-----------------------
+
+Now let's get a PO file to import.
+
+    >>> pofile = potemplate.newPOFile('cy')
+    >>> pofile_id = pofile.id
+
+By default, we got a safe path to prevent collisions with other IPOFile.
+
+    >>> print pofile.path
+    unique-...-cy.po
+
+Let's override the default good path with one we know is the right one.
+
+    >>> pofile.setPathIfUnique(u'po/cy.po')
+
+It's newly created, so it has only one translation which is the
+translation credits.
+
+    >>> pofile.getPOTMsgSetTranslated().count()
+    1
+
+And the statistics reflect it.
+
+    >>> pofile.currentCount()
+    1
+
+
+Import With Errors
+..................
+
+Here are the contents of the file we'll be importing. It has some
+validation errors.
+
+    >>> pofile_with_errors = r'''
+    ... msgid ""
+    ... msgstr ""
+    ... "PO-Revision-Date: 2005-06-03 19:41+0100\n"
+    ... "Last-Translator: Carlos Perello Marin <carlos@canonical.com>\n"
+    ... "Content-Type: text/plain; charset=UTF-8\n"
+    ... "Plural-Forms: nplurals=4; plural=(n==1) ? "
+    ...     "0 : n==2 ? 1 : (n != 8 || n != 11) ? 2 : 3;\n"
+    ... "X-Rosetta-Export-Date: %s\n"
+    ...
+    ... msgid "foo"
+    ... msgstr "blah"
+    ...
+    ... #, fuzzy
+    ... msgid "bar"
+    ... msgstr "heffalump"
+    ...
+    ... msgid "balloon"
+    ... msgstr "blah"
+    ...
+    ... #, c-format
+    ... msgid "Foo %%s"
+    ... msgstr "blah %%i"
+    ...
+    ... #, c-format
+    ... msgid "Singular %%d"
+    ... msgid_plural "Plural %%d"
+    ... msgstr[0] "Foos %%d"
+    ... msgstr[1] "Bars %%d"
+    ... msgstr[2] "Welsh power! %%d"
+    ... msgstr[3] "We have four! %%d"
+    ... ''' % datetime.datetime.now(UTC).isoformat()
+
+This is the dbschema that controls the validation of a translation.
+
+    >>> from lp.translations.interfaces.translationmessage import (
+    ...     TranslationValidationStatus)
+
+The process of importing a PO file is much like that of importing a PO
+template. Remember, we need to tell the system that this po file is an
+"imported" one.
+
+    >>> entry = translation_import_queue.addOrUpdateEntry(
+    ...     pofile.path, pofile_with_errors, True, person,
+    ...     distroseries=distroseries, sourcepackagename=sourcepackagename,
+    ...     potemplate=potemplate)
+    >>> transaction.commit()
+
+The guess IPOFile should be the same we already had.
+
+    >>> entry.getGuessedPOFile().id == pofile.id
+    True
+
+Set it as the place where the entry should be imported.
+
+    >>> entry.pofile = entry.getGuessedPOFile()
+
+We must approve the entry to be able to import it.
+
+    >>> entry.setStatus(RosettaImportStatus.APPROVED, rosetta_experts)
+
+And we do the import.
+
+    >>> (subject, body) = pofile.importFromQueue(entry, FakeLogger())
+    >>> flush_database_updates()
+
+The status is now IMPORTED:
+
+    >>> print entry.status.name
+    IMPORTED
+
+Three translations have been properly imported. Note that the translation
+"balloon" -> "blah" is considered as current, even though "balloon" does
+not appear in the POTemplate.
+
+    >>> def show_translation_details(translationmessage, pofile):
+    ...     print translationmessage.potmsgset.singular_text,
+    ...     print translationmessage.translations,
+    ...     print translationmessage.potmsgset.getSequence(pofile.potemplate)
+    >>> for translationmessage in pofile.translation_messages:
+    ...     if translationmessage.is_current_ubuntu:
+    ...         show_translation_details(translationmessage, pofile)
+    translator-credits
+        [u'This is a dummy translation so that the credits
+         are counted as translated.'] 6
+    foo [u'blah'] 1
+    balloon [u'blah'] 0
+    Singular %d
+        [u'Foos %d', u'Bars %d', u'Welsh power! %d', u'We have four! %d'] 5
+
+And the statistics reflect it. (Note that only translations with a
+sequence number greater than 0 are counted, hence the translation
+"balloon" -> "blah" does not appear in currentCount().)
+
+    >>> pofile.currentCount()
+    3
+
+Here's a current message: i.e. it has a corresponding current message
+set in the PO template.
+
+    >>> message = pofile.translation_messages[1]
+    >>> print message.potmsgset.singular_text
+    foo
+
+And should be accepted by our validator.
+
+    >>> upstream_message = message.potmsgset.getOtherTranslation(
+    ...     pofile.language, pofile.potemplate.translation_side)
+    >>> upstream_message.validation_status == TranslationValidationStatus.OK
+    True
+
+Fuzzy translations are ignored.
+
+    >>> def get_pofile_translation_message(pofile, msgid):
+    ...     potmsgset = pofile.potemplate.getPOTMsgSetByMsgIDText(msgid)
+    ...     return potmsgset.getCurrentTranslation(
+    ...         pofile.potemplate, pofile.language,
+    ...         pofile.potemplate.translation_side)
+    >>> message = get_pofile_translation_message(pofile, u'bar')
+    >>> print message
+    None
+
+Check that the plural form was imported correctly.
+
+    >>> potmsgset = pofile.potemplate.getPOTMsgSetByMsgIDText(
+    ...     u'Singular %d', u'Plural %d')
+    >>> imported_translationmessage = potmsgset.getOtherTranslation(
+    ...     pofile.language, pofile.potemplate.translation_side)
+    >>> print imported_translationmessage.validation_status.name
+    OK
+
+    >>> imported_translationmessage.translations
+    [u'Foos %d', u'Bars %d', u'Welsh power! %d', u'We have four! %d']
+
+The owner for those translations should be Carlos, instead of the person
+that did the upload, because the imported file states that Carlos is the
+translator.
+
+    >>> imported_translationmessage.submitter.displayname
+    u'Carlos Perell\xf3 Mar\xedn'
+
+The import process produces an email warning us of partial failure, but
+doesn't send it out for published uploads (indicated with subject of
+None).
+
+    >>> print subject
+    None
+
+    >>> print body
+    Hello Mark Shuttleworth,
+    <BLANKLINE>
+    On ..., you uploaded 5
+    Welsh (cy) translations for ... in Launchpad.
+    <BLANKLINE>
+    There were problems with 1 of these translations.
+    <BLANKLINE>
+    4. "format spec... 'msgid' and 'msgstr' for argument 1 are not the same":
+    <BLANKLINE>
+    #, c-format
+    msgid "Foo %s"
+    msgstr "blah %i"
+    <BLANKLINE>
+    <BLANKLINE>
+    <BLANKLINE>
+    The other 4 translations have been accepted.
+    <BLANKLINE>
+    ...
+
+The error information is also stored more compactly in the entry's
+error_output.
+
+    >>> print entry.error_output
+    Imported, but with errors:
+    <BLANKLINE>
+    4. "format spec... 'msgid' and 'msgstr' for argument 1 are not the same":
+    <BLANKLINE>
+    #, c-format
+    msgid "Foo %s"
+    msgstr "blah %i"
+
+
+Import With Warnings
+....................
+
+The import may also succeed but produce syntax warnings.  These need not
+be tied to particular messages (they could be in the header, for
+instance) and they don't mean that any messages failed to import.
+
+For example, here's a gettext PO file with two headers.
+
+    >>> pofile_with_warning = r'''
+    ... msgid ""
+    ... msgstr ""
+    ... "Content-Type: text/plain; charset=UTF-8\n"
+    ... "X-Rosetta-Export-Date: %s\n"
+    ...
+    ... # Second header.  This elicits a warning.
+    ... msgid ""
+    ... msgstr ""
+    ... "Content-Type: text/plain; charset=UTF-8\n"
+    ...
+    ... msgid "x"
+    ... msgstr "y"
+    ...
+    ... msgid "a"
+    ... msgstr "b"
+    ... ''' % datetime.datetime.now(UTC).isoformat()
+    >>> eo_pofile = potemplate.newPOFile('eo')
+    >>> warning_entry = translation_import_queue.addOrUpdateEntry(
+    ...     'eo.po', pofile_with_warning, False, potemplate.owner,
+    ...     distroseries=distroseries, sourcepackagename=sourcepackagename,
+    ...     potemplate=potemplate, pofile=eo_pofile)
+    >>> transaction.commit()
+    >>> warning_entry.setStatus(RosettaImportStatus.APPROVED, rosetta_experts)
+    >>> (subject, message) = eo_pofile.importFromQueue(warning_entry)
+
+The warning is noted in the confirmation email.  Note that this
+particular warning condition is recognized fairly late, so the line
+number points at the next message.  There's not much we can do about
+that, but it should help a bit.
+
+    >>> print message
+    Hello ...
+    This mail is to notify you that all translations have now been
+    imported.
+    <BLANKLINE>
+    <BLANKLINE>
+    There were warnings while parsing the file.  These are not
+    fatal, but please correct them if you can.
+    <BLANKLINE>
+    Line 12: We got a second header.
+    <BLANKLINE>
+    Thank you,
+    <BLANKLINE>
+    The Launchpad team
+
+    >>> print warning_entry.error_output
+    There were warnings while parsing the file.  These are not
+    fatal, but please correct them if you can.
+    <BLANKLINE>
+    Line 12: We got a second header.
+
+    >>> warning_entry.setStatus(RosettaImportStatus.DELETED, rosetta_experts)
+
+
+Import Without Errors
+.....................
+
+Now, let's import one without errors. This file changes one translation
+and adds another one.
+
+    >>> pofile_without_errors = r'''
+    ... msgid ""
+    ... msgstr ""
+    ... "PO-Revision-Date: 2005-06-03 20:41+0100\n"
+    ... "Last-Translator: Foo <no-priv@canonical.com>\n"
+    ... "Content-Type: text/plain; charset=UTF-8\n"
+    ... "Plural-Forms: nplurals=4; plural=(n==1) ? "
+    ...     "0 : n==2 ? 1 : (n != 8 || n != 11) ? 2 : 3;\n"
+    ... "X-Rosetta-Export-Date: %s\n"
+    ...
+    ... msgid "foo"
+    ... msgstr "new translation"
+    ...
+    ... msgid "baz"
+    ... msgstr "zab"
+    ...
+    ... msgid "translator-credits"
+    ... msgstr "helpful@example.com"
+    ... ''' % datetime.datetime.now(UTC).isoformat()
+    >>> entry = translation_import_queue.addOrUpdateEntry(
+    ...     pofile.path, pofile_without_errors, True, rosetta_experts,
+    ...     distroseries=distroseries, sourcepackagename=sourcepackagename,
+    ...     potemplate=potemplate)
+    >>> transaction.commit()
+
+The new upload clears the entry's error_output.
+
+    >>> print entry.error_output
+    None
+
+The guess IPOFile should be the same we already had.
+
+    >>> entry.getGuessedPOFile().id == pofile.id
+    True
+
+Set it as the place where the entry should be imported.
+
+    >>> entry.pofile = entry.getGuessedPOFile()
+
+We must approve the entry to be able to import it.
+
+    >>> entry.setStatus(RosettaImportStatus.APPROVED, rosetta_experts)
+
+We do the import.
+
+    >>> (subject, body) = pofile.importFromQueue(entry, FakeLogger())
+
+The status is now IMPORTED:
+
+    >>> print entry.status.name
+    IMPORTED
+
+Since the translations from the older imports are still present,
+we now have four current translations.
+
+    >>> for translationmessage in pofile.translation_messages.order_by('id'):
+    ...     if (translationmessage.is_current_ubuntu and
+    ...         translationmessage.potmsgset.getSequence(pofile.potemplate)
+    ...         > 0):
+    ...         show_translation_details(translationmessage, pofile)
+    Singular %d
+        [u'Foos %d', u'Bars %d', u'Welsh power! %d', u'We have four! %d'] 5
+    foo [u'new translation'] 1
+    baz [u'zab'] 3
+    translator-credits [u'helpful@example.com'] 6
+    >>> pofile.currentCount()
+    4
+
+This time, our notification email reports complete success, except
+that nothing is emailed out (subject is None) because this is an upstream
+upload.
+
+    >>> print subject
+    None
+
+    >>> print body
+    Hello Rosetta Administrators,
+    <BLANKLINE>
+    ...
+
+There was no error output either.
+
+    >>> print entry.error_output
+    None
+
+The translation has been augmented with the strings from the imported
+file.  The translation credits are special; upstream uploads can
+"translate" credits messages to provide translator names, but since
+credits for translations in Launchpad are generated automatically, non-
+upstream translations for these messages are ignored.
+
+    >>> message = get_pofile_translation_message(pofile, 'foo')
+    >>> message.msgstr0.translation
+    u'new translation'
+
+    >>> message = get_pofile_translation_message(pofile, 'translator-credits')
+    >>> message.msgstr0.translation
+    u'helpful@example.com'
+
+
+Import Preconditions
+....................
+
+The API for POFile.importFromQueue demands a translation import queue
+entry to import.
+
+    >>> pofile.importFromQueue(None)
+    Traceback (most recent call last):
+    ...
+    AssertionError: Attempt to import None entry.
+
+The entry must have been approved for import.
+
+    >>> pofile.importFromQueue(entry)
+    Traceback (most recent call last):
+    ...
+    AssertionError: Attempt to import non-approved entry.
+
+The entry indicates what file it is to be imported to; importing it to
+any other file would be an error.
+
+    >>> entry.setStatus(RosettaImportStatus.APPROVED, rosetta_experts)
+    >>> other_pofile = potemplate.newPOFile('de')
+    >>> other_pofile.importFromQueue(entry)
+    Traceback (most recent call last):
+    ...
+    AssertionError: Attempt to import entry to POFile it doesn't belong to.
+
+Even importing a translation into its own template is wrong; it must be
+the exact right POFile.
+
+    >>> potemplate.importFromQueue(entry)
+    Traceback (most recent call last):
+    ...
+    AssertionError: Attempt to import entry to POTemplate it doesn't belong
+    to.
+
+
+Plural forms handling
+---------------------
+
+Apart from the basic plural form handling, which is documented above as
+part of the import process, there are some peculiarities with importing
+plural forms we want documented as well.
+
+For a language that has no plural forms defined, we
+default to two plural forms (the most common value for the number of
+plural forms).
+
+    >>> language = factory.makeLanguage()
+    >>> print language.pluralforms
+    None
+
+    >>> potemplate = factory.makePOTemplate(
+    ...     distroseries=distroseries, sourcepackagename=sourcepackagename)
+    >>> pofile = potemplate.newPOFile(language.code)
+    >>> pofile.plural_forms
+    2
+
+We'll import a POFile with 3 plural forms into this POFile:
+
+    >>> pofile_with_plurals = r'''
+    ... msgid ""
+    ... msgstr ""
+    ... "PO-Revision-Date: 2005-06-03 19:41+0100\n"
+    ... "Last-Translator: Carlos Perello Marin <carlos@canonical.com>\n"
+    ... "Content-Type: text/plain; charset=UTF-8\n"
+    ... "Plural-Forms: nplurals=3; plural=(n==0) ? 0 : ((n==1) ? 1 : 2);\n"
+    ... "X-Rosetta-Export-Date: %s\n"
+    ...
+    ... #, c-format
+    ... msgid "Singular %%d"
+    ... msgid_plural "Plural %%d"
+    ... msgstr[0] "First form %%d"
+    ... msgstr[1] "Second form %%d"
+    ... msgstr[2] "Third form %%d"
+    ... ''' % datetime.datetime.now(UTC).isoformat()
+
+We now import this POFile as this language's translation for the soure
+package:
+
+    >>> entry = translation_import_queue.addOrUpdateEntry(
+    ...     pofile.path, pofile_with_plurals, True, person,
+    ...     distroseries=distroseries, sourcepackagename=sourcepackagename,
+    ...     potemplate=potemplate)
+    >>> # Allow Librarian to see the change.
+    >>> transaction.commit()
+    >>> entry.pofile = pofile
+    >>> entry.setStatus(RosettaImportStatus.APPROVED, rosetta_experts)
+    >>> (subject, body) = pofile.importFromQueue(entry, FakeLogger())
+    >>> flush_database_updates()
+    >>> print entry.status.name
+    IMPORTED
+
+If we get a current translation for this PO file, it will list only two
+translations (which is a default when the language has no plural forms
+specified):
+
+    >>> potmsgset_plural = potemplate.getPOTMsgSetByMsgIDText(
+    ...     u'Singular %d', u'Plural %d')
+    >>> current = potmsgset_plural.getCurrentTranslation(
+    ...     potemplate, language, potemplate.translation_side)
+    >>> current.translations
+    [u'First form %d', u'Second form %d']
+
+However, even the third form will be imported into database (this is
+useful for when we finally define the number of plural forms for the
+language, we should not have to reimport all translations):
+
+    >>> current.msgstr2.translation
+    u'Third form %d'
+
+
+Upstream import notifications
+-----------------------------
+
+Add a maintainer POFile import (i.e. from a package or bzr branch),
+approve and import it.
+
+    >>> pofile_contents = r'''
+    ... msgid ""
+    ... msgstr ""
+    ... "PO-Revision-Date: 2005-05-03 20:41+0100\n"
+    ... "Last-Translator: Carlos Perello Marin <carlos@canonical.com>\n"
+    ... "Content-Type: text/plain; charset=UTF-8\n"
+    ... "Plural-Forms: nplurals=4; plural=(n==1) "
+    ...     "? 0 : n==2 ? 1 : (n != 8 || n != 11) ? 2 : 3;\n"
+    ...
+    ... msgid "foo"
+    ... msgstr "blah"
+    ... '''
+    >>> pofile = factory.makePOFile('sr', potemplate=potemplate)
+    >>> by_maintainer = True
+    >>> entry = translation_import_queue.addOrUpdateEntry(
+    ...     pofile.path, pofile_contents, by_maintainer, person,
+    ...     distroseries=distroseries, sourcepackagename=sourcepackagename,
+    ...     potemplate=potemplate, pofile=pofile)
+    >>> transaction.commit()
+    >>> entry.setStatus(RosettaImportStatus.APPROVED, rosetta_experts)
+    >>> (subject, message) = pofile.importFromQueue(entry)
+
+Import succeeds but no email is sent out.
+
+    >>> entry.status == RosettaImportStatus.IMPORTED
+    True
+
+    >>> print subject
+    None
+
+For syntax errors, failure notification is still sent out.
+
+    # Remove final quote from the contents, causing a syntax error.
+
+    >>> pofile_contents = pofile_contents[:-2]
+    >>> entry = translation_import_queue.addOrUpdateEntry(
+    ...     pofile.path, pofile_contents, by_maintainer, person,
+    ...     distroseries=distroseries, sourcepackagename=sourcepackagename,
+    ...     potemplate=potemplate, pofile=pofile)
+    >>> transaction.commit()
+    >>> entry.setStatus(RosettaImportStatus.APPROVED, rosetta_experts)
+    >>> (subject, message) = pofile.importFromQueue(entry)
+
+Import fails and email is sent out even though it's an upstream upload.
+
+    >>> entry.status == RosettaImportStatus.FAILED
+    True
+
+    >>> subject
+    u'Import problem - Serbian (sr) - ...'

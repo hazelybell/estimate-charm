@@ -1,0 +1,7 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+>
+  <tal:diff replace="structure view/preview_diff/fmt:link"/>
+  <pre tal:condition="view/preview_diff/has_conflicts"
+       tal:content="view/preview_diff/conflicts"/>
+</tal:root>

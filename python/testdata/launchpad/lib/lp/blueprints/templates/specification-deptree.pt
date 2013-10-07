@@ -1,0 +1,51 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+>
+
+<body>
+
+<div metal:fill-slot="side">
+  <div tal:replace="structure view/@@+portlet-blocked" />
+  <div tal:replace="structure view/@@+portlet-dependencies" />
+</div>
+
+<div metal:fill-slot="main">
+
+  <div class="top-portlet">
+  <p>
+    This is the sequence in which blueprints related to this one must be
+    implemented.
+  </p>
+  </div>
+
+  <div class="portlet">
+  <h2>Blueprints that must be implemented first</h2>
+    <div tal:repeat="spec view/all_deps"
+         tal:replace="structure spec/@@+listing-detailed" />
+    <p tal:condition="not: view/dependencies">
+      <i>None - this blueprint does not depend on any others.</i>
+    </p>
+  </div>
+
+  <div class="portlet">
+  <h2>This blueprint</h2>
+    <div tal:replace="structure context/@@+listing-detailed" />
+  </div>
+
+  <div class="portlet">
+  <h2>Blueprints that can then be implemented</h2>
+    <div tal:repeat="spec view/all_blocked"
+         tal:replace="structure spec/@@+listing-detailed" />
+    <p tal:condition="not: view/blocked_specs">
+      No blueprints depend on this one.
+    </p>
+  </div>
+
+</div>
+</body>
+</html>

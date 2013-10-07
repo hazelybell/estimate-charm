@@ -1,0 +1,62 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+  <body>
+
+<div metal:fill-slot="main">
+
+  <div id="maincontent">
+
+  <p tal:content="structure context/fmt:link" />
+
+  <div metal:use-macro="context/@@launchpad_form/form">
+
+    <metal:extra_info metal:fill-slot="extra_info">
+
+      <p class="informational message"
+         tal:repeat="message view/notifications"
+         tal:content="structure message">
+        Confirmation message.
+      </p>
+
+    </metal:extra_info>
+
+    <div metal:fill-slot="widgets" tal:define="widgets view/target_widgets">
+
+        <div metal:use-macro="context/@@launchpad_form/widget_rows" />
+
+    </div>
+
+    <div metal:fill-slot="extra_bottom">
+
+      <tal:visited_steps
+          replace="structure view/widgets/__visited_steps__/hidden" />
+
+      <div tal:define="widgets view/bugwatch_widgets">
+        <p>
+          If the bug has been reported in another bug tracker, you can
+          link to it in order to keep track of its status. Launchpad
+          synchronizes the status automatically for you.
+        </p>
+
+        <div metal:use-macro="context/@@launchpad_form/widget_rows" />
+      </div>
+
+    </div>
+
+  </div>
+
+  </div>
+
+</div>
+
+  </body>
+</html>

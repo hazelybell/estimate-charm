@@ -1,0 +1,31 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  tal:define="context_menu view/context/menu:context">
+
+  <div class="two-column-list">
+    <dl id="branch-format" tal:condition="context/branch_format">
+      <dt>Branch format:</dt>
+      <dd tal:content="context/branch_format/description" />
+    </dl>
+    <dl id="repository-format"
+      tal:condition="context/repository_format">
+      <dt>Repository format:</dt>
+      <dd tal:content="context/repository_format/title" />
+    </dl>
+    <dl id="stacked-on" tal:condition="context/stacked_on">
+      <dt>Stacked on:</dt>
+      <dd tal:content="structure context/stacked_on/fmt:bzr-link" />
+    </dl>
+  </div>
+  <div class="actions">
+    <div
+      tal:define="link context_menu/upgrade_branch"
+      tal:condition="link/enabled"
+      >
+      <a tal:replace="structure link/fmt:link" />
+    </div>
+  </div>
+
+</div>

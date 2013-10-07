@@ -1,0 +1,40 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+  >
+  <body>
+    <div metal:fill-slot="main">
+      <div tal:condition="context/status/enumvalue:INVITED">
+        <div metal:use-macro="context/@@launchpad_form/form">
+          <p metal:fill-slot="extra_info">
+            <a tal:attributes="href context/proposed_by/fmt:url"
+               tal:content="context/proposed_by/fmt:unique_displayname"
+               >Somebody</a>
+            has invited this team to join
+            <a tal:attributes="href context/team/fmt:url"
+               tal:content="context/team/fmt:unique_displayname">Some team</a>.
+          </p>
+        </div>
+      </div>
+
+      <p tal:condition="context/status/enumvalue:APPROVED">
+        This team is already an active member of
+        <a tal:attributes="href context/team/fmt:url"
+           tal:content="context/team/fmt:unique_displayname">Some team</a>.
+      </p>
+
+      <p tal:condition="context/status/enumvalue:INVITATION_DECLINED">
+        <a tal:attributes="href context/proposed_by/fmt:url"
+           tal:content="context/proposed_by/fmt:unique_displayname">Somebody</a>
+        has declined the invitation for this team to join
+        <a tal:attributes="href context/team/fmt:url"
+           tal:content="context/team/fmt:unique_displayname">Some team</a>.
+      </p>
+
+    </div>
+  </body>
+</html>

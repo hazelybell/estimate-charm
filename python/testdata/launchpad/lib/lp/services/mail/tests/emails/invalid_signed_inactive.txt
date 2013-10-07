@@ -1,0 +1,35 @@
+Date: Wed, 13 Apr 2005 19:17:16 -0400
+From: launchpad@julian-edwards.com
+To: new@bugs.launchpad.net
+Subject: Signed Email
+Message-ID: <20050413231716.GA16989@localhost.localdomain>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="vtzGhvizbBRQ85DL"
+Content-Disposition: inline
+Status: RO
+Content-Length: 475
+
+
+--vtzGhvizbBRQ85DL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Some signed content.
+
+--vtzGhvizbBRQ85DL
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.2.5 (GNU/Linux)
+
+XD8DBQFCXah8uiuTid/SBUMRAotfAJwOYuLfnW0mV3EA67gXhuhnE/Ur7wCfRVMZ
+xIlThcNdAY9Wkd289kB5W8I=
+=fQDd
+-----END PGP SIGNATURE-----
+
+--vtzGhvizbBRQ85DL--
+
+

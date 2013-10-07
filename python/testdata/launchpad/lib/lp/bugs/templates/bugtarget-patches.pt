@@ -1,0 +1,115 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="malone"
+>
+
+  <body>
+    <div metal:fill-slot="main" class="tab-bugs"
+         tal:define="batchnav view/batchedPatchTasks;
+                     batch batchnav/currentBatch">
+ <div tal:condition="python: len(batch) > 0">
+
+  <form class="lesser" id="sort" method="get"
+        tal:attributes="action string:${context/fmt:url}/+patches">
+
+    <script type="text/javascript">
+      LPJS.use('base', 'node', 'event', function(Y) {
+        Y.on('domready', function(e) {
+          Y.one('#sort-button').setStyle('display', 'none');
+          Y.one('#orderby').on('change', function(e) {
+             Y.one('#sort').submit();
+           });
+        });
+      });
+    </script>
+
+    Order&nbsp;by:&nbsp;<select
+          name="orderby" id="orderby" size="1"
+          tal:define="orderby request/orderby|string:-latest_patch_uploaded">
+      <option tal:repeat="ordering view/patch_task_orderings"
+              tal:attributes="value python: ordering[1];
+                              selected python:orderby == ordering[1]"
+              tal:content="python: ordering[0]"></option>
+    </select>
+    <input type="submit" value="sort" id="sort-button"/>
+  </form>
+
+    <table class="listing"><thead>
+             <tr>
+               <th class="patches-view-cell"
+                   >Bug</th>
+               <th class="patches-view-cell"
+                   >Importance</th>
+               <th class="patches-view-cell"
+                   >Status</th>
+               <th class="patches-view-cell"
+                   tal:condition="view/targetName"
+                   tal:content="view/targetName"
+                   ></th>
+               <th class="patches-view-cell"
+                   >Patch Age</th>
+             </tr>
+           </thead>
+           <tr tal:repeat="patch_task batch">
+             <td class="patches-view-cell">
+               <a tal:replace="structure patch_task/fmt:link" /></td>
+             <td class="patches-view-cell"
+                 tal:content="patch_task/importance/title"
+                 tal:attributes="class string:importance${patch_task/importance/name}"></td>
+             <td class="patches-view-cell"
+                 tal:content="patch_task/status/title"
+                 tal:attributes="class string:status${patch_task/status/name}"></td>
+             <td class="patches-view-cell"
+                 tal:condition="view/targetName">
+                   <a tal:attributes="href patch_task/target/fmt:url"
+                      tal:content="patch_task/target/name"></a></td>
+             <td class="patches-view-cell"
+                 tal:define="patch patch_task/bug/latest_patch;
+                             age python:view.patchAge(patch)"
+                 tal:attributes="id string:patch-cell-${repeat/patch_task/index}">
+                   <a tal:attributes="href python:view.proxiedUrlForLibraryFile(patch)"
+                      tal:content="age/fmt:approximateduration"></a>
+               <div class="popupTitle"
+                    tal:attributes="id string:patch-popup-${repeat/patch_task/index};">
+                 <p tal:define="submitter patch/message/owner">
+                    <strong>From:</strong>
+                    <a tal:replace="structure submitter/fmt:link"></a><br/>
+                    <strong>Link:</strong>
+                    <a tal:attributes="href python:view.proxiedUrlForLibraryFile(patch)"
+                       tal:content="patch/libraryfile/filename"></a></p>
+                 <p tal:content="string:${patch/title}"></p>
+               </div>
+               <script type="text/javascript" tal:content="string:
+                 LPJS.use('base', 'node', 'event', function(Y) {
+                   Y.on('domready', function(e) {
+                     var cell_id = '#patch-cell-${repeat/patch_task/index}';
+                     var target_id = '#patch-popup-${repeat/patch_task/index}';
+                     var elt = Y.one(cell_id);
+                     elt.on('mouseover', function(e) {
+                        Y.one(target_id).setStyle('display', 'block');
+                      });
+                     elt.on('mouseout', function(e) {
+                        Y.one(target_id).setStyle('display', 'none');
+                      });
+                   });
+                 });"/>
+             </td>
+             </tr></table>
+    <div tal:replace="structure batchnav/@@+navigation-links-lower" />
+ </div>
+ <div class="informational message"
+      tal:condition="python: len(batch) == 0">
+   There are no patches associated with
+   <tal:target replace="context/displayname" />
+   at this time.
+ </div>
+    </div><!-- main -->
+  </body>
+</html>

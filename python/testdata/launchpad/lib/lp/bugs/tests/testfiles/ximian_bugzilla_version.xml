@@ -1,0 +1,35 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE bugzilla SYSTEM "http://bugzilla.ximian.com/bugzilla.dtd">
+<bugzilla version="2.10" urlbase="http://bugzilla.ximian.com/" maintainer="bugmaster@ximian.com">
+<bug>
+  <bug_id>1</bug_id>
+  <bug_status>CLOSED</bug_status>
+  <product>Evolution</product>
+  <priority>Blocker</priority>
+  <version>unspecified</version>
+  <assigned_to>matt@helixcode.com</assigned_to>
+  <delta_ts>20040929164217</delta_ts>
+  <component>Mailer</component>
+  <reporter>matt@helixcode.com</reporter>
+  <target_milestone>---</target_milestone>
+  <bug_severity>Unknown</bug_severity>
+  <creation_ts>2000-05-18 18:13</creation_ts>
+  <qa_contact>evolution-qa@ximian.com</qa_contact>
+  <op_sys>GNU/Linux [Other]</op_sys>
+  <resolution>FIXED</resolution>
+  <short_desc>Garbage bug</short_desc>
+  <long_desc encoding="base64">
+   <who>matt@helixcode.com</who>
+   <bug_when>2000-05-18 18:13:30</bug_when>
+   <thetext>YmxhaCBibGhhIGRlc2NyaXB0aW9uIGJsYWg=
+</thetext>
+  </long_desc>
+  <long_desc encoding="base64">
+   <who>gerardo@novell.com</who>
+   <bug_when>2002-02-27 16:58:01</bug_when>
+   <thetext>KioqIEJ1ZyAyMDgyMyBoYXMgYmVlbiBtYXJrZWQgYXMgYSBkdXBsaWNhdGUgb2YgdGhpcyBidWcu
+ICoqKg==
+</thetext>
+  </long_desc>
+</bug>
+</bugzilla>

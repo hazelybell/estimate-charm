@@ -1,0 +1,15 @@
+Package: ekg
+Binary: ekg, libgadu-dev, libgadu3
+Version: 1:1.5-4ubuntu1.2
+Priority: optional
+Section: net
+Maintainer: Marcin Owsiany <porridge@debian.org>
+Build-Depends: debhelper (>= 4), libncurses-dev, libreadline4-dev, zlib1g-dev, python-dev, libgsm1-dev (>= 1.0.10-11.1), libssl-dev, libglib1.2-dev, libjpeg62-dev | libjpeg-dev, libaspell-dev
+Architecture: any
+Standards-Version: 3.6.1
+Format: 1.0
+Directory: pool/main/e/ekg
+Files:
+ 2d609b048a3a7a89c245fec78380ce4f 742 ekg_1.5-4ubuntu1.2.dsc
+ 721ebfe7b13e9531b30d558465e6695f 483606 ekg_1.5.orig.tar.gz
+ 94d10dc8d262c773b75e273a89af21ca 66554 ekg_1.5-4ubuntu1.2.diff.gz

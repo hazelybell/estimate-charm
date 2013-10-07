@@ -1,0 +1,20 @@
+Format: 1.7
+Date: Tue, 18 May 2006 15:48:14 -0300
+Source: bar
+Binary: bar-bin
+Architecture: source
+Version: 1.0-6
+Distribution: breezy
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Celso Providelo <cprov@ubuntu.com>
+Description: 
+ bar-bin    - Stuff for testing
+Changes: 
+ bar (1.0-6) breezy; urgency=low
+ .
+   * Change the binary name to check bogus creation of sourcepackagename when
+     processing binaries.
+Files: 
+ 6e6bfd2ad2ab37268b90e22484fd291c 516 devel optional bar_1.0-6.dsc
+ 273bef311801aab42376058b1cbd5e10 771 devel optional bar_1.0-6.diff.gz

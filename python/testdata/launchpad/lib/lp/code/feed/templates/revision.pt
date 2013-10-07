@@ -1,0 +1,56 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:tal="http://xml.zope.org/namespaces/tal"
+     xmlns:metal="http://xml.zope.org/namespaces/metal">
+
+  <table style="border: 0; padding: 2px"
+         tal:define="site_url view/feed/site_url">
+    <tr>
+      <th>Author:</th>
+      <td tal:define="author context/revision_author">
+        <tal:lp-person condition="author/person">
+          <a tal:attributes="href string:${site_url}${author/person/fmt:url}">
+            <tal:project-name replace="author/person/displayname"/>
+          </a>
+        </tal:lp-person>
+        <tal:non-lp-person condition="not: author/person"
+                           define="name author/name_without_email">
+          <tal:has-name condition="name" replace="name"/>
+          <tal:no-name condition="not: name" replace="string: &lt;email address hidden&gt;"/>
+        </tal:non-lp-person>
+      </td>
+    </tr>
+    <tr>
+      <th>Date:</th>
+      <td tal:content="context/revision_date/fmt:datetime"/>
+    </tr>
+    <tr>
+      <th>Branch:</th>
+      <td>
+        <a tal:attributes="href view/branch/fmt:url">
+          <img tal:attributes="src string:${site_url}/@@/branch" />
+          <tal:project-name replace="view/branch/bzr_identity"/>
+        </a>
+      </td>
+    </tr>
+    <tr tal:condition="view/revno">
+      <th>Revno:</th>
+      <td tal:content="view/revno"/>
+    </tr>
+    <tr tal:condition="view/product">
+      <th>Project:</th>
+      <td>
+        <a tal:attributes="href string:${site_url}${view/product/fmt:url}">
+          <tal:project-name replace="view/product/displayname"/>
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <th>Log message:</th>
+      <td>
+        <p tal:replace="structure context/log_body/fmt:text-to-html">
+          Revision info
+        </p>
+      </td>
+    </tr>
+  </table>
+</div>

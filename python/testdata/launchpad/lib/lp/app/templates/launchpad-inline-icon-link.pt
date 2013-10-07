@@ -1,0 +1,9 @@
+<tal:link-enabled
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  condition="context/enabled"
+><a
+  tal:attributes="
+    class string:menu-link-${context/name} sprite ${context/icon} action-icon;
+    href context/url;
+    title context/summary;"
+  tal:content="context/text"></a></tal:link-enabled>

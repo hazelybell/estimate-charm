@@ -1,0 +1,76 @@
+= Field for assigning aliases to pillars =
+
+    >>> from lp.registry.interfaces.product import IProductSet
+    >>> from lp.services.fields import PillarAliases
+    >>> firefox = getUtility(IProductSet)['firefox']
+    >>> field = PillarAliases(__name__='aliases')
+    >>> bound_field = field.bind(firefox)
+
+The field takes a list of aliases separated by one or more spaces.
+
+    >>> login('mark@example.com')
+    >>> aliases = u'iceweasel snowchicken'
+    >>> bound_field.validate(aliases)
+
+    >>> aliases = u'iceweasel      snowchicken'
+    >>> bound_field.validate(aliases)
+
+It also knows how to set these values as the aliases of the pillar it is bound
+to.
+
+    >>> bound_field.set(firefox, aliases)
+    >>> bound_field.get(firefox)
+    u'iceweasel snowchicken'
+
+An alias which is already in use by a given pillar is considered by the field
+to be a valid alias for that pillar, but only for that pillar.
+
+    >>> bound_field.validate(u'iceweasel')
+
+    >>> field.bind(getUtility(IProductSet)['bzr']).validate(u'iceweasel')
+    Traceback (most recent call last):
+    ...
+    LaunchpadValidationError: iceweasel is already used by another project
+
+If existing aliases are not passed to the field's set() method, they will be
+removed.
+
+    >>> bound_field.set(firefox, u'iceweasel')
+    >>> bound_field.get(firefox)
+    u'iceweasel'
+
+If an empty string (or None) is given, all aliases will be removed.
+
+    >>> bound_field.set(firefox, '')
+    >>> bound_field.get(firefox)
+    ''
+
+    >>> bound_field.set(firefox, None)
+    >>> bound_field.get(firefox)
+    ''
+
+Each of these aliases must be valid names and must be unique.
+
+    >>> bound_field.validate(u'names_cannot_have_underscores')
+    Traceback (most recent call last):
+    ...
+    LaunchpadValidationError: Invalid name...
+
+    >>> bound_field.validate(u'ubuntu')
+    Traceback (most recent call last):
+    ...
+    LaunchpadValidationError: ubuntu is already used by another project
+
+Also, they must not be identical to the pillar's own name.
+
+    >>> bound_field.validate(firefox.name)
+    Traceback (most recent call last):
+    ...
+    LaunchpadValidationError: This is your name: firefox
+
+Black-listed names are not accepted as aliases either.
+
+    >>> bound_field.validate(u'blacklisted')
+    Traceback (most recent call last):
+    ...
+    LaunchpadValidationError: The name &#x27;blacklisted&#x27; has been blocked...

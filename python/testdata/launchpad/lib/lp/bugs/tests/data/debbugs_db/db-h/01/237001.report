@@ -1,0 +1,107 @@
+Received: (at submit) by bugs.debian.org; 9 Mar 2004 08:14:36 +0000
+From teun@tux.office.luna.net Tue Mar 09 00:14:36 2004
+Return-path: <teun@tux.office.luna.net>
+Received: from smtp1.email.luna.net [217.77.129.33] 
+	by spohr.debian.org with esmtp (Exim 3.35 1 (Debian))
+	id 1B0cNn-0001P7-00; Tue, 09 Mar 2004 00:14:35 -0800
+Received: from tux (tux.office.luna.net [217.77.129.183])
+	by smtp1.email.luna.net (Luna.nl mail server) with ESMTP id D4166133A26
+	for <submit@bugs.debian.org>; Tue,  9 Mar 2004 09:14:30 +0100 (CET)
+Received: by tux (Postfix, from userid 1000)
+	id 98BF411EE67; Tue,  9 Mar 2004 09:14:30 +0100 (CET)
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+From: Teun Vink <teun@tux.office.luna.net>
+To: Debian Bug Tracking System <submit@bugs.debian.org>
+Subject: evolution mail crashes on opening an email with a TIFF attachment
+X-Mailer: reportbug 2.50
+Date: Tue, 09 Mar 2004 09:14:30 +0100
+Message-Id: <20040309081430.98BF411EE67@tux>
+Delivered-To: submit@bugs.debian.org
+X-Spam-Checker-Version: SpamAssassin 2.60-bugs.debian.org_2004_03_08 
+	(1.212-2003-09-23-exp) on spohr.debian.org
+X-Spam-Status: No, hits=-5.0 required=4.0 tests=HAS_PACKAGE autolearn=no 
+	version=2.60-bugs.debian.org_2004_03_08
+X-Spam-Level: 
+
+Package: evolution
+Version: 1.4.5-3.2
+Severity: normal
+
+
+
+Evolution mail crashes on opening an email with a TIFF attachment.
+Other attachment types like GIF and JPG seem unnaffected.
+
+
+
+-- System Information:
+Debian Release: testing/unstable
+  APT prefers unstable
+  APT policy: (500, 'unstable')
+Architecture: i386 (i686)
+Kernel: Linux 2.6.0
+Locale: LANG=C, LC_CTYPE=C
+
+Versions of packages evolution depends on:
+ii  gconf2                      2.4.0.1-4    GNOME configuration database syste
+ii  gtkhtml3.0                  3.0.9-2.1    HTML rendering/editing library - b
+ii  libart-2.0-2                2.3.16-1     Library of functions for 2D graphi
+ii  libasn1-6-heimdal           0.6-7        Libraries for Heimdal Kerberos
+ii  libatk1.0-0                 1.4.1-1      The ATK accessibility toolkit
+ii  libaudiofile0               0.2.3-4      The Audiofile Library
+ii  libbonobo2-0                2.4.3-1      Bonobo CORBA interfaces library
+ii  libbonoboui2-0              2.4.3-2      The Bonobo UI library
+ii  libc6                       2.3.2.ds1-11 GNU C Library: Shared libraries an
+ii  libcomerr2                  1.35-2       The Common Error Description libra
+ii  libdb3                      3.2.9-19     Berkeley v3 Database Libraries [ru
+ii  libesd0                     0.2.29-1     Enlightened Sound Daemon - Shared 
+ii  libfontconfig1              2.2.1-16     generic font configuration library
+ii  libfreetype6                2.1.7-2      FreeType 2 font engine, shared lib
+ii  libgail-common              1.4.1-1      GNOME Accessibility Implementation
+ii  libgail17                   1.4.1-1      GNOME Accessibility Implementation
+ii  libgal2.0-5                 1.99.10-2.3  G App Libs (run time library)
+ii  libgal2.0-common            1.99.10-2.3  G App Libs (common files)
+ii  libgconf2-4                 2.4.0.1-4    GNOME configuration database syste
+ii  libgcrypt1                  1.1.12-4     LGPL Crypto library - runtime libr
+ii  libglade2-0                 2.0.1-6      Library to load .glade files at ru
+ii  libglib2.0-0                2.2.3-1      The GLib library of C routines
+ii  libgnome-pilot2             2.0.10-3     Support libraries for gnome-pilot
+ii  libgnome2-0                 2.4.0-4      The GNOME 2 library - runtime file
+ii  libgnomecanvas2-0           2.4.0-1      A powerful object-oriented display
+ii  libgnomeprint2.2-0          2.4.2-3      The GNOME 2.2 print architecture -
+ii  libgnomeprintui2.2-0        2.4.2-1      The GNOME 2.2 print architecture U
+ii  libgnomeui-0                2.4.0.1-6    The GNOME 2 libraries (User Interf
+ii  libgnomevfs2-0              2.4.1-5      The GNOME virtual file-system libr
+ii  libgnomevfs2-common         2.4.1-5      The GNOME virtual file-system libr
+ii  libgnutls7                  0.8.12-5     GNU TLS library - runtime library
+ii  libgssapi1-heimdal          0.6-7        Libraries for Heimdal Kerberos
+ii  libgtk2.0-0                 2.2.4-3      The GTK+ graphical user interface 
+ii  libgtkhtml3.0-2             3.0.9-2.1    HTML rendering/editing library - r
+ii  libice6                     4.3.0-5      Inter-Client Exchange library
+ii  libjpeg62                   6b-9         The Independent JPEG Group's JPEG 
+ii  libkrb-1-kerberos4kth       1.2.2-10     Kerberos Libraries for Kerberos4 F
+ii  libkrb5-17-heimdal          0.6-7        Libraries for Heimdal Kerberos
+ii  libldap2                    2.1.26-1     OpenLDAP libraries
+ii  libnspr4                    2:1.6-1      Netscape Portable Runtime Library
+ii  libnss3                     2:1.6-1      Network Security Service Libraries
+ii  liborbit2                   1:2.8.3-2    libraries for ORBit2 - a CORBA ORB
+ii  libpango1.0-0               1.2.5-2.1    Layout and rendering of internatio
+ii  libpisock8                  0.11.8-9     Library for communicating with a P
+ii  libpisync0                  0.11.8-9     Synchronization library for PalmOS
+ii  libpopt0                    1.7-4        lib for parsing cmdline parameters
+ii  libroken16-kerberos4kth     1.2.2-10     Roken Libraries for Kerberos4 From
+ii  libsm6                      4.3.0-5      X Window System Session Management
+ii  libsoup2.0-0                1.99.26-1    an HTTP library implementation in 
+ii  libssl0.9.7                 0.9.7c-5     SSL shared libraries
+ii  libtasn1-0                  0.1.2-1      Manage ASN.1 structures (runtime)
+ii  libx11-6                    4.3.0-5      X Window System protocol client li
+ii  libxml2                     2.6.6-1      GNOME XML library
+ii  scrollkeeper                0.3.14-5     A free electronic cataloging syste
+ii  xlibs                       4.3.0-5      X Window System client libraries m
+ii  zlib1g                      1:1.2.1-4    compression library - runtime
+
+-- debconf information:
+* evolution1.3/warning: 
+

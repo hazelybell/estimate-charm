@@ -1,0 +1,57 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<body>
+
+<div metal:fill-slot="main">
+
+  <h1 tal:content="view/page_title" />
+
+  <div class="top-portlet">
+  <h2>Ask your question!</h2>
+
+  <p>
+    You can post questions directly to the <a
+    tal:attributes="href
+        modules/lp.services.webapp.vhosts/allvhosts/configs/answers/rooturl">Launchpad
+    answer</a> tracker.
+  </p>
+    <ul class="horizontal">
+        <li><a class="sprite info"
+          tal:attributes="href
+          string:${context/fmt:url}/+questions">Search through existing questions</a></li>
+        <li><a tal:replace="structure context/menu:answers/new/fmt:link" /></li>
+    </ul>
+  </div>
+
+  <div>
+  <h2>Other support options</h2>
+
+  <p>
+    You can also get help on Ubuntu in general from:
+  </p>
+  <ul class="support">
+    <li>
+      <a href="irc://irc.freenode.net/#ubuntu">the <code>#ubuntu</code>
+      IRC channel</a> on <code>irc.freenode.net</code>
+    </li>
+    <li>
+      <a href="http://ubuntuforums.org/">the Ubuntu Forums</a>.
+    </li>
+  </ul>
+  <p>
+    You can also get
+    <a href="http://ubuntu.com/support/supportoptions/local">support
+    in languages other than English</a>.
+  </p>
+  </div>
+</div>
+</body>
+</html>
+

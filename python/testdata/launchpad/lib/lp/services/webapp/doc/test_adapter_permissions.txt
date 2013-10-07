@@ -1,0 +1,48 @@
+Our database adapters need to trap writes to tables in slave replication
+sets. These tables may be reached directly using a SLAVE_FLAVOR store, or
+traversed to from a MASTER_FLAVOR store.
+
+Because our development environment is not replicated, we use database
+permissions to ensure that tables we should not be writing too cannot
+be written to. The same permissions structure is also used on production,
+so the Slony-I triggers blocking writes to slaved tables will never
+actually be invoked.
+
+    >>> from lp.registry.model.person import Person
+    >>> from lp.services.database.interfaces import (
+    ...     IStoreSelector, MAIN_STORE, MASTER_FLAVOR, SLAVE_FLAVOR)
+    >>> import transaction
+    >>> from zope.component import getUtility
+
+If a SLAVE_FLAVOR store is requested, it should trap all writes.
+
+    >>> t = transaction.begin()
+    >>> main_slave = getUtility(IStoreSelector).get(MAIN_STORE, SLAVE_FLAVOR)
+    >>> janitor = main_slave.find(Person, name='janitor').one()
+    >>> janitor.displayname = 'Ben Dover'
+    >>> transaction.commit()
+    Traceback (most recent call last):
+    ...
+    InternalError: ...
+
+Test this once more to ensure the settings stick across transactions.
+
+    >>> transaction.abort()
+    >>> t = transaction.begin()
+    >>> main_slave.find(Person, name='janitor').one().displayname = 'BenD'
+    >>> transaction.commit()
+    Traceback (most recent call last):
+    ...
+    InternalError: ...
+
+If a MASTER_FLAVOR is requested, it should allow writes to table in that
+Store's replication set.
+
+    >>> t = transaction.begin()
+    >>> main_master = getUtility(IStoreSelector).get(MAIN_STORE, MASTER_FLAVOR)
+    >>> main_master.find(Person, name='janitor').one().displayname = 'BenD'
+    >>> transaction.commit()
+    >>> t = transaction.begin()
+    >>> main_master.find(Person, name='janitor').one().displayname
+    u'BenD'
+    >>> transaction.abort()

@@ -1,0 +1,10 @@
+<tal:root
+   xmlns:tal="http://xml.zope.org/namespaces/tal"
+   xmlns:metal="http://xml.zope.org/namespaces/metal"
+   omit-tag="">
+
+  <tal:branch replace="structure context/branch/fmt:link"/>
+  updated
+  <tal:date replace="context/date/fmt:displaydate" />
+
+</tal:root>

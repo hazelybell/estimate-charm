@@ -1,0 +1,79 @@
+= Translation credits =
+
+Translation credit strings are automatically updated with contributors
+through Launchpad.
+
+ALSA Utils template contains both KDE- and GNOME-style translation credit
+messages.  Carlos is going to update this translation to Serbian,
+which has so far been untranslated.
+
+    >>> browser = setupBrowser(auth='Basic carlos@canonical.com:test')
+    >>> browser.open(
+    ...     'http://translations.launchpad.dev/alsa-utils/trunk/+pots/'
+    ...     'alsa-utils/sr/+translate')
+
+GNOME-style credits string is 'translation-credits'.
+
+    >>> extract_text(find_tag_by_id(browser.contents, 'msgset_199_singular'))
+    u'translation-credits'
+
+This has no translation yet:
+
+    >>> extract_text(find_tag_by_id(browser.contents,
+    ...                             'msgset_199_sr_translation_0'))
+    u'(no translation yet)'
+
+And there is no input field allowing changing this message.
+
+   >>> print find_tag_by_id(browser.contents,
+   ...                      'msgset_199_sr_translation_0_new')
+   None
+
+KDE-style translation credits are split into two messages, with emails
+in one, and names in other.
+
+    >>> extract_text(find_tag_by_id(browser.contents, 'msgset_200_singular'))
+    u'_: EMAIL OF TRANSLATORS...Your emails'
+    >>> extract_text(find_tag_by_id(browser.contents, 'msgset_201_singular'))
+    u'_: NAME OF TRANSLATORS...Your names'
+
+These are locked as well:
+
+    >>> print find_tag_by_id(browser.contents,
+    ...                      'msgset_200_sr_translation_0_new')
+    None
+    >>> print find_tag_by_id(browser.contents,
+    ...                      'msgset_201_sr_translation_0_new')
+    None
+
+We can translate a non-translator credits message, which will update
+displayed credits once we submit the translation.
+
+    >>> inputradio = browser.getControl(
+    ...    name='msgset_198_sr_translation_0_radiobutton')
+    >>> inputradio.value = [ 'msgset_198_sr_translation_0_new']
+    >>> inputfield = browser.getControl(name='msgset_198_sr_translation_0_new')
+    >>> inputfield.value = 'Test translation'
+    >>> browser.getControl('Save & Continue').click()
+    >>> print browser.url
+    http://translations.launchpad.dev/alsa-utils/trunk/+pots/alsa-utils/sr/+translate
+
+Translation has been updated.
+
+    >>> extract_text(find_tag_by_id(browser.contents,
+    ...                             'msgset_198_sr_translation_0'))
+    u'Test translation'
+
+And translation credits now list Carlos.
+
+    >>> extract_text(find_tag_by_id(browser.contents,
+    ...                             'msgset_199_sr_translation_0'))
+    u'Launchpad Contributions:\nCarlos Perell\xf3 Mar\xedn http://translations.launchpad.dev/~carlos'
+
+    >>> extract_text(find_tag_by_id(browser.contents,
+    ...                             'msgset_200_sr_translation_0'))
+    u',,carlos@canonical.com'
+
+    >>> extract_text(find_tag_by_id(browser.contents,
+    ...                             'msgset_201_sr_translation_0'))
+    u',Launchpad Contributions:,Carlos Perell\xf3 Mar\xedn'

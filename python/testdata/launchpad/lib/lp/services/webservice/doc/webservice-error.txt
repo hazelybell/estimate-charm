@@ -1,0 +1,39 @@
+= Web service status codes for Launchpad-specific exceptions =
+
+Most of the time, if a web service client triggers an exception, the
+response code will be 500. But specific exception classes can override
+this behavior and set some other response code.
+
+    >>> import threading
+    >>> from lp.services.webapp.servers import LaunchpadTestRequest
+    >>> from lp.services.webapp.adapter import (
+    ...     set_request_started, clear_request_started)
+    >>> from zope.component import getMultiAdapter
+
+    >>> def render_using_default_view(error):
+    ...     """Render an exception using its default 'index.html' view.
+    ...     :return: response, result tuple. (The response object and
+    ...         the content).
+    ...     """
+    ...     try:
+    ...         raise error
+    ...     except Exception as error:
+    ...         request = LaunchpadTestRequest(
+    ...             environ={'PATH_INFO' : ''})
+    ...         set_request_started()
+    ...         request.oopsid = '100'
+    ...         view = getMultiAdapter((error, request), name="index.html")
+    ...         result = view()
+    ...         return request.response, result
+
+
+IRequestExpired exceptions have a 503 status code.
+
+    >>> from lp.services.webapp.adapter import RequestExpired
+    >>> response, result = render_using_default_view(RequestExpired())
+    >>> response.getStatus()
+    503
+
+Cleanup.
+
+   >>> clear_request_started()

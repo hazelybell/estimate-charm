@@ -1,0 +1,55 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  metal:use-macro="view/macro:page/main_only"
+>
+<body>
+
+<div metal:fill-slot="main">
+  <div tal:condition="view/direct_question_targets">
+    <h2>Contact via self subscription</h2>
+
+    <ul class="listing" id="direct-answer-contacts-for-list">
+      <li tal:repeat="question_target view/direct_question_targets">
+        <a
+          tal:attributes="href question_target/fmt:url:answers"
+          tal:content="question_target/title">Project Title</a>
+        <tal:link condition="view/showRemoveYourselfLink">
+          <a class="sprite remove action-icon"
+            tal:attributes="
+            href string:${question_target/fmt:url}/+answer-contact;
+            id string:${question_target/name}-setdirectanswercontact"
+            >Unsubscribe</a>
+        </tal:link>
+      </li>
+    </ul>
+  </div>
+
+  <div tal:condition="view/team_question_targets">
+    <h2>Contact via team participation</h2>
+
+    <ul class="listing" id="team-answer-contacts-for-list">
+      <li tal:repeat="question_target view/team_question_targets">
+        <a
+          tal:attributes="href question_target/fmt:url:answers"
+          tal:content="question_target/title">Project Title</a>
+        <tal:link condition="view/showRemoveYourselfLink">
+          <a class="sprite remove action-icon"
+            tal:attributes="
+            href string:${question_target/fmt:url}/+answer-contact;
+            id string:${question_target/name}-setteamanswercontact"
+            >Unsubscribe team</a>
+        </tal:link>
+      </li>
+    </ul>
+  </div>
+
+  <p tal:condition="not: view/team_question_targets | view/direct_question_targets">
+    <span tal:replace="context/displayname">Person Name</span>
+    is not an answer contact for any project.
+  </p>
+</div>
+
+</body>
+</html>

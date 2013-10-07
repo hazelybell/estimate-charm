@@ -1,0 +1,105 @@
+It is possible to set a specification to a specific distribution
+series.
+
+This pagetest tries to add a spec to the Ubuntu distribution and set it
+to the Grumpy distroseries.
+
+First we try to access the addspec page.
+
+  >>> user_browser = browser
+  >>> user_browser.addHeader('Authorization', 'Basic test@canonical.com:test')
+  >>> url = 'http://blueprints.launchpad.dev/ubuntu/+addspec'
+  >>> user_browser.open(url)
+  >>> user_browser.url
+  'http://blueprints.launchpad.dev/ubuntu/+addspec'
+
+Then we try to add a specification to that distro
+
+  >>> user_browser.getControl('Name').value = "testspec"
+  >>> user_browser.getControl('Title').value = "Test Specification"
+  >>> user_browser.getControl('Specification URL').value = (
+  ... "http://wiki.test.com")
+  >>> user_browser.getControl('Summary').value = "TEst spec add"
+  >>> user_browser.getControl('Definition Status').value = ['NEW']
+  >>> user_browser.getControl('Assignee').value = "test@canonical.com"
+  >>> user_browser.getControl('Drafter').value = "test@canonical.com"
+  >>> user_browser.getControl('Approver').value = "test@canonical.com"
+  >>> user_browser.getControl('Register Blueprint').click()
+
+We're redirected to the Specification page
+
+  >>> user_browser.url
+  'http://blueprints.launchpad.dev/ubuntu/+spec/testspec'
+
+Now we try to open the +setdistroseries page, where there is a form to
+target the newly created spec to a distribution.
+
+
+  >>> url = 'http://blueprints.launchpad.dev/ubuntu/+spec/testspec/+setdistroseries'
+  >>> user_browser.open(url)
+  >>> user_browser.url
+  'http://blueprints.launchpad.dev/ubuntu/+spec/testspec/+setdistroseries'
+
+The page contains a link back to the blueprint, in case you change your mind.
+
+    >>> back_link = browser.getLink('Test Specification')
+    >>> back_link.url
+    'http://blueprints.launchpad.dev/ubuntu/+spec/testspec'
+    >>> browser.getLink('Cancel').url
+    'http://blueprints.launchpad.dev/ubuntu/+spec/testspec'
+
+We are able to target a specification to a distroseries. We expect to be
+redirected back to the spec page when we are done.
+
+  >>> user_browser.open('http://blueprints.launchpad.dev/ubuntu/+spec/media-integrity-check/+setdistroseries')
+  >>> user_browser.url
+  'http://blueprints.launchpad.dev/ubuntu/+spec/media-integrity-check/+setdistroseries'
+  >>> user_browser.getControl('Goal').value = ['5']
+  >>> user_browser.getControl('Continue').click()
+  >>> user_browser.url
+  'http://blueprints.launchpad.dev/ubuntu/+spec/media-integrity-check'
+ 
+
+After the POST we should see the goal on the specification page, as
+a "proposed" goal.
+
+  >>> "Series goal" in user_browser.contents
+  True
+  >>> "grumpy" in user_browser.contents
+  True
+  >>> "Proposed" in user_browser.contents
+  True
+
+
+The spec will not show up immediately as a Grumpy goal since it must
+first be approved.
+
+  >>> result = unicode(http(r"""
+  ... GET /ubuntu/hoary/+specs HTTP/1.1
+  ... """))
+  >>> '<td>CD Media Integrity Check' not in result
+  True
+
+However, we can expect to find it on the approvals page.
+
+  >>> user_browser.open('http://blueprints.launchpad.dev/ubuntu/grumpy/+specs')
+  >>> "CD Media Integrity Check" in user_browser.contents
+  False
+
+We will accept it:
+
+  >>> admin_browser.open('http://blueprints.launchpad.dev/ubuntu/grumpy/+setgoals')
+  >>> 'CD Media Integrity' in admin_browser.contents
+  True
+  >>> admin_browser.getControl('CD Media Integrity Check').selected = True
+  >>> admin_browser.getControl('Accept').click()
+  >>> admin_browser.url
+  'http://blueprints.launchpad.dev/ubuntu/grumpy'
+  >>> 'Accepted 1 specification(s)' in admin_browser.contents
+  True
+
+And now it should appear on the Grumpy specs list:
+
+  >>> "CD Media Integrity Check" in admin_browser.contents
+  True
+

@@ -1,0 +1,42 @@
+Received: (at submit) by bugs.debian.org; 10 Sep 2005 21:32:15 +0000
+From fw@deneb.enyo.de Sat Sep 10 14:32:15 2005
+Return-path: <fw@deneb.enyo.de>
+Received: from mail.enyo.de [212.9.189.167] 
+	by spohr.debian.org with esmtp (Exim 3.36 1 (Debian))
+	id 1EECxL-0002DN-00; Sat, 10 Sep 2005 14:32:15 -0700
+Received: from deneb.vpn.enyo.de ([212.9.189.177] helo=deneb.enyo.de)
+	by albireo.enyo.de with esmtp id 1EECxI-0005oL-RM
+	for submit@bugs.debian.org; Sat, 10 Sep 2005 23:32:12 +0200
+Received: from fw by deneb.enyo.de with local (Exim 4.52)
+	id 1EECwV-0000Fi-MM; Sat, 10 Sep 2005 23:31:23 +0200
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+From: Florian Weimer <fw@deneb.enyo.de>
+To: Debian Bug Tracking System <submit@bugs.debian.org>
+Subject: mozilla-firefox: [CAN-2005-2414] Race condition in the xpcom library
+X-Mailer: reportbug 3.15
+Date: Sat, 10 Sep 2005 23:31:23 +0200
+Message-Id: <E1EECwV-0000Fi-MM@mid.deneb.enyo.de>
+Delivered-To: submit@bugs.debian.org
+X-Spam-Checker-Version: SpamAssassin 2.60-bugs.debian.org_2005_01_02 
+	(1.212-2003-09-23-exp) on spohr.debian.org
+X-Spam-Level: 
+X-Spam-Status: No, hits=-7.0 required=4.0 tests=BAYES_01,HAS_PACKAGE 
+	autolearn=no version=2.60-bugs.debian.org_2005_01_02
+
+Package: mozilla-firefox
+Version: 1.0.6-4
+Severity: grave
+Tags: security
+Justification: user security hole
+
+GulfTech has disclosed a security bug in Mozilla-based browsers:
+
+  <http://www.gulftech.org/?node=research&article_id=00091-07212005>
+
+Malicious web sites can crash the browser.  This appears to be a memory
+corruption problem, so perhaps arbitrary code execution is possible.
+
+Workaround (according to my tests): Disable JavaScript.
+

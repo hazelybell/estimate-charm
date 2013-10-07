@@ -1,0 +1,18 @@
+Format: 1.7
+Date: Tue, 24 Apr 2007 12:14:09 -0300
+Source: bar
+Binary: bar
+Architecture: i386
+Version: 1:1.0-9
+Distribution: breezy
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Celso Providelo <cprov@canonical.com>
+Description: 
+ bar        - Stuff for testing
+Changes: 
+ bar (1:1.0-9) breezy; urgency=low
+ .
+   * Exploring epochs ...
+Files: 
+ e711625840a6777430746b3b46cf78d8 660 devel optional bar_6.6.6_i386.deb

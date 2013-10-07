@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<!--
+Copyright 2012 Canonical Ltd.  This software is licensed under the
+GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<html>
+  <head>
+      <title>Test bug_tags_entry</title>
+
+      <!-- YUI and test setup -->
+      <script type="text/javascript"
+              src="../../../../../build/js/yui/yui/yui.js">
+      </script>
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/console/assets/console-core.css" />
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/test-console/assets/skins/sam/test-console.css" />
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/test/assets/skins/sam/test.css" />
+
+      <script type="text/javascript"
+              src="../../../../../build/js/lp/app/testing/testrunner.js"></script>
+
+      <link rel="stylesheet" href="../../../app/javascript/testing/test.css" />
+
+      <!-- Dependencies -->
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/lp.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/client.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/testing/mockio.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/anim/anim.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/extras/extras.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/autocomplete/autocomplete.js"></script>
+
+      <!-- The module under test. -->
+      <script type="text/javascript" src="../bug_tags_entry.js"></script>
+
+      <!-- The test suite. -->
+      <script type="text/javascript" src="test_bug_tags_entry.js"></script>
+
+    </head>
+    <body class="yui3-skin-sam">
+        <ul id="suites">
+            <li>lp.bug_tags_entry.test</li>
+        </ul>
+
+        <div id="fixture"></div>
+
+        <script type="text/x-template" id="edit-bug-tag-form">
+          <div id="bug-tags">
+            <span id="tags-heading">
+              Tags:
+            </span>
+            <span id="tag-list">
+              <a class="official-tag"
+                  href="/fnord/+bugs?field.tag=project-tag">project-tag</a>
+              <a class="unofficial-tag"
+                  href="/fnord/+bugs?field.tag=user-tag">user-tag</a>
+            </span>
+            <a href="+edit" title="Edit tags" id="tags-trigger"
+              class="sprite edit action-icon">Edit</a>
+            <a href="/+help-bugs/tag-help.html" target="help"
+              class="sprite maybe action-icon">Tag help</a>
+          </div>
+        </script>
+
+        <script type="text/x-template" id="add-bug-tag-form">
+          <div id="bug-tags">
+            <span id="tags-heading">
+            </span>
+            <span id="tag-list">
+            </span>
+            <a href="+edit" title="Add tags" id="tags-trigger"
+              class="sprite add action-icon">Add tags</a>
+            <a href="/+help-bugs/tag-help.html" target="help"
+              class="sprite maybe action-icon">Tag help</a>
+          </div>
+        </script>
+
+        <script type="text/x-template" id="form-with-bug-tags">
+          <form>
+            <div>
+              <input type="text" name="field.tag" id="field.tag" />
+              <a href="/help/tags.html" target="help" class="help">(?)</a>
+            </div>
+          </form>
+        </script>
+    </body>
+</html>

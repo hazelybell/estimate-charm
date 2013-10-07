@@ -1,0 +1,11 @@
+Format-Version: 2
+Found-In: evolution/1.0.5-1woody2
+Done: Margarita Manterola <debian@marga.com.ar>
+Subject: is woody evolution still vulnerable to SSL Man-In-The-Middle Vulnerability?
+Date: 1100256492
+Submitter: Djoume SALVETTI <djoume@taket.org>
+Fixed-In: evolution/2.0.2-3
+Package: evolution
+Tags: woody security
+Message-Id: <E1CSYjb-0003PR-9h@localhost>
+Severity: grave

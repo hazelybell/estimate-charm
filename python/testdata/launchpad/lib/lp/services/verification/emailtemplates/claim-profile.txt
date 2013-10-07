@@ -1,0 +1,11 @@
+Hi,
+
+You, or someone posing as you, tried to claim the Launchpad profile
+named %(profile_name)s, to which the email address
+%(email)s belongs.
+
+To finish claiming that profile, just follow the link below.
+
+    %(token_url)s
+
+The Launchpad Team

@@ -1,0 +1,22 @@
+<ol
+  itemprop="breadcrumb"
+  class="breadcrumbs"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  i18n:domain="launchpad"
+  tal:condition="view/display_breadcrumbs">
+
+<tal:breadcrumbs repeat="breadcrumb view/items">
+  <li>
+    <a tal:attributes="href breadcrumb/url"
+      tal:omit-tag="repeat/breadcrumb/end"><tal:text
+        condition="not: repeat/breadcrumb/end"
+        replace="breadcrumb/text">
+          Bugs on redfish</tal:text><tal:text
+        condition="repeat/breadcrumb/end"
+        replace="breadcrumb/text/fmt:shorten/40">
+          Bugs on redfish</tal:text></a>
+  </li>
+</tal:breadcrumbs>
+</ol>

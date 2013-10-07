@@ -1,0 +1,56 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+  <div id="polls" class="portlet"
+       tal:define="overview_menu context/menu:overview"
+       tal:condition="view/should_show_polls_portlet">
+    <h2>Polls</h2>
+    <p tal:condition="not: view/has_current_polls">
+      No current polls.
+    </p>
+
+    <ul tal:condition="view/has_current_polls">
+      <li tal:repeat="poll view/openpolls">
+        <a tal:attributes="href poll/fmt:url">
+          <span tal:replace="poll/title" />
+        </a> - closes
+        <span
+          tal:attributes="title poll/datecloses/fmt:datetime"
+          tal:content="poll/datecloses/fmt:displaydate" />.
+
+        <tal:block define="user request/lp:person" condition="user">
+          <tal:block condition="python: poll.personVoted(user)">
+            You have
+            <span tal:replace="poll/closesIn/fmt:approximateduration" />
+            to change your vote if you wish.
+          </tal:block>
+
+          <tal:block condition="python: not poll.personVoted(user)">
+            You have
+            <span tal:replace="poll/closesIn/fmt:approximateduration" />
+            left to vote in this poll.
+          </tal:block>
+        </tal:block>
+
+      </li>
+
+      <li tal:condition="view/userIsOwner"
+          tal:repeat="poll view/notyetopenedpolls">
+        <a tal:attributes="href poll/fmt:url">
+          <span tal:replace="poll/title" />
+        </a> - opens
+        <span
+          tal:attributes="title poll/dateopens/fmt:datetime"
+          tal:content="poll/dateopens/fmt:displaydate" />
+      </li>
+    </ul>
+
+    <a tal:condition="view/should_show_polls_portlet"
+       tal:replace="structure overview_menu/polls/fmt:link" />
+    <a tal:replace="structure overview_menu/add_poll/fmt:link" />
+
+  </div>
+</tal:root>

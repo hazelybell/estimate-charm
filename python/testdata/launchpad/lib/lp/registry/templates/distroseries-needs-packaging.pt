@@ -1,0 +1,91 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+  <body>
+    <div metal:fill-slot="main">
+      <div class="top-portlet">
+        <p>
+          Links from distribution packages to upstream project series let
+          distribution and upstream maintainers share bugs, patches, and
+          translations efficiently.
+        </p>
+
+        <p>
+          The packages are listed by priority. Packages that greatest need to
+          forward bugs, sync translations, or need the latest development
+          branch are listed first. Can you help link these packages to
+          registered Launchpad projects?
+        </p>
+
+        <ul id="related-pages" class="horizontal">
+          <li>
+            <a tal:replace="structure context/menu:overview/needs_packaging/fmt:link" />
+          </li>
+          <li>
+            <a tal:replace="structure context/menu:overview/packaging/fmt:link" />
+          </li>
+        </ul>
+      </div>
+
+      <div class="narrow"
+        tal:define="summaries view/cached_unlinked_packages;"
+        tal:condition="summaries/batch">
+        <div id="listing-navigation"
+          tal:content="structure summaries/@@+navigation-links-upper" />
+
+        <table id="packages" class="listing">
+          <thead>
+            <tr>
+              <th>Source Package</th>
+              <th>Bugs</th>
+              <th>Translations</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr tal:repeat="summary summaries/batch">
+              <td>
+                <a class="sprite package-source"
+                  tal:attributes="href summary/package/fmt:url"
+                  tal:content="summary/package/name">evolution</a>
+              </td>
+              <td tal:define="count summary/bug_count;
+                              singular string:bug;
+                              plural string:bugs;">
+                <tal:no-bugs condition="not: count">
+                  No bugs
+                </tal:no-bugs>
+                <tal:has-bugs condition="count">
+                  <a tal:attributes="href summary/package/distribution_sourcepackage/fmt:url:bugs"
+                    ><tal:total-bugs replace="count" />
+                    <tal:plural
+                      metal:use-macro="context/@@+base-layout-macros/plural-message"/></a>
+                </tal:has-bugs>
+              </td>
+              <td tal:define="count summary/total_messages;
+                              singular string:string;
+                              plural string:strings;">
+                <tal:no-translations condition="not:count">
+                  No strings
+                </tal:no-translations>
+                <tal:has-translations condition="count">
+                  <a tal:attributes="href summary/package/fmt:url:translations"
+                    ><tal:total-messages replace="count" />
+                    <tal:plural
+                      metal:use-macro="context/@@+base-layout-macros/plural-message"/></a>
+                </tal:has-translations>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="results"
+          tal:content="structure summaries/@@+navigation-links-lower" />
+      </div>
+    </div>
+  </body>
+</html>

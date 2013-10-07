@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<!--
+Copyright 2012 Canonical Ltd.  This software is licensed under the
+GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<html>
+  <head>
+      <title>Test bugtask_index</title>
+
+      <!-- YUI and test setup -->
+      <script type="text/javascript"
+              src="../../../../../build/js/yui/yui/yui.js">
+      </script>
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/console/assets/console-core.css" />
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/test-console/assets/skins/sam/test-console.css" />
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/test/assets/skins/sam/test.css" />
+
+      <script type="text/javascript"
+              src="../../../../../build/js/lp/app/testing/testrunner.js"></script>
+
+      <link rel="stylesheet" href="../../../app/javascript/testing/test.css" />
+
+      <!-- Dependencies -->
+      <script type="text/javascript" src="../../../../../build/js/lp/app/client.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/errors.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/lp.js"></script>
+
+      <!-- Other dependencies -->
+      <script type="text/javascript" src="../../../../../build/js/lp/app/testing/mockio.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/mustache.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/activator/activator.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/anim/anim.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/confirmationoverlay/confirmationoverlay.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/choiceedit/choiceedit.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/effects/effects.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/expander.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/extras/extras.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/formoverlay/formoverlay.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/inlineedit/editor.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/ui/ui.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/overlay/overlay.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/picker/picker.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/picker/picker_patcher.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/picker/person_picker.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/banners/banner.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/banners/privacy.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/bugs/bug_subscription_portlet.js"></script>
+
+
+      <!-- The module under test. -->
+      <script type="text/javascript" src="../bugtask_index.js"></script>
+
+      <!-- Any css assert for this module. -->
+      <!-- <link rel="stylesheet" href="../assets/bugtask_index-core.css" /> -->
+
+      <!-- The test suite. -->
+      <script type="text/javascript" src="test_bugtask_delete.js"></script>
+
+      <!-- Pretty up the sample html -->
+      <style type="text/css">
+        div#sample {margin:15px; width:200px; border:1px solid #999; padding:10px;}
+      </style>
+      </head>
+    <body class="yui3-skin-sam">
+        <ul id="suites">
+            <!-- <li>lp.large_indicator.test</li> -->
+            <li>lp.bugtask_index.test</li>
+        </ul>
+        <div id="fixture"></div>
+        <div id="request-notifications"></div>
+        <script type="text/x-template" id="form-template">
+          <table id="affected-software">
+            <tbody>
+            <tr id="tasksummary49">
+              <td>
+                <div>
+                  <a class="sprite product" href="#">Product</a>
+                  <button class="lazr-btn yui3-activator-act">
+                    Edit
+                  </button>
+                  <a id="bugtask-delete-task49" href="http://foo"
+                      class="sprite remove bugtask-delete"></a>
+                </div>
+             </td>
+             <td>
+                 <table>
+                     <tr id="task49"><td>
+                        <a id="show-widget-product" class="sprite product"
+                          href="#">Product</a>
+                      </td></tr>
+                 </table>
+              </td>
+            </tr>
+            <tr id="tasksummary50">
+              <td>
+                <div>
+                  <a class="sprite product" href="#">Product</a>
+                  <button class="lazr-btn yui3-activator-act">
+                    Edit
+                  </button>
+                  <a id="bugtask-delete-task50" href="http://foo"
+                      class="sprite remove bugtask-delete"></a>
+                </div>
+             </td>
+            </tr>
+            </tbody>
+          </table>
+        </script>
+    </body>
+</html>

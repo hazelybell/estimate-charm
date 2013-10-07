@@ -1,0 +1,9 @@
+The 'bug' command expects either 'new' or a bug id.
+
+For example, to create a new bug:
+
+    bug new
+
+To edit or comment on an existing bug:
+
+    bug 1

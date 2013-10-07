@@ -1,0 +1,118 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  id="involvement" class="portlet"
+  tal:condition="view/has_involvement"
+  >
+  <h2>Get Involved</h2>
+
+  <ul class="involvement">
+    <li tal:repeat="link view/enabled_links">
+      <a tal:replace="structure link/fmt:link" />
+    </li>
+    <tal:disabled repeat="link view/visible_disabled_links">
+      <li tal:condition="not: link/enabled"
+          tal:attributes="title string:Launchpad needs to know where the user can ${link/text/lower}"
+          class="disabled">
+        <div style="padding: 0.3em 0 0.3em 0.3em">
+          <div style="display: inline-block"
+               class="sprite warning-icon action-icon">warning</div>
+
+          <div style="height: 1.2em; float: right">
+            <img src="/@@/gray-arrow-right.png"
+                style="top: 50%; bottom: 50%; margin-top: -5px;
+                       position: relative;
+                       height: 9px; width: 14px; padding: 0"/>
+          </div>
+
+          <span tal:content="link/text"/>
+        </div>
+      </li>
+    </tal:disabled>
+  </ul>
+
+  <tal:pseudo-editor condition="not: context/required:launchpad.Edit">
+    <tal:comment condition="nothing">
+      The bug supervisor can view the "Configure bug tracker" link, but
+      it would be confusing to display the configuration progress
+      information.
+    </tal:comment>
+    <table
+      tal:condition="context/required:launchpad.BugSupervisor"
+      style="width: 100%; margin-top: 1em"
+      id="configuration_links">
+      <tal:item repeat="link_status view/configuration_links">
+        <tr>
+          <td>
+            <a tal:replace="structure link_status/link/fmt:link" />
+          </td>
+        </tr>
+      </tal:item>
+    </table>
+  </tal:pseudo-editor>
+
+  <tal:editor condition="context/required:launchpad.Edit"
+              define="registration view/registration_completeness">
+
+    <tal:show-registration condition="registration">
+      <h2>Configuration Progress</h2>
+      <div id="progressbar" style="border: 1px solid gray; margin-bottom: 10px">
+        <img
+            tal:attributes="alt string:${registration/done}% registration complete;
+                            title string:${registration/done}% registration complete;
+                            style string:display: block;; width: ${registration/done}%"
+            src="/@@/green-bar"
+            height="10"/>
+      </div>
+
+      <div id="show-hide-configs" class="collapsible">
+        <div class="config-options">
+          Configuration options
+        </div>
+        <div
+          tal:attributes="class
+            python: 'expanded'
+              if not view.registration_done
+              else ''">
+        <table
+          tal:condition="view/configuration_links"
+          style="width: 100%; padding-top: 1em"
+          id="configuration_links">
+          <tal:item repeat="link_status view/configuration_links">
+            <tr>
+              <td>
+                <a tal:replace="structure link_status/link/fmt:link" />
+              </td>
+
+              <td style="text-align: right;" tal:condition="registration">
+                <tal:yes-no
+                  replace="structure link_status/configured/image:boolean"/>
+              </td>
+            </tr>
+          </tal:item>
+        </table>
+        </div>
+      </div>
+    </tal:show-registration>
+
+    <tal:no-registration condition="not:registration">
+      <table
+        tal:condition="view/configuration_links"
+        style="width: 100%; padding-top: 1em"
+        id="configuration_links">
+        <tal:item repeat="link_status view/configuration_links">
+          <tr>
+            <td>
+              <a tal:replace="structure link_status/link/fmt:link" />
+            </td>
+
+            <td style="text-align: right;" tal:condition="registration">
+              <tal:yes-no
+                replace="structure link_status/configured/image:boolean"/>
+            </td>
+          </tr>
+        </tal:item>
+      </table>
+    </tal:no-registration>
+  </tal:editor>
+</div>

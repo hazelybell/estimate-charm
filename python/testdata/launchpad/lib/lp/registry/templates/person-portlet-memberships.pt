@@ -1,0 +1,30 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+  <div class="portlet"
+       tal:define="memberships context/@@+restricted-membership/getLatestApprovedMembershipsForPerson">
+    <h2>
+      <span class="see-all" tal:condition="memberships">
+        <a tal:attributes="href context/menu:overview/memberships/url">
+          All memberships
+        </a>
+      </span>
+      Latest memberships
+    </h2>
+
+    <tal:memberships condition="memberships">
+      <table id="participation">
+        <tr tal:repeat="membership memberships"
+            tal:replace="structure membership/@@+listing-simple" />
+      </table>
+
+    </tal:memberships>
+
+    <p tal:condition="not: memberships">
+      <tal:name replace="context/displayname">Foo Bar</tal:name> is not an
+      active member of any Launchpad teams.
+    </p>
+  </div>
+</tal:root>

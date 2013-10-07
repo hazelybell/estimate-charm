@@ -1,0 +1,233 @@
+#!/usr/bin/python -S
+#
+# Copyright 2009-2010 Canonical Ltd.  This software is licensed under the
+# GNU Affero General Public License version 3 (see the file LICENSE).
+
+"""Create a user for testing the local Launchpad.
+
+Usage: make-lp-user <username> [<team1> <team2> ...] [-e email]
+
+This script will create a usable Launchpad user in the development database to
+help you test a locally running copy of Launchpad.
+
+You can add this user to teams by specifying them on the command-line. For
+example:
+
+  make-lp-user fred vcs-imports
+
+will create a user 'fred' and add them to the 'vcs-imports' team.
+
+In addition, this script will look in your ~/.ssh directory for public keys
+and register them for the created user.
+
+If you pass an email address, the new user will have this email address
+as well as any GPG keys you have for it.
+
+The login details will be printed to stdout.
+
+Please note that this script is for testing purposes only. Do NOT use it in
+production environments.
+"""
+
+import _pythonpath
+
+from optparse import OptionParser
+import os
+import re
+import subprocess
+import sys
+
+from storm.store import Store
+import transaction
+from zope.component import getUtility
+
+from lp.registry.interfaces.gpg import IGPGKeySet
+from lp.registry.interfaces.person import IPersonSet
+from lp.registry.interfaces.ssh import ISSHKeySet
+from lp.registry.interfaces.teammembership import TeamMembershipStatus
+from lp.services.gpg.interfaces import (
+    GPGKeyAlgorithm,
+    IGPGHandler,
+    )
+from lp.services.scripts import execute_zcml_for_scripts
+from lp.services.timeout import set_default_timeout_function
+from lp.testing.factory import LaunchpadObjectFactory
+
+
+factory = LaunchpadObjectFactory()
+
+set_default_timeout_function(lambda: 100)
+
+def make_person(username, email):
+    """Create and return a person with the given username.
+
+    The email address for the user will be <username>@example.com.
+    """
+    person = factory.makePerson(name=username, email=email)
+    print "username: %s" % (username,)
+    print "email:    %s" % (email,)
+    return person
+
+
+def add_person_to_teams(person, team_names):
+    """Add `person` to the teams named in `team_names`.
+
+    `person` is provided as its own review, team membership status is always
+    `APPROVED`. This function will add users even to restricted teams.
+
+    A list of teams joined will be printed to stdout.
+    """
+    person_set = getUtility(IPersonSet)
+    teams_joined = []
+    for team_name in team_names:
+        team = person_set.getByName(team_name)
+        if team is None:
+            print "ERROR: %s not found." % (team_name,)
+            continue
+        if not team.is_team:
+            print "ERROR: %s is not a team." % (team_name,)
+            continue
+        team.addMember(
+            person, person, status=TeamMembershipStatus.APPROVED)
+        teams_joined.append(team_name)
+    print "teams:    %s" % ' '.join(teams_joined)
+
+
+def add_ssh_public_keys(person):
+    """Look for public keys and register them for `person`.
+
+    This function looks in ~/.ssh/id_rsa.pub and ~/.ssh/id_dsa.pub for SSH
+    public keys and registers them as SSH keys for `person`.
+    """
+    ssh_dir = os.path.expanduser('~/.ssh')
+    key_set = getUtility(ISSHKeySet)
+    for filename in ('id_rsa.pub', 'id_dsa.pub'):
+        try:
+            public_key_file = open(os.path.join(ssh_dir, filename), 'r')
+            try:
+                public_key = public_key_file.read()
+            finally:
+                public_key_file.close()
+        except (OSError, IOError):
+            continue
+        key_set.new(person, public_key)
+        print 'Registered SSH key: %s' % (filename,)
+        break
+    else:
+        print 'No SSH key files found in %s' % ssh_dir
+
+
+def parse_fingerprints(gpg_output):
+    """Find key fingerprints in "gpg --fingerprint <email>" output."""
+    line_prefix = re.compile('\s*Key fingerprint\s*=\s*')
+    return [
+        ''.join(re.sub(line_prefix, '', line).split())
+        for line in gpg_output.splitlines()
+        if line_prefix.match(line)
+        ]
+
+
+def run_native_gpg(arguments):
+    """Run GPG using the user's real keyring."""
+    # Need to override GNUPGHOME or we'll get a dummy GPG in a temp
+    # directory, which won't find any keys.
+    env = os.environ.copy()
+    if 'GNUPGHOME' in env:
+        del env['GNUPGHOME']
+
+    # Prevent translated gpg output from messing up our parsing.
+    env['LC_ALL'] = 'C'
+
+    command_line = ['gpg'] + arguments
+    pipe = subprocess.Popen(
+        command_line, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = pipe.communicate()
+    if stderr != '':
+        print stderr
+    if pipe.returncode != 0:
+        raise Exception('GPG error during "%s"' % ' '.join(command_line))
+
+    return stdout
+
+
+def add_gpg_key(person, fingerprint):
+    """Add the GPG key with the given fingerprint to `person`."""
+    run_native_gpg([
+        '--keyserver', 'keyserver.launchpad.dev',
+        '--send-key', fingerprint
+        ])
+
+    gpghandler = getUtility(IGPGHandler)
+    key = gpghandler.retrieveKey(fingerprint)
+
+    gpgkeyset = getUtility(IGPGKeySet)
+    if gpgkeyset.getByFingerprint(fingerprint) is not None:
+        # We already have this key.
+        return
+
+    algorithm = GPGKeyAlgorithm.items[key.algorithm]
+    can_encrypt = True
+    lpkey = gpgkeyset.new(
+        person.id, key.keyid, fingerprint, key.keysize, algorithm,
+        active=True, can_encrypt=can_encrypt)
+    Store.of(person).add(lpkey)
+
+
+def attach_gpg_keys(email, person):
+    """Attach the GPG key(s) for `email` to `person`."""
+    output = run_native_gpg(['--fingerprint', email])
+
+    fingerprints = parse_fingerprints(output)
+    if len(fingerprints) == 0:
+        print "No GPG key fingerprints found!"
+    for fingerprint in fingerprints:
+        add_gpg_key(person, fingerprint)
+
+
+def parse_args(arguments):
+    """Parse command-line arguments.
+
+    :return: options object.  Among the options are username (a
+        string) and optionally teams (a list).
+    """
+    parser = OptionParser(description="Create a local Launchpad user.")
+    parser.add_option(
+        '-e', '--email', action='store', dest='email', default=None,
+        help="Email address; set to use real GPG key for this address.")
+
+    options, args = parser.parse_args(arguments)
+    if len(args) == 0:
+        print __doc__
+        sys.exit(2)
+
+    options.username = args[0]
+    options.teams = args[1:]
+
+    return options
+
+
+def main(arguments):
+    """Run the script."""
+    options = parse_args(arguments)
+    if options.email is None:
+        email = '%s@example.com' % options.username
+    else:
+        email = options.email
+
+    execute_zcml_for_scripts()
+    transaction.begin()
+
+    person = make_person(options.username, email)
+    add_person_to_teams(person, options.teams)
+    add_ssh_public_keys(person)
+
+    if options.email is not None:
+        attach_gpg_keys(options.email, person)
+
+    transaction.commit()
+
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv[1:]))

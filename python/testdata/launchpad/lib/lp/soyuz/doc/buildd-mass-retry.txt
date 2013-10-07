@@ -1,0 +1,135 @@
+Buildd-mass-retry behaviour
+===========================
+
+    >>> import subprocess
+    >>> import os
+    >>> import sys
+    >>> from lp.services.config import config
+
+'buildd-mass-retry' is a tool designed to retry a group of 'failed'
+build records in a distroseries and/or architecture.
+
+    >>> script = os.path.join(
+    ...     config.root, "scripts", "ftpmaster-tools", "buildd-mass-retry.py")
+
+The user can specify a distribution, a suite name (-s) and/or and
+architecture (-a) as a build record provider, it will restrict the
+target group.
+
+Also, can combine the types of failure we allow to be retried:
+
+ * -F: retry builds marked as FAILEDTOBUILD
+ * -D: retry builds marked as MANUALDEPWAIT
+ * -C: retry builds marked as CHROOTWAIT
+
+The available types can be combined acording the situation.
+
+The script provides dry-run mode (-N).
+
+See binarypackagebuild.txt for more information about IBuild.retry().
+
+Passing only suite, request retry on all failed states:
+
+    >>> process = subprocess.Popen(
+    ...     [sys.executable, script, "-v", "-NFDC", "-s", "hoary"],
+    ...     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    >>> stdout, stderr = process.communicate()
+    >>> process.returncode
+    0
+    >>> print stderr
+    INFO    Creating lockfile: ...
+    INFO    Initializing Build Mass-Retry for
+    'The Hoary Hedgehog Release/RELEASE'
+    INFO    Processing builds in 'Failed to build'
+    INFO    Processing builds in 'Dependency wait'
+    INFO    Retrying i386 build of libstdc++ b8p in ubuntu hoary RELEASE (12)
+    INFO    Processing builds in 'Chroot problem'
+    INFO    Success.
+    INFO    Dry-run.
+    DEBUG   Removing lock file: ...
+    <BLANKLINE>
+
+Superseded builds won't be retried; buildd-manager will just skip the build
+and set it to SUPERSEDED.
+
+    >>> from zope.security.proxy import removeSecurityProxy
+    >>> from lp.soyuz.interfaces.binarypackagebuild import (
+    ...     IBinaryPackageBuildSet)
+    >>> from lp.soyuz.enums import PackagePublishingStatus
+    >>> build = getUtility(IBinaryPackageBuildSet).getByID(12)
+    >>> pub = removeSecurityProxy(build.current_source_publication)
+
+Let's mark the build from the previous run superseded.
+
+    >>> pub.status = PackagePublishingStatus.SUPERSEDED
+    >>> print build.current_source_publication
+    None
+    >>> transaction.commit()
+
+A new run doesn't pick it up.
+
+    >>> process = subprocess.Popen(
+    ...     [sys.executable, script, "-v", "-NFDC", "-s", "hoary"],
+    ...     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    >>> stdout, stderr = process.communicate()
+    >>> process.returncode
+    0
+    >>> print stderr
+    INFO    Creating lockfile: ...
+    INFO    Initializing Build Mass-Retry for
+    'The Hoary Hedgehog Release/RELEASE'
+    INFO    Processing builds in 'Failed to build'
+    INFO    Processing builds in 'Dependency wait'
+    DEBUG   Skipping superseded i386 build of libstdc++ b8p in
+    ubuntu hoary RELEASE (12)
+    INFO    Processing builds in 'Chroot problem'
+    INFO    Success.
+    INFO    Dry-run.
+    DEBUG   Removing lock file: ...
+    <BLANKLINE>
+
+    >>> pub.status = PackagePublishingStatus.PUBLISHED
+    >>> transaction.commit()
+
+Passing an architecture, which contains no failed build records,
+nothing is done:
+
+    >>> process = subprocess.Popen(
+    ...     [
+    ...         sys.executable, script,
+    ...         "-v", "-NFDC", "-s", "hoary", "-a", "hppa",
+    ...     ],
+    ...     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    >>> stdout, stderr = process.communicate()
+    >>> process.returncode
+    0
+    >>> print stderr
+    INFO    Creating lockfile: ...
+    INFO    Initializing Build Mass-Retry for
+    'The Hoary Hedgehog Release for hppa (hppa)/RELEASE'
+    INFO    Processing builds in 'Failed to build'
+    INFO    Processing builds in 'Dependency wait'
+    INFO    Processing builds in 'Chroot problem'
+    INFO    Success.
+    INFO    Dry-run.
+    DEBUG   Removing lock file: ...
+    <BLANKLINE>
+
+
+Selecting only a specific failed state:
+
+    >>> process = subprocess.Popen(
+    ...     [sys.executable, script, "-v", "-NF", "-s", "hoary"],
+    ...     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    >>> stdout, stderr = process.communicate()
+    >>> process.returncode
+    0
+    >>> print stderr
+    INFO    Creating lockfile: ...
+    INFO    Initializing Build Mass-Retry for
+    'The Hoary Hedgehog Release/RELEASE'
+    INFO    Processing builds in 'Failed to build'
+    INFO    Success.
+    INFO    Dry-run.
+    DEBUG   Removing lock file: ...
+    <BLANKLINE>

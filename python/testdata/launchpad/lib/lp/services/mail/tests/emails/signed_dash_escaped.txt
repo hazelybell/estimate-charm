@@ -1,0 +1,23 @@
+Date: Mon, 28 Nov 2005 18:05:00 +0200
+From: Sample Person <test@canonical.com>
+To: someone@somehost
+Subject: Dash Escaped
+Message-ID: <20051128160500.GA13489@localhost.localdomain>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; x-action=pgp-signed
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Some signed content.
+
+- --
+Sample Person
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.9 (GNU/Linux)
+
+iEYEARECAAYFAkmcST8ACgkQ2yWXVgK6XvYKsgCfaIlwwwPyPnvh8pFAeU8xcfme
+blkAoMKYnntBH1s42+72h5fn01Pow/qM
+=tgNW
+-----END PGP SIGNATURE-----

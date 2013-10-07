@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE issuezilla SYSTEM "https://jdk-distros.dev.java.net/issues/issuezilla.dtd">
+<issuezilla exporter="guest" charset="UTF-8" version="2.11-ooo" urlbase="https://jdk-distros.dev.java.net/issues/" maintainer="owner@jdk-distros.dev.java.net" project_domain="dev.java.net" project_name="jdk-distros" project_id="5078" dtd_version="Revision: 1.2">
+<issue status_code="200" status_message="OK">
+  <issue_id>1</issue_id>
+  <issue_status>RESOLVED</issue_status>
+  <priority>P3</priority>
+  <resolution>FIXED</resolution>
+  <component>jdk-distros</component>
+  <version>current</version>
+  <rep_platform>All</rep_platform>
+  <assigned_to>issues@jdk-distros</assigned_to>
+  <delta_ts>20060507112701</delta_ts>
+  <subcomponent>www</subcomponent>
+  <reporter>robogeek</reporter>
+  <target_milestone>milestone 1</target_milestone>
+  <issue_type>FEATURE</issue_type>
+  <creation_ts>2006-05-06 13:32:52</creation_ts>
+  <qa_contact>issues@jdk-distros</qa_contact>
+  <status_whiteboard></status_whiteboard>
+  <issue_file_loc></issue_file_loc>
+  <votes></votes>
+  <op_sys>All</op_sys>
+  <short_desc>Neither plugin nor javaws automatically integrate with browser</short_desc>
+  <keywords></keywords>
+  <long_desc>
+   <who>robogeek</who>
+   <issue_when>2006-05-06 13:32:52</issue_when>
+   <thetext>On install of the sun-java5 package it would be nice for it to automatically
+find browsers and integrate with them.
+
+As it is, each user has to hunt down a) the plugin and make a symlink, b) when
+they download a JNLP file, associate it with javaws</thetext>
+  </long_desc>
+  <long_desc>
+   <who>doko</who>
+   <issue_when>2006-05-06 14:13:50</issue_when>
+   <thetext>you need to install the sun-java5-plugin package (which is suggested by
+sun-java5-jre)
+
+</thetext>
+  </long_desc>
+  <long_desc>
+   <who>robogeek</who>
+   <issue_when>2006-05-07 11:27:01</issue_when>
+   <thetext>Done</thetext>
+  </long_desc>
+  <activity>
+    <user>robogeek</user>
+    <when>2006-05-07 11:27:01</when>
+    <field_name>issue_status</field_name>
+    <field_desc>Status</field_desc>
+    <oldvalue>NEW</oldvalue>
+    <newvalue>RESOLVED</newvalue>
+  </activity>
+  <activity>
+    <user>robogeek</user>
+    <when>2006-05-07 11:27:01</when>
+    <field_name>resolution</field_name>
+    <field_desc>Resolution</field_desc>
+    <oldvalue></oldvalue>
+    <newvalue>FIXED</newvalue>
+  </activity>
+</issue>
+</issuezilla>

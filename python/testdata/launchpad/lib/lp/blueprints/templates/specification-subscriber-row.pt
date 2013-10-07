@@ -1,0 +1,51 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+  <tal:comment replace="nothing">
+    This is messy, but the portlet has to convey both subscribers and
+    whether or not they are essential. Also, in the case where a person
+    can say if the subscription is essential, that subscription
+    essentiality indicator needs to be clickable to edit, otherwise not.
+    Hence all the duplication.
+  </tal:comment>
+  <div tal:define="subscription view/subscription"
+       tal:attributes="id string:subscription-${subscription/css_name};
+                        class string:${subscription/css_name} subscriber">
+    <a tal:condition="subscription/required:launchpad.Edit"
+       tal:attributes="href subscription/fmt:url">
+        <img
+          tal:condition="subscription/essential"
+          alt="(essential)"
+          src="/@@/subscriber-essential"
+          title="Participation Essential: Has asked to take part in all discussions of this blueprint."
+        />
+        <img
+          tal:condition="not: subscription/essential"
+          alt=""
+          src="/@@/subscriber-inessential"
+          title="This person has indicated interest in the blueprint but is not required to be present at every discussion."
+        />
+    </a>
+    <tal:no_edit condition="not: subscription/required:launchpad.Edit">
+       <img tal:condition="subscription/essential"
+         src="/@@/subscriber-essential" />
+       <img tal:condition="not: subscription/essential"
+         src="/@@/subscriber-inessential" />
+    </tal:no_edit>
+    <a tal:attributes="href subscription/person/fmt:url:blueprints"
+       tal:content="subscription/person/fmt:displayname"
+    />
+    <a tal:define="user request/lp:person"
+       tal:condition="python: subscription.canBeUnsubscribedByUser(user)"
+       tal:attributes="
+         title string:Unsubscribe ${subscription/person/fmt:displayname};
+         id string:unsubscribe-${subscription/css_name};
+         href string:${subscription/fmt:url}/+unsubscribe;"
+    >
+      <img class="unsub-icon" src="/@@/remove" alt="Remove"
+        tal:attributes="id string:unsubscribe-icon-${subscription/css_name}" />
+    </a>
+  </div>
+</tal:root>

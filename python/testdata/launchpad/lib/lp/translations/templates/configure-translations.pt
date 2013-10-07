@@ -1,0 +1,24 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  metal:use-macro="view/macro:page/main_only">
+
+  <body>
+    <div metal:fill-slot="main">
+      <div metal:use-macro="context/@@launchpad_form/form">
+
+        <p metal:fill-slot="extra_info" id="form_extra_info">
+          Select the translation group that will be managing the
+          translations for
+          <tal:product replace="context/title">Launchpad</tal:product>. In
+          most cases you should choose the <em>Launchpad Translators</em>
+          group. You can also set the translation permissions policy here.
+          (<a href="/+help-translations/translation-groups.html" target="help">Tips on
+          choosing a group</a>) (<a href="/+help-translations/permissions-policies.html"
+          target="help">Help on choosing a policy</a>)
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

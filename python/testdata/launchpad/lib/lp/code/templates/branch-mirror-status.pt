@@ -1,0 +1,24 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+<dl id="last-mirrored">
+  <dt>Last mirrored:</dt>
+  <dd tal:attributes="title context/last_mirrored/fmt:datetime"
+      tal:condition="context/last_mirrored"
+      tal:content="context/last_mirrored/fmt:approximatedate"/>
+  <dd tal:condition="not:context/last_mirrored">Not mirrored yet</dd>
+</dl>
+
+<dl id="next-mirror">
+  <dt>Next mirror:</dt>
+  <dd tal:condition="view/mirror_disabled">Disabled</dd>
+  <tal:mirror-enabled tal:condition="not:view/mirror_disabled">
+    <dd tal:attributes="title context/next_mirror_time/fmt:datetime"
+        tal:condition="not:view/in_mirror_queue"
+        tal:content="context/next_mirror_time/fmt:approximatedate"/>
+    <dd tal:condition="view/in_mirror_queue">As soon as possible</dd>
+  </tal:mirror-enabled>
+</dl>
+</tal:root>

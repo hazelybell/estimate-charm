@@ -1,0 +1,11 @@
+
+Hello
+
+Your Code of Conduct Signature was modified.
+
+User: '%(user)s'
+%(content)s
+
+Thanks,
+
+The Launchpad Team

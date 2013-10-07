@@ -1,0 +1,20 @@
+Format: 1.7
+Date: Thu, 16 Feb 2006 15:47:28 +0000
+Source: foo
+Binary: foo foo-dev
+Architecture: i386
+Version: 1.0-2
+Distribution: breezy
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Daniel Silverstone <daniel.silverstone@canonical.com>
+Description: 
+ foo        - Stuff for testing
+ foo-dev    - Stuff for testing
+Changes: 
+ foo (1.0-2) breezy; urgency=low
+ .
+   * A version rev for joy's sake
+Files: 
+ 15aaae6676d3d546d6ba69cf7d272875 642 devel optional foo_1.0-2_i386.deb
+ 0afcb7d8a6ec16b954ee340fcdaf7644 652 devel optional foo-dev_1.0-2_i386.deb

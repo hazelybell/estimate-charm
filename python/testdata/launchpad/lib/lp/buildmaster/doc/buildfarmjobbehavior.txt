@@ -1,0 +1,81 @@
+BuildFarmJobBehavior
+====================
+
+The Launchpad build farm was originally designed for building binary
+packages from source packages, but was subsequently generalised to support
+other types of build farm jobs.
+
+The `BuildFarmJobBehavior` class encapsulates job-type-specific behavior
+with a standard interface to which our generic IBuilder class delegates.
+The result is that neither our generic IBuilder class or any call-sites
+(such as the build master) need any knowledge of different job types or
+how to handle them.
+
+
+Creating a new behavior
+-----------------------
+
+A new behavior should implement the `IBuildFarmJobBehavior` interface
+and extend BuildFarmJobBehaviorBase. A new behavior will only be required
+to define one method - dispatchBuildToSlave() - to correctly implement
+the interface, but will usually want to customise the other properties and
+methods as well.
+
+    >>> from lp.buildmaster.interfaces.buildfarmjobbehavior import (
+    ...     IBuildFarmJobBehavior)
+    >>> from lp.buildmaster.model.buildfarmjobbehavior import (
+    ...     BuildFarmJobBehaviorBase)
+    >>> from zope.interface import implements
+
+    >>> class MyNewBuildBehavior(BuildFarmJobBehaviorBase):
+    ...     """A custom build behavior for building blah."""
+    ...     implements(IBuildFarmJobBehavior)
+    ...
+    ...     def dispatchBuildToSlave(self, build_queue_item_id, logger):
+    ...         print "Did something special to dispatch MySpecialBuild."
+
+For this documentation, we'll also need a dummy new build farm job.
+
+    >>> from lp.buildmaster.interfaces.buildfarmjob import IBuildFarmJob
+    >>> class IMyNewBuildFarmJob(IBuildFarmJob):
+    ...     "Normally defines job-type specific database fields."""
+    >>> class MyNewBuildFarmJob(object):
+    ...     implements(IMyNewBuildFarmJob)
+
+Custom behaviors are not normally instantiated directly, instead an adapter is
+specified for the specific IBuildFarmJob. Normaly we'd add some ZCML to
+adapt our specific build farm job to its behavior like:
+
+    <!-- MyNewBuildBehavior -->
+    <adapter
+        for="lp.myapp.interfaces.mynewbuildfarmjob.IMyNewBuildFarmJob"
+        provides="lp.buildmaster.interfaces.buildfarmjobbehavior.IBuildFarmJobBehavior"
+        factory="lp.myapp.model.mynewbuildbehavior.MyNewBuildBehavior"
+        permission="zope.Public" />
+
+But for the sake of this documentation we'll add the adapter manually.
+
+    >>> from zope.component import provideAdapter
+    >>> provideAdapter(
+    ...     MyNewBuildBehavior, (IMyNewBuildFarmJob,), IBuildFarmJobBehavior)
+
+This will then allow the builder to request and set the required behavior from
+the current job. Bob the builder currently has a binary package job and so
+finds itself with a binary package build behavior which defines binary-build
+specific information.
+
+    >>> from lp.buildmaster.model.builder import Builder
+    >>> from lp.services.database.interfaces import IStore
+    >>> bob = IStore(Builder).find(Builder, Builder.name == 'bob').one()
+
+Once the builder has the relevant behavior, it is able to provide both general
+builder functionality of its own accord, while delegating any build-type
+specific functionality to the behavior.
+
+The IBuildFarmJobBehavior interface currently provides customisation points
+throughout the build life-cycle, from logging the start of a build, verifying
+that the provided queue item is ready to be built, dispatching the build etc.,
+and allows further customisation to be added easily.
+
+Please refer to the IBuildFarmJobBehavior interface to see the currently
+provided build-type specific customisation points.

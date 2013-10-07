@@ -1,0 +1,62 @@
+/* =========================
+   Universal
+   Help pane
+*/
+.invisible {
+    left: -9999em;
+    display: block;
+    }
+
+#help-pane {
+    /* Inline help is dynamically positioned by JavaScript.
+       This should appear above all other content.  Needs to be
+       above the Google Maps element on the profile pages, which
+       has a z-index of 9999.  See bug #380349. */
+    position: absolute;
+    border: 1px solid black;
+    padding: 1px 1px 5px 10px;
+    z-index: 11000;
+    background-color: #fff;
+    width: 600px; /* based on the help wiki, should change later */
+    }
+
+#help-pane.invisible {
+    /* We want the hidden pane to have dimensions so that we can position the
+       frame with them.  This works because the element an absolute position,
+       taking it out of the page flow. */
+    position: absolute;
+    visibility: hidden;
+    display: block;
+    left: 0px;
+    top: 0px;
+    }
+
+#help-body {
+    background: url(/@@/spinner) no-repeat center center;
+    }
+
+#help-pane iframe {
+    width: 100%;
+    height: 300px;
+    border: 0;
+    }
+
+#help-pane iframe.invisible {
+    visibility: hidden;
+    display: block;
+    }
+
+#help-footer {
+    padding: 3px;
+    border-top: 1px solid #ddd;
+    text-align: right;
+    }
+
+#help-footer button {
+    margin-bottom: 10px;
+    margin-top: 3px;
+    }
+
+span.help {
+    font-weight: normal;
+    }

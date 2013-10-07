@@ -1,0 +1,472 @@
+<!-- Copyright 2009-2011 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:xmlrpc="http://namespaces.zope.org/xmlrpc"
+    i18n_domain="launchpad">
+
+    <include file="servers.zcml" />
+    <include file="errorlog.zcml" />
+    <include file="bug-5133.zcml" />
+
+    <browser:defaultView name="index.html" />
+
+    <class class="lp.services.webapp.servers.LaunchpadBrowserRequest">
+      <allow
+        interface="
+          lp.services.webapp.interfaces.ILaunchpadBrowserApplicationRequest"
+        attributes="response locale __str__"
+        />
+    </class>
+
+    <class class="lp.services.webapp.publisher.RedirectionView">
+      <allow attributes="browserDefault __call__" />
+    </class>
+
+    <adapter
+        for="zope.interface.Interface
+             zope.publisher.interfaces.http.IHTTPRequest"
+        provides="zope.traversing.browser.interfaces.IAbsoluteURL"
+        factory="lp.services.webapp.publisher.CanonicalAbsoluteURL"
+        />
+
+    <adapter
+        for="zope.publisher.interfaces.http.IHTTPRequest"
+        provides="lp.services.database.interfaces.IDatabasePolicy"
+        factory="lp.services.database.policy.LaunchpadDatabasePolicyFactory"
+        />
+    <adapter
+        for="zope.publisher.interfaces.xmlrpc.IXMLRPCRequest"
+        provides="lp.services.database.interfaces.IDatabasePolicy"
+        factory="lp.services.database.policy.MasterDatabasePolicy"
+        />
+    <adapter
+        for="lp.layers.WebServiceLayer"
+        provides="lp.services.database.interfaces.IDatabasePolicy"
+        factory="lp.services.database.policy.WebServiceDatabasePolicyFactory"
+        />
+    <adapter
+        for="lp.layers.FeedsLayer"
+        provides="lp.services.database.interfaces.IDatabasePolicy"
+        factory="lp.services.database.policy.SlaveOnlyDatabasePolicy"
+        />
+    <adapter
+        for="lp.layers.WebServiceLayer"
+        provides="lazr.restful.interfaces.IWebBrowserOriginatingRequest"
+        factory="lp.services.webapp.servers.web_service_request_to_browser_request"
+        />
+    <adapter
+        for="lp.layers.WebServiceLayer"
+        provides="lazr.restful.interfaces.INotificationsProvider"
+        factory="lp.services.webapp.interfaces.INotificationRequest"
+        />
+
+    <!-- lazr.batchnavigator hook -->
+    <adapter
+        factory='.batching.FiniteSequenceAdapter' />
+
+    <adapter
+        factory='.batching.FiniteSequenceAdapter'
+        for='storm.zope.interfaces.ISQLObjectResultSet' />
+
+    <adapter
+        factory='.batching.BoundReferenceSetAdapter'
+        for='storm.references.BoundReferenceSet' />
+
+    <adapter
+        factory='.batching.BoundReferenceSetAdapter'
+        for='storm.references.BoundIndirectReferenceSet' />
+
+    <!-- links -->
+    <class class="lp.services.webapp.menu.LinkData">
+        <allow interface="lp.services.webapp.interfaces.ILinkData" />
+    </class>
+
+    <adapter
+        for="lp.services.webapp.interfaces.ILinkData"
+        provides="lp.services.webapp.interfaces.ILink"
+        factory="lp.services.webapp.menu.MenuLink"
+        />
+
+    <adapter
+        for="*"
+        provides="lp.services.webapp.interfaces.IPrimaryContext"
+        factory="lp.services.webapp.publication.DefaultPrimaryContext"
+        />
+
+    <class class="lp.services.webapp.menu.MenuLink">
+        <require
+            permission="zope.Public"
+            interface="lp.services.webapp.interfaces.ILink"
+            />
+    </class>
+
+    <adapter
+        for="lp.services.webapp.interfaces.ILinkData"
+        provides="lp.services.webapp.interfaces.IFacetLink"
+        factory="lp.services.webapp.menu.FacetLink"
+        />
+
+    <class class="lp.services.webapp.menu.FacetLink">
+        <require
+            permission="zope.Public"
+            interface="lp.services.webapp.interfaces.IFacetLink"
+            />
+    </class>
+
+    <!-- Launchpad root object -->
+    <utility
+        provides="lp.services.webapp.interfaces.ILaunchpadRoot"
+        component="lp.services.webapp.publisher.rootObject"
+        />
+
+    <adapter
+        provides="lp.services.webapp.interfaces.ICanonicalUrlData"
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        factory="lp.services.webapp.publisher.LaunchpadRootUrlData"
+        />
+
+    <adapter
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        provides="lp.services.webapp.interfaces.ILaunchpadContainer"
+        factory="lp.services.webapp.publisher.LaunchpadContainer"
+        />
+
+    <!-- Authentication. -->
+    <utility
+        component="lp.services.webapp.authentication.authService"
+        provides="lp.services.webapp.interfaces.IPlacelessAuthUtility"
+        permission="zope.Public"
+        />
+
+    <subscriber
+        for="lp.services.webapp.interfaces.IPrincipalIdentifiedEvent"
+        handler="lp.services.webapp.launchbag.set_login_in_launchbag_when_principal_identified"
+        />
+
+    <subscriber
+        for="lp.services.webapp.interfaces.IPrincipalIdentifiedEvent"
+        handler="lp.services.webservice.me.cache_me_link_when_principal_identified"
+        />
+
+    <subscriber
+        for="zope.traversing.interfaces.IBeforeTraverseEvent"
+        handler="lp.services.webapp.launchbag.set_developer_in_launchbag_before_traversal"
+        />
+
+    <subscriber
+        for="lp.services.webapp.interfaces.ILoggedOutEvent"
+        handler="lp.services.webapp.launchbag.reset_login_in_launchbag_on_logout"
+        />
+
+    <subscriber
+        for="lp.services.webapp.interfaces.ILoggedOutEvent"
+        handler="lp.services.webapp.launchbag.reset_developer_in_launchbag_on_logout"
+        />
+
+    <utility
+        component="lp.services.webapp.authentication.loginSource"
+        provides="lp.services.webapp.interfaces.IPlacelessLoginSource"
+        permission="zope.Public"
+        />
+
+    <!-- Session machinery. -->
+    <utility
+        component="lp.services.webapp.session.idmanager"
+        provides="zope.session.interfaces.IClientIdManager"
+        />
+    <utility
+        component="lp.services.webapp.pgsession.data_container"
+        provides="zope.session.interfaces.ISessionDataContainer"
+        />
+
+    <!-- Storm Store selector. -->
+    <utility
+        component="lp.services.webapp.adapter.StoreSelector"
+        provides="lp.services.database.interfaces.IStoreSelector">
+    </utility>
+
+    <!-- Storm Store adapters, adapting a Storm subclass or instance
+         to the correct Store for that tables replication set.
+      -->
+    <adapter
+        provides="lp.services.database.interfaces.IStore"
+        for="zope.interface.Interface"
+        factory="lp.services.webapp.adapter.get_store"
+        />
+    <adapter
+        provides="lp.services.database.interfaces.IMasterStore"
+        for="zope.interface.Interface"
+        factory="lp.services.webapp.adapter.get_master_store"
+        />
+    <adapter
+        provides="lp.services.database.interfaces.ISlaveStore"
+        for="zope.interface.Interface"
+        factory="lp.services.webapp.adapter.get_slave_store"
+        />
+    <!-- Universal adapter needed here per Bug #591841.
+         We have no way of specifying that all subclasses of
+         storm.locals.Storm implement an Interface. -->
+    <adapter
+        provides="lp.services.database.interfaces.IMasterObject"
+        for="zope.interface.Interface"
+        trusted="yes"
+        factory="lp.services.webapp.adapter.get_object_from_master_store"
+        />
+    <class class="storm.store.Store">
+        <implements interface="lp.services.database.interfaces.IStore" />
+        <allow attributes="get" />
+    </class>
+    <class class="lp.services.database.sqlbase.SQLBase">
+        <implements interface="lp.services.database.interfaces.IDBObject" />
+    </class>
+
+    <!-- Default favicon -->
+    <browser:favicon for="*" file="../../../canonical/launchpad/images/launchpad.png" />
+
+    <!-- LaunchBag Utility -->
+    <utility
+        factory="lp.services.webapp.launchbag.LaunchBag"
+        provides="lp.services.webapp.interfaces.IOpenLaunchBag"
+        permission="zope.Public"
+        />
+
+    <class class="lp.services.webapp.launchbag.LaunchBag">
+        <require
+            permission="zope.Public"
+            interface="lp.services.webapp.interfaces.ILaunchBag"
+            />
+    </class>
+
+    <!--
+    Operational statistics. Note that these are publicly available,
+    and if we want to restrict access to the LAN then we need to block
+    these URLs in Apache.
+    -->
+    <browser:page
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        name="+opstats"
+        permission="zope.Public"
+        class="lp.services.webapp.opstats.OpStats"
+        />
+    <xmlrpc:view
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        class="lp.services.webapp.opstats.OpStats"
+        methods="opstats"
+        permission="zope.Public"
+        name="+opstats"
+        />
+
+    <!-- Resource unnamed view, allowing Z3 preferred spelling
+        /@@/launchpad-icon-small to access the images directory -->
+    <browser:page
+        name=""
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        class="lp.app.browser.launchpad.LaunchpadImageFolder"
+        permission="zope.Public"
+        />
+    <browser:page
+        name=""
+        for="lp.services.feeds.interfaces.application.IFeedsApplication"
+        class="lp.app.browser.launchpad.LaunchpadImageFolder"
+        permission="zope.Public"
+        />
+
+    <!-- LaunchpadBrowserResponse needs to be able to find the session -->
+    <adapter
+        for="lp.services.webapp.servers.LaunchpadBrowserResponse"
+        provides="zope.session.interfaces.ISession"
+        factory="lp.services.webapp.servers.adaptResponseToSession"
+        />
+
+    <!-- LaunchpadBrowserRequest needs to be able to find the response.
+    We don't just use the response attribute, as this makes our tests harder
+    to write -->
+    <adapter
+        for="lp.services.webapp.servers.LaunchpadBrowserRequest"
+        provides="lp.services.webapp.interfaces.INotificationResponse"
+        factory="lp.services.webapp.servers.adaptRequestToResponse"
+        />
+
+    <adapter
+        for="lp.services.webapp.servers.LaunchpadTestRequest"
+        provides="lp.services.webapp.interfaces.INotificationResponse"
+        factory="lp.services.webapp.servers.adaptRequestToResponse"
+        />
+
+    <adapter
+        factory="lp.services.webapp.snapshot.snapshot_sql_result" />
+    <!-- It also works for the legacy SQLObject interface. -->
+    <adapter
+        factory="lp.services.webapp.snapshot.snapshot_sql_result"
+        for="storm.zope.interfaces.ISQLObjectResultSet" />
+
+    <class class="lp.services.webapp.publisher.RenamedView">
+        <allow interface="zope.publisher.interfaces.browser.IBrowserPublisher"
+               attributes="__call__"/>
+    </class>
+
+    <!--These pages are used for testing BrowserNotificationMessages
+        They are protected with admin privileges rather than being installed
+        on the debug port because we use them in page tests and as an easy way
+        to view and adjust the visual rendering of the notifications.
+    -->
+    <browser:page
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        name="+notificationtest1"
+        template="templates/notification-test.pt"
+        permission="launchpad.Admin"
+        class="lp.services.webapp.notifications.NotificationTestView1"
+        />
+    <browser:page
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        name="+notificationtest2"
+        template="templates/notification-test.pt"
+        permission="launchpad.Admin"
+        class="lp.services.webapp.notifications.NotificationTestView2"
+        />
+    <browser:page
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        name="+notificationtest3"
+        template="templates/notification-test.pt"
+        permission="launchpad.Admin"
+        class="lp.services.webapp.notifications.NotificationTestView3"
+        />
+    <browser:page
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        name="+notificationtest4"
+        template="templates/notification-test.pt"
+        permission="launchpad.Admin"
+        class="lp.services.webapp.notifications.NotificationTestView4"
+        />
+
+    <!-- Signal handlers -->
+    <subscriber
+        for="zope.app.appsetup.IProcessStartingEvent"
+        handler="lp.services.webapp.sighup.setup_sighup"
+        />
+    <subscriber
+        for="zope.app.appsetup.IProcessStartingEvent"
+        handler="lp.services.webapp.sigusr1.setup_sigusr1"
+        />
+    <subscriber
+        for="zope.app.appsetup.IProcessStartingEvent"
+        handler="lp.services.webapp.sigusr2.setup_sigusr2"
+        />
+    <subscriber
+        for="zope.app.appsetup.IProcessStartingEvent"
+        handler="lp.services.webapp.sigdumpmem.setup_sigdumpmem"
+        />
+
+    <!-- Confirm that no main thread event handlers use the connection cache -->
+    <subscriber
+        for="zope.app.appsetup.IProcessStartingEvent"
+        handler="lp.services.webapp.adapter.break_main_thread_db_access"
+        />
+
+    <!-- Set the default timeout function. -->
+    <subscriber
+        for="zope.app.appsetup.IProcessStartingEvent"
+        handler="lp.services.webapp.adapter.set_launchpad_default_timeout"
+        />
+
+    <subscriber
+        for="zope.traversing.interfaces.IBeforeTraverseEvent"
+        handler="lp.services.webapp.sigusr1.before_traverse"
+        />
+
+    <subscriber
+        for="zope.publisher.interfaces.IEndRequestEvent"
+        handler="lp.services.webapp.sigusr1.end_request"
+        />
+
+    <class class="lp.services.webapp.publication.LoginRoot">
+      <allow
+        attributes="publishTraverse"
+        />
+    </class>
+
+    <!-- Define the widget used by Choice fields that use huge vocabularies -->
+    <view
+      type="zope.publisher.interfaces.browser.IBrowserRequest"
+      for="zope.schema.interfaces.IChoice
+        lp.services.webapp.vocabulary.IHugeVocabulary"
+      provides="zope.formlib.interfaces.IInputWidget"
+      factory="lp.app.widgets.popup.VocabularyPickerWidget"
+      permission="zope.Public"
+      />
+
+    <!-- Define the widget used by PersonChoice fields. -->
+    <view
+      type="zope.publisher.interfaces.browser.IBrowserRequest"
+      for="lp.services.fields.PersonChoice
+        lp.services.webapp.vocabulary.IHugeVocabulary"
+      provides="zope.formlib.interfaces.IInputWidget"
+      factory="lp.app.widgets.popup.PersonPickerWidget"
+      permission="zope.Public"
+      />
+
+    <!-- Define the widget used by fields that use BranchVocabulary. -->
+    <view
+      type="zope.publisher.interfaces.browser.IBrowserRequest"
+      for="zope.schema.interfaces.IChoice
+        lp.code.vocabularies.branch.BranchVocabulary"
+      provides="zope.formlib.interfaces.IInputWidget"
+      factory="lp.code.browser.widgets.branch.BranchPopupWidget"
+      permission="zope.Public"
+      />
+
+    <!-- A simple view used by the page tests. -->
+    <browser:page
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        name="+whichdb"
+        permission="zope.Public"
+        class="lp.services.webapp.adapter.WhichDbView"
+        layer="lp.layers.PageTestLayer"
+        />
+
+    <class class="lp.services.webapp.vocabulary.CountableIterator">
+      <allow interface="lp.services.webapp.vocabulary.ICountableIterator" />
+    </class>
+
+    <class class="lp.services.webapp.vocabulary.BatchedCountableIterator">
+      <allow interface="lp.services.webapp.vocabulary.ICountableIterator" />
+    </class>
+
+    <!-- Create a namespace to render the form of any LaunchpadFormView-->
+    <view
+        name="form" type="*"
+        provides="zope.traversing.interfaces.ITraversable" for="*"
+        factory="lp.services.webapp.namespace.FormNamespaceView"
+        />
+
+    <!-- Expose LaunchpadView methods. -->
+    <class class="lp.services.webapp.publisher.LaunchpadView">
+      <allow attributes="getCacheJson initialize" />
+    </class>
+
+    <!-- Create a namespace to render the model of any LaunchpadView-->
+    <view
+        name="model" type="*"
+        provides="zope.traversing.interfaces.ITraversable" for="*"
+        factory="lp.services.webapp.namespace.JsonModelNamespaceView"
+        permission="zope.Public"
+        />
+
+    <class class="lp.services.webapp.namespace.JsonModelNamespaceView">
+        <allow
+          attributes="__call__"
+          interface="zope.publisher.interfaces.browser.IBrowserPublisher" />
+    </class>
+
+    <!-- Registrations to support +haproxy status url. -->
+    <browser:page
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        name="+haproxy"
+        permission="zope.Public"
+        class="lp.services.webapp.haproxy.HAProxyStatusView"
+        />
+</configure>

@@ -1,0 +1,232 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/searchless"
+  i18n:domain="launchpad"
+>
+  <head>
+    <tal:head_epilogue metal:fill-slot="head_epilogue">
+      <meta name="robots" content="noindex,nofollow" />
+    </tal:head_epilogue>
+  </head>
+  <body>
+    <tal:heading metal:fill-slot="heading">
+      <h1 tal:content="view/page_heading">
+        Pages matching "bazaar" in Launchpad
+      </h1>
+    </tal:heading>
+
+    <div metal:fill-slot="main">
+      <div class="top-portlet">
+        <form tal:replace="structure view/@@+primary-search-form" />
+      </div>
+
+      <tal:wants-results condition="view/text">
+
+        <div id="search-results" tal:condition="view/has_matches">
+          <tal:has_exact_matches condition="view/has_exact_matches">
+
+            <div class="search-batch" style="padding:4px;">
+              <strong class="batch-navigation-index">Exact matches</strong>
+            </div>
+
+            <ul class="exact-matches">
+              <li tal:condition="view/has_shipit">
+                <div>
+                  <a tal:attributes="href view/shipit_faq_url"><img
+                    src="/@@/ubuntu-icon" /> Shipit Questions | ubuntu</a>
+                </div>
+                <div class="summary">
+                  Ubuntu is available free of charge and we can send you a CD
+                  of the latest version with no extra cost, but the delivery
+                  may take up to ten weeks, so you should consider downloading
+                  the CD image if you have a fast Internet connection.
+                </div>
+              </li>
+              <li tal:condition="view/bug">
+                <div>
+                  <tal:link replace="structure view/bug/fmt:link" />
+                </div>
+                <div class="summary">
+                  in
+                    <tal:per_pillar repeat="pillar view/bug/affected_pillars">
+                      <b tal:content="pillar/displayname" />,
+                    </tal:per_pillar>
+                  reported
+                  <span
+                    tal:attributes="title view/bug/datecreated/fmt:datetime"
+                    tal:content="view/bug/datecreated/fmt:displaydate">2005-10-05</span>
+                  by
+                  <a
+                    tal:attributes="href view/bug/owner/fmt:url"
+                    tal:content="view/bug/owner/displayname">Foo Bar</a>
+                </div>
+              </li>
+
+              <li tal:condition="view/question">
+                <div>
+                  <tal:link replace="structure view/question/fmt:link" />
+                </div>
+                <div class="summary">
+                  posted
+                  <span
+                    tal:attributes="title view/question/datecreated/fmt:datetime"
+                    tal:content="view/question/datecreated/fmt:displaydate">2005-10-05</span>
+                  by
+                  <a tal:replace="structure view/question/owner/fmt:link"
+                    >Foo Bar</a><tal:assignee condition="view/question/assignee">,
+                  assigned to
+                  <a tal:replace="structure view/question/assignee/fmt:link"
+                    >Foo Bar</a></tal:assignee><tal:answerer condition="view/question/answerer">,
+                  answered by
+                  <a tal:replace="structure view/question/answerer/fmt:link">Foo Bar</a>
+                  </tal:answerer>
+                  in
+                  <strong tal:content="view/question/target/title">ubuntu</strong>
+                </div>
+              </li>
+
+              <li tal:condition="view/pillar">
+                <div>
+                  <a tal:replace="structure view/pillar/fmt:link">
+                    The GNOME project
+                  </a>
+                </div>
+                <div class="summary">
+                  <div
+                    tal:content="view/pillar/summary"
+                    tal:condition="view/pillar/summary">
+                      Project summary
+                  </div>
+                  <div>
+                    Registered
+                    <tal:registrant
+                      define="registrant view/pillar/registrant|nothing"
+                      condition="registrant">
+                      by
+                      <a tal:replace="structure registrant/fmt:link">Foo Bar</a>
+                    </tal:registrant>
+                    <tal:XXX condition="nothing">
+                      # XXX sinzui 2008-05-27:
+                      # Product and ProjectGroup still use the wrong name for
+                      # date_created.
+                    </tal:XXX>
+                    <span
+                      tal:define="date_created view/pillar/datecreated|view/pillar/date_created|nothing"
+                      tal:attributes="title date_created/fmt:datetime"
+                      tal:content="date_created/fmt:displaydate">2005-10-12</span>
+                  </div>
+                </div>
+              </li>
+
+              <li tal:condition="view/person_or_team">
+                <div>
+                  <a tal:attributes="href view/person_or_team/fmt:url"
+                     tal:content="view/person_or_team/fmt:unique_displayname" />
+                </div>
+                <div class="summary">
+                  <tal:team
+                    tal:condition="view/person_or_team/is_team" >
+                    <div
+                      tal:content="view/person_or_team/description"
+                      tal:condition="view/person_or_team/description">
+                      The Launchpad team creates Launchpad. That's what they do.
+                      They rock!
+                    </div>
+                    <div>
+                      Created
+                      <span
+                        tal:attributes="title view/person_or_team/datecreated/fmt:datetime"
+                        tal:content="view/person_or_team/datecreated/fmt:displaydate">2005-10-05</span>
+                    </div>
+                  </tal:team>
+                  <tal:person
+                    tal:condition="not: view/person_or_team/is_team">
+                    <div>
+                      joined
+                      <span
+                        tal:attributes="title view/person_or_team/datecreated/fmt:datetime"
+                        tal:content="view/person_or_team/datecreated/fmt:displaydate">2005-10-05</span>,
+                        with <tal:karma content="view/person_or_team/karma">1000</tal:karma> karma
+                    </div>
+                  </tal:person>
+                </div>
+              </li>
+            </ul>
+          </tal:has_exact_matches>
+
+          <tal:batch
+            condition="view/pages"
+            define="batch view/pages/currentBatch|nothing">
+
+            <tal:navigation
+               replace="structure view/pages/@@+navigation-links-upper"/>
+
+            <ul class="site-matches" tal:condition="batch">
+              <li class="pagematch" tal:repeat="page batch">
+                <div>
+                  <a
+                    tal:attributes="href page/url"
+                    tal:content="structure page/title">Page title</a>
+                </div>
+                <div
+                  class="summary"
+                  tal:content="structure page/summary">
+                  A snippet of search result summary text.
+                </div>
+              </li>
+            </ul>
+
+            <tal:navigation
+               replace="structure view/pages/@@+navigation-links-lower" />
+
+            <form tal:replace="structure view/@@+search-form" />
+          </tal:batch>
+        </div>
+
+        <p id="no-results" tal:condition="not:view/has_matches">
+          Your search for
+          &ldquo;<span
+            class="text"
+            tal:content="view/text">some text</span>&rdquo;
+          did not return any results.
+        </p>
+
+        <p id="no-page-service" tal:condition="not: view/has_page_service">
+          The page search service was not available when this search was
+          performed. <a tal:attributes="href view/url">Search again</a>
+          to see the matching pages.
+        </p>
+
+      </tal:wants-results>
+
+      <div id="no-search" tal:condition="not:view/text">
+        <p>
+        Enter a term or many terms to find matching pages. All words are
+        used when matching, "and" is not needed. Capitalization is not
+        important. Enter a number to match a bug or question. Enter a
+        name to match a project, person, or team.
+        </p>
+
+        <ul>
+          <li>
+            Place words in double quotation marks to match an exact phrase.
+            <br />For example: <em>"core dump"</em>
+          </li>
+          <li>
+            Place a "+" in front of a word to require it to make a match.
+            Common words such as "and" or "the" are ignored when matching,
+            unless they are prefixed with a "+".
+            <br />For example: <em>read +and write</em>
+          </li>
+          <li>
+            Place a "-" in front of a word to exclude pages with that word.
+            <br />For example: <em>core -dump</em>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>

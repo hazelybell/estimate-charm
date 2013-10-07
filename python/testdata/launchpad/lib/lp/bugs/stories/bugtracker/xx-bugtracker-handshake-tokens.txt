@@ -1,0 +1,27 @@
+= Handling BugTracker handshake tokens =
+
+Launchpad can generate LoginTokens which can then be used to
+authenticate it with remote bug trackers. Generating these tokens is
+done using the internal XML-RPC service.
+
+    >>> import xmlrpclib
+    >>> from lp.testing.xmlrpc import XMLRPCTestTransport
+    >>> bugtracker_api = xmlrpclib.ServerProxy(
+    ...     'http://xmlrpc-private.launchpad.dev:8087/bugs',
+    ...     transport=XMLRPCTestTransport())
+
+    >>> from zope.component import getUtility
+    >>> from lp.bugs.xmlrpc.bug import ILoginTokenSet
+    >>> token_string = bugtracker_api.newBugTrackerToken()
+
+Browsing to the token's +bugtracker-handshake URL will result in an
+error if we attempt it as a GET request.
+
+    >>> token_url = (
+    ...     'http://launchpad.dev/token/%s/+bugtracker-handshake' %
+    ...     token_string)
+
+    >>> anon_browser.open(token_url)
+    Traceback (most recent call last):
+      ...
+    HTTPError: HTTP Error 405: Method Not Allowed

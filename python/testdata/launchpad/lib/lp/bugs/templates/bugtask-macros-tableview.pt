@@ -1,0 +1,474 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  omit-tag="">
+<metal:advanced_search_form define-macro="advanced_search_form">
+
+  <form class="long" name="search" method="get" action="">
+    <span tal:condition="view/current_package|nothing">
+      <input type="hidden" name="field.distribution"
+             tal:attributes="value view/current_package/distribution/name" />
+      <input type="hidden" name="field.sourcepackagename"
+             tal:attributes="value view/current_package/sourcepackagename/name"
+      />
+    </span>
+
+    <tal:searchbox replace="structure view/widgets/searchtext" />
+    <metal:widget use-macro="context/@@+bugtarget-macros-search/sortwidget" />
+    <input type="submit" name="search" value="Search" />
+    <a tal:attributes="href view/getSimpleSearchURL">Simple search</a>
+
+    <fieldset>
+      <legend>Status and importance</legend>
+      <table>
+        <tr>
+          <td width="40%">
+            <div><label>Status:</label></div>
+
+              <div tal:repeat="widget_value view/getStatusWidgetValues">
+                <tal:checkbox
+                    define="widget_id string:status.${widget_value/title}">
+                    <input name="field.status:list"
+                           type="checkbox"
+                           tal:attributes="value widget_value/value;
+                                           checked widget_value/checked;
+                                           id widget_id"/>
+                    <label style="font-weight: normal"
+                           tal:content="widget_value/title"
+                           tal:attributes="for widget_id">
+                      Unconfirmed
+                    </label>
+                </tal:checkbox>
+              </div>
+            </td>
+            <td width="25%">
+              <div><label>Importance:</label></div>
+              <div tal:repeat="widget_value view/getImportanceWidgetValues">
+                <tal:checkbox
+                    define="widget_id string:importance.${widget_value/title}">
+                    <input name="field.importance:list"
+                      type="checkbox"
+                      tal:attributes="value widget_value/value;
+                                      checked widget_value/checked;
+                                      id widget_id"/>
+                    <label style="font-weight: normal"
+                      tal:content="widget_value/title"
+                      tal:attributes="for widget_id">Critical</label>
+              </tal:checkbox>
+            </div>
+          </td>
+            <td width="35%">
+              <div><label>Information Type:</label></div>
+              <div tal:repeat="widget_value view/getInformationTypeWidgetValues">
+                <tal:checkbox
+                    define="widget_id string:information_type.${widget_value/title}">
+                    <input name="field.information_type:list"
+                      type="checkbox"
+                      tal:attributes="value widget_value/value;
+                                      checked widget_value/checked;
+                                      id widget_id"/>
+                    <label style="font-weight: normal"
+                      tal:content="widget_value/title"
+                      tal:attributes="for widget_id">Public</label>
+              </tal:checkbox>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </fieldset>
+    <fieldset>
+      <legend>People</legend>
+        <table>
+          <tr>
+            <td width="40%" tal:condition="view/shouldShowAssigneeWidget">
+              <table>
+                <tr>
+                <td><label>Assignee:</label></td>
+                </tr>
+                <tr>
+                  <td>
+                    <input
+                      type="radio"
+                      name="assignee_option"
+                      value="any"
+                      id="any"
+                      checked="checked" />
+                    <label style="font-weight: normal"
+                      for="any">Doesn&#8217;t matter</label><br />
+                    <input
+                      type="radio"
+                      name="assignee_option"
+                      value="none"
+                      id="none" />
+                    <label style="font-weight: normal"
+                      for="none"> Nobody</label><br />
+                    <div class="field"
+                      tal:define="error
+                      python:view.getFieldError('assignee')">
+                      <div tal:attributes="class python:error and 'error' or None">
+                        <span style="white-space: nowrap">
+                          <input
+                            type="radio"
+                            name="assignee_option"
+                            id="assignee_option"
+                            value="choose" />
+                          <span
+                            tal:content="structure view/widgets/assignee"/>
+                        </span>
+                          <div tal:condition="error"
+                              class="message"
+                              tal:content="structure error">An error on
+                              owner widget
+                          </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+            <td width="40%">
+              <table>
+                <tal:render-if condition="view/shouldShowReporterWidget">
+                  <tr>
+                    <td>
+                        <label for="field.bug_reporter">Reporter:</label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="white-space: nowrap">
+                      <div class="field"
+                           tal:define="error
+                           python:view.getFieldError('bug_reporter')">
+                        <div tal:attributes="class python:error and 'error' or None">
+                          <span tal:content="structure
+                                             view/widgets/bug_reporter"/>
+                          <div class="message"
+                               tal:condition="error"
+                               tal:content="structure error">An error on owner widget
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </tal:render-if>
+
+                <tal:render-if condition="view/shouldShowCommenterWidget">
+                  <tr>
+                    <td>
+                      <label for="field.bug_commenter">
+                        Commenter:
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="white-space: nowrap">
+                      <div class="field"
+                           tal:define="error
+                           python:view.getFieldError('bug_commenter')">
+                        <div tal:attributes=
+                             "class python:error and 'error' or None">
+                          <span tal:content="structure
+                                             view/widgets/bug_commenter"/>
+                          <div tal:condition="error"
+                               class="message"
+                               tal:content="structure error">An error on owner widget
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </tal:render-if>
+
+                <tal:render-if condition="view/shouldShowSubscriberWidget">
+                  <tr>
+                    <td>
+                      <label for="field.subscriber">
+                        Subscriber:
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="white-space: nowrap">
+                      <div class="field"
+                           tal:define="error
+                           python:view.getFieldError('subscriber')">
+                        <div tal:attributes=
+                             "class python:error and 'error' or None">
+                          <span tal:content="structure
+                                             view/widgets/subscriber"/>
+                          <div tal:condition="error"
+                               class="message"
+                               tal:content="structure error">An error on owner widget
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </tal:render-if>
+
+                <tal:render-if condition="view/shouldShowStructuralSubscriberWidget">
+                  <tr>
+                    <td>
+                      <label for="field.structural_subscriber"
+                        tal:content="view/structural_subscriber_label" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="white-space: nowrap">
+                      <div class="field"
+                           tal:define="error
+                           python:view.getFieldError('structural_subscriber')">
+                        <div tal:attributes=
+                             "class python:error and 'error' or None">
+                          <span tal:content="structure
+                                             view/widgets/structural_subscriber"/>
+                          <div tal:condition="error"
+                               class="message"
+                               tal:content="structure error">An error on owner widget
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </tal:render-if>
+
+              </table>
+            </td>
+            <td>&nbsp;</td>
+          </tr>
+        </table>
+    </fieldset>
+    <fieldset tal:define="show_component_widget view/shouldShowComponentWidget">
+      <legend>Milestones, components, and tags</legend>
+      <table>
+        <tr>
+          <td>
+            <table tal:define="widget_values view/getMilestoneWidgetValues">
+              <tr>
+                <td><label for="field.milestone">Target milestone:</label></td>
+              </tr>
+              <tr>
+                <td tal:condition="widget_values">
+                  <tal:block tal:repeat="widget_value widget_values">
+                    <span
+                        tal:define="widget_id string:milestone.${widget_value/title}">
+                      <input name="field.milestone:list"
+                             type="checkbox"
+                             tal:attributes="value widget_value/value;
+                                             checked widget_value/checked;
+                                             id widget_id" />
+                      <label style="font-weight: normal"
+                             tal:content="widget_value/title"
+                             tal:attributes="for widget_id">
+                        dapper
+                      </label>
+                    </span>
+                    <br />
+                  </tal:block>
+                </td>
+                <td tal:condition="not:widget_values">(none)</td>
+              </tr>
+            </table>
+          </td>
+          <td tal:condition="show_component_widget">
+            <table>
+              <tr>
+                <td><label for="field.component">Component:</label></td>
+              </tr>
+              <tr>
+                <td tal:content="structure view/widgets/component"
+                    tal:condition="show_component_widget">
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+	    <tr>
+        <tal:XXX condition="nothing">
+          # XXX: Bjorn Tillenius 2006-10-02:
+          # The rendering of the widget is pretty much copied from
+          # the widget macro; the difference is that we want to
+          # render the widget in a table, and the label should
+          # be rendered on the same line as the widget. When
+          # FormLayout lands we should be able to use the
+          # standard macro instead.
+        </tal:XXX>
+        <td span="2"
+          tal:define="error view/widgets/tag/error">
+          <div tal:attributes="class python:error and 'error' or ''">
+            <label tal:attributes="for view/widgets/tag/name"
+                   tal:content="structure view/widgets/tag/label">
+              Tag
+            </label>: <input tal:replace="structure view/widgets/tag" />
+            <div
+              tal:condition="error"
+              class="message"
+              tal:content="structure error"
+              >An error message.</div>
+          </div>
+
+          <div condition="view/shouldShowTagsCombinatorWidget"
+               class="value">
+            <label style="font-weight: normal">
+              <input id="field.tags_combinator.0"
+                     name="field.tags_combinator"
+                     value="ANY" checked="checked"
+                     class="radioType" type="radio" />&nbsp;Any
+            </label>
+            <br />
+            <label style="font-weight: normal">
+              <input id="field.tags_combinator.1"
+                     name="field.tags_combinator"
+                     value="ALL"
+                     class="radioType" type="radio" />&nbsp;All
+            </label>
+          </div>
+        </td>
+	    </tr>
+      </table>
+    </fieldset>
+
+    <tal:show_upstream_widgets condition="view/shouldShowUpstreamStatusBox">
+      <fieldset>
+        <legend>Upstream status</legend>
+            <table>
+              <tr>
+                <td style="white-space: nowrap"
+                    tal:content="structure view/widgets/status_upstream" />
+              </tr>
+            </table>
+      </fieldset>
+
+      <fieldset tal:condition="view/upstream_project">
+        <legend>Upstream target</legend>
+            <table>
+              <tr>
+                <td style="white-space: nowrap">
+                  <label>
+                    <input id="field.upstream_target"
+                           name="field.upstream_target"
+                           value="" checked="checked" class="radioType"
+                           type="radio" />
+                    All possible upstream targets
+                  </label><br />
+                  <label>
+                    <input id="field.upstream_target"
+                           name="field.upstream_target"
+                           class="radioType" type="radio"
+                           tal:attributes="value view/upstream_project/name" />
+                    <span tal:replace="view/upstream_project/displayname" />
+                  </label>
+                </td>
+              </tr>
+            </table>
+      </fieldset>
+    </tal:show_upstream_widgets>
+
+    <fieldset>
+      <legend>Bug relationships</legend>
+      <table>
+        <tr>
+          <td style="white-space: nowrap">
+            <input tal:replace="structure view/widgets/has_cve" />
+            <label style="font-weight: normal"
+              tal:attributes="for view/widgets/has_cve/name">
+               Show only bugs associated with a CVE
+            </label>
+          </td>
+          <td style="white-space: nowrap">
+            <span tal:content="structure view/widgets/omit_dupes" />
+            <label style="font-weight: normal"
+              for="field.omit_dupes">Hide duplicate bugs</label>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="white-space: nowrap">
+            <input tal:replace="structure view/widgets/affects_me" />
+            <label style="font-weight: normal"
+              tal:attributes="for view/widgets/affects_me/name">
+                Show only bugs affecting me
+            </label>
+          </td>
+          <td style="white-space: nowrap"
+            tal:condition="view/shouldShowNoPackageWidget">
+            <span tal:content="structure view/widgets/has_no_package" />
+            <label style="font-weight: normal" for="field.has_no_package">
+              Hide bugs with packages specified
+            </label>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="white-space: nowrap">
+            <span tal:content="structure view/widgets/has_patch" />
+            <label style="font-weight: normal" for="field.has_patch">
+              Show only bugs with patches available
+            </label>
+          </td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td style="white-space: nowrap">
+            <span tal:content="structure view/widgets/has_branches" />
+            <label style="font-weight: normal" for="field.has_branches">
+              Show bugs with linked branches
+            </label>
+          </td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td style="white-space: nowrap">
+            <span tal:content="structure view/widgets/has_no_branches" />
+            <label style="font-weight: normal" for="field.has_no_branches">
+              Show bugs without linked branches
+            </label>
+          </td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td style="white-space: nowrap">
+            <span tal:content="structure view/widgets/has_blueprints" />
+            <label style="font-weight: normal" for="field.has_blueprints">
+              Show bugs with linked blueprints
+            </label>
+          </td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td style="white-space: nowrap">
+            <span tal:content="structure view/widgets/has_no_blueprints" />
+            <label style="font-weight: normal" for="field.has_no_blueprints">
+              Show bugs without linked blueprints
+            </label>
+          </td>
+          <td>
+          </td>
+        </tr>
+      </table>
+
+    </fieldset>
+    <div style="margin-top: 1em;"><input type="submit" name="search" value="Search" /></div>
+  </form>
+</metal:advanced_search_form>
+
+
+<metal:listing_navigator define-macro="activate_listing_js">
+  <script type="text/javascript"
+    tal:condition="not: view/shouldShowAdvancedForm">
+    LPJS.use('lp.bugs.buglisting', function(Y) {
+        Y.on('domready', function() {
+            var view = new Y.lp.bugs.buglisting.TableView({
+                active_sort_key: LP.cache.order_by,
+                sort_keys: LP.cache.sort_keys
+            });
+            view.render();
+        })
+    });
+  </script>
+</metal:listing_navigator>
+</tal:root>

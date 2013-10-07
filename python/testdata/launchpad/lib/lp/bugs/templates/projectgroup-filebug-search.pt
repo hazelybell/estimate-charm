@@ -1,0 +1,136 @@
+<div
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:tal="http://xml.zope.org/namespaces/tal"
+        xmlns:metal="http://xml.zope.org/namespaces/metal"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        metal:use-macro="view/macro:page/main_only">
+
+  <metal:block fill-slot="head_epilogue">
+    <script type="text/javascript">
+        LPJS.use(
+          'lp.bugs.filebug',
+          function(Y) {
+            Y.on('domready', function() {
+              Y.lp.bugs.filebug.setup_filebug();
+            });
+        });
+    </script>
+  </metal:block>
+
+  <div metal:fill-slot="heading">
+    <h1>Report a bug</h1>
+  </div>
+
+  <div metal:fill-slot="main">
+    <div class="yui-g">
+      <tal:does-not-use-malone condition="not: view/contextUsesMalone">
+        <div class="top-portlet">
+          <metal:not_uses_malone
+                  use-macro="context/@@+filebug-macros/not_uses_malone" />
+        </div>
+      </tal:does-not-use-malone>
+
+      <div tal:condition="not: context/enable_bugfiling_duplicate_search"
+           omit-tag="">
+        <metal:no-dupe-form
+                metal:use-macro="context/@@+filebug-macros/simple-filebug-form" />
+      </div>
+
+
+      <div tal:condition="context/enable_bugfiling_duplicate_search"
+           omit-tag="">
+
+        <div class="top-portlet"
+             tal:define="launchpad_form_id string:filebug-search-form">
+
+        <div metal:use-macro="context/@@launchpad_form/form">
+
+          <table metal:fill-slot="widgets">
+
+            <tal:bugtarget
+                    tal:define="widget nocall:view/widgets/bugtarget|nothing"
+                    tal:condition="widget">
+              <metal:widget metal:use-macro="context/@@launchpad_form/widget_row" />
+            </tal:bugtarget>
+
+            <tal:hidden_tags tal:replace="structure view/widgets/tags/hidden" />
+
+            <tr>
+              <td colspan="2">
+                <p>
+                  Please describe the bug in a few words, for example, "weather
+                  applet crashes on logout":
+                </p>
+              </td>
+            </tr>
+            <tal:title_widget tal:define="widget nocall:view/widgets/title">
+              <tal:comment replace="nothing">
+                The desire to have more control over the styling of this widget
+                prevents us from using the widget_row macro here.
+              </tal:comment>
+              <tr>
+                <td tal:define="field_name widget/context/__name__;
+                          error python:view.getFieldError(field_name);
+                          error_class python:('error' if error else None);"
+                    tal:attributes="class error_class"
+                    style="text-align: left; padding-left: 5em;">
+                  <div>
+                    <label tal:attributes="for widget/name"
+                           tal:content="string:${widget/label}:">Label</label>
+                    <input tal:replace="structure widget" />
+                  </div>
+                  <div class="message" tal:condition="error"
+                       tal:content="structure error">Error message</div>
+                  <p class="formHelp"
+                     tal:condition="widget/hint"
+                     tal:content="widget/hint">Some Help Text
+                  </p>
+                </td>
+                <td style="text-align: left;">
+                  <input tal:replace="structure view/actions/field.actions.projectgroupsearch/render" />
+                  <span id="spinner" style="text-align: center" class="hidden">
+                    <img src="/@@/spinner" />
+                  </span>
+                </td>
+              </tr>
+            </tal:title_widget>
+          </table>
+
+          <div metal:fill-slot="buttons">
+            <tal:comment replace="nothing">
+              We add this to hide the standard action buttons.
+            </tal:comment>
+          </div>
+        </div>
+        </div>
+
+        <tal:uses-malone tal:condition="view/contextUsesMalone">
+          <div class="top-portlet">
+            <p tal:condition="not: view/similar_bugs">
+              No similar bug reports were found.
+            </p>
+            <div id="bug-reporting-form" tal:condition="not: view/similar_bugs">
+              <metal:form use-macro="context/@@launchpad_form/form">
+                <metal:widgets metal:fill-slot="widgets">
+                  <table class="form">
+                    <metal:basic_filebug_widgets
+                            metal:use-macro="context/@@+filebug-macros/basic_filebug_widgets" />
+                  </table>
+                </metal:widgets>
+                <div class="actions" metal:fill-slot="buttons">
+                  <input tal:replace="structure view/submit_bug_action/render" />
+                </div>
+              </metal:form>
+            </div>
+            <div tal:condition="view/similar_bugs">
+              <metal:display-similar-bugs
+                      use-macro="context/@@+filebug-macros/show-similar-bugs-and-filebug-form" />
+            </div>
+          </div>
+        </tal:uses-malone>
+
+      </div>
+
+    </div>
+  </div>
+</div>

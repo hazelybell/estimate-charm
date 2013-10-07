@@ -1,0 +1,521 @@
+Code Import Events
+==================
+
+The code-import events record the audit trail of the code import system.
+Events record a log that can be used to diagnose the interaction of the
+multiple moving parts that form the code-import system and to measure
+the quality of the service.
+
+CodeImports are hidden from regular users currently. David Allouche is a
+member of the vcs-imports team and can access the objects freely.
+
+    >>> login('david.allouche@canonical.com')
+
+
+Creating Events
+---------------
+
+Events of each type are created by separate methods in the
+ICodeImportEventSet utility.
+
+    >>> from zope.component import getUtility
+    >>> from zope.security.proxy import removeSecurityProxy
+    >>> from lp.testing import verifyObject
+    >>> from lp.code.interfaces.codeimportevent import ICodeImportEventSet
+    >>> event_set = getUtility(ICodeImportEventSet)
+    >>> verifyObject(ICodeImportEventSet, removeSecurityProxy(event_set))
+    True
+
+To easily verify objects returned by the individual event creation
+methods, we define a small helper function:
+
+    >>> from lp.code.interfaces.codeimportevent import ICodeImportEvent
+    >>> def verify_event(event):
+    ...     if verifyObject(ICodeImportEvent, removeSecurityProxy(event)):
+    ...         print event.event_type.name
+    ...     else:
+    ...         print "verifyObject failed"
+
+To help us test the output of the items() method, we define a helper
+function that do not print values which are potentially unstable
+database ids.
+
+    >>> def print_items(event):
+    ...     if len(event.items()) == 0:
+    ...         print '<nothing>'
+    ...     for k, v in sorted(event.items()):
+    ...         if k.name == 'CODE_IMPORT':
+    ...             print k.name, '<muted>'
+    ...         else:
+    ...             print k.name, repr(v)
+
+We want to concisely check that calling the CodeImportEventSet factory
+methods with required arguments set to None raise an AssertionError.
+
+The assert_raises helper prints nothing if the callable raises an
+exception of the specified type. If the callable raises an exception
+that does not match, it re-raises it. If it does not raises, it prints a
+message.
+
+    >>> import sys
+    >>> def assert_raises(exc_type, callable, *args, **kwargs):
+    ...     try:
+    ...         callable(*args, **kwargs)
+    ...     except:
+    ...         if sys.exc_info()[0] == exc_type:
+    ...             return
+    ...         else:
+    ...             raise
+    ...     else:
+    ...         print "No exception raised, expected: %s" % (exc_type,)
+
+All CodeImportEvent creation methods explicitly check that their
+arguments are not None. See the implementation of CodeImportEventSet for
+the rationale.
+
+    >>> def fail_if_argument_is_none(callable, *args):
+    ...     """Callable must fails if given at least one None argument."""
+    ...     assert_raises(AssertionError, callable, *args)
+
+
+CREATE
+......
+
+When a CodeImport is created, a CREATE event should be recorded. Any
+authenticated user can create a CodeImport.
+
+Creating a CodeImport is complicated, and we will create two of them, so
+we define a helper function. Since CodeImportSet.new should record the
+CodeImportEvent, we need to use the CodeImport constructor directly.
+
+    >>> from lp.code.enums import CodeImportEventDataType
+    >>> from lp.registry.interfaces.person import IPersonSet
+
+    >>> nopriv = getUtility(IPersonSet).getByName('no-priv')
+
+First we create a Subversion import.
+
+    >>> svn_import = factory.makeCodeImport(
+    ...     svn_branch_url='svn://svn.example.com/trunk')
+
+CodeImportSet.newCreate creates an event from the new CodeImport object
+and the person that created it. Here, the creator is the nopriv user.
+
+    >>> fail_if_argument_is_none(event_set.newCreate, None, nopriv)
+    >>> fail_if_argument_is_none(event_set.newCreate, svn_import, None)
+
+    >>> svn_create_event = event_set.newCreate(svn_import, nopriv)
+    >>> verify_event(svn_create_event)
+    CREATE
+
+    >>> print svn_create_event.person.name
+    no-priv
+
+    >>> svn_create_event.code_import == svn_import
+    True
+
+The initial import details are recorded in the event, and can be
+retrieved using the items() method.
+
+    >>> print_items(svn_create_event)
+    CODE_IMPORT <muted>
+    OWNER ...
+    REVIEW_STATUS u'REVIEWED'
+    ASSIGNEE None
+    UPDATE_INTERVAL None
+    URL u'svn://svn.example.com/trunk'
+
+The database IDs of the CodeImport is also recorded. It is useful to
+collate events associated with deleted CodeImport objects.
+
+    >>> event_dict = dict(svn_create_event.items())
+    >>> event_dict[CodeImportEventDataType.CODE_IMPORT] == (
+    ...     unicode(svn_import.id))
+    True
+
+Different source details are recorded according to the type of the
+import source. For a CVS import, CVS details are recorded instead of the
+Subversion URL.
+
+    >>> cvs_import = factory.makeCodeImport(
+    ...     cvs_root=':pserver:anonymous@cvs.example.com:/cvsroot',
+    ...     cvs_module='hello')
+    >>> cvs_create_event = event_set.newCreate(cvs_import, nopriv)
+    >>> print_items(cvs_create_event)
+    CODE_IMPORT <muted>
+    OWNER ...
+    REVIEW_STATUS u'REVIEWED'
+    ASSIGNEE None
+    UPDATE_INTERVAL None
+    CVS_ROOT u':pserver:anonymous@cvs.example.com:/cvsroot'
+    CVS_MODULE u'hello'
+
+And for a Git import, the git details are recorded.
+
+    >>> git_import = factory.makeCodeImport(
+    ...     git_repo_url='git://git.example.org/main.git')
+    >>> git_create_event = event_set.newCreate(git_import, nopriv)
+    >>> print_items(git_create_event)
+    CODE_IMPORT <muted>
+    OWNER ...
+    REVIEW_STATUS u'REVIEWED'
+    ASSIGNEE None
+    UPDATE_INTERVAL None
+    URL u'git://git.example.org/main.git'
+
+MODIFY
+------
+
+When a code import is modified, the ICodeImportEventSet utility should
+be used to create an event describing the changes.
+
+Application code should not modify CodeImport objects directly, instead
+they should call the appropriate mutator methods of CodeImport. This
+allows CodeImportEvent objects to be transparently created when needed.
+This is enforced by not defining a set_schema for ICodeImport.
+
+In this document, we are testing the CodeImportEvent creation
+infrastructure used by those mutator methods, so we need to directly
+modify the state of CodeImport objects. We can do this because we are
+working on unproxied database objects.
+
+ICodeImportEventSet defines a protocol so it is able to find changes
+applied to the code import. Before making any change, the beginModify
+method must be called. It returns a token that captures the initial
+state of the code import.
+
+    >>> fail_if_argument_is_none(event_set.beginModify, None)
+
+    >>> token = event_set.beginModify(svn_import)
+
+Then changes can be applied.
+
+    >>> from lp.code.enums import CodeImportReviewStatus
+    >>> removeSecurityProxy(svn_import).review_status = (
+    ...     CodeImportReviewStatus.SUSPENDED)
+
+After applying changes, the newModify method can create an event that
+details the changes that have been applied.
+
+    >>> fail_if_argument_is_none(
+    ...     event_set.newModify, None, nopriv, token)
+    >>> fail_if_argument_is_none(
+    ...     event_set.newModify, svn_import, nopriv, None)
+
+    >>> modify_event = event_set.newModify(svn_import, nopriv, token)
+    >>> verify_event(modify_event)
+    MODIFY
+
+    >>> print modify_event.person.name
+    no-priv
+
+    >>> modify_event.code_import == svn_import
+    True
+
+The event records all the current values, and the old value of
+attributes that have changed. This produces redundant data that makes it
+possible to validate the historical trail for integrity and to detect
+when changes were made without creating a correponding event.
+
+    >>> print_items(modify_event)
+    CODE_IMPORT <muted>
+    OWNER ...
+    REVIEW_STATUS u'SUSPENDED'
+    OLD_REVIEW_STATUS u'REVIEWED'
+    ASSIGNEE None
+    UPDATE_INTERVAL None
+    URL u'svn://svn.example.com/trunk'
+
+If no change of interest is found, no event is created.
+
+    >>> old_event_set_len = len(list(event_set.getAll()))
+    >>> token = event_set.beginModify(svn_import)
+    >>> print event_set.newModify(svn_import, nopriv, token)
+    None
+
+    >>> len(list(event_set.getAll())) == old_event_set_len
+    True
+
+
+REQUEST
+.......
+
+Users can request that an import be run immediately. When such a request
+is made the requestJob method of the CodeImportJobWorkflowt utility is
+called, this method logs the event by creating a REQUEST event.
+
+Recording REQUEST and other event types allow us to always know why a
+code import job was run.
+
+    >>> request_event = event_set.newRequest(svn_import, nopriv)
+    >>> verify_event(request_event)
+    REQUEST
+
+    >>> print request_event.person.name
+    no-priv
+
+    >>> print_items(request_event)
+    CODE_IMPORT <muted>
+
+The database ID of the requested CodeImport is also recorded. It is
+useful to collate events associated with deleted CodeImport objects.
+
+    >>> event_dict = dict(request_event.items())
+    >>> event_dict[CodeImportEventDataType.CODE_IMPORT] == (
+    ...     unicode(svn_import.id))
+    True
+
+
+ONLINE
+......
+
+Execution of import jobs is controlled by code-import-controller daemons
+on multiple machines.
+
+    >>> from lp.code.interfaces.codeimportmachine import ICodeImportMachineSet
+    >>> machine_set = getUtility(ICodeImportMachineSet)
+    >>> machine = machine_set.getByHostname('bazaar-importer')
+
+When a controller daemon starts, it calls a mutator method on
+CodeImportMachine that marks this machine as accepting jobs. This method
+logs the change by creating an ONLINE event using the
+ICodeImportEventSet.newOnline method.
+
+    >>> fail_if_argument_is_none(event_set.newOnline, None)
+
+    >>> online_event = event_set.newOnline(machine)
+    >>> verify_event(online_event)
+    ONLINE
+
+    >>> print online_event.machine.hostname
+    bazaar-importer
+
+    >>> print online_event.person
+    None
+
+    >>> print_items(online_event)
+    <nothing>
+
+A new online event can optionally take a user and a reason.  This is the
+case when a user updates the state of the machine through the web UI.
+
+    >>> apollo = factory.makeCodeImportMachine(hostname="apollo")
+    >>> ddaa = getUtility(IPersonSet).getByName('ddaa')
+    >>> online_event = event_set.newOnline(apollo, ddaa, 'Fubar was fixed')
+    >>> verify_event(online_event)
+    ONLINE
+
+    >>> print online_event.machine.hostname
+    apollo
+
+    >>> print online_event.person.name
+    ddaa
+
+    >>> print_items(online_event)
+    MESSAGE u'Fubar was fixed'
+
+
+OFFLINE
+.......
+
+When a controller daemon goes offline, a mutator method on
+CodeImportMachine is called to mark it as no longer running. This method
+logs the change by creating an OFFLINE event using the
+ICodeImportSet.newOffline method.
+
+    >>> from lp.code.enums import CodeImportMachineOfflineReason
+    >>> QUIESCED = CodeImportMachineOfflineReason.QUIESCED
+
+    >>> fail_if_argument_is_none(event_set.newOffline, None, QUIESCED)
+    >>> fail_if_argument_is_none(event_set.newOffline, machine, None)
+
+    >>> offline_event = event_set.newOffline(machine, QUIESCED)
+    >>> verify_event(offline_event)
+    OFFLINE
+
+    >>> print offline_event.machine.hostname
+    bazaar-importer
+
+    >>> print_items(offline_event)
+    OFFLINE_REASON u'QUIESCED'
+
+The offline reason must be a value of the CodeImportMachineOfflineReason
+enum. Since it is internally stored as a string, we need to manually
+check that it is a legal value.
+
+    >>> event_set.newOffline(machine, CodeImportReviewStatus.SUSPENDED)
+    Traceback (most recent call last):
+    ...
+    AssertionError: reason must be a CodeImportMachineOfflineReason value,
+    but was: ...
+
+A new offline event can optionally take a user and a reason.  This is
+the case when a user updates the state of the machine through the web
+UI.
+
+    >>> offline_event = event_set.newOffline(
+    ...     apollo, CodeImportMachineOfflineReason.STOPPED,
+    ...     ddaa, 'Down for fixing')
+    >>> verify_event(offline_event)
+    OFFLINE
+
+    >>> print offline_event.machine.hostname
+    apollo
+
+    >>> print offline_event.person.name
+    ddaa
+
+    >>> print_items(offline_event)
+    MESSAGE u'Down for fixing'
+    OFFLINE_REASON u'STOPPED'
+
+
+QUIESCE
+.......
+
+When an operator quiesces a machine (this is an administrative
+operation), a QUIESCE event should be created to record the operator's
+identity, the affected machine, and an optional user-provided message
+explaining why quiescing was requested.
+
+    >>> fail_if_argument_is_none(
+    ...     event_set.newQuiesce, None, ddaa, 'Message.')
+    >>> fail_if_argument_is_none(
+    ...     event_set.newQuiesce, machine, None, 'Message.')
+
+    >>> quiesce_event = event_set.newQuiesce(
+    ...     machine, ddaa, 'Production rollout.')
+    >>> verify_event(quiesce_event)
+    QUIESCE
+
+    >>> print quiesce_event.machine.hostname
+    bazaar-importer
+
+    >>> print quiesce_event.person.name
+    ddaa
+
+    >>> print_items(quiesce_event)
+    MESSAGE u'Production rollout.'
+
+
+START
+.....
+
+When a job is allocated to a machine, a START event should be created to
+record which code import is starting and on which machine.
+
+    >>> fail_if_argument_is_none(
+    ...     event_set.newStart, None, machine)
+    >>> fail_if_argument_is_none(
+    ...     event_set.newStart, svn_import, None)
+
+    >>> start_event = event_set.newStart(
+    ...     svn_import, machine)
+    >>> verify_event(start_event)
+    START
+
+    >>> print start_event.machine.hostname
+    bazaar-importer
+
+    >>> print start_event.code_import == svn_import
+    True
+
+    >>> start_event.items()
+    []
+
+
+FINISH
+......
+
+When a machine finishes a job, successfully or otherwise, a FINISH event
+should be created to record that the job has been finished.
+
+    >>> fail_if_argument_is_none(
+    ...     event_set.newFinish, None, machine)
+    >>> fail_if_argument_is_none(
+    ...     event_set.newFinish, svn_import, None)
+
+    >>> finish_event = event_set.newFinish(
+    ...     svn_import, machine)
+    >>> verify_event(finish_event)
+    FINISH
+
+    >>> print finish_event.machine.hostname
+    bazaar-importer
+
+    >>> print finish_event.code_import == svn_import
+    True
+
+    >>> finish_event.items()
+    []
+
+
+KILL
+....
+
+When a job is killed from outside of the worker, a KILL event records
+that this was done.  The parameters are self-explanatory: code_import
+and machine
+
+    >>> fail_if_argument_is_none(
+    ...     event_set.newKill, None, machine)
+    >>> fail_if_argument_is_none(
+    ...     event_set.newKill, svn_import, None)
+
+    >>> kill_event = event_set.newKill(svn_import, machine)
+    >>> verify_event(kill_event)
+    KILL
+
+    >>> print kill_event.code_import == svn_import
+    True
+
+    >>> print kill_event.person
+    None
+
+    >>> print kill_event.machine.hostname
+    bazaar-importer
+
+    >>> kill_event.items()
+    []
+
+
+RECLAIM
+.......
+
+The 'code import watchdog' is the name of the component that checks the
+supposedly-running code import jobs and deletes those which have not
+updated their heartbeat fields recently enough.  When it does this, a
+RECLAIM event records the details of what happened.  The 'newReclaim'
+method takes as parameters the code import, the machine the job was
+running on and the id of the removed code import job row (to make
+finding the log files on the import slave easier).
+
+    >>> job_id = 42 # Arbitrary choice.
+
+    >>> fail_if_argument_is_none(
+    ...     event_set.newReclaim, None, machine, job_id)
+    >>> fail_if_argument_is_none(
+    ...     event_set.newReclaim, svn_import, None, job_id)
+    >>> fail_if_argument_is_none(
+    ...     event_set.newReclaim, svn_import, machine, None)
+
+    >>> reclaim_event = event_set.newReclaim(svn_import, machine, job_id)
+    >>> verify_event(reclaim_event)
+    RECLAIM
+
+    >>> print reclaim_event.code_import == svn_import
+    True
+
+    >>> print reclaim_event.person
+    None
+
+    >>> print reclaim_event.machine.hostname
+    bazaar-importer
+
+The job id is the only datum stored in the key-value data associated
+with a RECLAIM event.
+
+    >>> print_items(reclaim_event)
+    RECLAIMED_JOB_ID u'42'
+
+

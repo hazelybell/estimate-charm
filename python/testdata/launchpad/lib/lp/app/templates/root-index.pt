@@ -1,0 +1,258 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+  <metal:head fill-slot="head_epilogue">
+    <style>
+      .homepage {
+          margin: auto;
+          width: 90%;
+          max-width: 80em;
+      }
+      #homepage-whatslaunchpad ul {
+          margin-left: 1em;
+          margin-bottom: 0.5em;
+      }
+      #homepage-whatslaunchpad ul,
+      #homepage-whatslaunchpad-tour {
+          font-weight: bold;
+      }
+      #homepage-stats {
+          max-width: 50em;
+          margin: auto;
+          padding-top: 0.5em;
+          color: gray;
+      }
+      #homepage-blogposts {
+          padding-right: 4em;
+      }
+      #homepage-getstarted ul {
+          padding-top: 0.5em;
+          }
+      .featured-project-top h3 {
+          font-weight: bold;
+          }
+      .featured-project-top h3 img {
+          vertical-align: middle;
+          }
+      .featured-project-top p {
+          margin-top: 0.5em;
+          margin-bottom: 1em;
+          padding-bottom: .5em;
+          border-bottom: 1px dotted #999;
+          }
+    </style>
+  </metal:head>
+  <body>
+    <div metal:fill-slot="main">
+
+      <tal:comment replace="nothing">
+        Do not replace the line below: "Is your project registered yet?"
+        without contacting the IS team. It's used by Nagios to verify
+        the app servers are running.
+      </tal:comment>
+      <!-- Is your project registered yet? -->
+
+      <div id="homepage" class="homepage">
+
+        <div class="top-portlet" style="border-bottom: 1px dotted #999;">
+          <img src="/@@/launchpad-logo-and-name.png"
+               id="launchpad-logo-and-name" alt=""
+               style="margin: 0 9em 1em 0"/>
+        </div>
+
+        <div class="yui-g">
+          <div class="yui-u first" style="margin-top: 1.5em;">
+            <div class="homepage-whatslaunchpad"
+                 tal:condition="view/show_whatslaunchpad">
+              <h2><span class="launchpad-gold">Launchpad</span> is a software collaboration platform that provides:</h2>
+              <ul tal:define="apphomes view/apphomes">
+              <li>
+                <a class="sprite bug"
+                  tal:attributes="href apphomes/bugs">Bug tracking</a>
+              </li>
+              <li>
+                <a class="sprite branch"
+                  tal:attributes="href apphomes/code">Code hosting</a>
+                using <a href="http://bazaar.canonical.com/">Bazaar</a>
+              </li>
+              <li>
+                <a class="sprite yes"
+                  href="https://help.launchpad.net/Code/Review">Code reviews</a>
+              </li>
+              <li>
+                <a class="sprite ubuntu-logo"
+                  tal:attributes="href apphomes/ubuntu">Ubuntu package building and hosting</a>
+              </li>
+              <li>
+                <a class="sprite translate-icon"
+                  tal:attributes="href apphomes/translations">Translations</a>
+              </li>
+              <li>
+                <a class="sprite mail"
+                  href="https://help.launchpad.net/Teams/MailingLists">Mailing lists</a>
+              </li>
+              <li>
+                <a class="sprite question"
+                  tal:attributes="href apphomes/answers">Answer tracking and FAQs</a>
+              </li>
+              <li>
+                <a class="sprite blueprint"
+                  tal:attributes="href apphomes/blueprints">Specification tracking</a>
+              </li>
+              </ul>
+              <div id="homepage-whatslaunchpad-tour">
+                 <a class="sprite tour" href="/+tour">Take the tour!</a>
+               </div>
+            </div>
+
+            <div id="homepage-blogposts" class="homepage-portlet"
+                 tal:condition="features/app.root_blog.enabled">
+              <h2>Recent Launchpad blog posts</h2>
+              <ul tal:define="posts view/getRecentBlogPosts">
+                <li class="news"
+                    tal:repeat="post posts">
+                    <a href="" tal:attributes="href post/link"
+                      tal:content="post/title">
+                      Take the Launchpad survey</a><span class="registered">
+                      &ndash; <tal:date content="post/date">01 July 2010</tal:date></span><br />
+                <tal:description content="structure post/description">
+                  Tell us a little about how you use Launchpad by answering
+                  our short survey.
+                </tal:description>
+                </li>
+                <li class="news">
+                  <a href="http://blog.launchpad.net/general/launchpad-is-now-open-source">
+                    Launchpad now open source</a><span class="registered"> &ndash; 21 Jul 2009</span><br />
+                    Get the code to Launchpad and join our development community.
+                </li>
+              </ul>
+              <ul class="horizontal">
+                <li>
+                  <strong><a href="http://blog.launchpad.net">Read the blog</a></strong>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="yui-u">
+            <form id="homepage-searchform"
+              xml:lang="en" lang="en" dir="ltr"
+              tal:attributes="action string:${rooturl}+search"
+              method="get" accept-charset="UTF-8">
+              <input id="text" type="text" name="field.text" size="25" />
+              <input id="search" type="submit" value="Search Launchpad" />
+            </form>
+            <script type="text/javascript">
+                LPJS.use('lp', function () {
+                    setFocusByName('field.text');
+                });
+            </script>
+            <div id="homepage-stats">
+              <strong
+                tal:content="view/project_count/fmt:intcomma">123</strong>&nbsp;projects,
+              <strong
+                tal:content="view/bug_count/fmt:intcomma">123</strong>&nbsp;bugs,
+              <strong
+                tal:content="view/branch_count/fmt:intcomma">123</strong>&nbsp;branches,
+              <strong
+                tal:content="view/translation_count/fmt:intcomma">123</strong>&nbsp;translations,
+              <strong
+                tal:content="view/answer_count/fmt:intcomma">123</strong>&nbsp;answers,
+              <strong
+                tal:content="view/blueprint_count/fmt:intcomma">123</strong>&nbsp;blueprints,
+              and&nbsp;counting...
+            </div>
+            <div id="homepage-getstarted" class="homepage-portlet">
+              <h2>Get started</h2>
+              <tal:logged_out condition="not:view/user" omit-tag="">
+                <a href="/+login">Creating an account</a> allows you to start
+                working within Launchpad.<br />
+              </tal:logged_out>
+              <p>
+                Learn more about Launchpad in the
+                <a href="https://help.launchpad.net/">user guide</a>
+                or try it for yourself in our
+                <a href="https://qastaging.launchpad.net/">sandbox environment</a>.
+              </p>
+              <tal:logged_in condition="view/user" omit-tag="">
+                If you're ready, you can:
+                <ul tal:define="apphomes view/apphomes">
+                  <li>
+                    <a class="sprite add"
+                      href="/projects/+new">Register a project</a>
+                  </li>
+                  <li>
+                    <a class="sprite add"
+                      href="/people/+newteam">Register a team</a>
+                  </li>
+                  <li tal:condition="not:view/show_whatslaunchpad">
+                    <a class="sprite bug"
+                      tal:attributes="href apphomes/bugs">Browse bugs</a>
+                  </li>
+                  <li tal:condition="not:view/show_whatslaunchpad">
+                    <a class="sprite translate-icon"
+                      tal:attributes="href apphomes/translations">Help translate</a>
+                  </li>
+                  <li tal:condition="not:view/show_whatslaunchpad">
+                    <a class="sprite question"
+                      tal:attributes="href apphomes/answers">Find answers</a>
+                  </li>
+                  <li>
+                    <a class="sprite ppa-icon"
+                      href="/ubuntu/+ppas">Browse Ubuntu PPAs</a>
+                  </li>
+                  <li tal:condition="not:view/show_whatslaunchpad">
+                     <a class="sprite tour" href="/+tour">Take the tour</a>
+                   </li>
+                </ul>
+              </tal:logged_in>
+            </div>
+
+            <div id="homepage-featured" class="homepage-portlet">
+              <h2>Featured projects</h2>
+
+              <div class="featured-project-top"
+                   tal:define="topproject view/featured_projects_top"
+                   tal:condition="topproject">
+                <h3>
+                  <a tal:attributes="href topproject/fmt:url"
+                    tal:content="structure topproject/image:logo"><img /></a>
+                  <a tal:attributes="href topproject/fmt:url"
+                    tal:content="topproject/displayname">Foo project</a>
+                </h3>
+                <p tal:content="structure view/featured_projects_top/summary/fmt:shorten/200">
+                   Foo project is great...
+                </p>
+              </div>
+
+              <div class="two-column-list">
+                <ul class="featured-projects-list">
+                  <li tal:repeat="project view/featured_projects">
+                    <a tal:replace="structure project/fmt:link" />
+                  </li>
+                </ul>
+              </div>
+
+              <ul class="horizontal">
+                <li>
+                  <strong><a href="/projects">Browse all
+                    <tal:count content="view/project_count">42</tal:count>
+                    projects</a>!</strong>
+                </li>
+                <li tal:condition="context/required:launchpad.Edit">
+                  <a class="sprite edit" href="+featuredprojects">Manage
+                  featured project list</a>
+                </li>
+              </ul>
+            </div>
+          </div><!-- yui-u -->
+
+        </div><!-- yui-gc -->
+      </div><!-- homepage -->
+    </div><!--main-->
+  </body>
+</html>

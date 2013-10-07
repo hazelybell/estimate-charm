@@ -1,0 +1,26 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+  <metal:block fill-slot="head_epilogue">
+    <metal:yui-dependencies
+      use-macro="context/@@launchpad_widget_macros/yui2calendar-dependencies" />
+  </metal:block>
+  <body>
+    <div metal:fill-slot="main">
+      <div metal:use-macro="context/@@launchpad_form/form">
+        <p metal:fill-slot="extra_info" class="documentDescription">
+          Publishing this announcement will put it on your project home page
+          and into the Atom/RSS news feed for your project. You can leave an
+          item unannounced for as long as you like, it will be visible only
+          to your project administrators.
+        </p>
+      </div>
+
+      <tal:menu replace="structure context/@@+related-pages" />
+    </div>
+  </body>
+</html>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<GSP VER="3.2">
+<TM>0.574436</TM>
+<Q>edge site:launchpad.net</Q>
+<PARAM name="as_sitesearch" value="launchpad.net" original_value="launchpad.net"/>
+<PARAM name="client" value="google-csbe" original_value="google-csbe"/>
+<PARAM name="cx" value="011948274177882366108:ixpjdn21yfg" original_value="011948274177882366108%3Aixpjdn21yfg"/>
+<PARAM name="ie" value="utf8" original_value="utf8"/>
+<PARAM name="num" value="20" original_value="20"/>
+<PARAM name="oe" value="utf8" original_value="utf8"/>
+<PARAM name="output" value="xml_no_dtd" original_value="xml_no_dtd"/>
+<PARAM name="q" value="edge" original_value="gobuntu"/>
+<PARAM name="start" value="0" original_value="0"/>
+<PARAM name="adkw" value="AELymgVSAg4Z0EIH2LyxeADeNPeaFHoipa7pZ_GD5K757xvLNb3T2vK__0jEvkeBwqMHVUHFWegTVcYpBPvbZwEp5kHEls6J5_vB52dDHCO-cBo5GcKKzLI" original_value="AELymgVSAg4Z0EIH2LyxeADeNPeaFHoipa7pZ_GD5K757xvLNb3T2vK__0jEvkeBwqMHVUHFWegTVcYpBPvbZwEp5kHEls6J5_vB52dDHCO-cBo5GcKKzLI"/>
+<PARAM name="hl" value="en" original_value="en"/>
+<Context>
+<title>Launchpad Search Engine</title>
+</Context>
+<RES SN="1" EN="2">
+
+<M>2</M>
+<FI/>
+<NB>
+<NU>/custom?q=gobuntu+site:launchpad.net&amp;num=20&amp;hl=en&amp;output=xml_no_dtd&amp;client=google-csbe&amp;cx=011948274177882366108:ixpjdn21yfg&amp;ie=UTF-8&amp;oe=UTF-8&amp;start=20&amp;sa=N</NU>
+</NB>
+
+<R N="1">
+<U>https://blueprints.edge.launchpad.net/ubuntu/+spec/gobuntu-hardy</U>
+<UE>https://blueprints.edge.launchpad.net/ubuntu/%2Bspec/gobuntu-hardy</UE>
+<T>Blueprint: &lt;b&gt;gobuntu&lt;/b&gt; hardy</T>
+<RK>0</RK>
+<S></S>
+<LANG>en</LANG>
+<Label>_cse_ixpjdn21yfg</Label>
+<HAS>
+<L/>
+<RT/>
+</HAS>
+</R>
+
+<R N="2">
+<U>https://blueprints.launchpad.net/ubuntu/+spec/gobuntu-hardy</U>
+<UE>https://blueprints.launchpad.net/ubuntu/%2Bspec/gobuntu-hardy</UE>
+<T>Blueprint: &lt;b&gt;Gobuntu&lt;/b&gt; 8.04</T>
+<RK>0</RK>
+<S>Discuss what needs to be done for &lt;b&gt;Gobuntu&lt;/b&gt; and what can be achieved in the Hardy &lt;br&gt;  time frame. Read the full specification » &lt;b&gt;...&lt;/b&gt;</S>
+<LANG>en</LANG>
+<Label>_cse_ixpjdn21yfg</Label>
+<HAS>
+<L/>
+<C SZ="17k" CID="3PPx0kdgdSsJ"/>
+<RT/>
+</HAS>
+</R>
+
+</RES>
+</GSP>
+

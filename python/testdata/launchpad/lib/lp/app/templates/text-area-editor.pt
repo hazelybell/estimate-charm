@@ -1,0 +1,44 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal">
+  <div tal:attributes="id view/content_box_id;
+                       class view/tag_class">
+  <div class="clearfix">
+    <div class="edit-controls" tal:condition="view/can_write">
+      <a tal:attributes="href view/edit_url;
+                         title view/edit_title"
+         class="yui3-editable_text-trigger sprite edit action-icon"
+         >Edit</a>
+    </div>
+
+    <h3 tal:condition="view/title"
+        tal:content="view/title">the title</h3>
+  </div>
+
+  <div class="yui3-editable_text-text"
+       tal:content="structure view/value">some text</div>
+  </div>
+
+  <script tal:condition="view/can_write"
+        tal:content="structure string:
+        LPJS.use('lp.ui.editor', 'lp.client.plugins', function (Y) {
+            var widget = new Y.EditableText({
+                contentBox: ${view/widget_css_selector},
+                accept_empty: ${view/accept_empty},
+                multiline: true,
+                buttons: 'top'
+            });
+            widget.editor.plug({
+                fn: Y.lp.client.plugins.PATCHPlugin, cfg: {
+                  patch: ${view/json_attribute},
+                  resource: ${view/json_resource_uri},
+                  use_html: true
+            }});
+            widget.render();
+            var lpns = Y.namespace('lp');
+            if (!lpns.widgets) {
+                lpns.widgets = {};
+            }
+            lpns.widgets['${view/content_box_id}'] = widget;
+        });
+  "></script>
+</div>

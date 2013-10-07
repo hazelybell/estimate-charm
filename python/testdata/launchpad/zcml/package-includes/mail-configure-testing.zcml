@@ -1,0 +1,22 @@
+<!-- Copyright 2009 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:mail="http://namespaces.zope.org/mail"
+    i18n_domain="zope">
+
+    <include package="zope.sendmail"/>
+
+    <!-- Configure email for testing. Use direct delivery instead of
+    queued, as otherwise tests would be more painful and the background
+    thread created by queuedDelivery causes trouble too -->
+    <mail:testMailer name="test" />
+    <mail:directDelivery name="Mail" permission="zope.SendMail" mailer="test" />
+
+    <!-- Configure a mail box which can be used when testing. Every email that
+         you send using testMailer will appear in this mail box. -->
+    <mail:testMailBox />
+
+</configure>

@@ -1,0 +1,15 @@
+<!-- Copyright 2010 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:xmlrpc="http://namespaces.zope.org/xmlrpc"
+    i18n_domain="launchpad">
+    <browser:url
+        for="lp.buildmaster.interfaces.packagebuild.IPackageBuild"
+        path_expression="string:+build/${build_farm_job/id}"
+        attribute_to_parent="archive"/>
+</configure>

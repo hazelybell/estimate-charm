@@ -1,0 +1,89 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+
+<style type="text/css" metal:fill-slot="head_epilogue">
+  .logtail {
+    padding-left: 2em;
+    margin-top: 0em;
+  }
+</style>
+
+<body>
+
+  <h1 metal:fill-slot="heading">
+    <tal:hostname content="context/hostname">hostname</tal:hostname>:
+    <tal:status content="context/state/title">online</tal:status>
+  </h1>
+
+  <div metal:fill-slot="main" class="visualPadding">
+
+    <div id="update-status" tal:condition="context/required:launchpad.Edit">
+      <h2>Update machine status</h2>
+
+      <div metal:use-macro="context/@@launchpad_form/form">
+      </div>
+
+    </div>
+
+    <div id="current-jobs" tal:define="jobs context/current_jobs">
+
+      <h2>Current jobs</h2>
+
+      <p tal:condition="not: jobs">
+        Not currently processing any jobs.
+      </p>
+
+      <tal:has-jobs condition="jobs">
+        <table class="simple">
+          <tal:jobs repeat="job jobs">
+            <tr>
+              <td><tal:branch replace="structure job/code_import/branch/fmt:link"/></td>
+              <td>Started: <tal:started replace="job/date_started/fmt:approximatedate"/></td>
+              <td>Last heartbeat: <tal:heartbeat replace="job/heartbeat/fmt:approximatedate"/></td>
+            </tr>
+            <tr tal:condition="job/logtail">
+              <td class="logtail" colspan="3"
+                  tal:content="structure job/logtail/fmt:nice_pre">
+              </td>
+            </tr>
+          </tal:jobs>
+        </table>
+      </tal:has-jobs>
+
+    </div>
+
+    <div id="recent-events">
+
+      <h2>Related events</h2>
+
+      <dl>
+        <tal:events repeat="event view/latest_events">
+          <dt>
+            <tal:created replace="event/date_created/fmt:datetime"/>:
+            <tal:has-person condition="event/person">
+              <tal:user replace="structure event/person/fmt:link"/>
+              set
+            </tal:has-person>
+            <tal:event replace="event/event_type/title" />
+            <tal:code-import condition="event/code_import"
+                             replace="structure event/code_import/branch/fmt:link"/>
+          </dt>
+          <dd tal:condition="event/items">
+            <tal:items repeat="item event/items">
+              <tal:type replace="python: item[0].title"/>:
+              <tal:value replace="python: item[1]"/>
+              <br tal:condition="not:repeat/item/end"/>
+            </tal:items>
+          </dd>
+        </tal:events>
+      </dl>
+
+    </div>
+  </div>
+  </body>
+</html>

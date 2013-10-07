@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<xrds:XRDS
+    xmlns="xri://$xrd*($v*2.0)"
+    xmlns:xrds="xri://$xrds"
+    xmlns:tal="http://xml.zope.org/namespaces/tal">
+  <XRD>
+    <Service priority="0">
+      <Type>http://specs.openid.net/auth/2.0/server</Type>
+      <URI tal:content="view/openid_server_url">
+        https://login.launchpad.net/+openid
+      </URI>
+    </Service>
+  </XRD>
+</xrds:XRDS>

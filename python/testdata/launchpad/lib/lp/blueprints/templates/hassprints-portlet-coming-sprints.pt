@@ -1,0 +1,24 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  class="portlet" id="portlet-coming-events"
+  tal:define="coming_sprints context/coming_sprints"
+  tal:condition="coming_sprints"
+>
+  <h2><span class="see-all"><a
+      tal:attributes="href string:/sprints">All events</a></span>
+    Coming events</h2>
+
+  <ul>
+    <li tal:repeat="sprint coming_sprints">
+      <a class="sprite meeting"
+        tal:attributes="href sprint/fmt:url"
+        tal:content="sprint/title" />
+      on <tal:when replace="sprint/time_starts/fmt:date" />
+      <br/><span class="registered">
+        Registered <tal:when replace="sprint/datecreated/fmt:displaydate" />
+      </span>
+    </li>
+  </ul>
+</div>

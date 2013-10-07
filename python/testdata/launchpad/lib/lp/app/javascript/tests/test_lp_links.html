@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<!--
+Copyright 2012 Canonical Ltd.  This software is licensed under the
+GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<html>
+  <head>
+      <title>Test lp-links</title>
+
+      <!-- YUI and test setup -->
+      <script type="text/javascript"
+              src="../../../../../build/js/yui/yui/yui.js">
+      </script>
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/console/assets/console-core.css" />
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/test-console/assets/skins/sam/test-console.css" />
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/test/assets/skins/sam/test.css" />
+
+      <script type="text/javascript"
+              src="../../../../../build/js/lp/app/testing/testrunner.js"></script>
+
+      <link rel="stylesheet" href="../../../app/javascript/testing/test.css" />
+
+      <!-- Dependencies -->
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/testing/mockio.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/client.js"></script>
+
+      <!-- The module under test. -->
+      <script type="text/javascript" src="../lp-links.js"></script>
+
+      <!-- Placeholder for any css asset for this module. -->
+      <!-- <link rel="stylesheet" href="../assets/lp-links-core.css" /> -->
+
+      <!-- The test suite. -->
+      <script type="text/javascript" src="test_lp_links.js"></script>
+
+    </head>
+    <body class="yui3-skin-sam">
+        <ul id="suites">
+            <!-- <li>lp.large_indicator.test</li> -->
+            <li>lp.lp_links.test</li>
+        </ul>
+
+        <!-- The example markup required by the script to run -->
+        <div id="expected-id">
+          <a href="/bugs/14" class="bug-link" id="valid-bug">bug 14</a>
+          <a href="/bugs/200" class="bug-link" id="invalid-bug">bug 200</a>
+          <a href="/+branch/valid" class="branch-short-link" id="valid-branch">lp:valid</a>
+          <a href="/+branch/invalid" class="branch-short-link" id="invalid-branch">lp:invalid</a>
+        </div>
+    </body>
+</html>

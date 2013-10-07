@@ -1,0 +1,39 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+    <ul id="navlinks" class="horizontal">
+      <li
+        tal:define="link view/menu:navigation/related_software_summary"
+        tal:condition="link/enabled"
+        tal:content="structure link/fmt:link" />
+      <li
+        tal:define="link view/menu:navigation/maintained"
+        tal:condition="link/enabled"
+        tal:content="structure link/fmt:link" />
+      <li
+        tal:define="link view/menu:navigation/uploaded"
+        tal:condition="link/enabled"
+        tal:content="structure link/fmt:link" />
+      <li
+        tal:define="link view/menu:navigation/ppa"
+        tal:condition="link/enabled"
+        tal:content="structure link/fmt:link" />
+      <li
+        tal:define="link view/menu:navigation/synchronised"
+        tal:condition="link/enabled"
+        tal:content="structure link/fmt:link" />
+       <li
+        tal:define="link view/menu:navigation/projects"
+        tal:condition="link/enabled"
+        tal:content="structure link/fmt:link" />
+       <li
+        tal:define="link view/menu:navigation/owned_teams"
+        tal:condition="link/enabled"
+        tal:content="structure link/fmt:link" />
+    </ul>
+
+</tal:root>
+

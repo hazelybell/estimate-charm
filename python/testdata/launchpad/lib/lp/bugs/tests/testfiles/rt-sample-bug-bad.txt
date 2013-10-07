@@ -1,0 +1,23 @@
+RT/3.4.5 500 Internal server error
+
+id: ticket/1585
+Queue: OpenSSL-Bugs
+Owner: Nobody
+Creator: pwalten@au1.ibm.com
+Subject: NIST CMAC, AES-CCM and AES-GCM modes
+Status: new
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: pwalten@au1.ibm.com
+Cc:
+AdminCc:
+Created: Fri Oct 05 10:15:53 2007
+Starts: Not set
+Started: Not set
+Due: Not set
+Resolved: Not set
+Told: Not set
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0

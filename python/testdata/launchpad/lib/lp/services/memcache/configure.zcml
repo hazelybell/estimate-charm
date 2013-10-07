@@ -1,0 +1,17 @@
+<!-- Copyright 2009 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:tales="http://namespaces.zope.org/tales"
+    i18n_domain="launchpad">
+
+    <!-- Main memcache interface - the IMemcacheClient Utility -->
+    <utility
+        provides="lp.services.memcache.interfaces.IMemcacheClient"
+        factory="lp.services.memcache.client.memcache_client_factory"
+        />
+</configure>
+

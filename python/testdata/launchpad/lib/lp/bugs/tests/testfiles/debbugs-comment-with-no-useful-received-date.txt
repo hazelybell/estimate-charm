@@ -1,0 +1,23 @@
+Subject: An existing comment
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+From: Sample Person <test@canonical.com>
+To: Debian Bug Tracking System <submit@bugs.debian.org>
+Date: Fri, 14 Dec 2007 18:54:30 +0000
+Received: (at 220301) by thiswontwork.com; 30 May 2008 21:18:12 +0000
+Received: from aeon.ethernal.org [210.54.152.129] 
+	by spohr.debian.org with esmtp (Exim 3.35 1 (Debian))
+	id 1BUXh5-00062V-00; Sun, 30 May 2004 14:18:12 -0700
+Received: from mjb by aeon.ethernal.org with local (Exim 3.35 #1 (Debian))
+	id 1BUXh4-0005mb-00; Mon, 31 May 2004 09:18:10 +1200
+Message-Id: <yetanothermessageid@launchpad>
+Delivered-To: submit@bugs.debian.org
+X-Spam-Checker-Version: SpamAssassin 2.60-bugs.debian.org_2004_03_08 
+	(1.212-2003-09-23-exp) on spohr.debian.org
+X-Spam-Status: No, hits=-5.0 required=4.0 tests=HAS_PACKAGE autolearn=no 
+	version=2.60-bugs.debian.org_2004_03_08
+X-Spam-Level: 
+
+For this message, we'll use the received date. Because server times
+rock!

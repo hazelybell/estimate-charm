@@ -1,0 +1,30 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Format: 1.7
+Date: Thu, 16 Feb 2006 15:57:25 +0000
+Source: foo
+Binary: foo
+Architecture: source
+Version: 1.0-2.2
+Distribution: breezy-updates
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Daniel Silverstone <daniel.silverstone@canonical.com>
+Description: 
+ foo        - Stuff for testing
+Changes: 
+ foo (1.0-2.2) breezy-updates; urgency=low
+ .
+   * Mmm update which makes foo nicer.
+Files: 
+ 12e3113ae1bc7a1af39ece087158293a 516 devel optional foo_1.0-2.2.dsc
+ 0c397c3bb061d4d6679654cc13dc0492 694 devel optional foo_1.0-2.2.diff.gz
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.3 (GNU/Linux)
+
+iD8DBQFFt8FLjn63CGxkqMURAk2zAJ44HR7fRbvf8jBAh1mA5TH/3UU5XQCfUNHT
+JcgfN/QdB3L974Ed6OGK0wI=
+=YP+9
+-----END PGP SIGNATURE-----

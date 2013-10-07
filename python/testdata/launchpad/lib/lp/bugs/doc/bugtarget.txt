@@ -1,0 +1,60 @@
+= Bug Targets =
+
+A bug target is a thing on which a bug can be reported, e.g., an
+IDistributionSourcePackage, an IProduct, etc.
+
+
+== Bug Tasks on Bug Targets ==
+
+Bug targets have a bugtargetdisplayname attribute, which returns a value
+tailored for human reading (e.g. display in Web pages); and a bugtargetname
+attribute, which returns a value tailored for unique identification of the
+target (such as in filterable e-mail messages).
+
+    >>> from zope.component import getUtility
+    >>> from lp.bugs.interfaces.bugtarget import IBugTarget
+    >>> from lp.registry.interfaces.distribution import IDistributionSet
+    >>> from lp.registry.interfaces.product import IProductSet
+    >>> distroset = getUtility(IDistributionSet)
+    >>> debian = distroset.getByName("debian")
+    >>> debian_firefox = debian.getSourcePackage("mozilla-firefox")
+    >>> firefox = getUtility(IProductSet).getByName("firefox")
+    >>> firefox_1_0 = firefox.getSeries("1.0")
+    >>> debian_woody = debian.getSeries("woody")
+    >>> debian_woody_firefox = debian_woody.getSourcePackage("mozilla-firefox")
+
+    >>> IBugTarget.providedBy(firefox)
+    True
+    >>> IBugTarget.providedBy(firefox_1_0)
+    True
+    >>> IBugTarget.providedBy(debian)
+    True
+    >>> IBugTarget.providedBy(debian_firefox)
+    True
+    >>> IBugTarget.providedBy(debian_woody)
+    True
+    >>> IBugTarget.providedBy(debian_woody_firefox)
+    True
+
+    >>> print firefox.bugtargetdisplayname
+    Mozilla Firefox
+    >>> print firefox.bugtargetname
+    firefox
+    >>> print firefox_1_0.bugtargetdisplayname
+    Mozilla Firefox 1.0
+    >>> print firefox_1_0.bugtargetname
+    firefox/1.0
+    >>> print debian.bugtargetdisplayname
+    Debian
+    >>> print debian.bugtargetname
+    debian
+    >>> print debian_firefox.bugtargetdisplayname
+    mozilla-firefox (Debian)
+    >>> print debian_firefox.bugtargetname
+    mozilla-firefox (Debian)
+    >>> print debian_woody.bugtargetdisplayname
+    Debian Woody
+    >>> print debian_woody_firefox.bugtargetdisplayname
+    mozilla-firefox (Debian Woody)
+    >>> print debian_woody_firefox.bugtargetname
+    mozilla-firefox (Debian Woody)

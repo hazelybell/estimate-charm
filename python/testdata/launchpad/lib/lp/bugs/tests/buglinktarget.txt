@@ -1,0 +1,171 @@
+= IBugLinkTarget Interface =
+
+Launchpad includes Malone, the powerful bug tracker. One of the best
+features of Malone is the ability to track a bug in multiple products
+and/or packages. A bug can also be linked to other non-bug tracking
+objects like questions, CVEs or specifications.
+
+The IBugLinkTarget interface is used for that general purpose linking.
+This file documents that interface and can be used to validate
+implementation of this interface on a particular object. (This object is
+made available through the 'target' variable which is defined outside of
+this file, usually by a LaunchpadFunctionalTestCase. This instance
+shouldn't have any bugs linked to it at the start of the test.)
+
+    # Some parts of the IBugLinkTarget interface are only accessible
+    # to a registered user.
+    >>> login('no-priv@canonical.com')
+    >>> from zope.interface.verify import verifyObject
+    >>> from lp.bugs.interfaces.bug import IBugSet
+    >>> from lp.bugs.interfaces.buglink import (
+    ...     IBugLink,
+    ...     IBugLinkTarget,
+    ...     )
+
+    >>> verifyObject(IBugLinkTarget, target)
+    True
+
+== linkBug() ==
+
+    >>> bugset = getUtility(IBugSet)
+    >>> bug1 = bugset.get(1)
+
+The linkBug() method is used to link a bug to the target. It takes as
+parameter the bug which should be linked. The method should return the
+IBugLink that was created.
+
+    >>> link1 = target.linkBug(bug1)
+
+    >>> verifyObject(IBugLink, link1)
+    True
+    >>> link1.target == target
+    True
+    >>> link1.bug == bug1
+    True
+
+When the bug was already linked to the target, the existing link should
+be used.
+
+    >>> target.linkBug(bug1) == link1
+    True
+
+When a IBugLink is created, one IObjectCreatedEvent for the created
+should be fired by the method.
+
+    >>> from lp.testing.event import TestEventListener
+    >>> from lazr.lifecycle.interfaces import (
+    ...     IObjectCreatedEvent, IObjectDeletedEvent)
+    >>> created_events = []
+    >>> created_event_listener = TestEventListener(
+    ...     IBugLink, IObjectCreatedEvent,
+    ...     lambda object, event: created_events.append(event))
+
+    >>> bug2 = bugset.get(2)
+    >>> link2 = target.linkBug(bugset.get(2))
+    >>> created_events[-1].object == link2
+    True
+
+Of course, if no new IBugLink is created, no events should be fired:
+
+    >>> created_events = []
+    >>> target.linkBug(bug2) == link2
+    True
+    >>> created_events
+    []
+
+Anonymous users cannot use linkBug():
+
+    >>> login(ANONYMOUS)
+    >>> target.linkBug(bug2)
+    Traceback (most recent call last):
+      ...
+    Unauthorized...
+
+A user can only link to a private bug if he is subscribed to the bug or
+if he is an administrator:
+
+    >>> login('no-priv@canonical.com')
+    >>> private_bug = bugset.get(6)
+    >>> private_bug.setPrivate(True, factory.makePerson())
+    True
+    >>> target.linkBug(private_bug)
+    Traceback (most recent call last):
+      ...
+    Unauthorized...
+
+    >>> login('foo.bar@canonical.com')
+    >>> private_link = target.linkBug(private_bug)
+
+== bugs ==
+
+The list of bugs linked to the target should be available in the bugs
+attributes:
+
+    >>> [bug.id for bug in target.bugs]
+    [1, 2, 6]
+
+== bug_links ==
+
+The IBugLink objects available on the target should be available in the
+bug_links attribute:
+
+    >>> [link.bug.id for link in target.bug_links]
+    [1, 2, 6]
+
+== unlinkBug() ==
+
+The unlinkBug() method is used to remove a link between a bug and
+the target.
+
+This method is only available to registered users:
+
+    >>> login(ANONYMOUS)
+    >>> target.unlinkBug(bug2)
+    Traceback (most recent call last):
+      ...
+    Unauthorized...
+
+    >>> login('no-priv@canonical.com')
+
+The method returns the linked object which was removed. It should also
+send a IObjectDeletedEvent for the removed IBugLink:
+
+    >>> deleted_events = []
+    >>> deleted_event_listener = TestEventListener(
+    ...     IBugLink, IObjectDeletedEvent,
+    ...     lambda object, event: deleted_events.append(event))
+
+    >>> target.unlinkBug(bug1) == link1
+    True
+    >>> deleted_events[-1].object == link1
+    True
+
+    >>> [bug.id for bug in target.bugs]
+    [2, 6]
+
+When the bug was not linked to the target, that method should return
+None (and not trigger any events):
+
+    >>> deleted_events = []
+    >>> target.unlinkBug(bug1) is None
+    True
+    >>> deleted_events
+    []
+
+A user can only remove a link to a private bug if he is subscribed to
+the bug or if he is an administrator.
+
+    >>> target.unlinkBug(private_bug)
+    Traceback (most recent call last):
+      ...
+    Unauthorized...
+
+    >>> login('foo.bar@canonical.com')
+    >>> target.unlinkBug(private_bug) == private_link
+    True
+
+== Cleanup ==
+
+    # Unregister event listeners.
+    >>> created_event_listener.unregister()
+    >>> deleted_event_listener.unregister()

@@ -1,0 +1,349 @@
+IBranchSetAPI
+=============
+
+    >>> from zope.security.proxy import removeSecurityProxy
+    >>> from datetime import datetime
+    >>> import pytz
+    >>> import xmlrpclib
+    >>> from lp.testing.xmlrpc import XMLRPCTestTransport
+    >>> branchset_api = xmlrpclib.ServerProxy(
+    ...     'http://foo.bar@canonical.com:test@xmlrpc.launchpad.dev/bazaar/',
+    ...     transport=XMLRPCTestTransport())
+
+
+register_branch
+===============
+
+register_branch(branch_url, branch_name, branch_title,
+                branch_description, author_email, product_name,
+                owner_name='')
+
+Let's register a branch using register_branch(). First we make sure that
+there is no branch with the URL we are going to register.
+
+    >>> from lp.code.interfaces.branchlookup import IBranchLookup
+    >>> branch_url = 'http://foo.com/branch'
+    >>> getUtility(IBranchLookup).getByUrl(branch_url) is None
+    True
+
+The only thing that we have to supply is the branch url. The rest is
+optional, so we pass '' for the rest of the parameters. The reason we
+pass '' is that XMLRPC doesn't allow optional parameters, and None is an
+extension to XMLRPC which we don't want to rely on. We use the currently
+authenticated user as the owner of the branch.
+
+    >>> branchset_api.register_branch(
+    ...      'http://foo.com/branch', '', '', '', '', '')
+    'http://code.launchpad.dev/~name16/+junk/branch'
+
+Now we can see that a branch got registered:
+
+    >>> new_branch = getUtility(IBranchLookup).getByUrl(branch_url)
+
+The author_email is now ignored as the author attribute has been
+removed from the branch object.
+
+    >>> print new_branch.owner.displayname
+    Foo Bar
+
+The name got set to the last component of the URL since it wasn't
+specified:
+
+    >>> print new_branch.name
+    branch
+
+Since we didn't specify product, title or description, they are None:
+
+    >>> new_branch.product is None
+    True
+
+Also, Launchpad is scheduled to mirror this branch on its next mirror run:
+
+    >>> removeSecurityProxy(new_branch).sync()
+    >>> print new_branch.next_mirror_time is not None
+    True
+    >>> print new_branch.next_mirror_time < datetime.now(pytz.timezone('UTC'))
+    True
+
+(We remove the security proxy in order to ensure that next_mirror_time has a
+real object in it, rather than an expression builder.)
+
+Let's register a branch specifying the name, description and product as
+well:
+
+    >>> other_branch_url = 'http://foo.com/other_branch'
+    >>> branchset_api.register_branch(
+    ...      other_branch_url, 'branch_name', 'branch_title',
+    ...      'branch description', 'test@canonical.com', 'evolution')
+    'http://code.launchpad.dev/~name16/evolution/branch_name'
+
+    >>> new_branch = getUtility(IBranchLookup).getByUrl(other_branch_url)
+    >>> print new_branch.owner.displayname
+    Foo Bar
+
+    >>> print new_branch.name
+    branch_name
+    >>> print new_branch.product.displayname
+    Evolution
+
+If we try to register a branch with a branch name that is already used:
+
+    >>> yet_another_branch_url = 'http://foo.com/yet_another_branch'
+    >>> branchset_api.register_branch(
+    ...      yet_another_branch_url, 'branch_name', 'branch_title',
+    ...      'branch description', 'test@canonical.com', 'evolution')
+    Traceback (most recent call last):
+    ...
+    Fault: <Fault 220: 'Branch name already in use:
+      A branch with the name "branch_name" already exists
+      for name16 in evolution.'>
+
+However a branch can be registered with a name used by a different user.
+
+    >>> evo_main_url = 'http://foo.example.com/evo/main'
+    >>> branchset_api.register_branch(
+    ...      evo_main_url, 'main', 'branch_title',
+    ...      'branch description', 'test@canonical.com', 'evolution')
+    'http://code.launchpad.dev/~name16/evolution/main'
+
+This check must also detect branch name conflict for +junk branches:
+
+    >>> branchset_api.register_branch(
+    ...      yet_another_branch_url, 'branch', '', '', '', '')
+    Traceback (most recent call last):
+    ...
+    Fault: <Fault 220: 'Branch name already in use:
+      A junk branch with the name "branch" already exists for name16.'>
+
+If we give a product name that doesn't exist, we get an error:
+
+    >>> new_branch_url = 'http://foo.com/new_branch'
+    >>> branchset_api.register_branch(
+    ...      new_branch_url, 'branch_name', 'branch_title',
+    ...      'branch description', 'test@canonical.com', 'non-existing')
+    Traceback (most recent call last):
+    ...
+    Fault: <Fault 10: 'No such project: non-existing'>
+
+If we try to register a branch with an invalid URI:
+
+    >>> invalid_uri = '.'
+    >>> branchset_api.register_branch(
+    ...     invalid_uri, 'branch_name', 'branch title', 'branch description',
+    ...     'test@canonical.com', 'evolution')
+    Traceback (most recent call last):
+    ...
+    Fault: <Fault 120: 'Invalid URL: .\n&quot;.&quot; is not a valid URI'>
+
+If we try to register a URL with a unsupported scheme:
+
+    >>> bad_scheme = 'svn://chinstrap.ubuntu.com/foo/bar/baz'
+    >>> branchset_api.register_branch(
+    ...     bad_scheme, 'branch_name', 'branch title', 'branch description',
+    ...     'test@canonical.com', 'evolution')
+    Traceback (most recent call last):
+    ...
+    Fault: <Fault 120: 'Invalid URL:
+    svn://chinstrap.ubuntu.com/foo/bar/baz\nThe URI scheme
+    &quot;svn&quot; is not allowed.  Only URIs with the following
+    schemes may be used: bzr+ssh, ftp, http, https, sftp'>
+
+If we try to register a root URL:
+
+    >>> root_url = 'http://example.com/'
+    >>> branchset_api.register_branch(
+    ...     root_url, 'branch_name', 'branch title', 'branch description',
+    ...     'test@canonical.com', 'evolution')
+    Traceback (most recent call last):
+    ...
+    Fault: <Fault 120: 'Invalid URL: http://example.com\nURLs for branches
+    cannot point to the root of a site.'>
+
+If we try to register a URL in launchpad.net (actually, launchpad.dev because
+we are in the testing environment):
+
+    >>> launchpad_url = 'https://blueprints.launchpad.dev/foo/bar/baz'
+    >>> branchset_api.register_branch(
+    ...     launchpad_url, 'branch_name', 'branch title',
+    ...     'branch description', 'test@canonical.com', 'evolution')
+    Traceback (most recent call last):
+    ...
+    Fault: <Fault 120:
+    'Invalid URL: https://blueprints.launchpad.dev/foo/bar/baz\nFor
+    Launchpad to mirror a branch, the original branch cannot be on
+    <code>launchpad.dev</code>.'>
+
+Registering a branch name that ends in a slash works, but the slash
+gets removed from the stored URL:
+
+    >>> branchset_api.register_branch(
+    ...     new_branch_url + '/', 'new_branch', 'branch_title',
+    ...     'branch_description', 'test@canonical.com', 'evolution')
+    'http://code.launchpad.dev/~name16/evolution/new_branch'
+
+    >>> new_branch = getUtility(IBranchLookup).getByUrl(new_branch_url)
+    >>> print new_branch.url
+    http://foo.com/new_branch
+    >>> print new_branch.owner.name
+    name16
+    >>> print new_branch.product.name
+    evolution
+    >>> print new_branch.name
+    new_branch
+
+
+If we try to register a branch which is already registered in Launchpad:
+
+    >>> getUtility(IBranchLookup).getByUrl(other_branch_url) is not None
+    True
+    >>> branchset_api.register_branch(
+    ...      other_branch_url, 'branch_name', 'branch_title',
+    ...      'branch description', 'test@canonical.com', 'evolution')
+    Traceback (most recent call last):
+    ...
+    Fault: <Fault 50: 'http://foo.com/other_branch is already registered.'>
+
+
+We get the same error if we try to register the branch with a slash appended:
+    >>> branchset_api.register_branch(
+    ...      other_branch_url + '/', 'branch_name', 'branch_title',
+    ...      'branch description', 'test@canonical.com', 'evolution')
+    Traceback (most recent call last):
+    ...
+    Fault: <Fault 50: 'http://foo.com/other_branch is already registered.'>
+
+Attempting to register a branch for a product where the branch visibility
+policy is forbidden will cause a fault result.
+
+    >>> test_user_api = xmlrpclib.ServerProxy(
+    ...     'http://no-priv@canonical.com:test@xmlrpc.launchpad.dev/bazaar/',
+    ...     transport=XMLRPCTestTransport())
+    >>> test_user_api.register_branch(
+    ...     'http://foo.com/bar', 'branch_name', 'branch_title',
+    ...     'branch description', 'no-priv@canonical.com', 'landscape')
+    Traceback (most recent call last):
+    ...
+    Fault: <Fault 110: 'You are not allowed to create a branch for project:
+    The Landscape Project'>
+
+We can register a branch as being owned by a team, rather than just an
+individual:
+
+    >>> branchset_api.register_branch(
+    ...     'http://example.com/unregistered-as-yet', 'team-branch',
+    ...     'new-title', 'new-description', 'test@canonical.com',
+    ...     'evolution', 'name18')
+    'http://code.launchpad.dev/~name18/evolution/team-branch'
+
+If the team doesn't exist, we raise a Fault that says so:
+
+    >>> branchset_api.register_branch(
+    ...     'http://example.com/team-dont-exist', 'team-dont-exist',
+    ...     'title', 'description', 'test@canonical.com', 'evolution',
+    ...     'no-existy-teamo')
+    Traceback (most recent call last):
+    ...
+    Fault: <Fault 200: 'No such person or team: no-existy-teamo'>
+
+We can only register branches as belonging to a team that we are a
+member of. Doing otherwise raises a Fault:
+
+    >>> branchset_api.register_branch(
+    ...     'http://example.com/invalid-team', 'invalid-team', 'title',
+    ...     'description', 'test@canonical.com', 'evolution',
+    ...     'landscape-developers')
+    Traceback (most recent call last):
+    ...
+    Fault: <Fault 250: 'name16 is not a member of landscape-developers.'>
+
+Trying to register a branch with an invalid name will fail with a fault that
+explains the problem:
+
+    >>> branchset_api.register_branch(
+    ...     'http://example.com/invalid-branch-name', '.bzr', 'title', 'desc',
+    ...     'test@canonical.com', 'evolution')
+    Traceback (most recent call last):
+    ...
+    Fault: <Fault 260: 'Invalid branch name &#x27;.bzr&#x27;. Branch names must ...
+
+Crazy unicode characters are also invalid:
+
+    >>> branchset_api.register_branch(
+    ...     'http://example.com/invalid-branch-name',
+    ...      u'\N{latin small letter e with acute}', 'title', 'desc',
+    ...     'test@canonical.com', 'evolution')
+    Traceback (most recent call last):
+    ...
+    Fault: <Fault 260: u'Invalid branch name &#x27;\xe9&#x27;. Branch names must ...
+
+
+link_branch_to_bug(branch_url, bug_id)
+======================================
+
+link_branch_to_bug() associates a branch with a bug. Let's associate
+the branch we registered with bug 1. If the link is successful, the bug
+URL is returned.
+
+    >>> branchset_api.link_branch_to_bug(other_branch_url, '1')
+    'http://bugs.launchpad.dev/bugs/1'
+
+Let's take a look to see that the branch actually got linked to the bug:
+
+    >>> from lp.bugs.interfaces.bug import IBugSet
+    >>> bug_one = getUtility(IBugSet).get(1)
+    >>> for bug_branch in bug_one.linked_branches:
+    ...     print bug_branch.branch.url
+    http://foo.com/other_branch
+
+We get an error if we try to specify a non-existant branch or bug:
+
+    >>> branchset_api.link_branch_to_bug('http://foo.com/unknown', '1')
+    Traceback (most recent call last):
+    ...
+    Fault: <Fault 30: 'No such branch: http://foo.com/unknown'>
+    >>> branchset_api.link_branch_to_bug(branch_url, '99')
+    Traceback (most recent call last):
+    ...
+    Fault: <Fault 40: 'No such bug: 99'>
+
+
+resolve_lp_path
+---------------
+
+The resolve_lp_path API allows clients to retrieve a list of URLs for a
+branch by specifying the path component of an lp: URL.
+
+Use of this method by any client other than the 'Launchpad' plugin of
+Bazaar is strictly unsupported.
+
+This API is deprecated, and will eventually be replaced with an
+equivalent method in the new Launchpad API infrastructure.
+
+Note that authentication is not required to use this method.
+
+    >>> branchset_api = xmlrpclib.ServerProxy(
+    ...     'http://xmlrpc.launchpad.dev/bazaar/',
+    ...     transport=XMLRPCTestTransport())
+
+
+On success, resolve_lp_path returns a dict containing a single key,
+'urls':
+
+    >>> results = branchset_api.resolve_lp_path('~vcs-imports/evolution/main')
+    >>> print results.keys()
+    ['urls']
+
+
+The value of a key is a list of URLs from which the branch can be
+accessed:
+
+    >>> results = branchset_api.resolve_lp_path('~vcs-imports/evolution/main')
+    >>> for url in results['urls']:
+    ...     print url
+    bzr+ssh://bazaar.launchpad.dev/~vcs-imports/evolution/main
+    http://bazaar.launchpad.dev/~vcs-imports/evolution/main
+
+The URLs that are likely to be faster or provide write access appear
+earlier in the list.
+
+For more tests see `lp.code.xmlrpc.tests.test_branch.py`.

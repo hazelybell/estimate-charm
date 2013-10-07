@@ -1,0 +1,18 @@
+Launchpad pages end with a comment that displays how many actions outside of
+the regular python code we've issued to satisfy the request. Note that we say "at
+least" because unfortunately some queries may be issued after the page may
+finish rendering -- the authoritative source is in OOPS reports or in the web
+app's stderr.
+
+  >>> browser.open('http://launchpad.dev/')
+  >>> print browser.contents
+  <!DOCTYPE...
+  ...<!--... At least ... actions issued in ... seconds ...-->...
+
+It's available for any page:
+
+
+  >>> browser.open('http://launchpad.dev/~mark/')
+  >>> print browser.contents
+  <!DOCTYPE...
+  ...<!--... At least ... actions issued in ... seconds ...-->...

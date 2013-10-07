@@ -1,0 +1,32 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="malone"
+>
+  <body>
+<div metal:fill-slot="main"
+     tal:define="batchnav view/getAllBatched;
+                 batch batchnav/currentBatch">
+
+  <div style="margin-top: 1em; margin-bottom: 1em;">
+    <a href="/bugs/cve">Search CVEs</a>
+  </div>
+
+  <tal:navigation replace="structure batchnav/@@+navigation-links-upper" />
+
+  <div tal:repeat="cve batch"
+       tal:replace="structure cve/@@+listing-detailed" />
+
+  <tal:navigation replace="structure batchnav/@@+navigation-links-lower" />
+
+  <div tal:replace="structure context/@@+portlet-details" />
+
+</div>
+</body>
+</html>

@@ -1,0 +1,28 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Origin: Ubuntu/warty
+Format: 1.7
+Date: Mon, 19 Feb 2007 01:56:25 -0200
+Architecture: all
+Version: 20070219.1234
+Distribution: breezy-autotest
+Source: dist-upgrader
+Binary: dist-upgrader
+Urgency: low
+Maintainer: Foo Bar <foo.bar@canonical.com>
+Changed-By: Foo Bar <foo.bar@canonical.com>
+Changes:
+ .
+ * should fail due to bad tarball disectory name.
+ .
+Files:
+ e1da13face32e46e30f49ca8de86a73e 385 raw-dist-upgrader - dist-upgrader_20070219.1234_all.tar.gz
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+
+iEYEARECAAYFAk3WbC8ACgkQjn63CGxkqMVwQACdFjEhUgM1+9MPPbt0LFswZrMT
+gpgAoJbOcQZXkD13VcL7tfCd9+MN8VHc
+=I7kk
+-----END PGP SIGNATURE-----

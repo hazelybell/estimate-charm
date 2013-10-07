@@ -1,0 +1,10 @@
+Bug #%(bug_id)s status changed in %(bugtask_target_name)s:
+
+    %(old_status)s => %(new_status)s
+
+%(bugtask_url)s
+"%(bugtask_title)s"
+
+This bug is linked to #%(question_id)s.
+%(question_title)s
+%(question_url)s

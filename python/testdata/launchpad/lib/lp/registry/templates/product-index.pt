@@ -1,0 +1,265 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad">
+  <tal:registering metal:fill-slot="registering">
+    Registered
+    <tal:created replace="context/datecreated/fmt:approximatedate" />
+    by
+    <tal:registrant replace="structure context/registrant/fmt:link" />
+  </tal:registering>
+
+<head>
+  <tal:head-epilogue metal:fill-slot="head_epilogue">
+    <tal:uses_launchpad_bugtracker
+       condition="context/bug_tracking_usage/enumvalue:LAUNCHPAD">
+      <script type="text/javascript">
+          LPJS.use('lp.registry.structural_subscription', function(Y) {
+              var module = Y.lp.registry.structural_subscription;
+              Y.on('domready', function() {
+                module.setup({content_box: "#structural-subscription-content-box"});
+              });
+          });
+      </script>
+    </tal:uses_launchpad_bugtracker>
+  </tal:head-epilogue>
+</head>
+
+  <body>
+    <tal:main metal:fill-slot="main"
+      define="overview_menu context/menu:overview">
+      <div class="top-portlet">
+        <p id="project-inactive" class="warning message"
+          tal:condition="not: context/active">
+          This project is currently inactive
+          <a tal:replace="structure overview_menu/review_license/fmt:icon"/>
+        </p>
+
+    <tal:warning-for-owner
+      condition="view/show_commercial_subscription_info">
+      <div
+        style="border-bottom: 1px solid #EBEBEB; margin-bottom: 1em;"
+        tal:condition="context/commercial_subscription_is_due"
+        tal:content="structure context/@@+portlet-requires-subscription"/>
+    </tal:warning-for-owner>
+
+	<div class="summary"
+	  tal:content="structure context/summary/fmt:markdown">
+          $Product.summary goes here. This should be quite short,
+          just a single paragraph of text really, giving the project
+          highlights.
+        </div>
+
+        <div class="description"
+          tal:content="structure context/description/fmt:markdown"
+          tal:condition="context/description">
+          $Product.description goes here. This should be a longer piece of
+          text, up to three paragraphs in length, which gives much more
+          detailed information about the open source project in question.
+        </div>
+
+        <div tal:replace="structure overview_menu/branding/fmt:link" />
+        <ul id="external-links" class="horizontal"
+          tal:condition="view/has_external_links">
+          <li tal:condition="view/should_display_homepage">
+            <a id="homepageurl-link" class="sprite external-link"
+              rel="nofollow"
+              tal:attributes="href context/homepageurl">Home page</a>
+          </li>
+          <li tal:repeat="link view/external_links">
+            <a tal:replace="structure link/fmt:link" />
+          </li>
+        </ul>
+      </div>
+
+      <div class="yui-g">
+        <div class="yui-u first">
+          <div id="project-info" class="portlet">
+            <h2>Project information</h2>
+
+            <div class="two-column-list">
+              <dl id="partof" tal:condition="context/project">
+                <dt>Part of:</dt>
+                <dd><a tal:replace="structure context/project/fmt:link" /></dd>
+              </dl>
+
+              <dl id="owner" tal:condition="context/owner">
+                <dt>Maintainer:</dt>
+                <dd tal:content="structure view/maintainer_widget" />
+              </dl>
+
+              <dl id="aliases" tal:condition="context/aliases">
+                <dt>Also known as:</dt>
+                <dd><tal:aliases repeat="alias context/aliases">
+                  <tal:alias replace="alias">something</tal:alias
+                    ><tal:comma condition="not:repeat/alias/end">,</tal:comma>
+                </tal:aliases></dd>
+              </dl>
+
+              <dl id="driver">
+                <dt>Driver:</dt>
+                <dd tal:content="structure view/driver_widget" />
+              </dl>
+
+              <dl id="dev-focus"
+                  tal:define="dev_focus context/development_focus;
+                              trunk dev_focus/branch;
+                              trunk_visible trunk/required:launchpad.View|nothing">
+                <dt>Development focus:</dt>
+                <dd>
+                  <p>
+                  <a tal:attributes="href dev_focus/fmt:url"
+                     tal:content="string:${dev_focus/name} series" />&nbsp;
+                  <a tal:replace="structure overview_menu/edit/fmt:icon" /></p>
+                  <p tal:condition="trunk_visible">
+                    <a tal:replace="structure trunk/fmt:link" />&nbsp;
+                    <a tal:replace="structure dev_focus/menu:overview/set_branch/fmt:icon" />
+                    <br/>
+                    <a tal:replace="structure trunk/menu:context/source/fmt:link"/>
+                  </p>
+                </dd>
+              </dl>
+
+              <dl id="product-languages"
+                tal:condition="view/show_programming_languages">
+                <dt>Programming Languages:</dt>
+                <dd tal:content="structure view/languages_edit_widget" />
+              </dl>
+
+              <dl id="licences">
+                <dt>Licences:</dt>
+                <dd>
+                  <tal:licenses repeat="license context/licenses">
+                    <tal:license replace="license/title">GPL</tal:license><tal:comma
+                        condition="not:repeat/license/end">,</tal:comma>
+                  </tal:licenses>
+                  <tal:none condition="not:context/licenses">None specified</tal:none>
+                  <div class="scrolled-box"
+                     condition="view/show_license_info">
+                    (<tal:license_info replace="context/license_info" />)
+                  </div>
+                </dd>
+                <dd id="commercial_subscription"
+                  tal:condition="context/commercial_subscription">
+                  Commercial subscription expires
+                  <tal:expiry content="context/commercial_subscription/date_expires/fmt:date" />
+                </dd>
+                <dd id="license-status" tal:condition="view/show_license_status">
+                  <strong tal:content="structure context/license_status/description" />
+                </dd>
+              </dl>
+            </div>
+
+            <p>
+              <a tal:replace="structure overview_menu/rdf/fmt:link" />
+            </p>
+
+            <div id="project-admin-whiteboard" class="whiteboard scrolled-box"
+              tal:condition="context/required:launchpad.Moderate">
+              <div>
+                <strong>Whiteboard</strong>&nbsp;
+                <a tal:replace="structure overview_menu/review_license/fmt:icon"/>
+              </div>
+              <tal:whiteboard replace="structure context/reviewer_whiteboard/fmt:text-to-html" />
+            </div>
+          </div>
+        </div>
+
+        <div class="yui-u">
+          <div class="portlet">
+            <h2>
+              <span class="see-all"><a
+                tal:replace="structure overview_menu/series/fmt:link" /></span>
+              Series and milestones
+            </h2>
+
+            <iframe style="width: 90%"
+              metal:use-macro="context/@@+timeline-macros/timeline-iframe" />
+
+            <p id="development-focus">
+              <a tal:replace="structure context/development_focus/fmt:link" />
+              is the current focus of development
+            </p>
+
+            <ul class="horizontal">
+              <li tal:condition="overview_menu/series_add/enabled">
+                <a tal:replace="structure overview_menu/series_add/fmt:link" />
+              </li>
+              <li>
+                <a tal:replace="structure overview_menu/milestones/fmt:link" />
+              </li>
+              <li tal:define="link context/menu:overview/view_recipes"
+                  tal:condition="link/enabled">
+                <a tal:replace="structure link/fmt:link" />
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="yui-g">
+        <div class="yui-u first">
+          <div tal:content="structure context/@@+portlet-listfaqs"
+            tal:condition="context/answers_usage/enumvalue:LAUNCHPAD" />
+
+          <div tal:content="structure context/@@+portlet-latestbugs"
+            tal:condition="context/bug_tracking_usage/enumvalue:LAUNCHPAD" />
+
+          <div tal:content="structure context/@@+portlet-top-contributors" />
+
+          <div tal:content="structure context/@@+portlet-packages" />
+        </div>
+
+        <div class="yui-u">
+          <div tal:content="structure context/@@+portlet-latestquestions"
+            tal:condition="context/answers_usage/enumvalue:LAUNCHPAD" />
+
+          <div tal:content="structure context/@@+portlet-latestspecs"
+            tal:condition="context/blueprints_usage/enumvalue:LAUNCHPAD" />
+
+          <div tal:content="structure context/@@+portlet-coming-sprints" />
+        </div>
+        <div class="yui-u">
+          <div id="structural-subscription-content-box"></div>
+        </div>
+
+      </div>
+    </tal:main>
+
+    <tal:side metal:fill-slot="side"
+      define="overview_menu context/menu:overview">
+      <tal:menu replace="structure view/@@+global-actions" />
+
+      <div tal:replace="structure context/@@+get-involved" />
+
+      <div id="downloads" class="top-portlet downloads"
+        tal:condition="context/information_type/enumvalue:PUBLIC"
+        tal:define="release view/latest_release_with_download_files">
+        <h2>Downloads</h2>
+
+        <tal:release condition="release">
+          <tal:downloads replace="structure release/@@+portlet-downloads"/>
+        </tal:release>
+
+        <p class="alternate">
+          <a class="sprite info"
+            tal:define="link overview_menu/downloads"
+            tal:condition="release"
+            tal:attributes="href link/fmt:url;
+                            title link/summary">All downloads</a>
+           <tal:no-files condition="not: release">
+             <tal:name replace="context/displayname" />
+             does not have any download files registered with Launchpad.
+           </tal:no-files>
+        </p>
+      </div>
+
+      <div tal:replace="structure context/@@+portlet-latestannouncements" />
+    </tal:side>
+
+
+  </body>
+</html>

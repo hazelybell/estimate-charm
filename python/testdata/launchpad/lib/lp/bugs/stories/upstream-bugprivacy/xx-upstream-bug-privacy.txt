@@ -1,0 +1,213 @@
+When filing a private security bug upstream, with no upstream bug
+contact, the maintainer will be subscribed to the bug instead.
+
+    >>> browser = setupBrowser(auth="Basic foo.bar@canonical.com:test")
+    >>> browser.open("http://localhost:9000/firefox/+filebug")
+    >>> browser.getControl('Summary', index=0).value = (
+    ...     "this is a newly created private bug")
+    >>> browser.getControl("Continue").click()
+
+    >>> browser.getControl(name="field.title").value = (
+    ...     "this is a newly created private bug")
+    >>> browser.getControl(name="field.comment").value = (
+    ...     "very secret info here")
+    >>> browser.getControl("Private Security").selected = True
+    >>> browser.getControl("Submit Bug Report").click()
+
+    >>> bug_id = browser.url.split("/")[-1]
+    >>> print browser.url.replace(bug_id, "BUG-ID")
+    http://bugs.launchpad.dev/firefox/+bug/BUG-ID
+
+
+Now the reporter is subscribed.
+
+    >>> from zope.component import getUtility
+
+    >>> from lp.testing import login, logout
+    >>> from lp.bugs.interfaces.bug import IBugSet
+
+    >>> login("foo.bar@canonical.com")
+
+    >>> bug = getUtility(IBugSet).get(bug_id)
+
+    >>> sorted(subscriber.name for subscriber in bug.getDirectSubscribers())
+    [u'name16']
+
+    >>> logout()
+
+Of course, we're able to see the private bug we've just filed in the
+bug listing.
+
+    >>> browser.open("http://localhost:9000/firefox/+bugs")
+    >>> print browser.contents.replace(bug_id, "BUG-ID")
+    <!DOCTYPE...
+    ...
+    ...Mozilla Firefox...
+    ...
+    ...4 results...
+    ...
+    ...5...
+    ...Critical...
+    ...
+    ...4...
+    ...Medium...
+    ...
+    ...1...
+    ...Low...
+    ...
+    ...BUG-ID...
+    ...Undecided...
+
+== Checking basic access to the private bug pages ==
+
+Trying to access the task edit page of a task on a private bug
+fails, because we pretend that inaccessible private bugs do not exist.
+
+    >>> browser = setupBrowser()
+    >>> browser.open(
+    ...     "http://launchpad.dev/firefox/+bug/%s/+editstatus" % bug_id)
+    Traceback (most recent call last):
+    ...
+    NotFound:...
+
+The no-privs user cannot access bug #10, because it's filed on a private bug on
+which the no-privs is not an explicit subscriber.
+
+    >>> browser = setupBrowser(auth="Basic no-priv@canonical.com:test")
+    >>> browser.open(
+    ...     "http://launchpad.dev/firefox/+bug/%s/+editstatus" % bug_id)
+    Traceback (most recent call last):
+    ...
+    NotFound:...
+
+Foo Bar accesses the bug page of a private bug. He is allowed to
+view the page because he is an explicit subscriber on the bug.
+
+    >>> browser = setupBrowser(auth="Basic foo.bar@canonical.com:test")
+    >>> browser.open("http://launchpad.dev/firefox/+bug/%s" % bug_id)
+    >>> print browser.headers["Status"]
+    200 Ok
+
+He now accesses the task page of a task on a private bug; also
+permitted.
+
+    >>> browser = setupBrowser(auth="Basic foo.bar@canonical.com:test")
+    >>> browser.open("http://launchpad.dev/firefox/+bug/%s/+editstatus" % bug_id)
+    >>> print browser.headers["Status"]
+    200 Ok
+
+
+
+View the bug task listing page as an anonymous user. Note that the
+private bug just filed by Sample Person is not visible.
+
+  >>> print http(r"""
+  ... GET /firefox/+bugs HTTP/1.1
+  ... Accept-Language: en-ca,en-us;q=0.8,en;q=0.5,fr-ca;q=0.3
+  ... """)
+  HTTP/1.1 200 Ok
+  ...3 results...
+  ...5...
+  ...4...
+  ...1...
+  ...
+
+Trying to access a private upstream bug as an anonymous user results
+in a page not found error.
+
+  >>> print http(r"""
+  ... GET /firefox/+bug/6 HTTP/1.1
+  ... """)
+  HTTP/1.1 200 Ok
+  ...
+
+  >>> print http(r"""
+  ... GET /firefox/+bug/14 HTTP/1.1
+  ... """)
+  HTTP/1.1 404 Not Found
+  ...
+
+View the upstream Firefox bug listing as user Foo Bar. Note that Foo
+Bar cannot see in this listing the private bug that Sample Person
+submitted earlier.
+
+  >>> print http(r"""
+  ... GET /firefox/+bugs HTTP/1.1
+  ... Authorization: Basic Zm9vLmJhckBjYW5vbmljYWwuY29tOnRlc3Q=
+  ... """)
+  HTTP/1.1 200 Ok
+  ...Mozilla Firefox...
+  ...5...Firefox install instructions should be complete...
+  ...4...Reflow problems with complex page layouts...
+  ...1...Firefox does not support SVG...
+  ...
+
+
+View bugs on Mozilla Firefox as the no-privs user:
+
+  >>> print http(r"""
+  ... GET /firefox/+bugs HTTP/1.1
+  ... Authorization: Basic bm8tcHJpdkBjYW5vbmljYWwuY29tOnRlc3Q=
+  ... """)
+  HTTP/1.1 200 Ok
+  ...
+      Mozilla Firefox
+  ...
+
+Note that the no-privs user doesn't have the permissions to see bug #13.
+
+  >>> print http(r"""
+  ... GET /firefox/+bug/14 HTTP/1.1
+  ... Authorization: Basic bm8tcHJpdkBjYW5vbmljYWwuY29tOnRlc3Q=
+  ... """)
+  HTTP/1.1 404 Not Found
+  ...
+
+This is also true if no-privs tries to access the bug from another
+context.
+
+  >>> print http(r"""
+  ... GET /tomcat/+bug/14 HTTP/1.1
+  ... Authorization: Basic bm8tcHJpdkBjYW5vbmljYWwuY29tOnRlc3Q=
+  ... """)
+  HTTP/1.1 404 Not Found
+  ...
+
+Sample Person views a bug, which they're about to set private:
+
+  >>> print http(r"""
+  ... GET /firefox/+bug/4/+edit HTTP/1.1
+  ... Authorization: Basic dGVzdEBjYW5vbmljYWwuY29tOnRlc3Q=
+  ... """)
+  HTTP/1.1 200 Ok
+  ...
+  ...Reflow problems with complex page layouts...
+  ...
+
+Sample Person sets the bug private and is made an explicit subscriber
+in the process.
+
+  ... POST /firefox/+bug/4/+secrecy HTTP/1.1
+  ... Authorization: Basic dGVzdEBjYW5vbmljYWwuY29tOnRlc3Q=
+  ... Content-Length: 429
+  ... Content-Type: multipart/form-data; boundary=---------------------------10389799518848978361196772104
+  ... 
+  ... -----------------------------10389799518848978361196772104
+  ... Content-Disposition: form-data; name="field.private.used"
+  ... 
+  ... 
+  ... -----------------------------10389799518848978361196772104
+  ... Content-Disposition: form-data; name="field.private"
+  ... 
+  ... on
+  ... -----------------------------10389799518848978361196772104
+  ... Content-Disposition: form-data; name="UPDATE_SUBMIT"
+  ... 
+  ... Change
+  ... -----------------------------10389799518848978361196772104--
+  ... """)
+  HTTP/1.1 200 Ok
+  ...
+  ...Cc:...
+  ...Sample Person...
+  ...

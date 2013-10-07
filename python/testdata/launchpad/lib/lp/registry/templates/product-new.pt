@@ -1,0 +1,120 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+>
+<body>
+  <div metal:fill-slot="main">
+
+  <script type="text/javascript">
+      /*
+       * When step 2 of this wizard has search results, we want to hide the
+       * details widgets until the user states that the project they are
+       * registering is not a duplicate.
+       */
+      LPJS.use('registry.product-views',  function(Y) {
+          Y.on('domready', function() {
+              var view = new Y.registry.views.NewProduct();
+              view.render();
+          });
+      });
+  </script>
+
+    <div id="staging-message" style="background: #e0f0d0;
+        padding: 0.3em; border-radius: 5px; margin-bottom: 1em;"
+      tal:condition="not: is_demo">
+      You can <strong>test Launchpad's features</strong> at <a
+      href="https://staging.launchpad.net/">staging.launchpad.net</a>
+      <form class="inline" action="https://staging.launchpad.net/">
+        <input type="submit" value="Oh, I want to create a test project" />
+      </form>
+    </div>
+
+    <div metal:use-macro="context/@@launchpad_form/form">
+      <metal:step fill-slot="extra_info">
+      <div style="float: right;">Not sure what to do?
+        <a href="https://help.launchpad.net/Feedback">Contact us</a>
+      </div>
+
+      <div tal:condition="view/is_step/1">
+        <p>
+          Launchpad projects are shared by all communities to encourage
+          collaboration between developers, translators, packagers, and other
+          contributors.
+        </p>
+
+        <p>
+          You do not need to register a project to:
+        </p>
+
+        <ul class="bulleted">
+          <li><a href="https://help.launchpad.net/Teams">Register
+            a team</a></li>
+          <li><a href="https://help.launchpad.net/Packaging/PPA">Activate
+            a PPA</a></li>
+          <li><a href="https://help.launchpad.net/Code/PersonalBranches">Access
+            your personal branches</a> (sandbox, repo)</li>
+          <li><a href="https://help.launchpad.net/Translations/YourProject">Translate
+            a project</a> that is already registered</li>
+          <li><a href="https://help.launchpad.net/ProjectGroups">Request a project group</a></li>
+        </ul>
+      </div>
+
+      <h2 class="legend" id="step-title">Step
+          <tal:step_number tal:replace="view/step_number"/>
+          (of <tal:total_steps tal:replace="view/total_steps"/>):
+          <tal:step_description tal:replace="view/step_description"/></h2>
+      </metal:step>
+
+      <metal:extra metal:fill-slot="extra_top">
+        <a href="" id="search-results-expander" class="js-action hidden">
+          <img id="search-results-arrow" src="/@@/treeCollapsed"
+               title="Show search results" alt="Show search results"/>
+          Possible duplicate projects
+        </a>
+
+        <div tal:condition="view/search_results_count"
+             id="search-results">
+          <div style="margin-bottom: 1em; max-width: 60em;">
+          <img src="/@@/info" />
+          There are similar projects already registered in Launchpad.
+          Is project
+          <strong><tal:displayname tal:replace="view/request/field.displayname" />
+          (<tal:name  tal:replace="view/request/field.name" />)</strong>
+          one of these?
+          </div>
+
+          <table tal:define="results view/search_results">
+            <tbody>
+              <tr tal:repeat="pillar_name results"
+                  tal:replace="structure pillar_name/@@+listing-simple">
+              </tr>
+            </tbody>
+          </table>
+          <div id="registration-details-buttons" class="hidden">
+            <input type="button"
+                   value="No, this is a new project"/>
+            or <a tal:attributes="href view/cancel_url">Cancel</a>
+          </div>
+        </div>
+
+        <div id="registration-details-title"
+             style="max-width: 60em;"
+             tal:condition="view/is_step/2">
+          <h3 id="registration-separator"
+              style="margin-top: 3em;"
+              tal:condition="view/search_results_count"
+              >Registration details</h3>
+          Select the licences for project
+          <strong><tal:displayname tal:replace="view/request/field.displayname" />
+          (<tal:name  tal:replace="view/request/field.name" />)</strong>
+          and complete the registration.  You may also update the project's
+          title and summary.
+        </div>
+      </metal:extra>
+    </div>
+  </div>
+</body>
+</html>

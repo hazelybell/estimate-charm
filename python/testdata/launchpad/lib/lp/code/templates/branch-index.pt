@@ -1,0 +1,204 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+>
+
+<metal:block fill-slot="head_epilogue">
+  <style type="text/css">
+    .logtail {
+      padding-left: 2em;
+    }
+    #merge-summary, #recipe-summary {
+      margin-top: .5em;
+      margin-bottom: .1em;
+    }
+    #download-url dt, #upload-url dt {
+      font-weight: strong;
+    }
+  </style>
+  <script type="text/javascript"
+          tal:content="string:
+    LPJS.use('node', 'event', 'widget', 'plugin', 'overlay',
+              'lp.ui.choiceedit',
+              'lp.code.branch.status',
+              'lp.code.branchmergeproposal.diff',
+              'lp.code.branch.subscription',
+              function(Y) {
+
+        Y.on('load', function(e) {
+            var logged_in = LP.links['me'] !== undefined;
+
+            if (logged_in) {
+                var subscription_portlet = new Y.lp.code.branch.subscription.SubscriptionWidget({
+                    contentBox: '#portlet-subscribers'
+                });
+                subscription_portlet.render();
+            }
+            Y.lp.code.branchmergeproposal.diff.connect_diff_links();
+        }, window);
+    });
+  "/>
+
+</metal:block>
+
+<body>
+
+<metal:side fill-slot="side">
+  <div tal:replace="structure context/@@+portlet-privacy" />
+  <div tal:replace="structure context/@@+global-actions" />
+  <tal:subscribers replace="structure context/@@+portlet-subscribers" />
+
+</metal:side>
+
+<tal:registering metal:fill-slot="registering">
+  Created by
+    <tal:registrant replace="structure context/registrant/fmt:link" />
+  on
+    <tal:created-on replace="structure context/date_created/fmt:date" />
+  and last modified on
+    <tal:last-modified replace="structure context/date_last_modified/fmt:date" />
+</tal:registering>
+
+
+<div metal:fill-slot="main">
+
+  <div class="yui-g first">
+    <tal:branch-errors tal:replace="structure context/@@+messages" />
+  </div>
+
+  <div id="branch-description" tal:condition="context/description"
+       class="summary"
+       tal:content="structure context/description/fmt:text-to-html">
+    TODO: set the size properly
+    The description of the branch usually goes here, but will be used so
+    rarely that it only shows if there is a description set.  To set a
+    description, one must do so through the "Edit details" navigation
+    link.
+  </div>
+
+  <div class="yui-g first">
+    <div id="branch-management" class="portlet">
+      <tal:branch-management
+          replace="structure context/@@++branch-management" />
+    </div>
+  </div>
+
+  <div class="yui-g">
+
+    <div class="portlet" id="branch-relations">
+      <tal:branch-pending-merges
+           replace="structure context/@@++branch-pending-merges" />
+      <tal:branch-recipes
+           replace="structure context/@@++branch-recipes"
+      />
+      <tal:related-bugs-specs
+           replace="structure context/@@++branch-related-bugs-specs" />
+    </div>
+
+  </div>
+
+  <div class="yui-g">
+    <div id="branch-info" class="portlet">
+      <h2>Branch information</h2>
+      <tal:branch-info replace="structure context/@@++branch-information" />
+    </div>
+  </div>
+
+  <div id="branch-import-details"
+       class="yui-g"
+       tal:condition="context/branch_type/enumvalue:IMPORTED">
+    <div class="portlet">
+      <h2>Import details</h2>
+      <tal:branch-pending-merges
+          replace="structure context/@@++branch-import-details" />
+    </div>
+  </div>
+
+  <div id="whiteboard" class="yui-g" tal:condition="view/show_whiteboard">
+    <div class="portlet">
+      <h2>Whiteboard</h2>
+      <div id="branch-whiteboard-value"
+        tal:condition="context/whiteboard"
+        tal:content="structure context/whiteboard/fmt:text-to-html">
+        Whiteboard text goes here.
+      </div>
+    </div>
+
+  </div>
+
+  <div class="yui-g" tal:condition="view/pending_writes">
+    <div class="portlet">
+      <div id="branch-pending-writes" class="pending-update">
+        <h3>Updating branch...</h3>
+        <p>
+          Launchpad is processing new changes to this branch which will be
+          available in a few minutes. Reload to see the changes.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="yui-g">
+    <div class="portlet" id="recent-revisions">
+      <h2>Recent revisions</h2>
+      <tal:branch-revisions replace="structure context/@@++branch-revisions" />
+    </div>
+  </div>
+
+  <div class="yui-g">
+    <div class="portlet" tal:condition="view/has_metadata">
+      <h2>Branch metadata</h2>
+      <tal:branch-metadata replace="structure context/@@++branch-metadata" />
+    </div>
+  </div>
+
+  <div
+    id="translations-sources"
+    tal:define="translations_sources view/translations_sources"
+    tal:condition="translations_sources">
+    <h2>Automatic translations commits</h2>
+    <ul>
+      <tal:sources-list repeat="source translations_sources">
+        <li tal:content="structure source/fmt:link">~foo/example/branch</li>
+      </tal:sources-list>
+    </ul>
+  </div>
+
+      <div id="nearby-branches" class="related">
+
+  <h2>Nearby</h2>
+  <ul>
+    <li tal:condition="context/product">
+      <a tal:attributes="href context/product/fmt:url:code">
+        Other <tal:product replace="context/product/displayname" /> branches
+      </a>
+    </li>
+    <li tal:condition="context/sourcepackage">
+      <a tal:attributes="href context/sourcepackage/fmt:url:code">
+        Other <tal:product replace="context/sourcepackage/displayname" /> branches
+      </a>
+    </li>
+    <li>
+      <a tal:attributes="href context/owner/fmt:url:code">
+        Other branches owned by <tal:person
+        replace="context/owner/fmt:displayname">Owner</tal:person>
+      </a>
+    </li>
+    <li tal:condition="not:view/owner_is_registrant">
+      <a tal:attributes="href string:${context/registrant/fmt:url:code}/+registeredbranches">
+        Other branches registered by <tal:person
+        replace="context/registrant/fmt:displayname">Registrant</tal:person>
+      </a>
+    </li>
+  </ul>
+
+      </div>
+
+</div>
+
+</body>
+</html>

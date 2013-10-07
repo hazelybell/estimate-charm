@@ -1,0 +1,278 @@
+div.left,
+div.right {
+    width: 50%;
+    }
+
+div.left,
+.cves {
+    clear: both;
+    float: left;
+    }
+
+div.right {
+    clear: right;
+    float: right;
+    }
+
+div.centered {
+    text-align: center;
+    }
+
+div.centered table {
+    margin: 0 auto;
+    text-align: left;
+    }
+
+div.see-all {
+    text-align: right;
+    }
+
+span.nolink {
+    font-weight: bold;
+    }
+
+span.see-all {
+    float: right;
+    }
+
+.see-all a {
+    padding-left: 8px;
+    background: inherit;
+    font-size: 12px;
+    text-decoration: underline;
+    }
+
+.transparent {
+    opacity: 0;
+    filter: alpha(opacity=0);
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    }
+
+.rss-right {
+    background: url(/@@/rss.png) right center no-repeat;
+    }
+
+.logo {
+    float: left;
+    display: inline;
+    width: 64px;
+    height: 64px;
+    margin: 0 5px 0 0;
+    }
+
+.registered {
+    color: #666;
+    }
+
+.description {
+    clear: both;
+    }
+
+.search-results {
+    margin-top: 1em;
+    }
+
+.top-portlet .summary {
+    margin: 0 0 1em 0;
+    /* Same as h3, this appears under a h1. */
+    font-size: 16px;
+    }
+
+.main-portlet {
+    margin: 1em 0 1em 0;
+    }
+
+.pre {
+    white-space: pre;
+    }
+
+.clearfix:after {
+    /* use class="clearfix" whenever floats should be enclosed */
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+    }
+
+* html .clearfix {
+    /* Work around float bug in MSIE */
+    height: 1%;
+    }
+
+div.beta {
+    background-color: #c24848;
+    margin-bottom: 7px;
+    margin-top: 7px;
+    height: 10px;
+    width: 175px;
+    }
+
+div.beta img {
+    height: 10px;
+    }
+
+.scrolled-box {
+    max-height: 4.5em;
+    overflow-y: scroll;
+    }
+
+.ellipsis.single-line {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    -ms-text-overflow: ellipsis;
+    }
+
+.ellipsis.wide {
+    max-width: 60em;
+    }
+
+.ellipsis:before {
+    content: attr(data-ellipsis-original-text);
+    position: absolute;
+    display: block;
+    }
+.ellipsis:hover:before {
+    display: block;
+    }
+
+.exception {
+    color: #cc0000;
+    }
+
+.highlight {
+    background: #ddd;
+    border: 1px solid #ddd;
+    }
+
+.lowlight {
+    opacity: .5;
+    filter: alpha(opacity=50);
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+    }
+
+.status :link,
+.importance :link {
+    text-decoration: none;
+    }
+
+.lesser,
+.duplicate-details {
+    font-size: 10px;
+    clear: left;
+    }
+
+pre.changelog,
+table.diff,
+.comment-text,
+.bug-activity {
+    font-family: 'Ubuntu Mono', monospace;
+    }
+
+.cloud-size-smallest {
+    font-size: 10px;
+    }
+
+.cloud-size-small {
+    font-size: 12px;
+    }
+
+.cloud-size-medium {
+    font-size: 14px;
+    }
+
+.cloud-size-large {
+    font-size: 16px;
+    }
+
+.cloud-size-largest {
+    font-size: 18px;
+    }
+
+.cloud-dark {
+    color: #00f;
+    }
+
+.cloud-medium {
+    color: #7878ff;
+    }
+
+.cloud-light {
+    color: #b8b8ff;
+    }
+
+/* =========================
+   Universal presentation
+   Sprites
+*/
+.sprite {
+    padding: 0 0 6px 18px;
+    line-height: 18px;
+    }
+.block-sprite {
+    padding: 2px 2px 15px 36px;
+    margin-bottom: 0;
+    }
+
+.action-icon {
+    /* Textual browsers read the text, graphical browsers see the sprite. */
+    display: inline-block;
+    margin-left: 6px;
+    width: 1px;
+    height: 16px;
+    vertical-align: text-top;
+    text-indent: 3px;
+    overflow: hidden;
+    }
+
+.action-icon + .action-icon {
+    margin-left: 0px;
+    }
+
+.action-icon.standalone {
+    margin-top: -6px;
+    }
+
+th .action-icon {
+    height: 12px;
+}
+
+h1 a.sprite,
+h2 a.sprite,
+h3 a.sprite {
+    position: relative;
+    top: 8px;
+    font-size: 12px;
+    }
+
+h3 a.sprite {
+    top: 4px;
+    }
+
+/* Hide the grey background for the Calendar content. */
+.yui3-skin-sam .yui3-pretty-overlay .yui3-calendar-content {
+    background: none;
+    border: none;
+    }
+
+/* Center the Calendar within its overlay. */
+.yui3-calendarbase {
+    margin: 0 auto;
+    }
+
+/* Hidden must be the last rule because it overides all other rules. */
+.inline {
+    display: inline;
+    margin: 0;
+    }
+
+/* Use 'hidden' to hide elements unconditionally.
+ * Some things we want to hide by default only if javascript is enabled; for
+ * these cases use 'hide-on-load'.
+ */
+.hidden, .yui3-js-enabled .hide-on-load {
+    display: none;
+    }

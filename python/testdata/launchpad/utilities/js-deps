@@ -1,0 +1,7 @@
+#!bin/py
+
+import _pythonpath
+from convoy.meta import main
+
+main()
+

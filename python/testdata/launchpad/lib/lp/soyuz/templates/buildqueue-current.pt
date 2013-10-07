@@ -1,0 +1,24 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+  <p>Started
+    <span
+      tal:attributes="title context/job/date_started/fmt:datetime"
+      tal:content="context/current_build_duration/fmt:exactduration" />
+    ago.
+  </p>
+  <tal:logtail condition="context/specific_job/required:launchpad.View">
+    <h2>Buildlog</h2>
+    <div tal:content="structure context/logtail/fmt:text-to-html"
+         id="buildlog-tail"
+         class="logtail">
+      Things are crashing and burning all over the place.
+    </div>
+    <p tal:condition="view/user">
+      Updated on <tal:date replace="structure view/user/fmt:local-time" />
+    </p>
+  </tal:logtail>
+</tal:root>

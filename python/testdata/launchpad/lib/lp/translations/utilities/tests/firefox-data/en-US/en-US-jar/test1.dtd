@@ -1,0 +1,6 @@
+<!ENTITY foozilla.name "FooZilla!">
+<!-- Translators, don't play with fire! -->
+<!ENTITY foozilla.play.fire "Do you want to play with fire?">
+<!-- This is just a comment, not a comment for translators -->
+
+<!ENTITY foozilla.play.ice "Play with ice?">

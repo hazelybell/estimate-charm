@@ -1,0 +1,32 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<body>
+
+<div metal:fill-slot="main">
+
+  <div metal:use-macro="context/@@launchpad_form/form">
+    <metal:extra_info fill-slot="extra_info">
+      <p>If so, you can point
+          <span tal:replace="structure context/owner/fmt:link" /> to the
+          relevant knowledge base article for
+          <span tal:replace="view/faq_target/displayname"
+                /><tal:can-create-faq
+                      condition="view/faq_target/required:launchpad.Append">
+          or <a href="+createfaq">create a new FAQ</a> yourself if it doesn't
+          exist already
+          </tal:can-create-faq>.
+      </p>
+    </metal:extra_info>
+  </div>
+
+</div>
+
+</body>
+</html>

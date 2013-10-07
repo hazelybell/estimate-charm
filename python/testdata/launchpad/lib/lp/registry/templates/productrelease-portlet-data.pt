@@ -1,0 +1,103 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  id="release-data" >
+
+  <div class="portlet"
+    tal:define="has_edit view/release/required:launchpad.Edit;">
+    <h2>Download files for this release</h2>
+    <form
+      tal:condition="view/release/can_have_release_files"
+      method="POST" tal:attributes="action request/URL">
+
+      <p id="how-to-verify" tal:condition="view/download_files">
+        After you've downloaded a file, you can verify its authenticity
+        using its MD5 sum or signature.
+        (<a href="/+help-registry/verify-downloads.html" target="help">How do I
+        verify a download?</a>)
+      </p>
+
+      <table id="downloads" class="listing">
+        <thead>
+          <tr>
+            <th>File</th>
+            <th>Description</th>
+            <th>Downloads</th>
+            <th tal:condition="has_edit" width="10%">Delete</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr tal:repeat="file view/download_files">
+            <tal:define-vars
+              define="checkbox_index string:${repeat/file/index}">
+              <tal:release-file
+                metal:use-macro="file/@@+macros/detailed_display" />
+            </tal:define-vars>
+          </tr>
+        </tbody>
+
+        <tfoot tal:condition="view/total_downloads">
+          <tr>
+            <th colspan="2" style="padding-top: 1em; text-align: right;">
+              Total downloads:
+            </th>
+            <td style="border: none; text-align: center;">
+              <span tal:replace="view/total_downloads/fmt:intcomma" />
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div style="margin-top: .4em;" tal:condition="has_edit">
+        <div style="float:right">
+          <input id="delete-files" type="submit"
+            name="delete_files" value="Delete Files"
+            tal:condition="view/product_release_files"/>
+        </div>
+
+        <ul class="horizontal"
+          tal:define="link view/release/menu:context/add_file"
+          tal:condition="link/enabled">
+          <li>
+            <a tal:replace="structure link/fmt:link" />
+          </li>
+        </ul>
+      </div>
+    </form>
+    <tal:nofiles tal:condition="not:view/release/can_have_release_files">
+      <em>Only public projects can have download files.</em>
+    </tal:nofiles>
+  </div>
+
+
+  <div class="top-portlet">
+    <h2>Release notes&nbsp;<a tal:replace="structure view/release/menu:context/edit/fmt:icon" /></h2>
+
+    <div id="release-notes"
+      tal:content="structure view/release/release_notes/fmt:text-to-html"
+      tal:condition="view/release/release_notes">
+      ProductRelease.release_notes
+    </div>
+
+    <p tal:condition="not: view/release/release_notes">
+      <em>This release does not have release notes.</em>
+    </p>
+
+    <h2>Changelog&nbsp;<a tal:replace="structure view/release/menu:context/edit/fmt:icon" /></h2>
+
+    <div class="collapsible" tal:condition="view/release/changelog">
+      <div>View the full changelog</div>
+
+      <div id="changelog" class="hide-on-load"
+        tal:content="structure view/release/changelog/fmt:obfuscate-email/fmt:text-to-html">
+        ProductRelease.changelog.
+      </div>
+    </div>
+
+    <p tal:condition="not: view/release/changelog">
+      <em>This release does not have a changelog.</em>
+    </p>
+  </div>
+</div>

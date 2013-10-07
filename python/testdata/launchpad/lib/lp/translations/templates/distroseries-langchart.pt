@@ -1,0 +1,97 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+  <p tal:condition="context/hide_all_translations" class="visibility-notice">
+    <strong>Translations for this series are currently hidden.</strong>
+
+    <!-- Bounce regular users to "translations unavailable" page. -->
+    <tal:XXX condition="nothing">
+        20100224 adiroiban bug=527069: The following tal:omit-tag is only
+        used with the sole purpose of raising an exception.
+        There should be a better solution for this problem.
+    </tal:XXX>
+    <metal:check-available tal:omit-tag="view/checkTranslationsViewable" />
+  </p>
+
+
+  <table class="sortable listing" width="100%" id="languagestats">
+    <thead>
+      <tr>
+        <th>Language</th>
+        <th>Contributors</th>
+        <th>Status</th>
+        <th>Untranslated</th>
+        <th>Need review</th>
+        <th>Changed</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tal:loop tal:repeat="drlang view/distroserieslanguages">
+        <tal:preferred
+            condition="python: view.isPreferredLanguage(drlang.language)">
+            <tal:set-class
+                define="global series_language_class string:preferred-language" />
+        </tal:preferred>
+        <tal:not-preferred
+            condition="not:python: view.isPreferredLanguage(drlang.language)">
+            <tal:set-class
+                define="global series_language_class string:not-preferred-language" />
+        </tal:not-preferred>
+      <tr tal:attributes="class series_language_class">
+        <td>
+          <a tal:attributes="href string:${drlang/fmt:url}"
+             tal:content="drlang/language/englishname">
+             Language Name
+          </a>
+        </td>
+        <td>
+          <span class="sortkey" tal:content="drlang/contributor_count">0</span>
+          <tal:count
+            tal:condition="drlang/contributor_count"
+            tal:replace="drlang/contributor_count">0</tal:count>
+          <tal:count condition="not: drlang/contributor_count">
+            &mdash;
+          </tal:count>
+        </td>
+        <td style="white-space: nowrap">
+          <div tal:replace="structure drlang/@@+barchart" />
+        </td>
+        <td>
+          <span class="sortkey" tal:content="drlang/untranslatedCount">0</span>
+          <tal:count
+            tal:condition="drlang/untranslatedCount"
+            tal:replace="drlang/untranslatedCount">0</tal:count>
+          <tal:count condition="not: drlang/untranslatedCount">
+            &mdash;
+          </tal:count>
+        </td>
+        <td>
+          <span class="sortkey" tal:content="drlang/unreviewedCount">0</span>
+          <tal:count
+            tal:condition="drlang/unreviewedCount"
+            tal:replace="drlang/unreviewedCount">0</tal:count>
+          <tal:count condition="not: drlang/unreviewedCount">
+            &mdash;
+          </tal:count>
+        </td>
+        <td>
+          <span class="sortkey" tal:content="drlang/updatesCount">0</span>
+          <tal:count
+            tal:condition="drlang/updatesCount"
+            tal:replace="drlang/updatesCount">0</tal:count>
+          <tal:count condition="not: drlang/updatesCount">
+            &mdash;
+          </tal:count>
+        </td>
+      </tr>
+      </tal:loop>
+    </tbody>
+  </table>
+  <metal:languages-table-actions
+    use-macro="context/@@+translations-macros/languages-table-actions" />
+
+</tal:root>

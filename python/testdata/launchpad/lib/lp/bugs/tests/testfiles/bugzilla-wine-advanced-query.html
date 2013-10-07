@@ -1,0 +1,1787 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+  
+    <title>WineHQ Bugzilla – Search for bugs</title>
+
+
+<link rel="Top" href="http://bugs.winehq.org/">
+
+
+    
+
+    
+      <link href="bugzilla-wine-advanced-query_files/global_003.css" rel="stylesheet" type="text/css">
+      <link href="bugzilla-wine-advanced-query_files/help_002.css" rel="stylesheet" type="text/css">
+    <!--[if lte IE 7]>
+      
+      <link href="skins/standard/IE-fixes.css"
+            rel="stylesheet"
+            type="text/css">
+    <![endif]-->
+
+    
+        <link href="bugzilla-wine-advanced-query_files/global_003.css" rel="stylesheet" title="Classic" type="text/css">
+        <link href="bugzilla-wine-advanced-query_files/help_002.css" rel="stylesheet" title="Classic" type="text/css">
+      <!--[if lte IE 7]>
+      
+        <link href="skins/standard/IE-fixes.css"
+              rel="stylesheet"
+              title="Classic"
+              type="text/css">
+      <![endif]-->
+
+    
+        
+            <link href="bugzilla-wine-advanced-query_files/global_002.css" rel="alternate stylesheet" title="Dusk" type="text/css">
+            <link href="bugzilla-wine-advanced-query_files/help_003.css" rel="alternate stylesheet" title="Dusk" type="text/css">
+        <!--[if lte IE 7]>
+          
+          <link href="skins/contrib/Dusk/IE-fixes.css"
+                rel="alternate stylesheet"
+                title="Dusk"
+                type="text/css">
+        <![endif]-->
+
+    
+      <style type="text/css">dl.bug_changes dt {
+                 margin-top: 15px;
+               }
+      </style>
+
+    
+        <link href="bugzilla-wine-advanced-query_files/global.css" rel="stylesheet" type="text/css">
+        <link href="bugzilla-wine-advanced-query_files/help.css" rel="stylesheet" type="text/css">
+    <!--[if lte IE 7]>
+      
+      <link href="skins/custom/IE-fixes.css"
+            rel="stylesheet"
+            type="text/css">
+    <![endif]-->
+
+    <script src="bugzilla-wine-advanced-query_files/yahoo-dom-event.js" type="text/javascript"></script>
+    <script src="bugzilla-wine-advanced-query_files/global.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    <!--
+        YAHOO.namespace('bugzilla');
+        if (YAHOO.env.ua.gecko) {
+            YAHOO.util.Event._simpleRemove(window, "unload", 
+                                           YAHOO.util.Event._unload);
+        }
+        
+        var BUGZILLA = {
+            param: {
+                cookiepath: '\/'
+            }
+        };
+var queryform = "queryform"
+    // -->
+    </script>
+
+        <script src="bugzilla-wine-advanced-query_files/productform.js" type="text/javascript"></script>
+        <script src="bugzilla-wine-advanced-query_files/util.js" type="text/javascript"></script>
+        <script src="bugzilla-wine-advanced-query_files/help.js" type="text/javascript"></script>
+
+    
+
+    
+    <link rel="search" type="application/opensearchdescription+xml" title="Bugzilla" href="http://bugs.winehq.org/search_plugin.cgi">
+    <link rel="stylesheet" href="bugzilla-wine-advanced-query_files/styles.css" type="text/css" media="screen">
+    <script language="JavaScript" src="bugzilla-wine-advanced-query_files/jquery_002.js" type="text/javascript"></script>
+    <script language="JavaScript" src="bugzilla-wine-advanced-query_files/utils.js" type="text/javascript"></script><script src="bugzilla-wine-advanced-query_files/jquery.js" type="text/javascript" language="javascript"></script>
+    <link rel="icon" type="image/png" href="http://bugs.winehq.org/images/winehq_logo_16.png">
+    <link rel="shortcut icon" type="image/png" href="http://bugs.winehq.org/images/winehq_logo_16.png">
+  </head><body onload="doOnSelectProduct(0); enableHelp();" class="bugs-winehq-org">
+
+
+<!-- <div id="banner"></div> -->
+
+<div id="logo_glass"><a href="http://bugs.winehq.org/"><img src="bugzilla-wine-advanced-query_files/winehq_logo_glass_sm.png" alt=""></a></div>
+<div id="logo_text"><a href="http://bugs.winehq.org/"><img src="bugzilla-wine-advanced-query_files/winehq_logo_text.png" alt="WineHQ" title="WineHQ"></a></div>
+
+<div id="logo_blurb">
+  Bug Tracking Database – Search for bugs
+</div>
+
+<div id="search_box">
+  <form action="http://www.winehq.org/search" id="cse-search-box" style="margin: 0pt; padding: 0pt;">
+    <input name="cx" value="partner-pub-0971840239976722:w9sqbcsxtyf" type="hidden">
+    <input name="cof" value="FORID:10" type="hidden">
+    <input name="ie" value="UTF-8" type="hidden">
+    <span style="color: rgb(255, 255, 255);">Search:</span> <input style="background: url(&quot;http://www.google.com/cse/intl/en/images/google_custom_search_watermark.gif&quot;) no-repeat scroll left center rgb(255, 255, 255);" name="q" size="20" type="text">
+  <input value="bugs.winehq.org/query.cgi?format=advanced" name="siteurl" type="hidden"></form>
+  <script type="text/javascript" src="bugzilla-wine-advanced-query_files/brand"></script>
+</div>
+
+<div id="tabs">
+    <ul>
+        <li><a href="http://www.winehq.org/">WineHQ</a></li>
+        <li><a href="http://wiki.winehq.org/">Wiki</a></li>
+        <li><a href="http://appdb.winehq.org/">AppDB</a></li>
+        <li class="s"><a href="http://bugs.winehq.org/">Bugzilla</a></li>
+        <li><a href="http://forums.winehq.org/">Forums</a></li>
+    </ul>
+</div>
+
+<!-- Start SideBar -->
+<div id="sidebar"><!--<ul>
+        <li class="top"><p>Bugzilla Menu</p></li>
+        <li><p><a href="index.cgi">Intro</a></p></li>
+        <li><p><a href="enter_bug.cgi">Enter Bug</a></p></li>
+        <li><p><a href="query.cgi">Query Bugs</a></p></li>
+        <li><p><a href="report.cgi">Reports</a></p></li><li class="bot"></li>
+    </ul>
+<ul>
+        <li class="top"><p>
+    <a class="menu_title_link" 
+       href="page.cgi?id=quicksearch.html">Find Bugs</a></p></li>
+        <li><p><form class="quicksearch" action="buglist.cgi" method="get"
+        onsubmit="if (this.quicksearch.value == '')
+                  { alert('Please enter one or more search terms first.');
+                    return false; } return true;">
+    <input class="txt" size="8"
+           type="text" id="quicksearch" name="quicksearch">
+    <input class="btn" type="submit" value="Find" id="find"></form>
+        </p></li><li class="bot"></li>
+    </ul>
+-->
+<ul>
+        <li class="top"><p>Task Lists</p></li>
+    <li><p><a href="http://bugs.winehq.org/buglist.cgi?bug_status=UNCONFIRMED&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;product=Wine&amp;target_milestone=1.2.0&amp;order=bugs.bug_severity">Wine 1.2</a></p></li>
+    <li><p><a href="http://bugs.winehq.org/buglist.cgi?bug_status=UNCONFIRMED&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;product=Wine&amp;keywords=regression&amp;keywords_type=anywords">Regressions</a></p></li>
+    <li><p><a href="http://bugs.winehq.org/buglist.cgi?bug_status=UNCONFIRMED&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;product=Wine&amp;keywords=download&amp;keywords_type=anywords">With download</a></p></li><li class="bot"></li>
+    </ul>
+
+<ul>
+        <li class="top"><p>Bug Lists</p></li> 
+    <li><p><a href="http://bugs.winehq.org/buglist.cgi?bug_status=UNCONFIRMED&amp;bug_status=NEW&amp;bug_status=REOPENED&amp;cmdtype=doit&amp;order=Bug+Number" class="menuItem">Available</a></p></li>
+    <li><p><a href="http://bugs.winehq.org/buglist.cgi?bug_status=UNCONFIRMED" class="menuItem">Unconfirmed</a></p></li>
+    <li><p><a href="http://bugs.winehq.org/buglist.cgi?bug_status=NEW" class="menuItem">New</a></p></li>
+    <li><p><a href="http://bugs.winehq.org/buglist.cgi?bug_status=ASSIGNED" class="menuItem">Assigned</a></p></li>
+    <li><p><a href="http://bugs.winehq.org/buglist.cgi?bug_status=RESOLVED" class="menuItem">Resolved</a></p></li>
+    <li><p><a href="http://bugs.winehq.org/buglist.cgi?bug_status=VERIFIED" class="menuItem">Verified</a></p></li>
+    <li><p><a href="http://bugs.winehq.org/buglist.cgi?bug_status=CLOSED" class="menuItem">Closed</a></p></li><li class="bot"></li>
+    </ul>
+</div>
+<!-- End SideBar -->
+
+<div id="main_content">
+
+  <div class="rbox">
+  <b class="rtop"><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b></b>
+    <div class="content" style="padding: 20px 20px 10px 80px;">
+    <!-- Start Content -->
+
+<table id="titles" style="background-color: maroon; margin-top: 10px;" border="0" cellpadding="0" cellspacing="0">
+<tbody><tr>
+    <td id="title">
+      <p>
+        &nbsp;Bugzilla
+      </p>
+    </td>
+
+    <td id="subtitle">
+      <p class="subheader">
+        &nbsp;
+      </p>
+    </td>
+
+</tr>
+</tbody></table>
+
+<div id="header"><ul class="links">
+  <li><a href="http://bugs.winehq.org/">Intro</a></li>
+  <li><span class="separator">| </span><a href="http://bugs.winehq.org/enter_bug.cgi">New</a></li>
+  <li><span class="separator">| </span><a href="http://bugs.winehq.org/query.cgi">Search</a></li>
+
+  <li class="form">
+    <span class="separator">| </span><form class="quicksearch" action="buglist.cgi" method="get" onsubmit="if (this.quicksearch.value == '')
+                  { alert('Please enter one or more search terms first.');
+                    return false; } return true;">
+    <input class="txt" id="quicksearch_top" name="quicksearch" type="text">
+    <input class="btn" value="Find" id="find_top" type="submit"></form></li>
+
+  <li><span class="separator">| </span><a href="http://bugs.winehq.org/report.cgi">Reports</a></li>
+
+  <li></li>
+
+
+  <li>
+        <span class="separator">| </span>
+        <a href="http://bugs.winehq.org/docs/html/query.html" target="_blank">Help</a>
+      </li>
+    
+      <li id="new_account_container_top">
+        <span class="separator">| </span>
+        <a href="http://bugs.winehq.org/createaccount.cgi">New&nbsp;Account</a>
+      </li>
+
+    <li id="mini_login_container_top">
+  <span class="separator">| </span>
+  <a id="login_link_top" href="http://bugs.winehq.org/query.cgi?GoAheadAndLogIn=1" onclick="return show_mini_login_form('_top')">Log In</a>
+  <form action="http://bugs.winehq.org/query.cgi?format=advanced&amp;field0-0-0=xyzzy" method="POST" class="mini_login bz_default_hidden" id="mini_login_top" onsubmit="return check_mini_login_fields( '_top' );">
+    <input value="login" id="Bugzilla_login_top" class="bz_login bz_mini_login_help" name="Bugzilla_login" onfocus="mini_login_on_focus('_top')">
+    <input class="bz_password bz_default_hidden" id="Bugzilla_password_top" name="Bugzilla_password" type="password">
+    <input class="bz_password bz_mini_login_help" id="Bugzilla_password_dummy_top" value="password" onfocus="mini_login_on_focus('_top')" type="text">
+      <input id="Bugzilla_remember_top" name="Bugzilla_remember" value="on" class="bz_remember" checked="checked" type="checkbox">
+      <label for="Bugzilla_remember_top">Remember</label>
+    <input name="GoAheadAndLogIn" value="Log in" id="log_in_top" type="submit">
+    <script type="text/javascript">
+      mini_login_constants = {
+          "login" : "login",
+          "warning" : "You must set the login and password before logging in."
+      };
+      
+      if (YAHOO.env.ua.gecko || YAHOO.env.ua.ie || YAHOO.env.ua.opera) {
+          YAHOO.util.Event.onDOMReady(function() {
+              init_mini_login_form('_top');
+          });
+      }
+      else {
+          YAHOO.util.Event.on(window, 'load', function () {
+              window.setTimeout(function() {
+                  init_mini_login_form('_top');
+              }, 200);
+          });
+    }
+    </script>
+    <a href="#" onclick="return hide_mini_login_form('_top')">[x]</a>
+  </form>
+</li>
+<li id="forgot_container_top">
+  <span class="separator">| </span>
+  <a id="forgot_link_top" href="http://bugs.winehq.org/query.cgi?GoAheadAndLogIn=1#forgot" onclick="return show_forgot_form('_top')">Forgot Password</a>
+  <form action="token.cgi" method="post" id="forgot_form_top" class="mini_forgot bz_default_hidden">
+    <label>Login: <input name="loginname" size="20" type="text"></label>
+    <input id="forgot_button_top" value="Reset Password" type="submit">
+    <input name="a" value="reqpw" type="hidden">
+    <a href="#" onclick="return hide_forgot_form('_top')">[x]</a>
+  </form>
+</li>
+</ul>
+
+</div>
+
+
+<div id="bugzilla-body">
+<div class="tabbed">
+  <table class="tabs" width="100%" border="0" cellpadding="10" cellspacing="0">
+    <tbody><tr>
+      <td class="spacer">&nbsp;</td>
+
+          <td class="clickable_area" onclick="document.location='query.cgi?format=specific'"><a href="http://bugs.winehq.org/query.cgi?format=specific">Find a Specific Bug</a></td>
+          <td class="selected">Advanced Search</td>
+
+      <td class="spacer">&nbsp;</td>
+    </tr>
+  </tbody></table>
+
+  <div class="tabbody">
+
+
+
+
+<script type="text/javascript"> <!--
+  document.write("<p><a href='query.cgi?help=1&amp;format=advanced'>Give me some help<\/a> (reloads page).<\/p>");
+// -->
+</script><p><a href="http://bugs.winehq.org/query.cgi?help=1&amp;format=advanced">Give me some help</a> (reloads page).</p>
+
+<form method="post" action="buglist.cgi" name="queryform">
+<script type="text/javascript">
+
+var first_load = true;         
+var last_sel = new Array();    
+
+var useclassification = false;
+var cpts = new Array();
+var vers = new Array();
+var tms = new Array();
+
+
+
+
+
+
+  cpts[0] = ['-unknown', 'advapi32', 'advpack', 'amstream', 'atl', 'build-env', 'cmd', 'comctl32', 'comdlg32', 'crypt32', 'dbghelp', 'directx-d3d', 'directx-d3dx10', 'directx-d3dx9', 'directx-ddraw', 'directx-dinput', 'directx-dmusic', 'directx-dplay', 'directx-dsound', 'documentation', 'dos', 'fonts', 'gameux', 'gdi32', 'gdiplus', 'hhctrl.ocx', 'iccvid', 'imagehlp', 'inkobj', 'jscript', 'kernel32', 'loader', 'mlang', 'mmdevapi', 'mountmgr.sys', 'msacm32', 'msadp32', 'mscoree', 'mshtml', 'msi', 'mstask', 'msvcp', 'msvcrt', 'msvfw32', 'msxml3', 'msxml4', 'ntdll', 'ntoskrnl', 'odbc', 'ole', 'ole32', 'oleaut32', 'openal32', 'opengl', 'pdh', 'programs', 'qmgr', 'quartz', 'rasapi32', 'richedit', 'rpc', 'rsaenh', 'secur32', 'setupapi', 'shdocvw', 'shell32', 'shlwapi', 'spooler', 'tapi32', 'testcases', 'tools', 'urlmon', 'user32', 'usp10', 'windowscodecs', 'winedbg', 'winemp3.acm', 'wineps.drv', 'wineserver', 'winex11.drv', 'winhttp', 'wininet', 'winmm&mci', 'winsock', 'wintab32', 'wintrust', 'wldap32', 'wmi&wbemprox' ];
+  vers[0] = ['unspecified', '20010305', '20010216', '20010112', '20010326', '20010418', '20020509', '20010510', '20010629', '20010824', '20011004', '20011108', '20020228', '20020310', '20020411', '20020605', '20020710', '20020804', '20020904', '20021007', '20021031', '20021125', '20021219', '20030115', '20030219', '20030318', '20030408', '20030508', '20030618', '20030709', '20030813', '20030911', '20031016', '20031118', '20031212', '20040121', '20040213', '20040309', '20040408', '20040505', '20040615', '20040716', '20040813', '20040914', '20041019', '20041201', '20050111', '20050211', '20050310', '20050419', '20050524', '20050628', '20050725', '20050830', '20050930', '0.9', '0.9.1.', '0.9.2.', '0.9.3.', '0.9.4.', '0.9.5.', '0.9.6.', '0.9.7.', '0.9.8.', '0.9.9.', '0.9.10.', '0.9.11.', '0.9.12.', '0.9.13.', '0.9.14.', '0.9.15.', '0.9.16.', '0.9.17.', '0.9.18.', '0.9.19.', '0.9.20.', '0.9.21.', '0.9.22.', '0.9.23.', '0.9.24.', '0.9.25.', '0.9.26.', '0.9.27.', '0.9.28.', '0.9.29.', '0.9.30.', '0.9.31.', '0.9.32.', '0.9.33.', '0.9.34.', '0.9.35.', '0.9.36.', '0.9.37.', '0.9.38.', '0.9.39.', '0.9.40.', '0.9.41.', '0.9.42.', '0.9.43.', '0.9.44.', '0.9.45.', '0.9.46.', '0.9.47.', '0.9.48.', '0.9.49.', '0.9.50.', '0.9.51.', '0.9.52.', '0.9.53.', '0.9.54.', '0.9.55.', '0.9.56.', '0.9.57.', '0.9.58.', '0.9.59.', '0.9.60', '0.9.61.', '1.0-rc1', '1.0-rc2', '1.0-rc3', '1.0-rc4', '1.0-rc5', '1.0.0', '1.1.0', '1.1.1', '1.1.2', '1.1.3', '1.1.4', '1.1.5', '1.1.6', '1.0.1', '1.1.7', '1.1.8', '1.1.9', '1.1.10', '1.1.11', '1.1.12', '1.1.13', '1.1.14', '1.1.15', '1.1.16', '1.1.17', '1.1.18', '1.1.19', '1.1.20', '1.1.21', '1.1.22', '1.1.23', '1.1.24', '1.1.25', '1.1.26', '1.1.27', '1.1.28', '1.1.29', '1.1.30', '1.1.31', '1.1.32', '1.1.33', '1.1.34', '1.1.35', '1.1.36', '1.1.37', '1.1.38', '1.1.39', '1.1.40', '1.1.41', '1.1.42', '1.1.43', '1.1.44', '1.2-rc1', '1.2-rc2', '1.2-rc3', '1.2-rc4', '1.2-rc5', '1.2-rc6', '1.2-rc7', '1.2', '1.3.0', '1.3.1', '1.3.2', '1.3.3', '1.3.4', '1.2.1', '1.3.5' ];
+  tms[0]  = ['---', '0.9.0', '1.0.0', '1.0.1', '1.2.0', '1.2.x', '1.4.0' ];
+  cpts[1] = ['appdb-unknown' ];
+  vers[1] = ['unspecified' ];
+  tms[1]  = ['---' ];
+  cpts[2] = ['bugzilla-unknown' ];
+  vers[2] = ['unspecified', '2.11', '2.14.2', '3.0.2', '3.2.3' ];
+  tms[2]  = ['---' ];
+  cpts[3] = ['www-unknown' ];
+  vers[3] = ['unspecified' ];
+  tms[3]  = ['---' ];
+
+/*
+ * doOnSelectProduct determines which selection should get updated 
+ *
+ * - selectmode = 0  - init
+ *   selectmode = 1  - classification selected
+ *   selectmode = 2  - product selected
+ *
+ * globals:
+ *   queryform - string holding the name of the selection form
+ */
+function doOnSelectProduct(selectmode) {
+    var f = document.forms[queryform];
+    var milestone = (typeof(f.target_milestone) == "undefined" ? 
+                                               null : f.target_milestone);
+    if (selectmode == 0) {
+        // If there is no classification selected, give us a chance to fill
+        // the select fields with values from the possibly selected product.
+        if (useclassification && f.classification.selectedIndex > -1) {
+            selectClassification(f.classification, f.product, f.component, f.version, milestone);
+        } else {
+            selectProduct(f.product, f.component, f.version, milestone, null);
+        }
+    } else if (selectmode == 1) {
+        selectClassification(f.classification, f.product, f.component, f.version, milestone);
+    } else {
+        selectProduct(f.product, f.component, f.version, milestone, null);
+    }
+}
+
+</script>
+
+
+
+<input name="query_format" value="advanced" type="hidden">
+
+
+
+<table>
+  <tbody><tr>
+    <th align="right">
+      <label for="short_desc" accesskey="s"><u>S</u>ummary</label>:
+    </th>
+    <td><select name="short_desc_type">
+    <option selected="selected" value="allwordssubstr">contains all of the strings</option>
+    <option value="anywordssubstr">contains any of the strings</option>
+    <option value="substring">contains the string</option>
+    <option value="casesubstring">contains the string (exact case)</option>
+    <option value="allwords">contains all of the words</option>
+    <option value="anywords">contains any of the words</option>
+    <option value="regexp">matches regular expression</option>
+    <option value="notregexp">does not match regular expression</option>
+</select>
+    </td>
+    <td>
+      <input name="short_desc" id="short_desc" size="40">
+      <script type="text/javascript"> <!--
+          document.forms[queryform].short_desc.focus(); 
+      // -->
+      </script>
+    </td>
+    <td>
+        <input id="Search_top" value="Search" type="submit">
+    </td>
+  </tr>
+
+
+  <tr>
+    <td colspan="4">
+      <table>
+        <tbody><tr>
+          <td valign="top">
+            <table>
+              <tbody><tr valign="bottom">
+                <th align="left">
+                  <label for="product" accesskey="p"><u>P</u>roduct</label>:
+                </th>
+              </tr>
+              <tr valign="top">
+                
+                <td align="left">
+                  <select name="product" multiple="multiple" size="5" id="product" onchange="doOnSelectProduct(2);">
+                      <option value="Wine">Wine</option>
+                      <option value="WineHQ Apps Database">WineHQ Apps Database</option>
+                      <option value="WineHQ Bugzilla">WineHQ Bugzilla</option>
+                      <option value="WineHQ.org">WineHQ.org</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody></table>
+          </td>
+          <td valign="top">
+            <table>
+              <tbody><tr valign="bottom">
+                <th align="left">
+                  <label for="component" accesskey="m"><a href="http://bugs.winehq.org/describecomponents.cgi">Co<u>m</u>ponent</a></label>:
+                </th>
+              </tr>
+              <tr valign="top">
+                
+                <td align="left">
+                  <select name="component" id="component" multiple="multiple" size="5">
+                      <option value="-unknown">-unknown</option>
+                      <option value="advapi32">advapi32</option>
+                      <option value="advpack">advpack</option>
+                      <option value="amstream">amstream</option>
+                      <option value="appdb-unknown">appdb-unknown</option>
+                      <option value="atl">atl</option>
+                      <option value="bugzilla-unknown">bugzilla-unknown</option>
+                      <option value="build-env">build-env</option>
+                      <option value="cmd">cmd</option>
+                      <option value="comctl32">comctl32</option>
+                      <option value="comdlg32">comdlg32</option>
+                      <option value="crypt32">crypt32</option>
+                      <option value="dbghelp">dbghelp</option>
+                      <option value="directx-d3d">directx-d3d</option>
+                      <option value="directx-d3dx10">directx-d3dx10</option>
+                      <option value="directx-d3dx9">directx-d3dx9</option>
+                      <option value="directx-ddraw">directx-ddraw</option>
+                      <option value="directx-dinput">directx-dinput</option>
+                      <option value="directx-dmusic">directx-dmusic</option>
+                      <option value="directx-dplay">directx-dplay</option>
+                      <option value="directx-dsound">directx-dsound</option>
+                      <option value="documentation">documentation</option>
+                      <option value="dos">dos</option>
+                      <option value="fonts">fonts</option>
+                      <option value="gameux">gameux</option>
+                      <option value="gdi32">gdi32</option>
+                      <option value="gdiplus">gdiplus</option>
+                      <option value="hhctrl.ocx">hhctrl.ocx</option>
+                      <option value="iccvid">iccvid</option>
+                      <option value="imagehlp">imagehlp</option>
+                      <option value="inkobj">inkobj</option>
+                      <option value="jscript">jscript</option>
+                      <option value="kernel32">kernel32</option>
+                      <option value="loader">loader</option>
+                      <option value="mlang">mlang</option>
+                      <option value="mmdevapi">mmdevapi</option>
+                      <option value="mountmgr.sys">mountmgr.sys</option>
+                      <option value="msacm32">msacm32</option>
+                      <option value="msadp32">msadp32</option>
+                      <option value="mscoree">mscoree</option>
+                      <option value="mshtml">mshtml</option>
+                      <option value="msi">msi</option>
+                      <option value="mstask">mstask</option>
+                      <option value="msvcp">msvcp</option>
+                      <option value="msvcrt">msvcrt</option>
+                      <option value="msvfw32">msvfw32</option>
+                      <option value="msxml3">msxml3</option>
+                      <option value="msxml4">msxml4</option>
+                      <option value="ntdll">ntdll</option>
+                      <option value="ntoskrnl">ntoskrnl</option>
+                      <option value="odbc">odbc</option>
+                      <option value="ole">ole</option>
+                      <option value="ole32">ole32</option>
+                      <option value="oleaut32">oleaut32</option>
+                      <option value="openal32">openal32</option>
+                      <option value="opengl">opengl</option>
+                      <option value="pdh">pdh</option>
+                      <option value="programs">programs</option>
+                      <option value="qmgr">qmgr</option>
+                      <option value="quartz">quartz</option>
+                      <option value="rasapi32">rasapi32</option>
+                      <option value="richedit">richedit</option>
+                      <option value="rpc">rpc</option>
+                      <option value="rsaenh">rsaenh</option>
+                      <option value="secur32">secur32</option>
+                      <option value="setupapi">setupapi</option>
+                      <option value="shdocvw">shdocvw</option>
+                      <option value="shell32">shell32</option>
+                      <option value="shlwapi">shlwapi</option>
+                      <option value="spooler">spooler</option>
+                      <option value="tapi32">tapi32</option>
+                      <option value="testcases">testcases</option>
+                      <option value="tools">tools</option>
+                      <option value="urlmon">urlmon</option>
+                      <option value="user32">user32</option>
+                      <option value="usp10">usp10</option>
+                      <option value="windowscodecs">windowscodecs</option>
+                      <option value="winedbg">winedbg</option>
+                      <option value="winemp3.acm">winemp3.acm</option>
+                      <option value="wineps.drv">wineps.drv</option>
+                      <option value="wineserver">wineserver</option>
+                      <option value="winex11.drv">winex11.drv</option>
+                      <option value="winhttp">winhttp</option>
+                      <option value="wininet">wininet</option>
+                      <option value="winmm&amp;mci">winmm&amp;mci</option>
+                      <option value="winsock">winsock</option>
+                      <option value="wintab32">wintab32</option>
+                      <option value="wintrust">wintrust</option>
+                      <option value="wldap32">wldap32</option>
+                      <option value="wmi&amp;wbemprox">wmi&amp;wbemprox</option>
+                      <option value="www-unknown">www-unknown</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody></table>
+          </td>
+          <td valign="top">
+            <table>
+              <tbody><tr valign="bottom">
+                <th align="left">
+                  <label for="version">Version</label>:
+                </th>
+              </tr>
+              <tr valign="top"><td align="left">
+    <select name="version" id="version" multiple="multiple" size="5">
+        <option value="0.9">0.9
+        </option>
+        <option value="0.9.1.">0.9.1.
+        </option>
+        <option value="0.9.2.">0.9.2.
+        </option>
+        <option value="0.9.3.">0.9.3.
+        </option>
+        <option value="0.9.4.">0.9.4.
+        </option>
+        <option value="0.9.5.">0.9.5.
+        </option>
+        <option value="0.9.6.">0.9.6.
+        </option>
+        <option value="0.9.7.">0.9.7.
+        </option>
+        <option value="0.9.8.">0.9.8.
+        </option>
+        <option value="0.9.9.">0.9.9.
+        </option>
+        <option value="0.9.10.">0.9.10.
+        </option>
+        <option value="0.9.11.">0.9.11.
+        </option>
+        <option value="0.9.12.">0.9.12.
+        </option>
+        <option value="0.9.13.">0.9.13.
+        </option>
+        <option value="0.9.14.">0.9.14.
+        </option>
+        <option value="0.9.15.">0.9.15.
+        </option>
+        <option value="0.9.16.">0.9.16.
+        </option>
+        <option value="0.9.17.">0.9.17.
+        </option>
+        <option value="0.9.18.">0.9.18.
+        </option>
+        <option value="0.9.19.">0.9.19.
+        </option>
+        <option value="0.9.20.">0.9.20.
+        </option>
+        <option value="0.9.21.">0.9.21.
+        </option>
+        <option value="0.9.22.">0.9.22.
+        </option>
+        <option value="0.9.23.">0.9.23.
+        </option>
+        <option value="0.9.24.">0.9.24.
+        </option>
+        <option value="0.9.25.">0.9.25.
+        </option>
+        <option value="0.9.26.">0.9.26.
+        </option>
+        <option value="0.9.27.">0.9.27.
+        </option>
+        <option value="0.9.28.">0.9.28.
+        </option>
+        <option value="0.9.29.">0.9.29.
+        </option>
+        <option value="0.9.30.">0.9.30.
+        </option>
+        <option value="0.9.31.">0.9.31.
+        </option>
+        <option value="0.9.32.">0.9.32.
+        </option>
+        <option value="0.9.33.">0.9.33.
+        </option>
+        <option value="0.9.34.">0.9.34.
+        </option>
+        <option value="0.9.35.">0.9.35.
+        </option>
+        <option value="0.9.36.">0.9.36.
+        </option>
+        <option value="0.9.37.">0.9.37.
+        </option>
+        <option value="0.9.38.">0.9.38.
+        </option>
+        <option value="0.9.39.">0.9.39.
+        </option>
+        <option value="0.9.40.">0.9.40.
+        </option>
+        <option value="0.9.41.">0.9.41.
+        </option>
+        <option value="0.9.42.">0.9.42.
+        </option>
+        <option value="0.9.43.">0.9.43.
+        </option>
+        <option value="0.9.44.">0.9.44.
+        </option>
+        <option value="0.9.45.">0.9.45.
+        </option>
+        <option value="0.9.46.">0.9.46.
+        </option>
+        <option value="0.9.47.">0.9.47.
+        </option>
+        <option value="0.9.48.">0.9.48.
+        </option>
+        <option value="0.9.49.">0.9.49.
+        </option>
+        <option value="0.9.50.">0.9.50.
+        </option>
+        <option value="0.9.51.">0.9.51.
+        </option>
+        <option value="0.9.52.">0.9.52.
+        </option>
+        <option value="0.9.53.">0.9.53.
+        </option>
+        <option value="0.9.54.">0.9.54.
+        </option>
+        <option value="0.9.55.">0.9.55.
+        </option>
+        <option value="0.9.56.">0.9.56.
+        </option>
+        <option value="0.9.57.">0.9.57.
+        </option>
+        <option value="0.9.58.">0.9.58.
+        </option>
+        <option value="0.9.59.">0.9.59.
+        </option>
+        <option value="0.9.60">0.9.60
+        </option>
+        <option value="0.9.61.">0.9.61.
+        </option>
+        <option value="1.0-rc1">1.0-rc1
+        </option>
+        <option value="1.0-rc2">1.0-rc2
+        </option>
+        <option value="1.0-rc3">1.0-rc3
+        </option>
+        <option value="1.0-rc4">1.0-rc4
+        </option>
+        <option value="1.0-rc5">1.0-rc5
+        </option>
+        <option value="1.0.0">1.0.0
+        </option>
+        <option value="1.0.1">1.0.1
+        </option>
+        <option value="1.1.0">1.1.0
+        </option>
+        <option value="1.1.1">1.1.1
+        </option>
+        <option value="1.1.2">1.1.2
+        </option>
+        <option value="1.1.3">1.1.3
+        </option>
+        <option value="1.1.4">1.1.4
+        </option>
+        <option value="1.1.5">1.1.5
+        </option>
+        <option value="1.1.6">1.1.6
+        </option>
+        <option value="1.1.7">1.1.7
+        </option>
+        <option value="1.1.8">1.1.8
+        </option>
+        <option value="1.1.9">1.1.9
+        </option>
+        <option value="1.1.10">1.1.10
+        </option>
+        <option value="1.1.11">1.1.11
+        </option>
+        <option value="1.1.12">1.1.12
+        </option>
+        <option value="1.1.13">1.1.13
+        </option>
+        <option value="1.1.14">1.1.14
+        </option>
+        <option value="1.1.15">1.1.15
+        </option>
+        <option value="1.1.16">1.1.16
+        </option>
+        <option value="1.1.17">1.1.17
+        </option>
+        <option value="1.1.18">1.1.18
+        </option>
+        <option value="1.1.19">1.1.19
+        </option>
+        <option value="1.1.20">1.1.20
+        </option>
+        <option value="1.1.21">1.1.21
+        </option>
+        <option value="1.1.22">1.1.22
+        </option>
+        <option value="1.1.23">1.1.23
+        </option>
+        <option value="1.1.24">1.1.24
+        </option>
+        <option value="1.1.25">1.1.25
+        </option>
+        <option value="1.1.26">1.1.26
+        </option>
+        <option value="1.1.27">1.1.27
+        </option>
+        <option value="1.1.28">1.1.28
+        </option>
+        <option value="1.1.29">1.1.29
+        </option>
+        <option value="1.1.30">1.1.30
+        </option>
+        <option value="1.1.31">1.1.31
+        </option>
+        <option value="1.1.32">1.1.32
+        </option>
+        <option value="1.1.33">1.1.33
+        </option>
+        <option value="1.1.34">1.1.34
+        </option>
+        <option value="1.1.35">1.1.35
+        </option>
+        <option value="1.1.36">1.1.36
+        </option>
+        <option value="1.1.37">1.1.37
+        </option>
+        <option value="1.1.38">1.1.38
+        </option>
+        <option value="1.1.39">1.1.39
+        </option>
+        <option value="1.1.40">1.1.40
+        </option>
+        <option value="1.1.41">1.1.41
+        </option>
+        <option value="1.1.42">1.1.42
+        </option>
+        <option value="1.1.43">1.1.43
+        </option>
+        <option value="1.1.44">1.1.44
+        </option>
+        <option value="1.2">1.2
+        </option>
+        <option value="1.2-rc1">1.2-rc1
+        </option>
+        <option value="1.2-rc2">1.2-rc2
+        </option>
+        <option value="1.2-rc3">1.2-rc3
+        </option>
+        <option value="1.2-rc4">1.2-rc4
+        </option>
+        <option value="1.2-rc5">1.2-rc5
+        </option>
+        <option value="1.2-rc6">1.2-rc6
+        </option>
+        <option value="1.2-rc7">1.2-rc7
+        </option>
+        <option value="1.2.1">1.2.1
+        </option>
+        <option value="1.3.0">1.3.0
+        </option>
+        <option value="1.3.1">1.3.1
+        </option>
+        <option value="1.3.2">1.3.2
+        </option>
+        <option value="1.3.3">1.3.3
+        </option>
+        <option value="1.3.4">1.3.4
+        </option>
+        <option value="1.3.5">1.3.5
+        </option>
+        <option value="2.11">2.11
+        </option>
+        <option value="2.14.2">2.14.2
+        </option>
+        <option value="3.0.2">3.0.2
+        </option>
+        <option value="3.2.3">3.2.3
+        </option>
+        <option value="20010112">20010112
+        </option>
+        <option value="20010216">20010216
+        </option>
+        <option value="20010305">20010305
+        </option>
+        <option value="20010326">20010326
+        </option>
+        <option value="20010418">20010418
+        </option>
+        <option value="20010510">20010510
+        </option>
+        <option value="20010629">20010629
+        </option>
+        <option value="20010824">20010824
+        </option>
+        <option value="20011004">20011004
+        </option>
+        <option value="20011108">20011108
+        </option>
+        <option value="20020228">20020228
+        </option>
+        <option value="20020310">20020310
+        </option>
+        <option value="20020411">20020411
+        </option>
+        <option value="20020509">20020509
+        </option>
+        <option value="20020605">20020605
+        </option>
+        <option value="20020710">20020710
+        </option>
+        <option value="20020804">20020804
+        </option>
+        <option value="20020904">20020904
+        </option>
+        <option value="20021007">20021007
+        </option>
+        <option value="20021031">20021031
+        </option>
+        <option value="20021125">20021125
+        </option>
+        <option value="20021219">20021219
+        </option>
+        <option value="20030115">20030115
+        </option>
+        <option value="20030219">20030219
+        </option>
+        <option value="20030318">20030318
+        </option>
+        <option value="20030408">20030408
+        </option>
+        <option value="20030508">20030508
+        </option>
+        <option value="20030618">20030618
+        </option>
+        <option value="20030709">20030709
+        </option>
+        <option value="20030813">20030813
+        </option>
+        <option value="20030911">20030911
+        </option>
+        <option value="20031016">20031016
+        </option>
+        <option value="20031118">20031118
+        </option>
+        <option value="20031212">20031212
+        </option>
+        <option value="20040121">20040121
+        </option>
+        <option value="20040213">20040213
+        </option>
+        <option value="20040309">20040309
+        </option>
+        <option value="20040408">20040408
+        </option>
+        <option value="20040505">20040505
+        </option>
+        <option value="20040615">20040615
+        </option>
+        <option value="20040716">20040716
+        </option>
+        <option value="20040813">20040813
+        </option>
+        <option value="20040914">20040914
+        </option>
+        <option value="20041019">20041019
+        </option>
+        <option value="20041201">20041201
+        </option>
+        <option value="20050111">20050111
+        </option>
+        <option value="20050211">20050211
+        </option>
+        <option value="20050310">20050310
+        </option>
+        <option value="20050419">20050419
+        </option>
+        <option value="20050524">20050524
+        </option>
+        <option value="20050628">20050628
+        </option>
+        <option value="20050725">20050725
+        </option>
+        <option value="20050830">20050830
+        </option>
+        <option value="20050930">20050930
+        </option>
+        <option value="unspecified">unspecified
+        </option>
+    </select>
+  </td>
+              </tr>
+            </tbody></table>
+          </td>
+          <td valign="top">
+            <table>
+              <tbody><tr valign="bottom">
+                <th align="left">
+                  <label for="target_milestone">Target</label>:
+                </th>
+              </tr>
+              <tr valign="top"><td align="left">
+    <select name="target_milestone" id="target_milestone" multiple="multiple" size="5">
+        <option value="---">---
+        </option>
+        <option value="0.9.0">0.9.0
+        </option>
+        <option value="1.0.0">1.0.0
+        </option>
+        <option value="1.0.1">1.0.1
+        </option>
+        <option value="1.2.0">1.2.0
+        </option>
+        <option value="1.2.x">1.2.x
+        </option>
+        <option value="1.4.0">1.4.0
+        </option>
+    </select>
+  </td>
+              </tr>
+            </tbody></table>
+          </td>
+        </tr>
+      </tbody></table>
+    </td>
+  </tr>
+
+
+
+
+    <tr>
+      <th align="right">
+        <label for="longdesc" accesskey="c">A&nbsp;<u>C</u>omment</label>:
+      </th>
+      <td><select name="longdesc_type">
+    <option selected="selected" value="allwordssubstr">contains all of the strings</option>
+    <option value="anywordssubstr">contains any of the strings</option>
+    <option value="substring">contains the string</option>
+    <option value="casesubstring">contains the string (exact case)</option>
+    <option value="allwords">contains all of the words</option>
+    <option value="anywords">contains any of the words</option>
+    <option value="regexp">matches regular expression</option>
+    <option value="notregexp">does not match regular expression</option>
+</select>
+      </td>
+      <td><input name="longdesc" id="longdesc" size="40">
+      </td>
+      <td></td>
+    </tr>
+
+    <tr>
+      <th align="right">
+        <label for="bug_file_loc" accesskey="u">The&nbsp;<u>U</u>RL</label>:
+      </th>
+      <td><select name="bug_file_loc_type">
+    <option selected="selected" value="allwordssubstr">contains all of the strings</option>
+    <option value="anywordssubstr">contains any of the strings</option>
+    <option value="substring">contains the string</option>
+    <option value="casesubstring">contains the string (exact case)</option>
+    <option value="allwords">contains all of the words</option>
+    <option value="anywords">contains any of the words</option>
+    <option value="regexp">matches regular expression</option>
+    <option value="notregexp">does not match regular expression</option>
+</select>
+      </td>
+      <td><input name="bug_file_loc" id="bug_file_loc" size="40">
+      </td>
+      <td></td>
+    </tr>
+
+    <tr>
+      <th align="right">
+        <label for="status_whiteboard" accesskey="w"><u>W</u>hiteboard</label>:
+      </th>
+      <td><select name="status_whiteboard_type">
+    <option selected="selected" value="allwordssubstr">contains all of the strings</option>
+    <option value="anywordssubstr">contains any of the strings</option>
+    <option value="substring">contains the string</option>
+    <option value="casesubstring">contains the string (exact case)</option>
+    <option value="allwords">contains all of the words</option>
+    <option value="anywords">contains any of the words</option>
+    <option value="regexp">matches regular expression</option>
+    <option value="notregexp">does not match regular expression</option>
+</select>
+      </td>
+      <td><input name="status_whiteboard" id="status_whiteboard" size="40">
+      </td>
+      <td></td>
+    </tr>
+
+    <tr>
+      <th align="right">
+        <label for="keywords" accesskey="k"><a href="http://bugs.winehq.org/describekeywords.cgi"><u>K</u>eywords</a></label>:
+      </th>
+      <td><select name="keywords_type">
+    <option selected="selected" value="allwords">contains all of the words</option>
+    <option value="anywords">contains any of the words</option>
+    <option value="nowords">contains none of the words</option>
+</select>
+      </td>
+      <td>
+        <input name="keywords" id="keywords" size="40">
+      </td>
+    </tr>
+
+  
+  
+</tbody></table>
+
+<hr>
+
+
+
+<table>
+  <tbody><tr>
+    <td>
+      <table>
+        <tbody><tr>
+          <th align="left">
+            <label for="bug_status" accesskey="a">St<u>a</u>tus</label>:
+          </th>
+        </tr>
+        <tr valign="top"><td align="left">
+    <select name="bug_status" id="bug_status" multiple="multiple" size="7">
+        <option value="UNCONFIRMED" selected="selected">UNCONFIRMED
+        </option>
+        <option value="NEW" selected="selected">NEW
+        </option>
+        <option value="ASSIGNED" selected="selected">ASSIGNED
+        </option>
+        <option value="REOPENED" selected="selected">REOPENED
+        </option>
+        <option value="RESOLVED" selected="selected">RESOLVED
+        </option>
+        <option value="VERIFIED">VERIFIED
+        </option>
+        <option value="CLOSED">CLOSED
+        </option>
+    </select>
+  </td>
+        </tr>
+      </tbody></table>
+    </td>
+    <td>
+      <table>
+        <tbody><tr>
+          <th align="left">
+            <label for="resolution" accesskey="r"><u>R</u>esolution</label>:
+          </th>
+        </tr>
+        <tr valign="top"><td align="left">
+    <select name="resolution" id="resolution" multiple="multiple" size="7">
+        <option value="FIXED">FIXED
+        </option>
+        <option value="INVALID">INVALID
+        </option>
+        <option value="WONTFIX">WONTFIX
+        </option>
+        <option value="DUPLICATE">DUPLICATE
+        </option>
+        <option value="WORKSFORME">WORKSFORME
+        </option>
+        <option value="MOVED">MOVED
+        </option>
+        <option value="ABANDONED">ABANDONED
+        </option>
+        <option value="---">---
+        </option>
+    </select>
+  </td>
+        </tr>
+      </tbody></table>
+    </td>
+    <td>
+      <table>
+        <tbody><tr>
+          <th align="left">
+            <label for="bug_severity">Severity</label>:
+          </th>
+        </tr>
+        <tr valign="top"><td align="left">
+    <select name="bug_severity" id="bug_severity" multiple="multiple" size="7">
+        <option value="blocker">blocker
+        </option>
+        <option value="critical">critical
+        </option>
+        <option value="major">major
+        </option>
+        <option value="normal">normal
+        </option>
+        <option value="minor">minor
+        </option>
+        <option value="trivial">trivial
+        </option>
+        <option value="enhancement">enhancement
+        </option>
+    </select>
+  </td>
+        </tr>
+      </tbody></table>
+    </td>
+    <td>
+      <table>
+        <tbody><tr>
+          <th align="left">
+            <label for="priority" accesskey="i">Pr<u>i</u>ority</label>:
+          </th>
+        </tr>
+        <tr valign="top"><td align="left">
+    <select name="priority" id="priority" multiple="multiple" size="7">
+        <option value="P1">P1
+        </option>
+        <option value="P2">P2
+        </option>
+        <option value="P3">P3
+        </option>
+        <option value="P4">P4
+        </option>
+        <option value="P5">P5
+        </option>
+    </select>
+  </td>
+        </tr>
+      </tbody></table>
+    </td>
+    <td>
+      <table>
+        <tbody><tr>
+          <th align="left">
+            <label for="rep_platform" accesskey="h"><u>H</u>ardware</label>:
+          </th>
+        </tr>
+        <tr valign="top"><td align="left">
+    <select name="rep_platform" id="rep_platform" multiple="multiple" size="7">
+        <option value="All">All
+        </option>
+        <option value="arm">arm
+        </option>
+        <option value="ppc32">ppc32
+        </option>
+        <option value="x86">x86
+        </option>
+        <option value="x86-64">x86-64
+        </option>
+        <option value="sparc">sparc
+        </option>
+        <option value="Other">Other
+        </option>
+    </select>
+  </td>
+        </tr>
+      </tbody></table>
+    </td>
+    <td>
+      <table>
+        <tbody><tr>
+          <th align="left">
+            <label for="op_sys" accesskey="o"><u>O</u>S</label>:
+          </th>
+        </tr>
+        <tr valign="top"><td align="left">
+    <select name="op_sys" id="op_sys" multiple="multiple" size="7">
+        <option value="All">All
+        </option>
+        <option value="Windows 3.1">Windows 3.1
+        </option>
+        <option value="Windows 95">Windows 95
+        </option>
+        <option value="Windows 98">Windows 98
+        </option>
+        <option value="Windows ME">Windows ME
+        </option>
+        <option value="Windows 2000">Windows 2000
+        </option>
+        <option value="Windows NT">Windows NT
+        </option>
+        <option value="Windows XP">Windows XP
+        </option>
+        <option value="Windows Vista">Windows Vista
+        </option>
+        <option value="Mac OS X 10.2">Mac OS X 10.2
+        </option>
+        <option value="Mac OS X 10.3">Mac OS X 10.3
+        </option>
+        <option value="Mac OS X 10.4">Mac OS X 10.4
+        </option>
+        <option value="Mac OS X 10.5">Mac OS X 10.5
+        </option>
+        <option value="Mac OS X 10.6">Mac OS X 10.6
+        </option>
+        <option value="Linux">Linux
+        </option>
+        <option value="BSDI">BSDI
+        </option>
+        <option value="FreeBSD">FreeBSD
+        </option>
+        <option value="NetBSD">NetBSD
+        </option>
+        <option value="OpenBSD">OpenBSD
+        </option>
+        <option value="AIX">AIX
+        </option>
+        <option value="Solaris">Solaris
+        </option>
+        <option value="other">other
+        </option>
+    </select>
+  </td>
+        </tr>
+      </tbody></table>
+    </td>
+  </tr>
+</tbody></table>
+
+
+
+<table>
+  <tbody><tr>
+    <td>
+      <fieldset>
+        <legend>
+          <strong>
+              Email Addresses, Bug Numbers, and Votes
+          </strong>
+        </legend>
+
+
+<table>
+  <tbody><tr>
+    <td>
+
+
+<table cellpadding="0" cellspacing="0">
+  <tbody><tr>
+    <td>
+      Any of:
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <input name="emailassigned_to1" id="emailassigned_to1" value="1" checked="checked" type="checkbox">
+      <label for="emailassigned_to1">
+        the bug assignee
+      </label>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <input name="emailreporter1" id="emailreporter1" value="1" type="checkbox">
+      <label for="emailreporter1">
+        the reporter
+      </label>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <input name="emailcc1" id="emailcc1" value="1" type="checkbox">
+      <label for="emailcc1">
+        a CC list member
+      </label>
+    </td>
+  </tr>
+  <tr>
+    <td>
+        <input name="emaillongdesc1" id="emaillongdesc1" value="1" type="checkbox">
+      <label for="emaillongdesc1">
+        a commenter
+      </label>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <select name="emailtype1">
+
+        <option selected="selected" value="substring">contains</option>
+
+        <option value="exact">is</option>
+
+        <option value="notequals">is not</option>
+
+        <option value="regexp">matches regexp</option>
+
+        <option value="notregexp">doesn't match regexp</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <input name="email1" size="25">
+    </td>
+  </tr>
+</tbody></table>
+
+
+    </td>
+    <td>
+
+
+<table cellpadding="0" cellspacing="0">
+  <tbody><tr>
+    <td>
+      Any of:
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <input name="emailassigned_to2" id="emailassigned_to2" value="1" checked="checked" type="checkbox">
+      <label for="emailassigned_to2">
+        the bug assignee
+      </label>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <input name="emailreporter2" id="emailreporter2" value="1" checked="checked" type="checkbox">
+      <label for="emailreporter2">
+        the reporter
+      </label>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <input name="emailcc2" id="emailcc2" value="1" checked="checked" type="checkbox">
+      <label for="emailcc2">
+        a CC list member
+      </label>
+    </td>
+  </tr>
+  <tr>
+    <td>
+        <input name="emaillongdesc2" id="emaillongdesc2" value="1" type="checkbox">
+      <label for="emaillongdesc2">
+        a commenter
+      </label>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <select name="emailtype2">
+
+        <option selected="selected" value="substring">contains</option>
+
+        <option value="exact">is</option>
+
+        <option value="notequals">is not</option>
+
+        <option value="regexp">matches regexp</option>
+
+        <option value="notregexp">doesn't match regexp</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <input name="email2" size="25">
+    </td>
+  </tr>
+</tbody></table>
+
+
+    </td>
+  </tr>
+</tbody></table>
+<hr>
+<table>
+  <tbody><tr>
+    <td>
+      <select name="bugidtype">
+        <option selected="selected" value="include">Only include</option>
+        <option value="exclude">Exclude</option>
+      </select>
+      <label for="bug_id">bugs numbered</label>:
+    </td>
+    <td>
+      <input name="bug_id" id="bug_id" size="20" type="text">
+    </td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>(comma-separated list)</td>
+  </tr>
+    <tr>
+      <td align="right">
+        <label for="votes">Only bugs with at least</label>:
+      </td>
+      <td>
+        <input name="votes" id="votes" size="3">
+        votes
+      </td>
+    </tr>
+</tbody></table>
+
+
+      </fieldset>
+    </td>
+   
+
+
+    <td valign="top">
+      <fieldset>
+        <legend><strong>Bug Changes</strong></legend>
+
+
+<dl class="bug_changes">
+  <dt>
+    <label for="chfieldfrom">Only bugs changed between</label>:
+  </dt>
+  <dd>
+    <input name="chfieldfrom" id="chfieldfrom" size="10">
+    and <input name="chfieldto" size="10" value="Now">
+    <br>(YYYY-MM-DD or relative dates)
+  </dd>
+  <dt>
+    <label for="chfield">where one or more of the following changed</label>:
+  </dt>
+  <dd>
+    
+
+    <select name="chfield" id="chfield" multiple="multiple" size="4">
+      <option value="[Bug creation]">[Bug creation]</option>
+      <option value="alias">Alias</option>
+      <option value="assigned_to">Assignee</option>
+      <option value="cclist_accessible">CC list accessible</option>
+      <option value="component">Component</option>
+      <option value="deadline">Deadline</option>
+      <option value="cf_difficulty">Difficulty</option>
+      <option value="environment">Environment</option>
+      <option value="everconfirmed">Ever confirmed</option>
+      <option value="rep_platform">Hardware</option>
+      <option value="keywords">Keywords</option>
+      <option value="op_sys">OS</option>
+      <option value="priority">Priority</option>
+      <option value="product">Product</option>
+      <option value="qa_contact">QA Contact</option>
+      <option value="reporter_accessible">Reporter accessible</option>
+      <option value="resolution">Resolution</option>
+      <option value="bug_severity">Severity</option>
+      <option value="bug_status">Status</option>
+      <option value="short_desc">Summary</option>
+      <option value="target_milestone">Target Milestone</option>
+      <option value="bug_file_loc">URL</option>
+      <option value="version">Version</option>
+      <option value="votes">Votes</option>
+      <option value="status_whiteboard">Whiteboard</option>
+    </select>
+  </dd>
+  <dt>and <label for="chfieldvalue">the new value was</label>:</dt>
+  <dd>
+    <input name="chfieldvalue" id="chfieldvalue" size="20">
+  </dd>
+</dl>
+
+       </fieldset>
+     </td>
+  </tr>
+</tbody></table>
+<input name="cmdtype" value="doit" type="hidden">
+
+<p>
+  <label for="order">Sort results by</label>:
+  <select name="order" id="order">
+    <option value="Reuse same sort as last time" selected="selected">Reuse same sort as last time</option>
+    <option value="Bug Number">Bug Number</option>
+    <option value="Importance">Importance</option>
+    <option value="Assignee">Assignee</option>
+    <option value="Last Changed">Last Changed</option>
+  </select>
+</p>
+
+<p>  
+  <input id="Search" value="Search" type="submit">
+  
+</p>
+
+<p>
+  &nbsp;&nbsp;&nbsp;
+  <input id="remasdefault" name="remtype" value="asdefault" type="checkbox">
+  <label for="remasdefault">
+    and remember these as my default search options
+  </label>
+</p>
+
+<hr>
+<p>
+    <strong>
+      <a name="chart">Advanced Searching Using Boolean Charts</a>:
+    </strong>
+  </p>
+
+
+
+
+  <table>
+    <tbody><tr>
+      <td>
+        <input id="negate0" name="negate0" value="1" type="checkbox">
+        <label for="negate0">
+          Not (negate this whole chart)
+        </label>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <select name="field0-0-0">
+            <option selected="selected" value="noop">---
+            </option>
+            <option value="%5BBug+creation%5D">%5BBug+creation%5D
+            </option>
+            <option value="alias">Alias
+            </option>
+            <option value="assigned_to">Assignee
+            </option>
+            <option value="attachments.submitter">Attachment creator
+            </option>
+            <option value="attach_data.thedata">Attachment data
+            </option>
+            <option value="attachments.description">Attachment description
+            </option>
+            <option value="attachments.filename">Attachment filename
+            </option>
+            <option value="attachments.isurl">Attachment is a URL
+            </option>
+            <option value="attachments.isobsolete">Attachment is obsolete
+            </option>
+            <option value="attachments.ispatch">Attachment is patch
+            </option>
+            <option value="attachments.isprivate">Attachment is private
+            </option>
+            <option value="attachments.mimetype">Attachment mime type
+            </option>
+            <option value="blocked">Blocks
+            </option>
+            <option value="bug_id">Bug ID
+            </option>
+            <option value="cc">CC
+            </option>
+            <option value="cclist_accessible">CC list accessible
+            </option>
+            <option value="classification">Classification
+            </option>
+            <option value="longdesc">Comment
+            </option>
+            <option value="longdescs.isprivate">Comment is private
+            </option>
+            <option value="commenter">Commenter
+            </option>
+            <option value="component">Component
+            </option>
+            <option value="content">Content
+            </option>
+            <option value="creation_ts">Creation date
+            </option>
+            <option value="days_elapsed">Days since bug changed
+            </option>
+            <option value="dependson">Depends on
+            </option>
+            <option value="cf_difficulty">Difficulty
+            </option>
+            <option value="environment">Environment
+            </option>
+            <option value="everconfirmed">Ever confirmed
+            </option>
+            <option value="flagtypes.name">Flag
+            </option>
+            <option value="requestees.login_name">Flag Requestee
+            </option>
+            <option value="setters.login_name">Flag Setter
+            </option>
+            <option value="bug_group">Group
+            </option>
+            <option value="keywords">Keywords
+            </option>
+            <option value="delta_ts">Changed
+            </option>
+            <option value="op_sys">OS
+            </option>
+            <option value="rep_platform">Hardware
+            </option>
+            <option value="priority">Priority
+            </option>
+            <option value="product">Product
+            </option>
+            <option value="qa_contact">QA Contact
+            </option>
+            <option value="reporter">Reporter
+            </option>
+            <option value="reporter_accessible">Reporter accessible
+            </option>
+            <option value="resolution">Resolution
+            </option>
+            <option value="see_also">See Also
+            </option>
+            <option value="bug_severity">Severity
+            </option>
+            <option value="bug_status">Status
+            </option>
+            <option value="status_whiteboard">Whiteboard
+            </option>
+            <option value="short_desc">Summary
+            </option>
+            <option value="target_milestone">Target Milestone
+            </option>
+            <option value="owner_idle_time">Time Since Assignee Touched
+            </option>
+            <option value="bug_file_loc">URL
+            </option>
+            <option value="version">Version
+            </option>
+            <option value="votes">Votes
+            </option>
+        </select>
+<select name="type0-0-0">
+    <option value="noop" selected="selected">---</option>
+    <option value="equals">is equal to</option>
+    <option value="notequals">is not equal to</option>
+    <option value="anyexact">is equal to any of the strings</option>
+    <option value="substring">contains the string</option>
+    <option value="casesubstring">contains the string (exact case)</option>
+    <option value="notsubstring">does not contain the string</option>
+    <option value="anywordssubstr">contains any of the strings</option>
+    <option value="allwordssubstr">contains all of the strings</option>
+    <option value="nowordssubstr">contains none of the strings</option>
+    <option value="regexp">matches regular expression</option>
+    <option value="notregexp">does not match regular expression</option>
+    <option value="lessthan">is less than</option>
+    <option value="greaterthan">is greater than</option>
+    <option value="anywords">contains any of the words</option>
+    <option value="allwords">contains all of the words</option>
+    <option value="nowords">contains none of the words</option>
+    <option value="changedbefore">changed before</option>
+    <option value="changedafter">changed after</option>
+    <option value="changedfrom">changed from</option>
+    <option value="changedto">changed to</option>
+    <option value="changedby">changed by</option>
+    <option value="matches">matches</option>
+</select>
+
+        <input name="value0-0-0"> 
+      </td>
+      
+        <td>
+          <input value="Or" onclick="this.form.action='query.cgi#chart'; this.form.method='POST'; return 1;" name="cmd-add0-0-1" id="cmd-add0-0-1" type="submit">
+        </td>
+      
+    </tr>
+    
+    <tr>
+      <td>
+        <input value="And" onclick="this.form.action='query.cgi#chart'; this.form.method='POST'; return 1;" name="cmd-add0-1-0" id="cmd-add0-1-0" type="submit">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <input value="Add another boolean chart" onclick="this.form.action='query.cgi#chart'; this.form.method='POST'; return 1;" name="cmd-add1-0-0" id="cmd-add1-0-0" type="submit">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      </td>
+    </tr>   
+    
+  </tbody></table>
+  <hr>
+
+</form>
+
+
+
+  </div>
+
+</div>
+</div>
+
+
+
+<div id="footer">
+  <div class="intro"></div>
+
+
+
+
+<ul id="useful-links">
+  <li id="links-actions"><ul class="links">
+  <li><a href="http://bugs.winehq.org/">Intro</a></li>
+  <li><span class="separator">| </span><a href="http://bugs.winehq.org/enter_bug.cgi">New</a></li>
+  <li><span class="separator">| </span><a href="http://bugs.winehq.org/query.cgi">Search</a></li>
+
+  <li class="form">
+    <span class="separator">| </span><form class="quicksearch" action="buglist.cgi" method="get" onsubmit="if (this.quicksearch.value == '')
+                  { alert('Please enter one or more search terms first.');
+                    return false; } return true;">
+    <input class="txt" id="quicksearch_bottom" name="quicksearch" type="text">
+    <input class="btn" value="Find" id="find_bottom" type="submit"></form></li>
+
+  <li><span class="separator">| </span><a href="http://bugs.winehq.org/report.cgi">Reports</a></li>
+
+  <li></li>
+
+
+  <li>
+        <span class="separator">| </span>
+        <a href="http://bugs.winehq.org/docs/html/query.html" target="_blank">Help</a>
+      </li>
+    
+      <li id="new_account_container_bottom">
+        <span class="separator">| </span>
+        <a href="http://bugs.winehq.org/createaccount.cgi">New&nbsp;Account</a>
+      </li>
+
+    <li id="mini_login_container_bottom">
+  <span class="separator">| </span>
+  <a id="login_link_bottom" href="http://bugs.winehq.org/query.cgi?GoAheadAndLogIn=1" onclick="return show_mini_login_form('_bottom')">Log In</a>
+  <form action="http://bugs.winehq.org/query.cgi?format=advanced&amp;field0-0-0=xyzzy" method="POST" class="mini_login bz_default_hidden" id="mini_login_bottom" onsubmit="return check_mini_login_fields( '_bottom' );">
+    <input value="login" id="Bugzilla_login_bottom" class="bz_login bz_mini_login_help" name="Bugzilla_login" onfocus="mini_login_on_focus('_bottom')">
+    <input class="bz_password bz_default_hidden" id="Bugzilla_password_bottom" name="Bugzilla_password" type="password">
+    <input class="bz_password bz_mini_login_help" id="Bugzilla_password_dummy_bottom" value="password" onfocus="mini_login_on_focus('_bottom')" type="text">
+      <input id="Bugzilla_remember_bottom" name="Bugzilla_remember" value="on" class="bz_remember" checked="checked" type="checkbox">
+      <label for="Bugzilla_remember_bottom">Remember</label>
+    <input name="GoAheadAndLogIn" value="Log in" id="log_in_bottom" type="submit">
+    <script type="text/javascript">
+      mini_login_constants = {
+          "login" : "login",
+          "warning" : "You must set the login and password before logging in."
+      };
+      
+      if (YAHOO.env.ua.gecko || YAHOO.env.ua.ie || YAHOO.env.ua.opera) {
+          YAHOO.util.Event.onDOMReady(function() {
+              init_mini_login_form('_bottom');
+          });
+      }
+      else {
+          YAHOO.util.Event.on(window, 'load', function () {
+              window.setTimeout(function() {
+                  init_mini_login_form('_bottom');
+              }, 200);
+          });
+    }
+    </script>
+    <a href="#" onclick="return hide_mini_login_form('_bottom')">[x]</a>
+  </form>
+</li>
+<li id="forgot_container_bottom">
+  <span class="separator">| </span>
+  <a id="forgot_link_bottom" href="http://bugs.winehq.org/query.cgi?GoAheadAndLogIn=1#forgot" onclick="return show_forgot_form('_bottom')">Forgot Password</a>
+  <form action="token.cgi" method="post" id="forgot_form_bottom" class="mini_forgot bz_default_hidden">
+    <label>Login: <input name="loginname" size="20" type="text"></label>
+    <input id="forgot_button_bottom" value="Reset Password" type="submit">
+    <input name="a" value="reqpw" type="hidden">
+    <a href="#" onclick="return hide_forgot_form('_bottom')">[x]</a>
+  </form>
+</li>
+</ul>
+  </li>
+
+<!--    
+  
+    
+-->
+
+  
+
+
+  
+</ul>
+
+  <div class="outro"></div>
+</div>
+
+
+    <!-- End Content -->
+    </div>
+  <b class="rbottom"><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></b>
+  </div>
+
+</div>
+
+<div id="cwfooter">
+    Hosted By
+    <a href="http://www.codeweavers.com/"><img src="bugzilla-wine-advanced-query_files/cw_logo_sm.png" alt="CodeWeavers" title="CodeWeavers - Run Windows applications and games on Mac and Linux"></a>
+</div>
+
+</body></html>

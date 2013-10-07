@@ -1,0 +1,89 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+
+<body>
+
+<h1 metal:fill-slot="heading" tal:content="view/heading" />
+
+<div metal:fill-slot="main">
+
+  <tal:has-proposals condition="view/proposal_count"
+                     define = "approved view/review_groups/approved|nothing;
+                               to_do view/review_groups/to_do|nothing;
+                               are_doing view/review_groups/are_doing|nothing;
+                               can_do view/review_groups/can_do|nothing;
+                               mine  view/review_groups/mine|nothing;
+                               other view/review_groups/other|nothing;
+                               wip view/review_groups/wip|nothing;
+                               headings view/headings;
+                               ">
+
+  <table id="proposals" class="listing">
+
+    <tal:to-do condition="approved"
+               define="proposals approved;
+                       heading headings/approved;">
+      <metal:to-do use-macro="context/@@+bmp-macros/active-reviews"/>
+    </tal:to-do>
+
+    <tal:to-do condition="to_do"
+               define="proposals to_do;
+                       heading headings/to_do;">
+      <metal:to-do use-macro="context/@@+bmp-macros/active-reviews"/>
+    </tal:to-do>
+
+    <tal:to-do condition="can_do"
+               define="proposals can_do;
+                       heading headings/can_do;">
+      <metal:to-do use-macro="context/@@+bmp-macros/active-reviews"/>
+    </tal:to-do>
+
+    <tal:to-do condition="mine"
+               define="proposals mine;
+                       heading headings/mine;">
+      <metal:to-do use-macro="context/@@+bmp-macros/active-reviews"/>
+    </tal:to-do>
+
+    <tal:to-do condition="are_doing"
+               define="proposals are_doing;
+                       heading headings/are_doing;">
+      <metal:to-do use-macro="context/@@+bmp-macros/active-reviews"/>
+    </tal:to-do>
+
+    <tal:to-do condition="other"
+               define="proposals other;
+                       heading headings/other;">
+      <metal:to-do use-macro="context/@@+bmp-macros/active-reviews"/>
+    </tal:to-do>
+
+    <tal:to-do condition="wip"
+               define="proposals wip;
+                       heading headings/wip;">
+      <metal:to-do use-macro="context/@@+bmp-macros/active-reviews"/>
+    </tal:to-do>
+
+  </table>
+
+  </tal:has-proposals>
+
+  <em id="no-proposals"
+     tal:condition="not: view/proposal_count"
+     tal:content="view/no_proposal_message">
+     No reviews
+  </em>
+
+  <div class="related">
+    <ul>
+      <li><a href="+merges">See all merge proposals</a></li>
+    </ul>
+  </div>
+
+</div>
+
+</body>
+</html>

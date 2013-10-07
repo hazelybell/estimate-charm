@@ -1,0 +1,30 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="malone"
+>
+  <body>
+
+    <div metal:fill-slot="main">
+      <div class="top-portlet">
+        <div metal:use-macro="context/@@launchpad_form/form">
+
+          <p metal:fill-slot="extra_info">
+            Are you sure you want to remove the link between
+            <span tal:replace="context/bug/displayname">Bug #123</span> and the
+            <abbr title="Common Vulnerabilities and Exposures">CVE</abbr> entry?
+          </p>
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>
+

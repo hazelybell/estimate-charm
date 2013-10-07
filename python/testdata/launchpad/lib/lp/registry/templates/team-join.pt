@@ -1,0 +1,45 @@
+<team-join
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+
+<div metal:fill-slot="main">
+
+  <tal:can-join tal:condition="view/user_can_request_to_join">
+
+    <p>Are you sure you want to join this team?</p>
+
+    <p tal:condition="view/team_is_moderated">
+      Since this is a moderated team, one of its administrators will have to
+      approve your membership before you actually become a member.
+    </p>
+
+    <div metal:use-macro="context/@@launchpad_form/form" />
+  </tal:can-join>
+
+  <tal:cannot-join tal:condition="not: view/user_can_request_to_join">
+    <p tal:condition="view/join_allowed" class="informational message">
+      <tal:active-member condition="view/user_is_active_member">
+        You are an active member of this team already.
+      </tal:active-member>
+      <tal:proposed-member condition="view/user_is_proposed_member">
+        Your membership is awaiting approval from one of this team's
+        administrators.
+      </tal:proposed-member>
+    </p>
+
+    <p tal:condition="not: view/join_allowed" class="informational message">
+      <span tal:replace="context/displayname" /> is a restricted team.
+      Only a team administrator can add new members.
+    </p>
+
+    <p>
+      <a tal:attributes="href view/cancel_url">Back</a>
+    </p>
+  </tal:cannot-join>
+
+</div>
+</team-join>

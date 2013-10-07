@@ -27,12 +27,12 @@ def toBool(inputString):
     return json.loads(inputString)
 
 # From http://www.python.org/dev/peps/pep-0318/#examples 2013-09-30
-# Public Domain
+# Public Domain, edited to take args
 def singleton(cls):
     instances = {}
-    def getinstance():
+    def getinstance(*a, **k):
         if cls not in instances:
-            instances[cls] = cls()
+            instances[cls] = cls(*a, **k)
         return instances[cls]
     return getinstance
 # End Public Domain

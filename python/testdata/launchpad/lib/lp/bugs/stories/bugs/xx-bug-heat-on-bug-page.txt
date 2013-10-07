@@ -1,0 +1,8 @@
+= Bug heat on bug page =
+
+Bug heat appears on the bug index page:
+
+    >>> anon_browser.open('http://bugs.launchpad.dev/firefox/+bug/1')
+    >>> content = find_main_content(anon_browser.contents)
+    >>> print content.find('a', href='/+help-bugs/bug-heat.html')
+    <a href="/+help-bugs/bug-heat.html" target="help" class="sprite flame">0</a>

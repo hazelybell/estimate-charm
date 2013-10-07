@@ -1,0 +1,71 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+<body>
+
+<div metal:fill-slot="main">
+
+  <p>
+    Here you can see the people who have earned the most Launchpad
+    karma while working on
+    <span id="project-name" tal:content="context/displayname">
+      this project
+    </span>.
+    (<a href="https://help.launchpad.net/YourAccount/Karma">What is karma?</a>)
+  </p>
+
+  <h2>Overall</h2>
+
+  <table class="listing sortable narrow-listing" id="overall_top">
+  <thead>
+    <tr>
+      <th class="karma-person">Person</th>
+      <th class="karma-count">
+        <span tal:replace="view/context_name" /> Karma
+      </th>
+      <th class="karma-total">Total Karma</th>
+    </tr>
+  </thead>
+  <tbody tal:define="contributors view/getTopContributors">
+    <metal:contributors
+      use-macro="context/@@karmacontext-macros/top-contributors-table-body" />
+  </tbody>
+  </table>
+
+
+  <h2>By category</h2>
+
+  <tal:block
+    define="contributors_by_category view/top_contributors_by_category">
+    <tal:categories repeat="category view/sorted_categories">
+      <table style="margin-bottom: 2em"
+             class="listing sortable narrow-listing"
+             tal:attributes="id category"
+        >
+      <thead>
+        <tr>
+          <th class="karma-person">Person</th>
+          <th class="karma-count"><span tal:replace="category" /> Karma</th>
+          <th class="karma-total">Total Karma</th>
+        </tr>
+      </thead>
+      <tbody tal:define="contributors contributors_by_category/?category">
+        <metal:contributors
+          use-macro="context/@@karmacontext-macros/top-contributors-table-body" />
+      </tbody>
+      </table>
+    </tal:categories>
+  </tal:block>
+
+</div>
+
+</body>
+</html>

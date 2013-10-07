@@ -1,0 +1,13 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xml:lang="en"
+  lang="en"
+  i18n:domain="launchpad">
+
+<body>
+  <p>
+    Your request didn't fit the protocol expected by this server.
+  </p>
+</body>
+
+</html>

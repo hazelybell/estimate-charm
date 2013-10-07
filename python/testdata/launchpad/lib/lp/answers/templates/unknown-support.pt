@@ -1,0 +1,43 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+  <head>
+    <tal:head_epilogue metal:fill-slot="head_epilogue">
+      <meta name="robots" content="noindex,nofollow" />
+    </tal:head_epilogue>
+  </head>
+
+  <body>
+    <div metal:fill-slot="main">
+      <div class="top-portlet">
+        <p id="support-unknown">
+          <strong>Launchpad does not know where
+          <tal:project replace="context/displayname" />
+          tracks support requests.</strong>
+        </p>
+
+        <p id="ubuntu-support"
+          tal:define="packages context/ubuntu_packages | nothing"
+          tal:condition="packages">
+          <tal:project replace="context/displayname" /> questions are
+          tracked in: <tal:packages repeat="package packages">
+            <tal:package replace="structure package/fmt:link" /><tal:comma
+            condition="not:repeat/package/end">, </tal:comma></tal:packages>.
+        </p>
+
+        <p id="configure-support"
+          tal:condition="view/can_configure_answers">
+          <a class="sprite maybe"
+            href="https://help.launchpad.net/Answers">Getting started
+          tracking questions and FAQs in Launchpad</a>.
+          <br /><a tal:replace="structure context/menu:overview/configure_answers/fmt:link" />
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
+

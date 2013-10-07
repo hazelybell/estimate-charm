@@ -1,0 +1,424 @@
+<!-- Style is supposed to go in the head. We don't have one here. This seems
+to work for FF and WebKit. -->
+<style type="text/css">
+.python_topten {margin-bottom: 4px;}
+.python_danger {background-color: red;}
+.python_warning {background-color: yellow;}
+.sql_danger .sqlstep {background-color: red;}
+.sql_warning .sqlstep {background-color: yellow;}
+.trace .dbstack {font-size: smaller; color: gray}
+.sqlinfo {border-bottom: 1px gray dotted; padding-bottom: 2px;}
+.sqlstats {margin-left: 1ex;}
+.sqlstep {border: LightGray solid 1px; margin-bottom: 4px;}
+.sqlstep.sql_danger {border-color: red;}
+.sqlstep.sql_warning {border-color: yellow;}
+.sqlstep .trace {background-color: GhostWhite; font-size: small; clear: both;}
+.sqlstep .trace .line {margin-left: 2em; font-family: monospace;}
+.sqlstep .trace .supplement, .sqlstep .trace .extrainfo {
+    font-weight: bold; margin-left: 2em;}
+.tracebackwarning {color: red;}
+.col1 {width: 60em; float: left;}
+a.clicktext {font-weight: normal;}
+.trace {overflow: hidden;}
+.trace.inner {height: auto; overflow: hidden;}
+.querylinks {margin-left: 2em;}
+</style>
+<div class="profiling_info">
+  <div class="hide_reveal_profiling" id="reveal_profiling">
+  <a href="#">Click to REVEAL profiling information</a>
+  </div>
+</div>
+<div class="profiling_info" id="profiling_info"
+     tal:define="actions options/actions;
+                 help actions/help|nothing;
+                 callgrind actions/callgrind|nothing;
+                 pstats actions/pstats|nothing;
+                 log python: callgrind or pstats;
+                 show actions/show|nothing;
+                 always_log options/always_log;
+                 dump_path options/dump_path;
+                 callgrind_path options/callgrind_path|nothing;
+                 pstats_path options/pstats_path|nothing;
+                 time options/time|nothing;
+                 cumulative options/cumulative|nothing;
+                 calls options/calls|nothing;
+                 oops options/oops|nothing;
+                 profile_count options/profile_count|nothing;
+                 multiple_profiles options/multiple_profiles|nothing;
+                 inline_ignored actions/inline_ignored|nothing;
+                 inline actions/inline|nothing;
+                 sqltrace actions/sql|nothing;
+                 sqltrace_steps options/sqltrace|nothing;
+                 ">
+  <div class="hide_reveal_profiling" id="hide_profiling">
+  <a href="#">Click to HIDE profiling information</a>
+  </div>
+  <h1>Profiling Information</h1>
+  <tal:block condition="help">
+    <h2>Help</h2>
+    <p>Hi.  I see you are using a <code>++profile++</code> request.
+    <tal:block condition="always_log">You have configured every request
+    to have a log, via the <code>profile_all_requests: True</code> in
+    the <code>[profiling]</code> section of your launchpad-lazr.conf, so
+    you'll always see some logging information below.  In order to also
+    get immediate profiling results in the browser, use
+    <code>++profile++show</code>.</tal:block> <tal:block condition="not:
+    always_log">In order to get profiling results, you need to ask for an HTML
+    view of the profile and OOPS data including SQL calls
+    (<code>++profile++show</code>), a KCacheGrind-friendly log on the
+    filesystem (<code>++profile++callgrind</code>), a PStats-friendly log
+    (Python standard library) on the filesystem
+    (<code>++profile++pstats</code>), an HTML view of the SQL and the
+    Python stacktrace when each SQL call was made
+    (<code>++profile++sqltrace</code>), or an HTML view of only the SQL
+    (<code>++profile++sql</code>). You can also combine these
+    (<code>++profile++show&callgrind</code> or
+    <code>++profile++show&pstats</code> or others, with each action separated
+    with ampersands).</tal:block></p>
+    <p>The <code>++profile++sqltrace</code> can take too much time to let a
+    page practically render, especially on qastaging and staging.  You can
+    filter to only get the stacktraces you want in this case; see information
+    in the &quot;SQL trace&quot; section below on how to do this.</p>
+    <p>The "++profile++" path segment can usually go anywhere in the URL
+    (e.g., <code>http://launchpad.dev/++profile++show</code> or
+    <code>http://launchpad.dev/++profile++show/Firefox</code> or
+    <code>http://launchpad.dev/Firefox/++profile++show</code>) but some pages
+    do seem to redirect in surprising ways, so experimentation may be
+    necessary.</p>
+    <p>If you are working on a developer instance of Launchpad, you can also
+    insert calls directly in your code to profile certain code paths.  Try
+    something like this:</p>
+<pre>
+from lp.services.profile import profiling
+with profiling():
+    # Do the work that you want profiled here!
+</pre>
+    <p>Multiple calls like this within a single request will be aggregated
+    together.</p>
+  </tal:block>
+  <tal:block condition="inline_ignored">
+    <h2>Inline request ignored</h2>
+    <p>You tried to use a profiling call in your code while also using a
+    conflicting <code>++profile++</code> request (like <code>show</code> or
+    <code>pstats</code> or <code>callgrind</code>).  You can't use both at the
+    same time, so you got the full profile of this request.  If you want the
+    results of the inline calls instead, try removing the
+    <code>++profile++</code>...<code>/</code> segment from your browser's URL.
+    </p>
+  </tal:block>
+  <tal:block condition="inline">
+    <h2>Inline request</h2>
+    <p>These results are from profiling statements in your code. <tal:block
+    condition="multiple_profiles">This request made <tal:block
+    replace="profile_count" /> individual profiles. The data here represent
+    an aggregate of all the profiles.</tal:block></p>
+  </tal:block>
+  <h2>Log information</h2>
+  <tal:block condition="not:log">
+    <p>Profile was not logged to file.</p>
+    <p>Use <code>++profile++callgrind</code> in your URL in order to log the
+    information to file for later KCacheGrind analysis.  KCacheGrind is great
+    for visualizing a profile, but it only allows analyzing a limited depth of
+    calls.  If you want a greater profile depth, or if for any other reason
+    you want to use the standard Python library's pstats analysis instead, you
+    can. To do this, use "pstats" instead as part of your ++profile++ request,
+    as in <code>++profile++pstats</code>.  Profiles are logged to <tal:block
+    replace="dump_path" />.</p>
+    <p> You can see both the log information and immediate results with
+    <code>++profile++callgrind&show</code> or
+    <code>++profile++pstats&show</code>.</p>
+  </tal:block>
+  <tal:block condition="log">
+    <p tal:condition="always_log"><strong>You have configured every
+    request to have a full profile log</strong>, via the
+    <code>profile_all_requests: True</code> in the
+    <code>[profiling]</code> section of your launchpad-lazr.conf.</p>
+    <p>Profile was logged to <tal:block replace="dump_path" />.</p>
+    <p tal:condition="callgrind">You should be able to use this
+    simply by entering <code>kcachegrind <tal:block replace="callgrind_path"
+    /></code> in the console for a great visualization of the profile.  The <a
+    href="https://dev.launchpad.net/Debugging#Profiling%%20page%%20requests"
+    >dev wiki</a> may have more information on how to use this.</p>
+    <p tal:condition="pstats">You should be able to use this
+    simply by entering <code>python -m pstats <tal:block replace="pstats_path"
+    /></code> in the console to use the normal Python profile statistics
+    interface.  Type &quot;help&quot; at the prompt, or see the <a
+    href="http://docs.python.org/library/profile.html#instant-user-s-manual"
+    >Python documentation</a>.</p>
+  </tal:block>
+  <h2>SQL trace</h2>
+  <tal:block condition="not:sqltrace">
+    <p>Use <code>++profile++sqltrace</code> in your URL to see the SQL that
+    the page runs, along with start and stop times, the database used, and the
+    stacktrace for when each sql call is made.</p>
+    <p>If you only want SQL and not the tracebacks,
+    <code>++profile++sql</code> will give you what you want, or
+    <code>++profile++show</code> will include OOPS data at the end of the
+    profiling information.</p>
+    <p>If you want stacktraces only for certain SQL statements, you can do
+    that too.  You can use <code>startswith</code>, <code>endswith</code>
+    or <code>includes</code> to specify parts of the SQL that you want to use
+    as triggers.  Note that this is whitespace and case normalized, so you
+    just need to get the spelling right.  Here are some examples.</p>
+    <dl>
+    <dt><code>/++profile++sqltrace: includes Product.blueprints_usage/</code>
+    </dt>
+    <dd>This will get a stacktrace for any SQL statement that has the
+    string &quot;Product.blueprints_usage&quot; in it.</dd>
+    <dt><code>/++profile++sqltrace:startswith SELECT
+    Distribution.answers_usage/</code> </dt>
+    <dd>This will get a stacktrace for any SQL statement that starts with the
+    string &quot;SELECT Distribution.answers_usage&quot; in it.</dd>
+    <dt><code>/++profile++sqltrace:endswith WHERE Project.id = 5 LIMIT
+    1/</code> </dt>
+    <dd>This will get a stacktrace for any SQL statement that ends with the
+    string given.  Note that it does not end in a semicolon, and note that
+    parameters are filled in.</dd>
+    </dl>
+    <p>You can also combine requests with the <code>|</code> mark (the
+    pipe).  Here's an example:
+    <code>/++profile++sqltrace:startswith SELECT Distribution.answers_usage |
+    includes Product.blueprints_usage/</code>.</p>
+  </tal:block>
+  <tal:block condition="sqltrace">
+    <p tal:condition="options/sql_traceback_all|nothing">You have requested
+    tracebacks for all SQL statements.  You can filter these with conditions
+    like <code>startswith</code>, <code>endswith</code> or
+    <code>includes</code>. Here's a simple example:
+    <code>/++profile++sqltrace: includes Product.blueprints_usage/</code>.</p>
+    <p tal:condition="options/sql_traceback_none|nothing">You have requested no
+    tracebacks.  Use <code>++profile++sqltrace</code> to get tracebacks.</p>
+    <tal:block condition="options/sql_traceback_conditions|nothing">
+      <p>You have requested tracebacks for statements that match only certain
+      conditions.</p>
+      <tal:block
+      condition="not:options/sql_traceback_conditions/included">
+      <p><strong> You had no valid conditions, so no tracebacks were
+      included.</strong> The available conditions are <code>startswith</code>,
+      <code>endswith</code> or <code>includes</code>. Here's a simple
+      example.</p>
+      <pre>++profile++sqltrace: includes Product.blueprints_usage/</pre>
+      </tal:block>
+      <ul>
+      <li tal:repeat="condition options/sql_traceback_conditions/included">
+        <em tal:content="condition/constraint">CONSTRAINT</em>
+        <span tal:replace="condition/value">VALUE</span>
+      </li>
+      </ul>
+      <tal:block condition="options/sql_traceback_conditions/ignored">
+        <p><strong>Warning</strong>: these conditions were not understood, and
+        so ignored.</p>
+        <ul>
+        <li tal:repeat="condition options/sql_traceback_conditions/ignored">
+          <em tal:content="condition/constraint">CONSTRAINT</em>
+          <span tal:replace="condition/value">VALUE</span>
+        </li>
+        </ul>
+      </tal:block>
+    </tal:block>
+    <h3>Top 10 SQL times</h3>
+    <ol>
+      <li tal:repeat="info options/top_sql" tal:attributes="class info/cls">
+        <a tal:attributes="href string:#sqlstep-${info/ix}">Query number
+        <tal:block tal:content="info/ix"></tal:block></a> (<tal:block
+        replace="info/value"></tal:block> milliseconds)
+      </li>
+    </ol>
+    <h3>Top 10 Python times</h3>
+    <p tal:condition="options/sql_traceback_all|nothing">Note that generating
+    stacktraces can add significantly to these numbers, and skew results.  Use
+    <code>++profile++sql</code> for a more accurate view.</p>
+    <p tal:condition="options/sql_traceback_conditions|nothing">Note that
+    generating stacktraces can add significantly to these numbers, and
+    selectively choosing when to generate stacktraces will produce so much
+    skew as to potentially make these values meaningless.  Use
+    <code>++profile++sql</code> for the most accurate view.</p>
+    <ol>
+      <li tal:repeat="info options/top_python" tal:attributes="class info/cls">
+        <a tal:attributes="href string:#pythonstep-${info/ix}">Before query
+        number <tal:block tal:content="info/ix"></tal:block></a> (<tal:block
+        replace="info/value"></tal:block> milliseconds)
+      </li>
+    </ol>
+    <tal:block condition="not: options/sql_traceback_none|nothing">
+      <h3>Repeated Python SQL Triggers</h3>
+      <p tal:condition="options/sql_traceback_conditions|nothing">These are
+      only calculated for the stacktraces that were collected.</p>
+      <p tal:condition="not: options/top_triggers">None.</p>
+      <div tal:condition="options/top_triggers">
+        <p>Typically, these show loops.  The traceback may show extra
+        information, such as from page templates, that indicate the variable
+        within the loop.  If you want to add more information to identify the
+        variables in the loop, in your Python add either an informational
+        string with the variable name <code>__traceback_info__</code>, or add
+        a <code>__traceback_supplement__</code> as used in
+        lp.services.stacktrace.</p>
+        <div tal:repeat="trigger options/top_triggers">
+          <div>File &quot;<tal:block
+          replace="trigger/filename"></tal:block>&quot;, line <tal:block
+          replace="trigger/lineno"></tal:block></div>
+          <div class="querylinks"> <tal:block
+          replace="trigger/count"></tal:block> related queries (<a href="#"
+          class="expandall">expand all tracebacks</a>): <span tal:repeat="ix
+          trigger/indexes"> <a tal:attributes="href string:#sqlstep-${ix}"
+          tal:content="ix"></a> </span> </div>
+        </div>
+      </div>
+    </tal:block>
+    <h3>SQL (<tal:block replace="options/sql_count"></tal:block> queries)</h3>
+    <p>Each sql line begins with the start time and the stop time, along with
+    the name of the database on which the query ran.  Times are in
+    milliseconds since request start.</p>
+    <div tal:condition="not:options/sql_traceback_none|nothing"><a href="#"
+    id="show-all-tracebacks">Show all tracebacks</a> / <a href="#"
+    id="hide-all-tracebacks">Hide all tracebacks</a></div>
+    <div tal:repeat="step sqltrace_steps">
+      <div tal:condition="step/python_rank|nothing" tal:attributes="class
+      string: python_topten ${step/python_class}; id
+      string:pythonstep-${step/id}"><strong>Top ten (# <tal:block
+      replace="step/python_rank"></tal:block>):</strong> Python work took
+      <span tal:replace="step/python_time" /> milliseconds in-between SQL
+      calls.</div>
+      <div tal:attributes="class string: sqlstep ${step/sql_class|nothing};
+                           id string:sqlstep-${step/id};">
+        <div class="sqlinfo">
+          <div class="col1"><span><tal:block replace="step/id"></tal:block>.
+          <span class="sqlstats"><span
+          tal:replace="step/sql/start"></span> - <span
+          tal:replace="step/sql/stop"></span> @ <tal:block
+          replace="step/sql/name"></tal:block></span></span> <span
+          tal:condition="step/sql_rank|nothing"><strong>Top ten (# <tal:block
+          replace="step/sql_rank"></tal:block>):</strong> SQL took <span
+          tal:replace="step/sql_time" /> milliseconds</span></div> <a href="#"
+          class="clicktext" tal:condition="step/stack">Click to toggle Python
+          traceback.</a><span tal:condition="not:step/stack">--</span>
+        </div>
+        <div class="trace" tal:condition="step/stack"><div class="inner">
+          <div class="appstack" tal:define="stack step/app_stack">
+            <div tal:repeat="frame stack" metal:define-macro="draw-stack">
+              <div>File &quot;<tal:block replace="frame/filename"></tal:block>&quot;,
+              line <tal:block replace="frame/lineno"></tal:block>, in
+              <tal:block replace="frame/name"></tal:block></div>
+              <div tal:condition="frame/line" tal:content="frame/line" class="line"></div>
+              <div tal:define="supp frame/supplement" tal:condition="supp" class="supplement">
+                <div tal:condition="supp/source_url" tal:content="supp/source_url"></div>
+                <div tal:define="line supp/line; column supp/column;"
+                     tal:condition="python:line or column">
+                <tal:block condition="line">Line <span tal:replace="line"></span><tal:block condition="column">, </tal:block></tal:block>
+                <tal:block condition="column">Column <span tal:replace="column"></span></tal:block>
+                </div>
+                <div tal:condition="supp/expression">Expression: <code tal:content="supp/expression"></code></div>
+                <div tal:condition="supp/warnings">
+                  <div tal:repeat="warning supp/warnings" class="tracebackwarning">Warning: <span tal:replace="supp/warnings"></span></div>
+                </div>
+                <pre tal:condition="supp/extra"
+                     tal:content="supp/extra"></pre>
+              </div>
+              <pre tal:condition="frame/info" tal:content="frame/info" class="extrainfo"></pre>
+            </div>
+          </div>
+          <div class="dbstack" tal:define="stack step/db_stack">
+            <div metal:use-macro="template/macros/draw-stack"></div>
+          </div>
+        </div></div>
+        <pre  tal:attributes="class string: sql ${step/sql_class|nothing}" tal:content="step/sql/statement"></pre>
+      </div>
+    </div>
+  </tal:block>
+  <h2>Profile quick view</h2>
+  <tal:block condition="not:show">
+    <p>Use <code>++profile++show</code> in your URL in order to see immediate
+    profile results (or <code>++profile++callgrind&show</code> or
+    <code>++profile++pstats&show</code> to see both the log information and
+    immediate results).</p>
+  </tal:block>
+  <tal:block condition="show">
+    <p tal:condition="multiple_profiles">This request made <tal:block
+    replace="profile_count" /> profiles. The statistics below represent an
+    aggregate of them all.</p>
+    <h3>Top Inline Time</h3>
+    <pre tal:content="time" />
+    <h3>Top Total Time</h3>
+    <pre tal:content="cumulative" />
+    <h3>Top Call Count</h3>
+    <pre tal:content="calls" />
+    <h2>Raw OOPS Information</h2>
+    <pre tal:content="oops" />
+  </tal:block>
+</div>
+<script>
+LPJS.use('node', 'lp', 'transition', function (Y) {
+    Y.one('div#reveal_profiling').on('click', function (e) {
+        Y.one('div#profiling_info').setStyle('display', 'block');
+        e.preventDefault();
+    });
+    Y.one('div#hide_profiling').on('click', function (e) {
+        Y.one('div#profiling_info').setStyle('display', 'none');
+        e.preventDefault();
+    });
+});
+</script>
+<script tal:condition="not:options/sql_traceback_none|nothing">
+LPJS.use('node', 'lp', 'transition', function (Y) {
+    function slideIn(target) {
+        target.transition({
+            easing: 'ease-in',
+            duration: 0.75, // seconds
+            height: '0px'
+        }, function() {
+            target.setStyle('display', 'none');
+        });
+    }
+    function slideOut(target) {
+        target.setStyles({display: 'block', height: '0px'});
+        var inner = target.one('.inner');
+        var height = parseInt(inner.getComputedStyle('height'));
+        target.transition({
+            easing: 'ease-out',
+            duration: 0.75, // seconds
+            height: height+'px'
+        }, function() {
+            target.setStyle('height', 'auto');
+        });
+    }
+    // We use "all" on these two as a lazy way to handle the possibility
+    // that the link may not be there.
+    Y.all('#show-all-tracebacks').on('click', function (e) {
+        // For speed, just force them all open without animation.
+        Y.all('.trace').setStyles({display: 'block', height: 'auto'});
+        e.preventDefault();
+    });
+    Y.all('#hide-all-tracebacks').on('click', function (e) {
+        // For speed, just force them all closed without animation.
+        Y.all('.trace').setStyle('display', 'none');
+        e.preventDefault();
+    });
+    Y.all('.expandall').on('click', function (e) {
+        var links = e.currentTarget.ancestor('.querylinks').all('span a');
+        links.each(function (link) {
+            var href = link.get('href');
+            var identifier = href.slice(href.indexOf('#'));
+            var target = Y.one(identifier).one('.trace');
+            // target.setStyles({display: 'block', height: 'auto'});
+            if (target.getStyle('display') !== 'block') {
+                slideOut(target);
+            }
+        });
+        e.preventDefault();
+    });
+    Y.on('load', function(e) {
+        // We hide the tracebacks with Javascript so that, if the Javascript
+        // does not load, we still can easily see the tracebacks.
+        Y.all('.trace').setStyle('display', 'none');
+        Y.all('.sqlinfo').on('click', function(e) {
+            var trace = e.currentTarget.ancestor('.sqlstep').one('.trace');
+            if (trace.getStyle('display') === 'block') {
+                slideIn(trace);
+            } else {
+                slideOut(trace);
+            }
+            e.preventDefault();
+        });
+    });
+});
+</script>

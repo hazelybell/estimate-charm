@@ -1,0 +1,41 @@
+= Cross-Site Scripting, or XSS, when changing contact address =
+
+The contact address field and its related messages are properly
+escaped in order to prevent XSS.
+
+    >>> admin_browser.open(
+    ...     'http://launchpad.dev/~guadamen/+contactaddress')
+    >>> admin_browser.getControl('Another e-mail address').selected = True
+    >>> admin_browser.getControl(name='field.contact_address').value = (
+    ...     '<script>alert("cheezburger");</script>')
+    >>> admin_browser.getControl('Change').click()
+
+The value can be obtained correctly, which indicates that the markup
+is parse-able:
+
+    >>> admin_browser.getControl(name='field.contact_address').value
+    '<script>alert("cheezburger");</script>'
+
+The markup is valid and correctly escaped:
+
+    >>> print find_tag_by_id(
+    ...     admin_browser.contents, 'field.contact_address').prettify()
+    <input class="textType" id="field.contact_address"
+           name="field.contact_address" size="20" type="text"
+           value='&lt;script&gt;alert("cheezburger");&lt;/script&gt;' />
+
+The error message is also valid and correctly escaped:
+
+    >>> for tag in find_tags_by_class(admin_browser.contents, 'message'):
+    ...     print tag.prettify()
+    <p class="error message">
+    ...
+    <div class="message">
+    &lt;script&gt;alert(&quot;cheezburger&quot;);&lt;/script&gt; isn&#x27;t...
+    </div>
+
+The script we tried to inject is not present, unescaped, anywhere in
+the page:
+
+    >>> '<script>alert("cheezburger");</script>' in admin_browser.contents
+    False

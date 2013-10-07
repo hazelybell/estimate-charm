@@ -1,0 +1,136 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  metal:use-macro="view/macro:page/main_only">
+  <body>
+    <div metal:fill-slot="main">
+
+      <div class="yui-g">
+        <p id="application-summary">
+          Launchpad Answers helps you build a
+          community support network and knowledge base for
+          your project. Encourage new users to ask questions
+          rather than file bugs! (<a href="https://help.launchpad.net/Answers">Read our guide</a>)
+        </p>
+
+        <ul class="rollover buttons">
+          <li>
+            <a href="/+tour/community-support"
+               tal:attributes="href string:${rooturl}+tour/community-support">
+              <img
+                alt="Take a tour"
+                src="/+icing/but-lrg-takeatour.gif"
+              />
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="yui-g">
+        <form id="search-all-questions" class="central" action="" method="get"
+              tal:attributes="action request/URL">
+          <table>
+            <tbody>
+              <tr>
+                <td style="text-align: right;">
+                  <input
+                    id="text"
+                    type="text"
+                    name="field.search_text"
+                    size="50"
+                  />
+                </td>
+                <td>
+                  <input
+                    tal:replace="structure view/search_action/render"
+                    type="submit"
+                    value="Find Answers"
+                  />
+                </td>
+              </tr>
+            <tr>
+              <td colspan="2"
+                tal:attributes="class view/scope_css_class">
+                <input tal:replace="structure view/widgets/scope" />
+                <div class="message"
+                  tal:condition="view/widgets/scope/error"
+                  tal:content="structure view/widgets/scope/error">
+                  Error message
+                </div>
+                <script type="text/javascript"
+                  tal:define="script view/focusedElementScript"
+                  tal:condition="script"
+                  tal:content="structure script" ></script>
+                <tal:sort
+                    replace="structure view/widgets/sort/hidden" />
+                <tal:status
+                  replace="structure view/widgets/status/hidden" />
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </form>
+      </div>
+
+      <div class="columns">
+        <div id="most-active-projects" class="three column left">
+          <h2>Most active projects</h2>
+
+          <ul tal:define="projects view/most_active_projects"
+              tal:condition="projects"
+              style="list-style: none;">
+            <li tal:repeat="project projects">
+              <a tal:replace="structure project/fmt:link:answers"/>
+            </li>
+          </ul>
+        </div>
+
+        <div id="latest-questions-asked" class="three column middle">
+          <h2>Latest questions asked</h2>
+          <ul>
+            <tal:question
+              repeat="question view/latest_questions_asked"
+              content="structure question/@@+listing-detailed"
+            />
+          </ul>
+        </div>
+
+        <div id="latest-questions-solved" class="three column right">
+          <h2>Latest questions solved</h2>
+          <ul>
+            <tal:question
+              repeat="question view/latest_questions_solved"
+              content="structure question/@@+listing-detailed"
+            />
+          </ul>
+        </div>
+      </div>
+
+      <div id="application-footer">
+        <div>
+          <strong
+            tal:content="view/answered_question_count"
+          >52</strong>
+          questions answered and
+          <strong
+            tal:content="view/solved_question_count"
+          >52</strong>
+          questions solved out of
+        </div>
+        <div>
+          <strong
+            tal:content="view/question_count"
+          >318</strong>
+          questions asked across
+          <strong
+            tal:content="view/projects_with_questions_count"
+          >28</strong>
+          projects
+        </div>
+      </div>
+
+    </div><!--main-->
+
+  </body>
+</html>

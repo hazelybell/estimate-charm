@@ -1,0 +1,42 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+  <body>
+    <div metal:fill-slot="main">
+      <div metal:use-macro="context/@@launchpad_form/form">
+
+        <tal:extra_info metal:fill-slot="extra_info">
+        <p>
+          To merge two Launchpad accounts:
+        </p>
+        <ul class="bulleted">
+          <li>You must be logged in to Launchpad under the account you
+            want to keep.</li>
+          <li>You must have access to the e-mail address registered
+            under the other account that you want to remove.</li>
+        </ul>
+        <p>
+          You will receive an email notification requesting you authorize
+          the merge, and once you've proven that you own the duplicated
+          account's e-mail address, it will be assigned to you, along with
+          everything else owned by it.
+        </p>
+        <p>
+          Note: If you no longer have access to the duplicated account's
+          email address, you may place a
+          <a href="/launchpad/+addquestion">support request</a>.
+          The Launchpad administrators will tend to your request as soon
+          as possible.
+        </p>
+        </tal:extra_info>
+
+      </div>
+
+    </div>
+  </body>
+</html>

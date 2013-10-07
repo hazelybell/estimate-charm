@@ -1,0 +1,37 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag=""
+  define="packages view/sourcepackages"
+  condition="view/can_show_portlet">
+
+<div class="portlet" id="portlet-packages">
+  <tal:has_packages condition="packages">
+  <h2>
+    <span class="see-all"><a
+      tal:attributes="href context/menu:overview/packages/fmt:url">
+      All packages</a></span>
+    Packages in Distributions
+  </h2>
+
+    <ul>
+      <tal:pair tal:repeat="package packages">
+        <li>
+          <a class="sprite package-source"
+            tal:attributes="href package/fmt:url"
+            tal:content="package/title">apache in ubuntu hoary</a>
+          <br />
+          <span class="registered"
+            tal:define="release package/currentrelease"
+            tal:condition="release">
+          <strong>Version
+            <tal:version content="release/version">2.3</tal:version></strong>
+          uploaded <tal:date replace="release/dateuploaded/fmt:displaydate" />
+          </span>
+        </li>
+      </tal:pair>
+    </ul>
+  </tal:has_packages>
+</div>
+</tal:root>

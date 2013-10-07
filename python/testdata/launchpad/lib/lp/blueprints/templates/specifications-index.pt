@@ -1,0 +1,113 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+  <body>
+    <div metal:fill-slot="main">
+
+      <ul class="buttons">
+        <li>
+          <a href="/+tour/feature-tracking"
+             tal:attributes="href string:${rooturl}+tour/feature-tracking">
+            <img
+              alt="Take a tour"
+              src="/+icing/but-lrg-takeatour.gif"
+              />
+          </a>
+        </li>
+        <li>
+          <a href="+new" id="addspec">
+            <img
+              alt="Register a blueprint"
+              src="/+icing/but-lrg-registeraspec.gif"
+              />
+          </a>
+        </li>
+      </ul>
+
+      <form id="search-all-specifications" class="central" action="" method="get"
+            tal:attributes="action request/URL">
+        <table>
+          <tbody>
+            <tr>
+              <td style="text-align: right;">
+                <input
+                  id="text"
+                  type="text"
+                  name="field.search_text"
+                  size="50"
+                  tal:attributes="value view/searchtext"
+                />
+              </td>
+              <td>
+                <input tal:replace="structure view/search_action/render"/>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2"
+                tal:attributes="class view/scope_css_class">
+                <input tal:replace="structure view/widgets/scope" />
+                <div class="message"
+                  tal:condition="view/widgets/scope/error"
+                  tal:content="structure view/widgets/scope/error">
+                  Error message
+                </div>
+                <script type="text/javascript"
+                  tal:define="script view/focusedElementScript"
+                  tal:condition="script"
+                  tal:content="structure script" ></script>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </form>
+      <script type="text/javascript">
+          LPJS.use('lp', function (Y) {
+              setFocusByName('field.search_text');
+          });
+      </script>
+
+      <tal:searchresults condition="view/searchrequested"
+                         define="specs view/specs" >
+        <p tal:condition="specs">
+          <span tal:replace="view/spec_count" />
+          blueprint(s) matching
+          &#8220;<tal:string replace="view/searchtext" />&#8221;
+        </p>
+
+        <tal:nomatches condition="not: specs"
+                       replace="structure context/@@+nomatches" />
+
+        <table id="specs-table">
+          <tr tal:repeat="spec specs"
+              tal:replace="structure spec/@@+listing-simple" />
+        </table>
+
+      </tal:searchresults>
+      <tal:nosearchresults condition="not:view/searchrequested">
+        <p id="application-summary">
+          With Launchpad you can track blueprints
+          (lightweight feature specifications) from discussion through to
+          review, approval, and implementation. (<a href="https://help.launchpad.net/Blueprint">Read our guide</a>)
+        </p>
+        <div class="columns">
+          <div class="three column left"
+               tal:content="structure context/@@+portlet-latestregistered">
+          </div>
+          <div class="three column middle"
+               tal:content="structure context/@@+portlet-latestcompleted">
+          </div>
+          <div class="three column right"
+               tal:content="structure context/@@+portlet-sprints" />
+        </div>
+        <div id="application-footer">
+          <tal:stats replace="structure context/@@+portlet-stats" />
+        </div>
+      </tal:nosearchresults>
+
+    </div><!--main-->
+  </body>
+</html>

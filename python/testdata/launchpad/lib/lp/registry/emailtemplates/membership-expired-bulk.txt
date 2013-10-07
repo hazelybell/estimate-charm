@@ -1,0 +1,7 @@
+Hello %(recipient_name)s,
+
+The membership of %(member_name)s in the %(team_name)s team has expired.
+<%(team_url)s>
+
+Regards,
+The Launchpad team

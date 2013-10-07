@@ -1,0 +1,39 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  class="portlet" id="portlet-architectures"
+  tal:define="architectures context/architectures">
+
+  <h2>Architectures and builds for <tal:series replace="context/displayname" /></h2>
+
+  <p tal:condition="not: architectures">
+    <tal:name replace="context/displayname" /> has no architectures
+    managed in Launchpad.
+  </p>
+
+  <tal:buildable condition="architectures">
+    <ul id="portlet-architectures-list">
+      <tal:official repeat="architecture architectures">
+        <li tal:condition="architecture/official">
+          <a class="sprite architecture"
+            tal:attributes="href architecture/fmt:url"
+            tal:content="architecture/architecturetag" />
+        </li>
+      </tal:official>
+      <tal:unofficial repeat="architecture architectures">
+        <li tal:condition="not: architecture/official">
+          <a class="sprite architecture"
+            tal:attributes="href architecture/fmt:url"
+            tal:content="architecture/architecturetag" />
+            (unofficial)
+        </li>
+      </tal:unofficial>
+    </ul>
+
+    <ul class="horizontal">
+      <a tal:replace="structure context/menu:overview/add_port/fmt:link" />
+      <a tal:replace="structure context/menu:overview/builds/fmt:link" />
+    </ul>
+  </tal:buildable>
+</div>

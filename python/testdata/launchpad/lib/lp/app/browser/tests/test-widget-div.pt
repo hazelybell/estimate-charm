@@ -1,0 +1,20 @@
+<div
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="launchpad">
+
+  <tal:single-line define="widget nocall:view/widgets/single_line">
+    <metal:widget-div use-macro="widget/@@launchpad_form/widget_div" />
+  </tal:single-line>
+
+  <tal:multi-line define="widget nocall:view/widgets/multi_line">
+    <metal:widget-div use-macro="widget/@@launchpad_form/widget_div" />
+  </tal:multi-line>
+
+  <tal:checkbox define="widget nocall:view/widgets/checkbox">
+    <metal:widget-div use-macro="widget/@@launchpad_form/widget_div" />
+  </tal:checkbox>
+
+</div>

@@ -1,0 +1,73 @@
+#!/usr/bin/python -S
+#
+# Copyright 2009 Canonical Ltd.  This software is licensed under the
+# GNU Affero General Public License version 3 (see the file LICENSE).
+
+"""Make a Subversion repostiory and then make a CodeImportJob for it.
+
+USAGE: ./utilities/mock-code-import
+
+Run 'make schema' first! This utility mutates the DB and doesn't restore
+afterwards.
+
+This means that the valid_vcs_details constraint on CodeImport is lost and
+that there are new, crappy test objects in the DB. The utility will bork on
+these when run again.
+
+Details of the Subversion server are printed to stdout.
+"""
+
+# XXX: JonathanLange 2008-01-03: This is deliberately horrible.
+# You can make it nicer if you want.
+
+import _pythonpath
+
+import os
+from subprocess import (
+    PIPE,
+    Popen,
+    )
+import tempfile
+
+import transaction
+
+from lp.codehosting.codeimport.tests.test_foreigntree import SubversionServer
+from lp.services.scripts import execute_zcml_for_scripts
+from lp.services.webapp import canonical_url
+from lp.testing.factory import LaunchpadObjectFactory
+
+
+def shell(*args):
+    print ' '.join(args)
+    return Popen(args, stdout=PIPE).communicate()[0]
+
+
+def make_import_job(svn_url):
+    factory = LaunchpadObjectFactory()
+    code_import = factory.makeCodeImport(svn_branch_url=svn_url)
+    return factory.makeCodeImportJob(code_import)
+
+
+def main():
+    execute_zcml_for_scripts(use_web_security=False)
+    temp_directory = tempfile.mkdtemp()
+    svn_repo_path = os.path.join(temp_directory, 'svn-repository')
+    svn_server = SubversionServer(svn_repo_path)
+    svn_server.setUp()
+    try:
+        svn_url = svn_server.makeBranch(
+            'trunk', [('README', 'No real content\n.')])
+        job = make_import_job(svn_url)
+        transaction.commit()
+        print "CodeImportJob.id:", job.id
+        print "Code Import URL:", canonical_url(job.code_import)
+        print "Subversion Repository:", svn_repo_path
+        print "Subversion branch URL:", job.code_import.svn_branch_url
+        print "Launchpad branch URL:", canonical_url(job.code_import.branch)
+        print
+    finally:
+        svn_server.tearDown()
+
+
+if __name__ == '__main__':
+    main()

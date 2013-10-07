@@ -1,0 +1,79 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  metal:use-macro="view/macro:page/main_only"
+>
+  <body>
+    <div metal:fill-slot="main">
+      <div class="translation-help-links">
+        <a href="https://help.launchpad.net/Translations"
+           id="link-to-translations-help"
+           >Help for translations
+        </a>
+        <div></div><!-- to clear-up all floats -->
+      </div>
+
+      <div class="yui-g">
+        <div class="yui-u first">
+          <div class="portlet">
+            <h3>Permissions</h3>
+            <p>
+              <tal:permissions replace="
+                 structure
+                 context/distroseries/distribution/@@+portlet-translation-groups-and-permission"/>
+            </p>
+          </div>
+          <div class="portlet" id="sharing-information">
+            <h3>Sharing Information</h3>
+            <p tal:condition="not:view/is_sharing">
+              This source package is not sharing translations with
+              an upstream project.
+            </p>
+            <p tal:condition="view/is_sharing"
+               tal:define="productseries view/sharing_productseries">
+              This source package is sharing translations with
+              <a class="sprite product"
+              tal:attributes="href productseries/fmt:url"
+              tal:content="productseries/title">Evolution trunk</a>.
+            </p>
+            <a tal:replace="structure view/sharing_details">
+              View sharing details
+            </a>
+          </div>
+        </div>
+        <div class="yui-u">
+
+          <div class="portlet">
+            <h3>Administration</h3>
+            <p>Translation files that are waiting to be imported are shown in
+              the
+              <a tal:attributes="href context/menu:navigation/imports/url">
+                import queue</a>.
+            </p>
+            <p tal:condition="context/required:launchpad.ExpensiveRequest">
+              If you want to manually integrate translations for this package,
+              you can
+              <a tal:attributes="href context/menu:navigation/download/url">
+                download a full tarball</a> with translations.
+            </p>
+            <p tal:condition="context/distribution_sourcepackage/required:launchpad.TranslationsAdmin"
+               id="custom-language-codes">
+              If necessary, you may
+              <a tal:attributes="href context/distribution_sourcepackage/fmt:url:translations/+custom-language-codes"
+                 class="edit sprite">
+                define custom language codes
+              </a>
+              for this package.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="yui-b">
+        <div tal:replace="structure context/@@+potlist" />
+      </div>
+
+    </div>
+  </body>
+</html>

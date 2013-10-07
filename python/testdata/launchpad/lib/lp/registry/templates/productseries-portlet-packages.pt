@@ -1,0 +1,43 @@
+<div class="portlet" id="portlet-packages"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  tal:define="sourcepackages context/sourcepackages">
+  <h2>
+    <span class="see-all">
+      <a tal:attributes="href context/product/menu:overview/packages/fmt:url">
+        All packages
+      </a>
+    </span>
+    Distribution packaging
+  </h2>
+
+  <p id="distribution-packaging-explanation">
+    <tal:distro condition="sourcepackages">
+      This series is packaged in the following distribution series:
+    </tal:distro>
+    <tal:no-distro condition="not: sourcepackages">
+      This series is not packaged in any distribution series.
+    </tal:no-distro>
+  </p>
+
+  <ul id="distribution-packaging"
+    tal:condition="sourcepackages">
+    <li
+      tal:repeat="package sourcepackages">
+      <a class="sprite package-source"
+        tal:attributes="href package/fmt:url"><tal:distro
+        tal:content="package/distroseries/distribution/displayname">
+        Ubuntu</tal:distro>
+        <tal:series tal:replace="package/distroseries/displayname">
+        Warty</tal:series>
+        <tal:package tal:content="package/name">firefox</tal:package></a>
+    </li>
+  </ul>
+
+  <ul class="horizontal">
+    <li>
+      <a tal:replace="structure context/menu:overview/ubuntupkg/fmt:icon-link" />
+    </li>
+  </ul>
+</div>

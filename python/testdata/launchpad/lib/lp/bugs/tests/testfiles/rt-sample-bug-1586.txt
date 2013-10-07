@@ -1,0 +1,24 @@
+RT/3.4.5 200 Ok
+
+id: ticket/1586
+Queue: OpenSSL-Bugs
+Owner: Nobody
+Creator: James.Heit@UNISYS.com
+Subject: Certificate verification bug
+Status: open
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: James.Heit@UNISYS.com
+Cc:
+AdminCc:
+Created: Mon Oct 08 22:11:13 2007
+Starts: Not set
+Started: Not set
+Due: Not set
+Resolved: Not set
+Told: Not set
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+

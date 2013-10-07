@@ -1,0 +1,22 @@
+Format: 1.7
+Date: Thu, 15 Feb 2007 18:34:09 -0200
+Source: foo
+Binary: foo
+Architecture: source i386
+Version: 1.0-1
+Distribution: warty-security
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Celso Providelo <daniel.silverstone@canonical.com>
+Description: 
+ foo        - Stuff for testing
+Changes: 
+ foo (1.0-1) warty-security; urgency=low
+ .
+   * Test version that produces a deb using bzip2 but doesn't pre-depends on
+     the right dpgk version.
+Files: 
+ 30d2bed9c846b3ac73362bc78c5648f5 275 devel optional foo_1.0-1.dsc
+ 4a7a1ab59ed8f9f1021825ba4b7ea826 160 devel optional foo_1.0.orig.tar.gz
+ 642eb6032699504064c0d81214a7cad7 669 devel optional foo_1.0-1.diff.gz
+ 74d57c8db9d949ba7a6a364fca9367ff 696 devel optional foo_1.0-1_i386.deb

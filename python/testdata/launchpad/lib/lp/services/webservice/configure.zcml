@@ -1,0 +1,84 @@
+<!-- Copyright 2011 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:grok="http://namespaces.zope.org/grok"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:webservice="http://namespaces.canonical.com/webservice"
+    i18n_domain="launchpad">
+
+    <include package="lazr.restful" file="configure.zcml" />
+
+    <utility
+        factory="lp.services.webservice.configuration.LaunchpadWebServiceConfiguration"
+        provides="lazr.restful.interfaces.IWebServiceConfiguration">
+    </utility>
+
+    <securedutility
+        class="lp.systemhomes.WebServiceApplication"
+        provides="lp.services.webservice.interfaces.IWebServiceApplication">
+        <allow
+            interface="lp.services.webservice.interfaces.IWebServiceApplication" />
+        <allow interface='lazr.restful.interfaces.IServiceRootResource' />
+        <allow interface='lp.services.webapp.interfaces.ICanonicalUrlData' />
+    </securedutility>
+
+    <!-- Registration for the class that manages an entry's byte
+         storage fields. -->
+    <adapter
+        for="lazr.restful.interfaces.IEntry
+             zope.schema.interfaces.IField"
+        provides="lazr.restful.interfaces.IByteStorage"
+        factory="lp.services.webservice.bytestorage.LibraryBackedByteStorage"
+        />
+
+    <class class="lp.services.webservice.bytestorage.LibraryBackedByteStorage">
+        <allow interface='lazr.restful.interfaces.IByteStorage' />
+    </class>
+
+    <!-- WebService uses the default LaunchpadRootNavigation -->
+    <view
+        for="lp.services.webservice.interfaces.IWebServiceApplication"
+        type="lp.layers.WebServiceLayer"
+        factory="lp.app.browser.launchpad.LaunchpadRootNavigation"
+        provides="zope.publisher.interfaces.browser.IBrowserPublisher"
+        />
+
+   <grok:grok package="lazr.restful.directives" />
+   <grok:grok package="lp.services.webservice" />
+
+    <adapter
+            provides="lazr.restful.interfaces.IJSONPublishable"
+            for="zope.interface.common.idatetime.ITimeDelta"
+            factory="lp.services.webservice.json.StrJSONSerializer"
+            permission="zope.Public"/>
+
+   <adapter
+       for="zope.schema.interfaces.IChoice
+            zope.publisher.interfaces.http.IHTTPRequest
+            lp.services.webapp.vocabulary.SQLObjectVocabularyBase"
+       provides="lazr.restful.interfaces.IFieldMarshaller"
+       factory="lp.services.webapp.marshallers.choiceMarshallerError"
+       />
+   <adapter
+       for="lazr.restful.interfaces.IReferenceChoice
+            zope.publisher.interfaces.http.IHTTPRequest
+            lp.services.webapp.vocabulary.SQLObjectVocabularyBase"
+       provides="lazr.restful.interfaces.IFieldMarshaller"
+       factory="lazr.restful.marshallers.ObjectLookupFieldMarshaller"
+       />
+
+   <!-- The API documentation -->
+    <browser:page
+      for="lp.services.webapp.interfaces.ILaunchpadApplication"
+      name="+apidoc"
+      class="lp.app.browser.launchpad.LaunchpadAPIDocFolder"
+      attribute="__call__"
+      permission="zope.Public"
+      />
+
+    <webservice:register module="lp.services.webservice.webservice" />
+</configure>

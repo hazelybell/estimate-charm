@@ -1,0 +1,2179 @@
+<!-- Copyright 2009-2013 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:xmlrpc="http://namespaces.zope.org/xmlrpc"
+    xmlns:lp="http://namespaces.canonical.com/lp"
+    xmlns:webservice="http://namespaces.canonical.com/webservice"
+    i18n_domain="launchpad">
+    <include
+        file="vocabularies.zcml"/>
+    <include
+        package=".browser"/>
+    <class
+        class="lp.registry.model.teammembership.TeamMembershipSet">
+        <allow
+            interface="lp.registry.interfaces.teammembership.ITeamMembershipSet"/>
+    </class>
+    <securedutility
+        class="lp.registry.model.teammembership.TeamMembershipSet"
+        provides="lp.registry.interfaces.teammembership.ITeamMembershipSet">
+        <allow
+            interface="lp.registry.interfaces.teammembership.ITeamMembershipSet"/>
+    </securedutility>
+
+    <!-- XXX: Guilherme Salgado 2008-02-15: Need to refactor ITeamMembership
+                                                        into specific interfaces for each persmission. -->
+
+    <class
+        class="lp.registry.model.teammembership.TeamMembership">
+        <require
+            permission="zope.Public"
+            attributes="
+                id
+                team
+                person
+                status
+                proposed_by
+                acknowledged_by
+                reviewed_by
+                last_changed_by
+                date_proposed
+                date_acknowledged
+                date_reviewed
+                datejoined
+                dateexpires
+                date_created
+                date_last_changed
+                proponent_comment
+                acknowledger_comment
+                reviewer_comment
+                last_change_comment
+                isExpired
+                sendExpirationWarningEmail
+                canBeRenewedByMember
+                sendSelfRenewalNotification
+                canChangeExpirationDate"/>
+        <require
+            permission="launchpad.Edit"
+            attributes="
+                setStatus
+                setExpirationDate"/>
+        <require
+            permission="launchpad.Edit"
+            set_attributes="reviewed_by reviewer_comment"/>
+    </class>
+    <class
+        class="lp.registry.browser.team.TeamInvitationView">
+        <allow
+            interface="zope.publisher.interfaces.browser.IBrowserPublisher"/>
+        <allow
+            attributes="
+                __call__"/>
+    </class>
+    <class
+        class="lp.registry.browser.team.TeamMembershipSelfRenewalView">
+        <allow
+            interface="zope.publisher.interfaces.browser.IBrowserPublisher"/>
+        <allow
+            attributes="
+                __call__"/>
+    </class>
+
+    <!-- IPersonTransferJob -->
+    <securedutility
+        component=".model.persontransferjob.MembershipNotificationJob"
+        provides=".interfaces.persontransferjob.IMembershipNotificationJobSource">
+      <allow interface=".interfaces.persontransferjob.IMembershipNotificationJobSource"/>
+    </securedutility>
+
+    <securedutility
+        component=".model.persontransferjob.PersonMergeJob"
+        provides=".interfaces.persontransferjob.IPersonMergeJobSource">
+      <allow interface=".interfaces.persontransferjob.IPersonMergeJobSource"/>
+    </securedutility>
+
+    <securedutility
+        component=".model.persontransferjob.PersonDeactivateJob"
+        provides=".interfaces.persontransferjob.IPersonDeactivateJobSource">
+      <allow interface=".interfaces.persontransferjob.IPersonDeactivateJobSource"/>
+    </securedutility>
+
+    <class class=".model.persontransferjob.PersonTransferJob">
+        <allow interface=".interfaces.persontransferjob.IPersonTransferJob"/>
+    </class>
+
+    <class class=".model.persontransferjob.MembershipNotificationJob">
+      <allow interface=".interfaces.persontransferjob.IMembershipNotificationJob"/>
+    </class>
+
+    <class class=".model.persontransferjob.PersonMergeJob">
+      <allow interface=".interfaces.persontransferjob.IPersonMergeJob"/>
+    </class>
+
+    <class class=".model.persontransferjob.PersonDeactivateJob">
+      <allow interface=".interfaces.persontransferjob.IPersonDeactivateJob"/>
+    </class>
+
+    <!-- IProductNotificationJob -->
+    <securedutility
+        component=".model.productjob.CommercialExpiredJob"
+        provides=".interfaces.productjob.ICommercialExpiredJobSource">
+      <allow interface=".interfaces.productjob.ICommercialExpiredJobSource"/>
+    </securedutility>
+
+    <class class=".model.productjob.CommercialExpiredJob">
+      <allow interface=".interfaces.productjob.ICommercialExpiredJob"/>
+    </class>
+
+    <securedutility
+        component=".model.productjob.SevenDayCommercialExpirationJob"
+        provides=".interfaces.productjob.ISevenDayCommercialExpirationJobSource">
+      <allow interface=".interfaces.productjob.ISevenDayCommercialExpirationJobSource"/>
+    </securedutility>
+
+    <class class=".model.productjob.SevenDayCommercialExpirationJob">
+      <allow interface=".interfaces.productjob.ISevenDayCommercialExpirationJob"/>
+    </class>
+
+    <securedutility
+        component=".model.productjob.ThirtyDayCommercialExpirationJob"
+        provides=".interfaces.productjob.IThirtyDayCommercialExpirationJobSource">
+      <allow interface=".interfaces.productjob.IThirtyDayCommercialExpirationJobSource"/>
+    </securedutility>
+
+    <class class=".model.productjob.ThirtyDayCommercialExpirationJob">
+      <allow interface=".interfaces.productjob.IThirtyDayCommercialExpirationJob"/>
+    </class>
+
+    <!-- INameBlacklist -->
+    <securedutility
+        class="lp.registry.model.nameblacklist.NameBlacklistSet"
+        provides="lp.registry.interfaces.nameblacklist.INameBlacklistSet">
+        <allow
+            interface="lp.registry.interfaces.nameblacklist.INameBlacklistSet"/>
+    </securedutility>
+
+    <class class="lp.registry.model.nameblacklist.NameBlacklistSet">
+        <require
+            permission="launchpad.Edit"
+            interface="lp.registry.interfaces.nameblacklist.INameBlacklistSet"/>
+    </class>
+
+    <class class="lp.registry.model.nameblacklist.NameBlacklist">
+        <require
+            permission="launchpad.View"
+            interface="lp.registry.interfaces.nameblacklist.INameBlacklist"/>
+        <require
+            permission="launchpad.Edit"
+            set_schema="lp.registry.interfaces.nameblacklist.INameBlacklist"/>
+    </class>
+
+    <!-- Location -->
+
+    <class
+        class="lp.registry.model.personlocation.PersonLocation">
+        <require
+            permission="zope.Public"
+            attributes="
+                visible
+                time_zone"/>
+        <require
+            permission="launchpad.View"
+            attributes="
+                latitude
+                longitude
+                last_modified_by
+                date_last_modified
+                person"/>
+    </class>
+
+    <!-- DistroSeriesDifference -->
+    <securedutility
+        component="lp.registry.model.distroseriesdifference.DistroSeriesDifference"
+        provides="lp.registry.interfaces.distroseriesdifference.IDistroSeriesDifferenceSource">
+        <allow interface="lp.registry.interfaces.distroseriesdifference.IDistroSeriesDifferenceSource"/>
+    </securedutility>
+    <class
+        class="lp.registry.model.distroseriesdifference.DistroSeriesDifference">
+        <allow interface="lp.registry.interfaces.distroseriesdifference.IDistroSeriesDifferencePublic"/>
+        <require
+            permission="launchpad.Admin"
+            interface="lp.registry.interfaces.distroseriesdifference.IDistroSeriesDifferenceAdmin"/>
+        <require
+            permission="launchpad.Edit"
+            interface="lp.registry.interfaces.distroseriesdifference.IDistroSeriesDifferenceEdit"
+            set_attributes="package_diff parent_package_diff"/>
+    </class>
+
+    <!-- DistroSeriesDifferenceComment -->
+    <securedutility
+        component="lp.registry.model.distroseriesdifferencecomment.DistroSeriesDifferenceComment"
+        provides="lp.registry.interfaces.distroseriesdifferencecomment.IDistroSeriesDifferenceCommentSource">
+        <allow interface="lp.registry.interfaces.distroseriesdifferencecomment.IDistroSeriesDifferenceCommentSource"/>
+    </securedutility>
+    <class
+        class="lp.registry.model.distroseriesdifferencecomment.DistroSeriesDifferenceComment">
+        <allow interface="lp.registry.interfaces.distroseriesdifferencecomment.IDistroSeriesDifferenceComment"/>
+    </class>
+
+    <!-- DistroSeriesParent -->
+    <securedutility
+        class="lp.registry.model.distroseriesparent.DistroSeriesParentSet"
+        provides="lp.registry.interfaces.distroseriesparent.IDistroSeriesParentSet">
+        <allow
+            interface="lp.registry.interfaces.distroseriesparent.IDistroSeriesParentSet"/>
+    </securedutility>
+    <class
+        class="lp.registry.model.distroseriesparent.DistroSeriesParent">
+        <require
+            permission="launchpad.Edit"
+            set_schema="lp.registry.interfaces.distroseriesparent.IDistroSeriesParent"/>
+        <allow
+            interface="lp.registry.interfaces.distroseriesparent.IDistroSeriesParent"/>
+    </class>
+
+    <class
+        class="lp.registry.model.distroseries.DistroSeries">
+        <allow
+            interface="lp.registry.interfaces.distroseries.IDistroSeriesPublic"/>
+        <allow interface="lp.bugs.interfaces.bugsummary.IBugSummaryDimension"/>
+        <allow
+            interface="lp.bugs.interfaces.bugtarget.ISeriesBugTarget"/>
+        <allow
+            interface="lp.soyuz.interfaces.queue.IHasQueueItems"/>
+        <allow
+            interface="lp.soyuz.interfaces.publishing.ICanPublishPackages"/>
+        <require
+            permission="launchpad.Edit"
+            set_schema="lp.app.interfaces.launchpad.IServiceUsage"/>
+        <require
+            permission="launchpad.Edit"
+            interface="lp.registry.interfaces.distroseries.IDistroSeriesEditRestricted"/>
+        <require
+            permission="launchpad.Admin"
+            set_attributes="previous_series"/>
+        <require
+            permission="launchpad.TranslationsAdmin"
+            set_attributes="hide_all_translations defer_translation_imports"/>
+        <require
+            permission="launchpad.LanguagePacksAdmin"
+            set_attributes="language_pack_base language_pack_delta                                                                                                 language_pack_proposed                                                                                                 language_pack_full_export_requested"/>
+
+        <!-- NB: check with SABDFL before modifying these, there is potential to
+                                 make a huge mess if these get changed and Soyuz has to republish
+                                 shedloads of data. -->
+
+        <require
+            permission="launchpad.Edit"
+            set_attributes="displayname title summary description driver
+                            backports_not_automatic
+                            include_long_descriptions"/>
+
+        <!-- NB: check with SABDFL before modifying these, there is potential to
+                                 make a huge mess if these get changed and Soyuz has to republish
+                                 shedloads of data. -->
+
+        <require
+            permission="launchpad.Moderate"
+            set_attributes="version name status nominatedarchindep changeslist datereleased"/>
+
+        <!-- IStructuralSubscriptionTarget -->
+
+        <allow
+            interface="lp.bugs.interfaces.structuralsubscription.IStructuralSubscriptionTargetRead" />
+        <require
+            permission="launchpad.AnyPerson"
+            interface="lp.bugs.interfaces.structuralsubscription.IStructuralSubscriptionTargetWrite" />
+
+    </class>
+    <securedutility
+        class="lp.registry.model.distroseries.DistroSeriesSet"
+        provides="lp.registry.interfaces.distroseries.IDistroSeriesSet">
+        <allow
+            interface="lp.registry.interfaces.distroseries.IDistroSeriesSet"/>
+    </securedutility>
+    <adapter
+        provides="lp.registry.interfaces.distribution.IDistribution"
+        for="lp.registry.interfaces.distroseries.IDistroSeries"
+        factory="lp.registry.adapters.distroseries_to_distribution"
+        permission="zope.Public"/>
+    <adapter
+        provides="lp.app.interfaces.launchpad.ILaunchpadUsage"
+        for="lp.registry.interfaces.distroseries.IDistroSeries"
+        factory="lp.registry.adapters.distroseries_to_distribution"
+        permission="zope.Public"/>
+    <adapter
+        provides="lp.services.webapp.interfaces.IBreadcrumb"
+        for="lp.registry.interfaces.distroseries.IDistroSeries"
+        factory="lp.registry.browser.distroseries.DistroSeriesBreadcrumb"
+        permission="zope.Public"/>
+
+        <!-- CodeofConduct -->
+
+        <class
+            class="lp.registry.model.codeofconduct.CodeOfConduct">
+            <allow
+                interface="lp.registry.interfaces.codeofconduct.ICodeOfConduct"/>
+            <require
+                permission="launchpad.AnyPerson"
+                set_schema="lp.registry.interfaces.codeofconduct.ICodeOfConduct"/>
+        </class>
+
+        <!-- CodeOfConductConf -->
+
+        <securedutility
+            class="lp.registry.model.codeofconduct.CodeOfConductConf"
+            provides="lp.registry.interfaces.codeofconduct.ICodeOfConductConf">
+            <allow
+                interface="lp.registry.interfaces.codeofconduct.ICodeOfConductConf"/>
+        </securedutility>
+
+        <!-- CodeOfConductSet -->
+
+        <securedutility
+            class="lp.registry.model.codeofconduct.CodeOfConductSet"
+            provides="lp.registry.interfaces.codeofconduct.ICodeOfConductSet">
+            <allow
+                interface="lp.registry.interfaces.codeofconduct.ICodeOfConductSet"/>
+        </securedutility>
+
+        <!-- SignedCodeofConduct -->
+
+        <class
+            class="lp.registry.model.codeofconduct.SignedCodeOfConduct">
+            <allow
+                interface="lp.registry.interfaces.codeofconduct.ISignedCodeOfConduct"/>
+            <require
+                permission="launchpad.AnyPerson"
+                set_schema="lp.registry.interfaces.codeofconduct.ISignedCodeOfConduct"/>
+        </class>
+
+        <!-- SignedCodeOfConductSet -->
+
+        <class
+            class="lp.registry.model.codeofconduct.SignedCodeOfConductSet">
+            <allow
+                interface="lp.registry.interfaces.codeofconduct.ISignedCodeOfConductSet"/>
+        </class>
+        <securedutility
+            class="lp.registry.model.codeofconduct.SignedCodeOfConductSet"
+            provides="lp.registry.interfaces.codeofconduct.ISignedCodeOfConductSet">
+            <allow
+                interface="lp.registry.interfaces.codeofconduct.ISignedCodeOfConductSet"/>
+        </securedutility>
+
+        <!-- string:${id} because id is an int -->
+
+    <class
+        class="lp.registry.model.person.IrcID">
+        <allow
+            interface="lp.registry.interfaces.role.IHasOwner"/>
+        <allow
+            attributes="
+                id
+                person
+                network
+                nickname"/>
+        <require
+            permission="launchpad.Edit"
+            set_schema="lp.registry.interfaces.irc.IIrcID"
+            attributes="
+                destroySelf"/>
+    </class>
+    <class
+        class="lp.registry.model.person.IrcIDSet">
+        <allow
+            interface="lp.registry.interfaces.irc.IIrcIDSet"/>
+    </class>
+    <securedutility
+        class="lp.registry.model.person.IrcIDSet"
+        provides="lp.registry.interfaces.irc.IIrcIDSet">
+        <allow
+            interface="lp.registry.interfaces.irc.IIrcIDSet"/>
+    </securedutility>
+
+    <!-- ProjectGroup -->
+
+    <class
+        class="lp.registry.model.projectgroup.ProjectGroup">
+        <allow
+            interface="lp.registry.interfaces.projectgroup.IProjectGroupPublic"/>
+        <allow interface="lp.bugs.interfaces.bugsummary.IBugSummaryDimension"/>
+        <allow
+            interface="lp.answers.interfaces.faqcollection.IFAQCollection"/>
+        <allow
+            interface="lp.answers.interfaces.questioncollection.IQuestionCollection"/>
+        <allow
+            interface="lp.translations.interfaces.translationpolicy.ITranslationPolicy"/>
+        <require
+            permission="launchpad.Edit"
+            set_schema="lp.registry.interfaces.projectgroup.IProjectGroupPublic"/>
+        <require
+            permission="launchpad.TranslationsAdmin"
+            set_schema="lp.translations.interfaces.translationpolicy.ITranslationPolicy"/>
+
+        <!-- IStructuralSubscriptionTarget -->
+
+        <allow
+            interface="lp.bugs.interfaces.structuralsubscription.IStructuralSubscriptionTargetRead" />
+        <require
+            permission="launchpad.AnyPerson"
+            interface="lp.bugs.interfaces.structuralsubscription.IStructuralSubscriptionTargetWrite" />
+
+        <require
+            permission="launchpad.Admin"
+            set_attributes="registrant"/>
+
+        <!-- IHasAliases -->
+
+        <allow
+            attributes="
+                aliases"/>
+        <require
+            permission="launchpad.Moderate"
+            attributes="
+                setAliases"/>
+
+        <!-- IProjectGroupModerate -->
+        <allow
+            interface="lp.registry.interfaces.projectgroup.IProjectGroupModerate"/>
+        <require
+            permission="launchpad.Moderate"
+            set_schema="lp.registry.interfaces.projectgroup.IProjectGroupModerate"/>
+    </class>
+    <adapter
+        for="lp.registry.interfaces.projectgroup.IProjectGroup"
+        provides="lp.services.webapp.interfaces.ILaunchpadContainer"
+        factory="lp.services.webapp.publisher.LaunchpadContainer"/>
+    <adapter
+        provides="lp.services.webapp.interfaces.IBreadcrumb"
+        for="lp.registry.interfaces.projectgroup.IProjectGroup"
+        factory="lp.services.webapp.breadcrumb.DisplaynameBreadcrumb"
+        permission="zope.Public"/>
+    <adapter
+        provides="lp.services.webapp.interfaces.IBreadcrumb"
+        for="lp.registry.interfaces.projectgroup.IProjectGroupSet"
+        factory="lp.registry.browser.project.ProjectSetBreadcrumb"
+        permission="zope.Public"/>
+
+    <!-- ProjectGroupSet-->
+
+    <class
+        class="lp.registry.model.projectgroup.ProjectGroupSet">
+        <allow
+            interface="lp.registry.interfaces.projectgroup.IProjectGroupSet"/>
+    </class>
+    <securedutility
+        class="lp.registry.model.projectgroup.ProjectGroupSet"
+        provides="lp.registry.interfaces.projectgroup.IProjectGroupSet">
+        <allow
+            interface="lp.registry.interfaces.projectgroup.IProjectGroupSet"/>
+    </securedutility>
+
+    <!-- ProjectGroupSeries -->
+
+    <class
+        class="lp.registry.model.projectgroup.ProjectGroupSeries">
+        <allow
+            interface="lp.registry.interfaces.projectgroup.IProjectGroupSeries"/>
+    </class>
+
+    <!-- DistributionSourcePackage -->
+
+    <class
+        class="lp.registry.model.distributionsourcepackage.DistributionSourcePackage">
+        <allow interface="lp.bugs.interfaces.bugsummary.IBugSummaryDimension"/>
+        <allow interface="lp.bugs.interfaces.bugtarget.IBugTarget"/>
+        <allow
+            interface="lp.translations.interfaces.customlanguagecode.IHasCustomLanguageCodes"/>
+
+        <allow
+            attributes="
+                __eq__
+                __getitem__
+                __ne__
+                _getOfficialTagClause
+                binary_names
+                bug_count
+                bugtasks
+                current_publishing_records
+                currentrelease
+                delete
+                development_version
+                displayname
+                distribution
+                distro
+                drivers
+                findRelatedArchivePublications
+                findRelatedArchives
+                getBranches
+                getMergeProposals
+                getReleasesAndPublishingHistory
+                getUsedBugTagsWithOpenCounts
+                getVersion
+                get_distroseries_packages
+                is_official
+                latest_overall_publication
+                name
+                official_bug_tags
+                personHasDriverRights
+                publishing_history
+                releases
+                sourcepackagename
+                subscribers
+                summary
+                title
+                upstream_product"/>
+
+        <!-- IStructuralSubscriptionTarget -->
+
+        <allow
+            interface="lp.bugs.interfaces.structuralsubscription.IStructuralSubscriptionTargetRead" />
+        <require
+            permission="launchpad.AnyPerson"
+            interface="lp.bugs.interfaces.structuralsubscription.IStructuralSubscriptionTargetWrite" />
+
+        <!-- IQuestionTarget -->
+
+        <allow interface="lp.answers.interfaces.questiontarget.IQuestionTargetPublic"/>
+        <require
+          permission="launchpad.AnyPerson"
+          interface="lp.answers.interfaces.questiontarget.IQuestionTargetView"/>
+
+        <require
+            permission="launchpad.BugSupervisor"
+            set_attributes="
+                bug_reported_acknowledgement
+                bug_reporting_guidelines
+                enable_bugfiling_duplicate_search
+                "/>
+    </class>
+    <adapter
+        provides="lp.registry.interfaces.distribution.IDistribution"
+        for="lp.registry.interfaces.distributionsourcepackage.IDistributionSourcePackage"
+        factory="lp.registry.adapters.sourcepackage_to_distribution"
+        permission="zope.Public"/>
+    <adapter
+        for="lp.registry.interfaces.distributionsourcepackage.IDistributionSourcePackage"
+        provides="lp.services.webapp.interfaces.ILaunchpadContainer"
+        factory="lp.registry.publisher.LaunchpadDistributionSourcePackageContainer"/>
+    <adapter
+        provides="lp.app.interfaces.launchpad.IServiceUsage"
+        for="lp.registry.interfaces.distributionsourcepackage.IDistributionSourcePackage"
+        factory="lp.registry.adapters.sourcepackage_to_distribution"
+        permission="zope.Public"/>
+    <adapter
+        provides="lp.registry.interfaces.sourcepackagename.ISourcePackageName"
+        for="lp.registry.interfaces.distributionsourcepackage.IDistributionSourcePackage"
+        factory="lp.registry.adapters.package_to_sourcepackagename"
+        permission="zope.Public"/>
+    <adapter
+        factory="lp.registry.browser.distributionsourcepackage.DistributionSourcePackageBreadcrumb"/>
+
+    <!-- CommercialSubscription -->
+
+    <class
+        class="lp.registry.model.commercialsubscription.CommercialSubscription">
+        <require
+            permission="zope.Public"
+            interface="lp.registry.interfaces.commercialsubscription.ICommercialSubscription"/>
+        <require
+            permission="launchpad.Commercial"
+            set_schema="lp.registry.interfaces.commercialsubscription.ICommercialSubscription"/>
+    </class>
+    <class
+        class="lp.registry.model.teammembership.TeamParticipation">
+        <allow
+            interface="lp.registry.interfaces.teammembership.ITeamParticipation"/>
+    </class>
+    <class
+        class="lp.registry.model.person.JabberID">
+        <allow
+            interface="lp.registry.interfaces.role.IHasOwner"/>
+        <allow
+            attributes="
+                id
+                person
+                jabberid"/>
+        <require
+            permission="launchpad.Edit"
+            set_schema="lp.registry.interfaces.jabber.IJabberID"
+            attributes="
+                destroySelf"/>
+    </class>
+    <class
+        class="lp.registry.model.person.JabberIDSet">
+        <allow
+            interface="lp.registry.interfaces.jabber.IJabberIDSet"/>
+    </class>
+    <securedutility
+        class="lp.registry.model.person.JabberIDSet"
+        provides="lp.registry.interfaces.jabber.IJabberIDSet">
+        <allow
+            interface="lp.registry.interfaces.jabber.IJabberIDSet"/>
+    </securedutility>
+    <class
+        class="lp.registry.model.pillar.PillarName">
+        <allow
+            interface="lp.registry.interfaces.pillar.IPillarName"/>
+    </class>
+    <securedutility
+        class="lp.registry.model.pillar.PillarNameSet"
+        provides="lp.registry.interfaces.pillar.IPillarNameSet">
+        <allow
+            interface="lp.registry.interfaces.pillar.IPillarNameSet"/>
+    </securedutility>
+    <securedutility
+        class="lp.services.webservice.pillarset.PillarSetLink"
+        provides="lp.services.webservice.pillarset.IPillarSetLink">
+        <allow
+            interface="lazr.restful.interfaces.ITopLevelEntryLink"/>
+        <allow
+            interface="lp.services.webapp.interfaces.ICanonicalUrlData"/>
+    </securedutility>
+
+    <!-- PillarPerson-->
+
+    <class
+        class="lp.registry.model.pillar.PillarPerson">
+        <allow
+            interface="lp.registry.interfaces.pillar.IPillarPerson"/>
+    </class>
+
+    <securedutility
+        component="lp.registry.model.pillar.PillarPerson"
+        provides="lp.registry.interfaces.pillar.IPillarPersonFactory">
+        <allow
+            interface="lp.registry.interfaces.pillar.IPillarPersonFactory"/>
+    </securedutility>
+
+    <!-- SourcePackageName -->
+
+    <class
+        class="lp.registry.model.sourcepackagename.SourcePackageName">
+        <allow
+            interface="lp.registry.interfaces.sourcepackagename.ISourcePackageName"/>
+    </class>
+
+    <!-- SourcePackageNameSet -->
+
+    <securedutility
+        class="lp.registry.model.sourcepackagename.SourcePackageNameSet"
+        provides="lp.registry.interfaces.sourcepackagename.ISourcePackageNameSet">
+        <allow
+            interface="lp.registry.interfaces.sourcepackagename.ISourcePackageNameSet"/>
+    </securedutility>
+    <class
+        class="lp.registry.model.sourcepackagename.SourcePackageNameSet">
+        <allow
+            interface="lp.registry.interfaces.sourcepackagename.ISourcePackageNameSet"/>
+    </class>
+
+        <!-- Karma -->
+
+        <class
+            class="lp.registry.model.karma.Karma">
+            <allow
+                interface="lp.registry.interfaces.karma.IKarma"/>
+        </class>
+
+        <!-- KarmaCache -->
+
+        <class
+            class="lp.registry.model.karma.KarmaCache">
+            <allow
+                interface="lp.registry.interfaces.karma.IKarmaCache"/>
+        </class>
+
+        <!-- KarmaTotalCache -->
+
+        <class
+            class="lp.registry.model.karma.KarmaTotalCache">
+            <allow
+                interface="lp.registry.interfaces.karma.IKarmaTotalCache"/>
+        </class>
+
+        <!-- KarmaCategory -->
+
+        <class
+            class="lp.registry.model.karma.KarmaCategory">
+            <allow
+                interface="lp.registry.interfaces.karma.IKarmaCategory"/>
+            <require
+                permission="launchpad.Admin"
+                set_schema="lp.registry.interfaces.karma.IKarmaCategory"/>
+        </class>
+
+        <!-- KarmaAction -->
+
+        <class
+            class="lp.registry.model.karma.KarmaAction">
+            <allow
+                interface="lp.registry.interfaces.karma.IKarmaAction"/>
+            <require
+                permission="launchpad.Admin"
+                set_schema="lp.registry.interfaces.karma.IKarmaAction"/>
+        </class>
+
+        <!-- KarmaCacheManager -->
+
+        <class
+            class="lp.registry.model.karma.KarmaCacheManager">
+            <allow
+                interface="lp.registry.interfaces.karma.IKarmaCacheManager"/>
+        </class>
+        <securedutility
+            class="lp.registry.model.karma.KarmaCacheManager"
+            provides="lp.registry.interfaces.karma.IKarmaCacheManager">
+            <allow
+                interface="lp.registry.interfaces.karma.IKarmaCacheManager"/>
+        </securedutility>
+
+        <!-- KarmaActionSet -->
+
+        <class
+            class="lp.registry.model.karma.KarmaActionSet">
+            <allow
+                interface="lp.registry.interfaces.karma.IKarmaActionSet"/>
+        </class>
+        <securedutility
+            class="lp.registry.model.karma.KarmaActionSet"
+            provides="lp.registry.interfaces.karma.IKarmaActionSet">
+            <allow
+                interface="lp.registry.interfaces.karma.IKarmaActionSet"/>
+        </securedutility>
+
+        <!-- Poll -->
+
+        <class
+            class="lp.registry.model.poll.Poll">
+            <allow
+                interface="lp.registry.interfaces.poll.IPoll"/>
+            <require
+                permission="launchpad.Edit"
+                set_schema="lp.registry.interfaces.poll.IPoll"/>
+        </class>
+
+        <adapter
+            provides="lp.services.webapp.interfaces.IBreadcrumb"
+            for="lp.registry.interfaces.poll.IPoll"
+            factory="lp.registry.browser.poll.PollBreadcrumb"
+            permission="zope.Public"/>
+
+        <!-- PollOption -->
+
+        <class
+            class="lp.registry.model.poll.PollOption">
+            <allow
+                interface="lp.registry.interfaces.poll.IPollOption"/>
+            <require
+                permission="launchpad.Edit"
+                set_schema="lp.registry.interfaces.poll.IPollOption"/>
+        </class>
+
+        <!-- Vote -->
+
+
+        <!-- Can't require launchpad.Edit to set_attributes because in most cases
+                the vote won't be associated with a person, and thus we can't check it
+                against the logged in user. -->
+
+        <class
+            class="lp.registry.model.poll.Vote">
+            <allow
+                interface="lp.registry.interfaces.poll.IVote"/>
+            <require
+                permission="zope.Public"
+                set_attributes="option preference"/>
+        </class>
+
+        <!-- VoteCast -->
+
+        <class
+            class="lp.registry.model.poll.VoteCast">
+            <allow
+                interface="lp.registry.interfaces.poll.IVoteCast"/>
+        </class>
+
+        <!-- PollSet -->
+
+        <class
+            class="lp.registry.model.poll.PollSet">
+            <allow
+                interface="lp.registry.interfaces.poll.IPollSet"/>
+        </class>
+        <securedutility
+            class="lp.registry.model.poll.PollSet"
+            provides="lp.registry.interfaces.poll.IPollSet">
+            <allow
+                interface="lp.registry.interfaces.poll.IPollSet"/>
+        </securedutility>
+
+        <!-- PollSubset -->
+
+        <adapter
+            for="lp.registry.interfaces.person.ITeam"
+            provides="lp.registry.interfaces.poll.IPollSubset"
+            factory="lp.registry.adapters.PollSubset"
+            permission="zope.Public"/>
+
+        <!-- PollOptionSet -->
+
+        <class
+            class="lp.registry.model.poll.PollOptionSet">
+            <allow
+                interface="lp.registry.interfaces.poll.IPollOptionSet"/>
+        </class>
+        <securedutility
+            class="lp.registry.model.poll.PollOptionSet"
+            provides="lp.registry.interfaces.poll.IPollOptionSet">
+            <allow
+                interface="lp.registry.interfaces.poll.IPollOptionSet"/>
+        </securedutility>
+        <securedutility
+            class="lp.registry.model.poll.VoteSet"
+            provides="lp.registry.interfaces.poll.IVoteSet">
+            <allow
+                interface="lp.registry.interfaces.poll.IVoteSet"/>
+        </securedutility>
+        <securedutility
+            class="lp.registry.model.poll.VoteCastSet"
+            provides="lp.registry.interfaces.poll.IVoteCastSet">
+            <allow
+                interface="lp.registry.interfaces.poll.IVoteCastSet"/>
+        </securedutility>
+
+    <!-- Announcement -->
+
+    <class
+        class="lp.registry.model.announcement.Announcement">
+        <allow
+            attributes="
+                id
+                date_created
+                registrant
+                target
+                title
+                summary
+                url
+                date_announced
+                date_last_modified
+                date_updated
+                active
+                future
+                published"/>
+        <require
+            permission="launchpad.Edit"
+            attributes="
+                modify
+                retarget
+                retract
+                setPublicationDate
+                destroySelf"/>
+    </class>
+
+    <!-- AnnouncementSet -->
+
+    <securedutility
+        class="lp.registry.model.announcement.AnnouncementSet"
+        provides="lp.registry.interfaces.announcement.IAnnouncementSet">
+        <allow
+            interface="lp.registry.interfaces.announcement.IAnnouncementSet"/>
+    </securedutility>
+
+        <!-- Person -->
+
+        <adapter
+            provides="lp.services.privacy.interfaces.IObjectPrivacy"
+            for="lp.registry.interfaces.person.ITeam"
+            factory="lp.registry.browser.team.TeamPrivacyAdapter"
+            permission="zope.Public"/>
+        <adapter
+            provides="lp.app.browser.badge.IHasBadges"
+            for="lp.registry.interfaces.person.ITeam"
+            factory="lp.registry.browser.team.TeamBadges"
+            permission="zope.Public"/>
+        <adapter
+            provides="lp.services.webapp.interfaces.IBreadcrumb"
+            for="lp.registry.interfaces.person.IPerson"
+            factory="lp.services.webapp.breadcrumb.DisplaynameBreadcrumb"
+            permission="zope.Public"/>
+        <adapter
+            provides="lp.services.webapp.interfaces.IBreadcrumb"
+            for="lp.registry.interfaces.person.ITeam"
+            factory="lp.registry.browser.team.TeamBreadcrumb"
+            permission="zope.Public"/>
+
+        <adapter
+            for="lp.registry.interfaces.distribution.IDistribution"
+            factory="lp.registry.model.pillaraffiliation.PillarAffiliation"
+            />
+        <adapter
+            for="lp.registry.interfaces.product.IProduct"
+            factory="lp.registry.model.pillaraffiliation.PillarAffiliation"
+            />
+        <adapter
+            for="lp.bugs.interfaces.bugtask.IBugTask"
+            factory="lp.registry.model.pillaraffiliation.BugTaskPillarAffiliation"
+            />
+        <adapter
+            for="lp.code.interfaces.branch.IBranch"
+            factory="lp.registry.model.pillaraffiliation.BranchPillarAffiliation"
+            />
+        <adapter
+            for="lp.answers.interfaces.question.IQuestion"
+            factory="lp.registry.model.pillaraffiliation.QuestionPillarAffiliation"
+            />
+        <adapter
+            for="lp.blueprints.interfaces.specification.ISpecification"
+            factory="lp.registry.model.pillaraffiliation.SpecificationPillarAffiliation"
+            />
+        <adapter
+            for="lp.registry.interfaces.distroseries.IDistroSeries"
+            factory="lp.registry.model.pillaraffiliation.DistroSeriesPillarAffiliation"
+            />
+        <adapter
+            for="lp.registry.interfaces.productseries.IProductSeries"
+            factory="lp.registry.model.pillaraffiliation.ProductSeriesPillarAffiliation"
+            />
+        <adapter
+            for="lp.code.interfaces.codereviewvote.ICodeReviewVoteReference"
+            factory="lp.registry.model.pillaraffiliation.CodeReviewVotePillarAffiliation"
+            />
+        <!-- Using
+
+    permission="Public" here causes some tests to fail
+        (https://pastebin.canonical.com/13975/), so we use
+
+    trusted="yes" here. -->
+
+        <adapter
+            factory="lp.registry.model.person.person_from_account"
+            trusted="yes"/>
+        <class
+            class="lp.registry.model.person.Person">
+            <allow
+                interface="lp.registry.interfaces.person.IPersonPublic"/>
+            <allow
+                interface="lp.registry.interfaces.person.IHasStanding"/>
+            <require
+                permission="launchpad.LimitedView"
+                interface="lp.registry.interfaces.person.IPersonLimitedView"/>
+            <require
+                permission="launchpad.View"
+                interface="lp.registry.interfaces.person.IPersonViewRestricted"/>
+            <require
+                permission="launchpad.View"
+                interface="lp.registry.interfaces.person.ITeamPublic"/>
+            <require
+                permission="launchpad.Edit"
+                interface="lp.registry.interfaces.location.ISetLocation"/>
+            <require
+                permission="launchpad.Edit"
+                interface="lp.registry.interfaces.person.IPersonEditRestricted"/>
+            <require
+                permission="launchpad.Edit"
+                set_schema="lp.registry.interfaces.person.IPersonViewRestricted
+                            lp.registry.interfaces.person.IPersonPublic
+                            lp.registry.interfaces.person.ITeamPublic"
+                set_attributes="displayname icon logo visibility"/>
+            <require
+                permission="launchpad.Moderate"
+                set_attributes="name"/>
+            <require
+                permission="launchpad.Special"
+                interface="lp.registry.interfaces.person.IPersonSpecialRestricted"/>
+            <require
+                permission="launchpad.Moderate"
+                set_schema="lp.registry.interfaces.person.IHasStanding"/>
+        </class>
+
+        <!-- Adding SSH keys is the only possibly harmful thing that can be done
+        without the user's password, so we use a special permission here to make
+        sure only the user (and not launchpad admins) will be able to edit her own
+        ssh keys. Another option would be to require the user's password on this
+        page. GuilhermeSalgado 25/08/2005 -->
+
+
+        <!-- Team Views -->
+
+
+        <!-- PersonSet -->
+
+        <class
+            class="lp.registry.model.person.PersonSet">
+            <allow
+                interface="lp.registry.interfaces.person.IPersonSet"/>
+        </class>
+        <securedutility
+            class="lp.registry.model.person.PersonSet"
+            provides="lp.registry.interfaces.person.IPersonSet">
+            <allow
+                interface="lp.registry.interfaces.person.IPersonSet"/>
+        </securedutility>
+        <securedutility
+            class="lp.services.webservice.me.MeLink"
+            provides="lp.services.webservice.me.IMeLink">
+            <allow
+                interface="lazr.restful.interfaces.ITopLevelEntryLink"/>
+            <allow
+                interface="lp.services.webapp.interfaces.ICanonicalUrlData"/>
+        </securedutility>
+    <adapter
+        for="lp.services.webapp.interfaces.ILaunchpadPrincipal"
+        provides="lp.registry.interfaces.person.IPerson"
+        factory="lp.registry.adapters.person_from_principal"/>
+
+    <!-- Milestone -->
+
+    <class
+        class="lp.registry.model.milestone.Milestone">
+        <allow
+            attributes="
+                id
+                userCanView
+                " />
+        <require
+            permission="launchpad.View"
+            attributes="
+                active
+                bugtasks
+                code_name
+                dateexpected
+                distribution
+                distroseries
+                getSpecifications
+                getTags
+                getTagsData
+                product
+                product_release
+                productseries
+                series_target
+                summary
+                all_specifications
+                "/>
+        <require
+            permission="launchpad.LimitedView"
+            attributes="
+                displayname
+                name
+                target
+                title
+                "/>
+        <require
+            permission="launchpad.Edit"
+            attributes="
+                createProductRelease
+                closeBugsAndBlueprints
+                destroySelf
+                setTags
+                "/>
+        <require
+            permission="launchpad.View"
+            interface="lp.bugs.interfaces.bugsummary.IBugSummaryDimension"/>
+        <require
+            permission="launchpad.View"
+            interface="lp.bugs.interfaces.bugtarget.IHasBugs"/>
+        <require
+            permission="launchpad.View"
+            interface="lp.bugs.interfaces.bugtarget.IHasOfficialBugTags"/>
+        <allow
+            interface="lp.app.interfaces.security.IAuthorization"/>
+        <require
+            permission="launchpad.Edit"
+            set_attributes="name code_name dateexpected summary active
+                            product_release productseries distroseries"/>
+
+        <!-- IStructuralSubscriptionTarget -->
+
+        <require
+            permission="launchpad.View"
+            interface="lp.bugs.interfaces.structuralsubscription.IStructuralSubscriptionTargetRead" />
+        <require
+            permission="launchpad.AnyAllowedPerson"
+            interface="lp.bugs.interfaces.structuralsubscription.IStructuralSubscriptionTargetWrite" />
+
+    </class>
+    <adapter
+        provides="lp.app.interfaces.informationtype.IInformationType"
+        for="lp.registry.interfaces.milestone.IMilestone"
+        factory="lp.registry.adapters.information_type_from_product"/>
+
+    <!-- IMilestoneSet -->
+
+    <securedutility
+        class="lp.registry.model.milestone.MilestoneSet"
+        provides="lp.registry.interfaces.milestone.IMilestoneSet">
+        <allow
+            interface="lp.registry.interfaces.milestone.IMilestoneSet"/>
+    </securedutility>
+
+    <!-- ProjectMilestone -->
+
+    <class
+        class="lp.registry.model.milestone.ProjectMilestone">
+        <require
+            permission="launchpad.View"
+            interface="lp.registry.interfaces.milestone.IProjectGroupMilestone"/>
+    </class>
+    <adapter
+        provides="lp.app.interfaces.informationtype.IInformationType"
+        for="lp.registry.interfaces.milestone.IProjectGroupMilestone"
+        factory="lp.registry.adapters.information_type_from_product"/>
+    <class
+        class="lp.registry.model.milestonetag.ProjectGroupMilestoneTag">
+        <allow
+            interface="lp.registry.interfaces.milestonetag.IProjectGroupMilestoneTag"/>
+    </class>
+    <subscriber
+        for="lp.registry.interfaces.product.IProduct lp.registry.interfaces.product.ILicensesModifiedEvent"
+        handler="lp.registry.subscribers.product_licenses_modified"/>
+    <class
+        class="lp.registry.model.mailinglist.MailingList">
+        <allow
+            interface="lp.registry.interfaces.mailinglist.IMailingList"/>
+        <require
+            permission="launchpad.AnyPerson"
+            set_attributes="welcome_message"/>
+    </class>
+    <class
+        class="lp.registry.model.mailinglist.MailingListSubscription">
+        <allow
+            interface="lp.registry.interfaces.mailinglist.IMailingListSubscription"/>
+    </class>
+    <class
+        class="lp.registry.model.mailinglist.MessageApproval">
+        <allow
+            interface="lp.registry.interfaces.mailinglist.IMessageApproval"/>
+    </class>
+    <securedutility
+        class="lp.registry.model.mailinglist.MailingListSet"
+        provides="lp.registry.interfaces.mailinglist.IMailingListSet">
+        <allow
+            interface="lp.registry.interfaces.mailinglist.IMailingListSet"/>
+    </securedutility>
+    <securedutility
+        class="lp.systemhomes.MailingListApplication"
+        provides="lp.registry.interfaces.mailinglist.IMailingListApplication">
+        <allow
+            interface="lp.registry.interfaces.mailinglist.IMailingListApplication"/>
+    </securedutility>
+    <securedutility
+        class="lp.registry.model.mailinglist.MessageApprovalSet"
+        provides="lp.registry.interfaces.mailinglist.IMessageApprovalSet">
+        <allow
+            interface="lp.registry.interfaces.mailinglist.IMessageApprovalSet"/>
+    </securedutility>
+    <xmlrpc:view
+        for="lp.registry.interfaces.mailinglist.IMailingListApplication"
+        interface="lp.registry.interfaces.mailinglist.IMailingListAPIView"
+        class="lp.registry.xmlrpc.mailinglist.MailingListAPIView"
+        permission="zope.Public"/>
+    <securedutility
+        class="lp.registry.xmlrpc.softwarecenteragent.SoftwareCenterAgentApplication"
+        provides="lp.registry.interfaces.person.ISoftwareCenterAgentApplication">
+      <allow interface="lp.registry.interfaces.person.ISoftwareCenterAgentApplication" />
+    </securedutility>
+    <xmlrpc:view
+        for="lp.registry.interfaces.person.ISoftwareCenterAgentApplication"
+        interface="lp.registry.interfaces.person.ISoftwareCenterAgentAPI"
+        class="lp.registry.xmlrpc.softwarecenteragent.SoftwareCenterAgentAPI"
+        permission="zope.Public"/>
+    <securedutility
+        class="lp.registry.xmlrpc.canonicalsso.CanonicalSSOApplication"
+        provides="lp.registry.interfaces.person.ICanonicalSSOApplication">
+      <allow interface="lp.registry.interfaces.person.ICanonicalSSOApplication" />
+    </securedutility>
+    <xmlrpc:view
+        for="lp.registry.interfaces.person.ICanonicalSSOApplication"
+        interface="lp.registry.interfaces.person.ICanonicalSSOAPI"
+        class="lp.registry.xmlrpc.canonicalsso.CanonicalSSOAPI"
+        permission="zope.Public"/>
+
+    <!-- Helper page for held message approval -->
+
+    <subscriber
+        for="lp.registry.interfaces.mailinglist.IMailingList         lazr.lifecycle.interfaces.IObjectModifiedEvent"
+        handler="lp.registry.mail.notification.notify_mailinglist_activated"/>
+    <subscriber
+        for="lp.registry.interfaces.mailinglist.IMessageApproval                                        lazr.lifecycle.interfaces.IObjectCreatedEvent"
+        handler="lp.registry.mail.notification.notify_message_held"/>
+    <class
+        class="lp.registry.model.person.WikiName">
+        <allow
+            interface="lp.registry.interfaces.role.IHasOwner"/>
+        <allow
+            attributes="
+                id
+                person
+                wiki
+                wikiname
+                url"/>
+        <require
+            permission="launchpad.Edit"
+            set_schema="lp.registry.interfaces.wikiname.IWikiName"
+            attributes="
+                destroySelf"/>
+    </class>
+    <class
+        class="lp.registry.model.person.WikiNameSet">
+        <allow
+            interface="lp.registry.interfaces.wikiname.IWikiNameSet"/>
+    </class>
+    <securedutility
+        class="lp.registry.model.person.WikiNameSet"
+        provides="lp.registry.interfaces.wikiname.IWikiNameSet">
+        <allow
+            interface="lp.registry.interfaces.wikiname.IWikiNameSet"/>
+    </securedutility>
+    <class
+        class="lp.registry.model.gpgkey.GPGKey">
+        <allow
+            interface="lp.registry.interfaces.gpg.IGPGKey"/>
+        <require
+            permission="launchpad.Edit"
+            set_attributes="active can_encrypt"/>
+    </class>
+
+    <!-- GPGKeySet -->
+
+    <class
+        class="lp.registry.model.gpgkey.GPGKeySet">
+        <allow
+            interface="lp.registry.interfaces.gpg.IGPGKeySet"/>
+    </class>
+    <securedutility
+        class="lp.registry.model.gpgkey.GPGKeySet"
+        provides="lp.registry.interfaces.gpg.IGPGKeySet">
+        <allow
+            interface="lp.registry.interfaces.gpg.IGPGKeySet"/>
+    </securedutility>
+
+    <!-- Product -->
+
+    <class
+        class="lp.registry.model.product.Product">
+        <allow
+            interface="lp.registry.interfaces.product.IProductPublic"/>
+        <allow
+            interface="lp.registry.interfaces.pillar.IPillar"/>
+        <require
+            permission="launchpad.LimitedView"
+            interface="lp.registry.interfaces.product.IProductLimitedView"/>
+        <require
+            permission="launchpad.View"
+            interface="lp.registry.interfaces.product.IProductView"/>
+        <require
+            permission="launchpad.View"
+            interface="lp.bugs.interfaces.bugsummary.IBugSummaryDimension"/>
+        <require
+            permission="launchpad.View"
+            interface="lp.translations.interfaces.customlanguagecode.IHasCustomLanguageCodes"/>
+        <require
+            permission="launchpad.AnyAllowedPerson"
+            set_attributes="date_next_suggest_packaging"/>
+        <require
+            permission="launchpad.Driver"
+            interface="lp.registry.interfaces.product.IProductDriverRestricted"/>
+        <require
+            permission="launchpad.Edit"
+            interface="lp.registry.interfaces.product.IProductEditRestricted"/>
+        <require
+            permission="launchpad.Edit"
+            set_schema="lp.app.interfaces.informationtype.IInformationType"/>
+        <allow attributes="information_type" />
+        <require
+            permission="launchpad.Edit"
+            set_attributes="answers_usage blueprints_usage codehosting_usage
+                            bug_tracking_usage uses_launchpad"/>
+        <require
+            permission="launchpad.Edit"
+            set_attributes="
+                commercial_subscription
+                description
+                development_focus
+                displayname
+                downloadurl
+                driver
+                freshmeatproject
+                homepage_content
+                homepageurl
+                icon
+                license_info
+                licenses
+                logo
+                mugshot
+                official_answers
+                official_blueprints
+                official_codehosting
+                owner
+                programminglang
+                project
+                redeemSubscriptionVoucher
+                releaseroot
+                screenshotsurl
+                sourceforgeproject
+                summary
+                title
+                wikiurl"/>
+        <require
+            permission="launchpad.BugSupervisor"
+            set_attributes="
+                enable_bugfiling_duplicate_search
+                bug_reported_acknowledgement
+                bug_reporting_guidelines
+                bugtracker
+                enable_bug_expiration
+                official_bug_tags
+                official_malone
+                remote_product
+                "/>
+
+        <!-- mark 2006-04-10 I put "name" in the admin group because
+                        with Bazaar now in place, lots of people can have personal
+                        data published at product name-based locations (personal
+                        branches) and these URL's will all be b0rked if the product
+                        name has to change. It should require RegistryAdmin
+                        intervention to rename a product now. -->
+
+
+        <!-- https://lists.ubuntu.com/mailman/private/launchpad/2007-April/015189.html
+                        for further discussion - stub 20070411 -->
+
+        <!-- Per bug 588773, changing to launchpad.Moderate to allow Registry Experts (~registry) -->
+        <require
+            permission="launchpad.Moderate"
+            set_attributes="name autoupdate registrant"/>
+        <require
+            permission="launchpad.TranslationsAdmin"
+            set_attributes="
+                translation_focus
+                translationgroup
+                translationpermission
+                translations_usage"/>
+        <require
+            permission="launchpad.View"
+            attributes="
+                qualifies_for_free_hosting"/>
+        <require
+            permission="launchpad.Moderate"
+            attributes="
+                reviewer_whiteboard
+                is_permitted
+                project_reviewed
+                license_approved"
+            set_schema="lp.registry.interfaces.product.IProductModerateRestricted"
+            set_attributes="active"/>
+
+        <!-- IBugTarget -->
+
+        <require
+            permission="launchpad.LimitedView"
+            attributes="
+                bugtargetdisplayname"/>
+
+        <require
+            permission="launchpad.View"
+            attributes="
+                bug_reported_acknowledgement
+                bug_reporting_guidelines
+                bugtargetname
+                createBug
+                enable_bugfiling_duplicate_search
+                getBugTaskWeightFunction
+                pillar
+                searchTasks"/>
+
+        <!-- IHasAliases -->
+
+        <require
+            permission="launchpad.View"
+            attributes="
+                aliases"/>
+        <require
+            permission="launchpad.Moderate"
+            attributes="
+                setAliases"/>
+
+        <!-- IQuestionTarget -->
+
+        <require
+            permission="launchpad.View"
+            interface="lp.answers.interfaces.questiontarget.IQuestionTargetPublic"/>
+        <require
+          permission="launchpad.AnyAllowedPerson"
+          interface="lp.answers.interfaces.questiontarget.IQuestionTargetView"/>
+
+        <!-- IFAQTarget -->
+
+        <require
+            permission="launchpad.View"
+            interface="lp.answers.interfaces.faqcollection.IFAQCollection"
+            attributes="
+                findSimilarFAQs"/>
+        <require
+            permission="launchpad.Append"
+            attributes="
+                newFAQ"/>
+
+        <!-- IStructuralSubscriptionTarget -->
+
+        <require
+            permission="launchpad.LimitedView"
+            attributes="
+                parent_subscription_target" />
+        <require
+            permission="launchpad.View"
+            attributes="
+                bug_subscriptions
+                getSubscription
+                getSubscriptions
+                target_type_display
+                userCanAlterBugSubscription
+                userCanAlterSubscription
+                userHasBugSubscriptions" />
+        <require
+            permission="launchpad.AnyAllowedPerson"
+            interface="lp.bugs.interfaces.structuralsubscription.IStructuralSubscriptionTargetWrite" />
+
+        <!-- IHasBugSupervisor -->
+
+        <require
+            permission="launchpad.View"
+            attributes="
+                bug_supervisor"/>
+        <require
+            permission="launchpad.Edit"
+            set_attributes="bug_supervisor"/>
+
+        <!-- ISpecificationTarget -->
+        <require
+            permission="launchpad.LimitedView"
+            attributes="
+                getSpecification" />
+        <require
+            permission="launchpad.View"
+            attributes="
+                visible_specifications
+                valid_specifications
+                api_valid_specifications
+                getAllowedSpecificationInformationTypes
+                getDefaultSpecificationInformationType
+                specifications" />
+
+        <!-- IHasDrivers -->
+        <require
+            permission="launchpad.LimitedView"
+            attributes="
+                drivers" />
+        <require
+            permission="launchpad.View"
+            attributes="
+                personHasDriverRights" />
+
+    </class>
+
+    <!-- ProductWithLicenses
+                                This is a decorator for IProduct that eliminates an additional query
+                                for the product licenses.
+        -->
+
+    <class
+        class="lp.registry.model.product.ProductWithLicenses">
+        <allow
+            interface="lp.registry.interfaces.product.IProduct"/>
+    </class>
+    <adapter
+        for="lp.registry.interfaces.product.IProduct"
+        provides="lp.services.webapp.interfaces.ILaunchpadContainer"
+        factory="lp.registry.publisher.LaunchpadProductContainer"/>
+    <adapter
+        provides="lp.services.webapp.interfaces.IBreadcrumb"
+        for="lp.registry.interfaces.product.IProduct"
+        factory="lp.services.webapp.breadcrumb.DisplaynameBreadcrumb"
+        permission="zope.Public"/>
+    <adapter
+        provides="lp.services.webapp.interfaces.IBreadcrumb"
+        for="lp.registry.interfaces.product.IProductSet"
+        factory="lp.registry.browser.product.ProductSetBreadcrumb"
+        permission="zope.Public"/>
+
+    <!-- XXX: Steve Alexander 2005-09-21:
+                                                ProductBugsMenu undeclared until layout bug is fixed -->
+
+
+    <!-- ProductSet-->
+
+    <class
+        class="lp.registry.model.product.ProductSet">
+        <allow
+            attributes="
+                title
+                people
+                get
+                get_all_active
+                getByName
+                getProductsWithBranches
+                createProduct
+                search
+                latest
+                getTranslatables
+                count_all
+                count_translatables
+                count_buggy
+                count_featureful
+                count_reviewed
+                count_answered
+                count_codified"/>
+    </class>
+    <securedutility
+        class="lp.registry.model.product.ProductSet"
+        provides="lp.registry.interfaces.product.IProductSet">
+        <allow
+            interface="lp.registry.interfaces.product.IProductSet"/>
+        <require
+            permission="launchpad.Moderate"
+            attributes="
+                forReview"/>
+    </securedutility>
+
+    <!-- SSHKey -->
+
+    <class
+        class="lp.registry.model.person.SSHKey">
+        <allow
+            interface="lp.registry.interfaces.ssh.ISSHKey"/>
+        <require
+            permission="launchpad.Edit"
+            set_attributes="keytext comment"/>
+    </class>
+
+    <!-- SSHKeySet -->
+
+    <class
+        class="lp.registry.model.person.SSHKeySet">
+        <allow
+            interface="lp.registry.interfaces.ssh.ISSHKeySet"/>
+    </class>
+    <securedutility
+        class="lp.registry.model.person.SSHKeySet"
+        provides="lp.registry.interfaces.ssh.ISSHKeySet">
+        <allow
+            interface="lp.registry.interfaces.ssh.ISSHKeySet"/>
+    </securedutility>
+    <subscriber
+        for="lp.registry.interfaces.teammembership.IJoinTeamEvent"
+        handler="lp.registry.mail.notification.notify_team_join"/>
+    <subscriber
+        for="lp.registry.interfaces.teammembership.ITeamInvitationEvent"
+        handler="lp.registry.mail.notification.notify_invitation_to_join_team"/>
+
+    <!-- This is class ProductSeries -->
+
+    <class
+        class="lp.registry.model.productseries.ProductSeries">
+        <allow
+            interface="lp.registry.interfaces.productseries.IProductSeriesPublic"/>
+        <require
+            permission="launchpad.LimitedView"
+            interface="lp.registry.interfaces.productseries.IProductSeriesLimitedView"/>
+        <require
+            permission="launchpad.View"
+            interface="lp.registry.interfaces.productseries.IProductSeriesView"/>
+        <require
+            permission="launchpad.Edit"
+            interface="lp.registry.interfaces.productseries.IProductSeriesEditRestricted"/>
+        <require
+            permission="launchpad.View"
+            interface="lp.bugs.interfaces.bugsummary.IBugSummaryDimension"/>
+        <require
+            permission="launchpad.LimitedView"
+            interface="lp.bugs.interfaces.bugtarget.ISeriesBugTarget"/>
+        <require
+            permission="launchpad.Edit"
+            set_schema="lp.app.interfaces.launchpad.IServiceUsage"/>
+        <require
+            permission="launchpad.Edit"
+            set_attributes="product name owner driver summary branch
+                            translations_branch status releasefileglob
+                            translations_autoimport_mode"/>
+        <require
+            permission="launchpad.AnyAllowedPerson"
+            set_attributes="importstatus rcstype cvsroot cvsmodule
+                            cvstarfileurl cvsbranch svnrepository"/>
+
+        <!-- IStructuralSubscriptionTarget
+
+             Most attributes of IStructuralSubscriptionTargetRead require
+             launchpad.View, some require launchpad.LimitedView -->
+        <require
+            permission="launchpad.LimitedView"
+            attributes="
+                parent_subscription_target"/>
+        <require
+            permission="launchpad.View"
+            attributes="
+                bug_subscriptions
+                getSubscription
+                getSubscriptions
+                target_type_display
+                userCanAlterBugSubscription
+                userCanAlterSubscription
+                userHasBugSubscriptions"/>
+        <require
+            permission="launchpad.AnyAllowedPerson"
+            interface="lp.bugs.interfaces.structuralsubscription.IStructuralSubscriptionTargetWrite" />
+
+        <!-- IBugTarget -->
+        <require
+             permission="launchpad.LimitedView"
+             attributes="
+                 bugtargetdisplayname"/>>
+        <require
+             permission="launchpad.View"
+             attributes="
+                 bug_reported_acknowledgement
+                 bug_reporting_guidelines
+                 bugtargetname
+                 createBug
+                 enable_bugfiling_duplicate_search
+                 getBugTaskWeightFunction
+                 pillar
+                 searchTasks"/>
+
+    </class>
+    <adapter
+        provides="lp.bugs.interfaces.bugtracker.IHasExternalBugTracker"
+        for="lp.registry.interfaces.productseries.IProductSeries"
+        factory="lp.registry.adapters.productseries_to_product"
+        permission="zope.Public"/>
+    <adapter
+        provides="lp.app.interfaces.launchpad.ILaunchpadUsage"
+        for="lp.registry.interfaces.productseries.IProductSeries"
+        factory="lp.registry.adapters.productseries_to_product"
+        permission="zope.Public"/>
+    <adapter
+        provides="lp.registry.interfaces.product.IProduct"
+        for="lp.registry.interfaces.productseries.IProductSeries"
+        factory="lp.registry.adapters.productseries_to_product"
+        permission="zope.Public"/>
+    <adapter
+        provides="lp.services.webapp.interfaces.IBreadcrumb"
+        for="lp.registry.interfaces.productseries.IProductSeries"
+        factory="lp.registry.browser.productseries.ProductSeriesBreadcrumb"
+        permission="zope.Public"/>
+
+    <!-- This is class TimelineProductSeries -->
+
+    <class
+        class="lp.registry.model.productseries.TimelineProductSeries">
+        <require
+            permission="launchpad.View"
+            interface="lp.registry.interfaces.productseries.ITimelineProductSeries"/>
+    </class>
+
+    <!-- ProductSeriesSet -->
+
+    <class
+        class="lp.registry.model.productseries.ProductSeriesSet">
+        <allow
+            interface="lp.registry.interfaces.productseries.IProductSeriesSet"/>
+    </class>
+    <securedutility
+        class="lp.registry.model.productseries.ProductSeriesSet"
+        provides="lp.registry.interfaces.productseries.IProductSeriesSet">
+        <allow
+            interface="lp.registry.interfaces.productseries.IProductSeriesSet"/>
+    </securedutility>
+
+    <!-- Distribution -->
+
+    <class
+        class="lp.registry.model.distribution.Distribution">
+        <allow
+            interface="lp.registry.interfaces.distribution.IDistributionPublic"/>
+        <allow interface="lp.bugs.interfaces.bugsummary.IBugSummaryDimension"/>
+        <require
+            permission="launchpad.Edit"
+            interface="lp.registry.interfaces.distribution.IDistributionEditRestricted"/>
+        <require
+            permission="launchpad.Edit"
+            set_attributes="answers_usage blueprints_usage codehosting_usage
+                            bug_tracking_usage uses_launchpad"/>
+        <require
+            permission="launchpad.Moderate"
+            interface="lp.registry.interfaces.distribution.IDistributionDriverRestricted"/>
+        <require
+            permission="launchpad.Edit"
+            set_attributes="
+                bug_reported_acknowledgement
+                bug_reporting_guidelines
+                description
+                development_series_alias
+                displayname
+                driver
+                enable_bug_expiration
+                homepage_content
+                icon
+                logo
+                members
+                mirror_admin
+                mugshot
+                official_answers
+                official_blueprints
+                official_malone
+                owner
+                package_derivatives_email
+                redirect_release_uploads
+                summary
+                title"/>
+        <require
+            permission="launchpad.BugSupervisor"
+            set_attributes="
+                official_bug_tags"/>
+        <require
+            permission="launchpad.TranslationsAdmin"
+            set_attributes="
+                language_pack_admin
+                translationgroup
+                translationpermission
+                translation_focus
+                translations_usage
+                "/>
+
+        <!-- IHasAliases -->
+
+        <allow
+            attributes="
+                aliases"/>
+        <require
+            permission="launchpad.Admin"
+            attributes="
+                setAliases"/>
+
+        <!-- IQuestionTarget -->
+
+        <allow interface="lp.answers.interfaces.questiontarget.IQuestionTargetPublic"/>
+        <require
+          permission="launchpad.AnyPerson"
+          interface="lp.answers.interfaces.questiontarget.IQuestionTargetView"/>
+
+        <!-- IFAQTarget -->
+
+        <allow
+            interface="lp.answers.interfaces.faqcollection.IFAQCollection"
+            attributes="
+                findSimilarFAQs"/>
+        <require
+            permission="launchpad.Append"
+            attributes="
+                newFAQ"/>
+
+        <!-- IStructuralSubscriptionTarget -->
+
+        <allow
+            interface="lp.bugs.interfaces.structuralsubscription.IStructuralSubscriptionTargetRead" />
+        <require
+            permission="launchpad.AnyPerson"
+            interface="lp.bugs.interfaces.structuralsubscription.IStructuralSubscriptionTargetWrite" />
+
+        <!-- IHasBugSupervisor -->
+
+        <allow
+            attributes="
+                bug_supervisor"/>
+        <require
+            permission="launchpad.Edit"
+            set_attributes="bug_supervisor"/>
+    </class>
+    <adapter
+        for="lp.registry.interfaces.distribution.IDistribution"
+        provides="lp.services.webapp.interfaces.ILaunchpadContainer"
+        factory="lp.services.webapp.publisher.LaunchpadContainer"/>
+    <adapter
+        provides="lp.services.webapp.interfaces.IBreadcrumb"
+        for="lp.registry.interfaces.distribution.IDistribution"
+        factory="lp.services.webapp.breadcrumb.DisplaynameBreadcrumb"
+        permission="zope.Public"/>
+    <adapter
+        provides="lp.services.webapp.interfaces.IBreadcrumb"
+        for="lp.registry.interfaces.distribution.IDistributionSet"
+        factory="lp.registry.browser.distribution.DistributionSetBreadcrumb"
+        permission="zope.Public"/>
+    <adapter
+        provides="lp.archivepublisher.interfaces.publisherconfig.IPublisherConfig"
+        for="lp.registry.interfaces.distribution.IDistribution"
+        factory="lp.registry.adapters.distribution_to_publisherconfig"
+        permission="zope.Public"/>
+
+
+    <!-- DistributionSet -->
+
+    <class
+        class="lp.registry.model.distribution.DistributionSet">
+        <allow
+            interface="lp.registry.interfaces.distribution.IDistributionSet"/>
+    </class>
+    <securedutility
+        class="lp.registry.model.distribution.DistributionSet"
+        provides="lp.registry.interfaces.distribution.IDistributionSet">
+        <allow
+            interface="lp.registry.interfaces.distribution.IDistributionSet"/>
+    </securedutility>
+
+    <!-- SourcePackage -->
+    <class
+        class="lp.registry.model.sourcepackage.SourcePackage">
+        <allow
+            interface="lp.registry.interfaces.sourcepackage.ISourcePackagePublic"/>
+        <allow interface="lp.bugs.interfaces.bugsummary.IBugSummaryDimension"/>
+        <allow
+            interface="lp.bugs.interfaces.bugtarget.ISeriesBugTarget"/>
+        <allow
+            interface="lp.soyuz.interfaces.buildrecords.IHasBuildRecords"/>
+        <require
+            permission="launchpad.Edit"
+            interface="lp.registry.interfaces.sourcepackage.ISourcePackageEdit"/>
+    </class>
+    <securedutility
+        component="lp.registry.model.sourcepackage.SourcePackage"
+        provides="lp.registry.interfaces.sourcepackage.ISourcePackageFactory">
+        <allow
+            interface="lp.registry.interfaces.sourcepackage.ISourcePackageFactory"/>
+    </securedutility>
+    <adapter
+        provides="lp.registry.interfaces.distribution.IDistribution"
+        for="lp.registry.interfaces.sourcepackage.ISourcePackage"
+        factory="lp.registry.adapters.sourcepackage_to_distribution"
+        permission="zope.Public"/>
+    <adapter
+        factory="lp.registry.browser.sourcepackage.SourcePackageBreadcrumb"/>
+    <adapter
+        provides="lp.registry.interfaces.sourcepackagename.ISourcePackageName"
+        for="lp.registry.interfaces.sourcepackage.ISourcePackage"
+        factory="lp.registry.adapters.package_to_sourcepackagename"
+        permission="zope.Public"/>
+    <adapter
+        provides="lp.app.interfaces.launchpad.IServiceUsage"
+        for="lp.registry.interfaces.sourcepackage.ISourcePackage"
+        factory="lp.registry.adapters.sourcepackage_to_distribution"
+        permission="zope.Public"/>
+
+    <!-- This is class ProductReleaseSet -->
+
+    <class
+        class="lp.registry.model.productrelease.ProductReleaseSet">
+        <allow
+            interface="lp.registry.interfaces.productrelease.IProductReleaseSet"/>
+        <require
+            permission="zope.Public"
+            set_schema="lp.registry.interfaces.productrelease.IProductReleaseSet"/>
+    </class>
+    <securedutility
+        class="lp.registry.model.productrelease.ProductReleaseSet"
+        provides="lp.registry.interfaces.productrelease.IProductReleaseSet">
+        <allow
+            interface="lp.registry.interfaces.productrelease.IProductReleaseSet"/>
+    </securedutility>
+
+    <!-- This is class ProductRelease -->
+
+    <class
+        class="lp.registry.model.productrelease.ProductRelease">
+        <allow
+            interface="lp.registry.interfaces.productrelease.IProductReleasePublic"/>
+        <require
+            permission="launchpad.View"
+            interface="lp.registry.interfaces.productrelease.IProductReleaseView"/>
+        <require
+            permission="launchpad.Edit"
+            interface="lp.registry.interfaces.productrelease.IProductReleaseEditRestricted"/>
+        <require
+            permission="launchpad.Edit"
+            set_schema="lp.registry.interfaces.productrelease.IProductRelease"/>
+    </class>
+    <adapter
+        provides="lp.registry.interfaces.milestone.IMilestone"
+        for="lp.registry.interfaces.productrelease.IProductRelease"
+        factory="lp.registry.model.productrelease.productrelease_to_milestone"
+        permission="zope.Public"/>
+
+    <!-- This is class ProductReleaseFile -->
+
+    <class
+        class="lp.registry.model.productrelease.ProductReleaseFile">
+        <allow
+            interface="lp.registry.interfaces.productrelease.IProductReleaseFilePublic"/>
+        <require
+            permission="launchpad.Edit"
+            interface="lp.registry.interfaces.productrelease.IProductReleaseFileEditRestricted"/>
+    </class>
+
+    <!-- SuiteSourcePackage -->
+    <class
+       class="lp.registry.model.suitesourcepackage.SuiteSourcePackage">
+      <allow
+         interface="lp.registry.interfaces.suitesourcepackage.ISuiteSourcePackage"/>
+    </class>
+
+    <lp:help-folder folder="help" name="+help-registry" />
+
+    <!-- DistributionMirror -->
+    <class class="lp.registry.model.distributionmirror.DistributionMirror">
+        <allow
+            attributes="
+                id
+                name
+                displayname
+                description
+                distribution
+                http_base_url
+                ftp_base_url
+                rsync_base_url
+                enabled
+                speed
+                status
+                country
+                content
+                owner
+                title
+                cdimage_series
+                source_series
+                arch_series
+                last_probe_record
+                all_probe_records
+                has_ftp_or_rsync_base_url
+                base_url
+                date_created
+                country_dns_mirror
+                mirrorMustHaveHTTPOrFTPURL
+                getSummarizedMirroredSourceSeries
+                getSummarizedMirroredArchSeries
+                getOverallFreshness
+                isOfficial
+                shouldDisable
+                disable
+                newProbeRecord
+                deleteMirrorDistroArchSeries
+                ensureMirrorDistroArchSeries
+                ensureMirrorDistroSeriesSource
+                deleteMirrorDistroSeriesSource
+                ensureMirrorCDImageSeries
+                deleteMirrorCDImageSeries
+                deleteAllMirrorCDImageSeries
+                getExpectedPackagesPaths
+                getExpectedSourcesPaths
+                canTransitionToCountryMirror" />
+        <require
+            permission="launchpad.Edit"
+            set_attributes="name displayname description whiteboard
+                            http_base_url ftp_base_url rsync_base_url enabled
+                            speed country content official_candidate owner"
+            attributes="official_candidate whiteboard" />
+        <require
+            permission="launchpad.Admin"
+            set_attributes="status reviewer date_reviewed"
+            attributes="reviewer date_reviewed destroySelf
+                transitionToCountryMirror" />
+    </class>
+
+    <adapter
+        provides="lp.services.webapp.interfaces.IBreadcrumb"
+        for="lp.registry.interfaces.distributionmirror.IDistributionMirror"
+        factory="lp.registry.browser.distributionmirror.DistributionMirrorBreadcrumb"
+        permission="zope.Public"/>
+
+    <!-- DistributionMirrorSet -->
+    <class class="lp.registry.model.distributionmirror.DistributionMirrorSet">
+        <allow interface="lp.registry.interfaces.distributionmirror.IDistributionMirrorSet"/>
+    </class>
+
+    <securedutility
+        class="lp.registry.model.distributionmirror.DistributionMirrorSet"
+        provides="lp.registry.interfaces.distributionmirror.IDistributionMirrorSet">
+        <allow interface="lp.registry.interfaces.distributionmirror.IDistributionMirrorSet" />
+    </securedutility>
+
+    <!-- MirrorDistroArchSeries -->
+    <class class="lp.registry.model.distributionmirror.MirrorDistroArchSeries">
+        <allow interface="lp.registry.interfaces.distributionmirror.IMirrorDistroArchSeries" />
+        <require
+            permission="launchpad.Edit"
+            set_schema="lp.registry.interfaces.distributionmirror.IMirrorDistroArchSeries" />
+    </class>
+
+    <!-- MirrorDistroSeriesSource -->
+    <class class="lp.registry.model.distributionmirror.MirrorDistroSeriesSource">
+        <allow interface="lp.registry.interfaces.distributionmirror.IMirrorDistroSeriesSource" />
+        <require
+            permission="launchpad.Edit"
+            set_schema="lp.registry.interfaces.distributionmirror.IMirrorDistroSeriesSource" />
+    </class>
+
+    <!-- MirrorCDImageDistroSeries -->
+    <class class="lp.registry.model.distributionmirror.MirrorCDImageDistroSeries">
+        <allow interface="lp.registry.interfaces.distributionmirror.IMirrorCDImageDistroSeries" />
+    </class>
+
+    <!-- MirrorProbeRecord -->
+    <class class="lp.registry.model.distributionmirror.MirrorProbeRecord">
+        <allow interface="lp.registry.interfaces.distributionmirror.IMirrorProbeRecord" />
+        <require
+            permission="launchpad.Edit"
+            set_schema="lp.registry.interfaces.distributionmirror.IMirrorProbeRecord" />
+    </class>
+
+    <!-- Packaging -->
+    <class
+        class="lp.registry.model.packaging.Packaging">
+        <allow
+            interface="lp.registry.interfaces.packaging.IPackaging"/>
+        <require
+            permission="zope.Public"
+            set_schema="lp.registry.interfaces.packaging.IPackaging"/>
+    </class>
+
+    <!-- PackagingUtil -->
+    <class
+        class="lp.registry.model.packaging.PackagingUtil">
+        <allow
+            interface="lp.registry.interfaces.packaging.IPackagingUtil"/>
+    </class>
+    <securedutility
+        class="lp.registry.model.packaging.PackagingUtil"
+        provides="lp.registry.interfaces.packaging.IPackagingUtil">
+        <allow
+            interface="lp.registry.interfaces.packaging.IPackagingUtil"/>
+    </securedutility>
+
+    <!-- PersonNotification -->
+
+    <class
+        class="lp.registry.model.personnotification.PersonNotification">
+        <allow
+            interface="lp.registry.interfaces.personnotification.IPersonNotification"/>
+    </class>
+
+    <securedutility
+        provides="lp.registry.interfaces.personnotification.IPersonNotificationSet"
+        class="lp.registry.model.personnotification.PersonNotificationSet">
+        <allow
+            interface="lp.registry.interfaces.personnotification.IPersonNotificationSet"/>
+    </securedutility>
+
+    <!-- PersonProduct -->
+
+    <class
+        class="lp.registry.model.personproduct.PersonProduct">
+        <allow
+            interface="lp.registry.interfaces.personproduct.IPersonProduct"/>
+    </class>
+
+    <webservice:register module="lp.registry.errors" />
+    <webservice:register module="lp.registry.interfaces.webservice" />
+
+    <adapter
+        provides="lp.services.webapp.interfaces.IBreadcrumb"
+        for="lp.registry.interfaces.personproduct.IPersonProduct"
+        factory="lp.registry.browser.personproduct.PersonProductBreadcrumb"
+        permission="zope.Public"/>
+
+    <securedutility
+        component="lp.registry.model.personproduct.PersonProduct"
+        provides="lp.registry.interfaces.personproduct.IPersonProductFactory">
+        <allow
+            interface="lp.registry.interfaces.personproduct.IPersonProductFactory"/>
+    </securedutility>
+
+    <class
+        class="lp.registry.model.personroles.PersonRoles">
+        <allow
+            interface="lp.registry.interfaces.role.IPersonRoles"/>
+    </class>
+    <adapter
+        for="lp.registry.interfaces.person.IPerson"
+        provides="lp.registry.interfaces.role.IPersonRoles"
+        factory="lp.registry.model.personroles.PersonRoles" />
+
+    <class
+        class="lp.registry.model.accesspolicy.AccessPolicy">
+        <allow
+            interface="lp.registry.interfaces.accesspolicy.IAccessPolicy"/>
+    </class>
+    <securedutility
+        component="lp.registry.model.accesspolicy.AccessPolicy"
+        provides="lp.registry.interfaces.accesspolicy.IAccessPolicySource">
+        <allow
+            interface="lp.registry.interfaces.accesspolicy.IAccessPolicySource"/>
+    </securedutility>
+    <class
+        class="lp.registry.model.accesspolicy.AccessArtifact">
+        <allow
+            interface="lp.registry.interfaces.accesspolicy.IAccessArtifact"/>
+    </class>
+    <securedutility
+        component="lp.registry.model.accesspolicy.AccessArtifact"
+        provides="lp.registry.interfaces.accesspolicy.IAccessArtifactSource">
+        <allow
+            interface="lp.registry.interfaces.accesspolicy.IAccessArtifactSource"/>
+    </securedutility>
+    <class
+        class="lp.registry.model.accesspolicy.AccessPolicyArtifact">
+        <allow
+            interface="lp.registry.interfaces.accesspolicy.IAccessPolicyArtifact"/>
+    </class>
+    <securedutility
+        component="lp.registry.model.accesspolicy.AccessPolicyArtifact"
+        provides="lp.registry.interfaces.accesspolicy.IAccessPolicyArtifactSource">
+        <allow
+            interface="lp.registry.interfaces.accesspolicy.IAccessPolicyArtifactSource"/>
+    </securedutility>
+    <class
+        class="lp.registry.model.accesspolicy.AccessArtifactGrant">
+        <allow
+            interface="lp.registry.interfaces.accesspolicy.IAccessArtifactGrant"/>
+    </class>
+    <securedutility
+        component="lp.registry.model.accesspolicy.AccessArtifactGrant"
+        provides="lp.registry.interfaces.accesspolicy.IAccessArtifactGrantSource">
+        <allow
+            interface="lp.registry.interfaces.accesspolicy.IAccessArtifactGrantSource"/>
+    </securedutility>
+    <class
+        class="lp.registry.model.accesspolicy.AccessPolicyGrant">
+        <allow
+            interface="lp.registry.interfaces.accesspolicy.IAccessPolicyGrant"/>
+    </class>
+    <securedutility
+        component="lp.registry.model.accesspolicy.AccessPolicyGrant"
+        provides="lp.registry.interfaces.accesspolicy.IAccessPolicyGrantSource">
+        <allow
+            interface="lp.registry.interfaces.accesspolicy.IAccessPolicyGrantSource"/>
+    </securedutility>
+    <securedutility
+        component="lp.registry.model.accesspolicy.AccessPolicyGrantFlat"
+        provides="lp.registry.interfaces.accesspolicy.IAccessPolicyGrantFlatSource">
+        <allow
+            interface="lp.registry.interfaces.accesspolicy.IAccessPolicyGrantFlatSource"/>
+    </securedutility>
+
+    <!-- Sharing jobs -->
+    <class class=".model.sharingjob.RemoveArtifactSubscriptionsJob">
+      <allow interface=".interfaces.sharingjob.IRemoveArtifactSubscriptionsJob"/>
+      <allow attributes="
+         context
+         log_name"/>
+    </class>
+
+    <securedutility
+        component=".model.sharingjob.RemoveArtifactSubscriptionsJob"
+        provides=".interfaces.sharingjob.IRemoveArtifactSubscriptionsJobSource">
+      <allow interface=".interfaces.sharingjob.IRemoveArtifactSubscriptionsJobSource"/>
+    </securedutility>
+
+</configure>

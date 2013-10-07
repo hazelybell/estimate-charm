@@ -1,0 +1,19 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  class="portlet" id="portlet-latest-bugs"
+  tal:condition="view/latestBugTasks">
+  <h2><span class="see-all"><a
+      tal:attributes="href context/fmt:url:bugs">All bugs</a></span>
+    Latest bugs reported</h2>
+
+  <ul>
+    <li tal:repeat="bugtask view/latestBugTasks">
+      <a tal:replace="structure bugtask/fmt:link" />
+      <br /><span class="registered">
+        Reported <tal:when replace="bugtask/datecreated/fmt:displaydate" />
+      </span>
+    </li>
+  </ul>
+</div>

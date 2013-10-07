@@ -1,0 +1,39 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<div class="portlet" id="portlet-details">
+  <h2><span tal:replace="context/name" /> information</h2>
+
+  <div class="two-column-list"
+    tal:define="current context/currentrelease">
+    <tal:currentrelease tal:condition="current">
+      <dl>
+        <dt>Current version:</dt>
+        <dd><span tal:replace="current/version" /></dd>
+      </dl>
+      <dl>
+        <dt>Uploaded:</dt>
+        <dd><span
+          tal:attributes="title current/dateuploaded/fmt:datetime"
+          tal:content="current/dateuploaded/fmt:approximatedate" /></dd>
+      </dl>
+      <dl>
+        <dt>Urgency:</dt>
+        <dd><span tal:content="current/urgency/title" /></dd>
+      </dl>
+      <dl>
+        <dt>Component:</dt>
+        <dd><span tal:content="current/component/name"/></dd>
+      </dl>
+    </tal:currentrelease>
+    <tal:norelease tal:condition="not: current">
+      <em>No published releases of this package have been uploaded in
+      <tal:series content="context/distroseries/fullseriesname" /></em>
+    </tal:norelease>
+  </div>
+
+</div>
+</tal:root>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<!--
+Copyright 2012 Canonical Ltd.  This software is licensed under the
+GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<html>
+  <head>
+      <title>File Bug View Tests</title>
+
+      <!-- YUI and test setup -->
+      <script type="text/javascript"
+              src="../../../../../build/js/yui/yui/yui.js">
+      </script>
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/console/assets/console-core.css" />
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/test-console/assets/skins/sam/test-console.css" />
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/test/assets/skins/sam/test.css" />
+
+      <script type="text/javascript"
+              src="../../../../../build/js/lp/app/testing/testrunner.js"></script>
+
+      <link rel="stylesheet" href="../../../app/javascript/testing/test.css" />
+
+      <!-- Dependencies -->
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/mustache.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/choice.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/choiceedit/choiceedit.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/expander.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/formoverlay/formoverlay.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/formwidgets/formwidgets.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/formwidgets/resizing_textarea.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/information_type.js"></script>
+
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/overlay/overlay.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/anim/anim.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/bugs/filebug_dupefinder.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/effects/effects.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/extras/extras.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/banners/banner.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/banners/privacy.js"></script>
+
+      <!-- The module under test. -->
+      <script type="text/javascript" src="../filebug.js"></script>
+
+      <!-- The test suite -->
+      <script type="text/javascript" src="test_filebug.js"></script>
+
+    </head>
+    <body class="yui3-skin-sam">
+        <ul id="suites">
+            <li>lp.bugs.filebug.test</li>
+        </ul>
+        <div class='login-logout'></div>
+        <div id="fixture"></div>
+        <script type="text/x-template" id="bugsupervisor-filebug-template">
+        <div id="filebug-form">
+        <table class="radio-button-widget">
+            <tbody>
+            <tr>
+              <td><input type="radio" value="PUBLIC" name="field.information_type"
+                id="field.information_type.0" checked="checked" class="radioType">
+              </td>
+              <td><label for="field.information_type.0">Public</label></td>
+            </tr>
+            <tr>
+              <td><input type="radio" value="PUBLICSECURITY" name="field.information_type"
+                id="field.information_type.1"class="radioType">
+              </td>
+              <td><label for="field.information_type.1">Public Security</label></td>
+            </tr>
+            <tr>
+              <td><input type="radio" value="PRIVATESECURITY" name="field.information_type"
+                id="field.information_type.2"class="radioType">
+              </td>
+              <td><label for="field.information_type.2">Private Security</label></td>
+            </tr>
+            <tr>
+              <td><input type="radio" value="USERDATA" name="field.information_type"
+                id="field.information_type.3"class="radioType">
+              </td>
+              <td><label for="field.information_type.3">Private</label></td>
+            </tr>
+            <tr>
+              <td><input type="radio" value="PROPRIETARY" name="field.information_type"
+                id="field.information_type.4"class="radioType">
+              </td>
+              <td><label for="field.information_type.4">Proprietary</label></td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="value">
+            <select size="1" name="field.status" id="field.status">
+            <option value="New" selected="selected">New</option>
+            <option value="Incomplete">Incomplete</option>
+            </select>
+        </div>
+        <div class="value">
+            <select size="1" name="field.importance" id="field.importance">
+            <option value="Undecided" selected="selected">Undecided</option>
+            <option value="High">High</option>
+            </select>
+        </div>
+        </div>
+        </script>
+        <script type="text/x-template" id="filebug-template">
+        <div id="filebug-form">
+        <div>
+          <input type="checkbox" value="on" name="field.security_related" id="field.security_related" class="checkboxType">
+          <label for="field.security_related">
+            This bug is a security vulnerability
+          </label>
+        </div>
+        <div class="value">
+            <select size="1" name="field.status" id="field.status">
+            <option value="New" selected="selected">New</option>
+            <option value="Incomplete">Incomplete</option>
+            </select>
+        </div>
+        <div class="value">
+            <select size="1" name="field.importance" id="field.importance">
+            <option value="Undecided" selected="selected">Undecided</option>
+            <option value="High">High</option>
+            </select>
+        </div>
+        </div>
+        </script>
+    </body>
+</html>

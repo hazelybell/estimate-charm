@@ -1,0 +1,20 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+  <body>
+    <div class="top-portlet" metal:fill-slot="main">
+      <h1 class="exception">Invalid Batch Size</h1>
+      <p>
+      Your requested batch size exceeded the maximum batch size allowed.<br />
+      <span tal:replace="view/error_message" />
+      </p>
+      <tal:replace tal:replace="structure view/maybeShowTraceback" />
+    </div>
+  </body>
+</html>
+

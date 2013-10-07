@@ -1,0 +1,12 @@
+Hello Launchpad administrators,
+
+A UnicodeDecodeError occurred while trying to notify you of a
+failure during a translation export requested by %(person)s
+(%(person_id)s) at
+
+  %(request_url)s
+
+%(failed_requests)s
+
+-- 
+Automatic message from Launchpad.net.

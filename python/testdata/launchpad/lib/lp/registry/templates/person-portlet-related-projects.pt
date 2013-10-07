@@ -1,0 +1,34 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<div class="portlet" id="portlet-related-projects"
+     tal:define="overview_menu context/menu:overview"
+     tal:condition="view/first_five_related_projects">
+
+  <h2>
+    <span class="see-all">
+      <a href="+projects" tal:condition="view/has_more_related_projects">
+        Show all
+        <tal:count content="view/related_projects_count">8</tal:count>
+        related projects</a>
+      <a href="+projects" tal:condition="not: view/has_more_related_projects">
+        Show related projects</a>
+    </span>
+    Related projects
+  </h2>
+
+
+  <table tal:define="pillarnames view/first_five_related_projects">
+    <tbody>
+      <tr tal:repeat="pillarname pillarnames">
+        <td>
+          <a tal:replace="structure pillarname/pillar/fmt:link" />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</tal:root>

@@ -1,0 +1,29 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+
+<body>
+  <div metal:fill-slot="main">
+    <div metal:use-macro="context/@@launchpad_form/form">
+      <metal:extra-info metal:fill-slot="extra_info">
+        <p>
+          Enter a language code, and select what language it should map
+          to during upload auto-approval.
+         </p>
+         <p>
+          Avoid using this capability if possible, since it makes
+          it harder to keep track of what goes where.  For cases with
+          few templates, where a code would only cover one or two
+          translation files, it may be better to approve those
+          uploads manually.  Launchpad will remember the filename and
+          approve it automatically next time it comes along.
+        </p>
+      </metal:extra-info>
+    </div>
+  </div>
+</body>
+</html>

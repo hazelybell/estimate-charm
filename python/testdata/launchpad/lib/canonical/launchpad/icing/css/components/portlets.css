@@ -1,0 +1,94 @@
+.portlet dd {
+    margin-bottom: 0.5em;
+    }
+.portlet dl strong {
+    color: #000;
+    font-weight: normal;
+    }
+.related {
+    /* Lists that link to related content. */
+    margin-top: 4em;
+    border-top: 1px solid #cbcbcb; /* matches color of mainarea_* images */
+    padding-top: 1em;
+    }
+.related ul {
+    list-style: none;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    text-indent: 0.5em;
+    }
+.related ul.sourcepackage-links li.sourcepackage-not-dev-focus:before {
+    content: "";
+    display: inline-block;
+    width: 1.5em;
+    }
+.related ul.sourcepackage-links li.sourcepackage-dev-focus:before {
+    content: "⇒ ";
+    display: inline-block;
+    width: 1.5em;
+    }
+.related ul li:before {
+    content: "\00BB \0020";
+    }
+.gridflow {
+    /* A list that positions the items in a grid (like a table). */
+    margin: 0.0em;
+    padding: 0.0em;
+    }
+.gridflow ul {
+    margin: 0.5em 0.0em 0.5em 0.0em;
+    padding: 0.5em 0.0em 0.0em 0.0em;
+    }
+.gridflow li {
+    display: inline;
+    margin: 0.0em;
+    padding: 0.2em;
+    }
+.gridflow li span {
+    display: table-cell;
+    display: inline-table;
+    display: inline-block;
+    width: 192px;
+    text-align: center;
+    vertical-align: middle;
+    padding: 1em 1em 1em 0;
+    }
+.portlet-border {
+    border-top: 1px solid #EBEBEB;
+    padding: 1em 0;
+    }
+.portlet, .aside {
+    clear: both;
+    border-top: 1px solid #EBEBEB;
+    padding: 1em 0;
+    }
+.portlet > h2:first-child {
+    margin-top: 0;
+    }
+.top-portlet {
+    padding: 0 0 0.5em 0;
+    margin: 0 0 1em;
+    }
+.full-page-width {
+    z-index: 10;
+    width: 131%;
+    }
+.full-page-width .full-page-width {
+    /* The content is already full width. */
+    width: 100%;
+    }
+.warning.message {
+    margin-top: 17px;
+    }
+
+div.three.column.middle {
+    margin-right: 1%;
+    }
+div.three.column.left, div.three.column.middle, div.three.column.right {
+    clear: none;
+    float: left;
+    width: 33%;
+    }
+div.three.column.left, div.three.column.right {
+    margin: 0;
+    }

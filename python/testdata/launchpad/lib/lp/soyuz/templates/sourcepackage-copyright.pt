@@ -1,0 +1,23 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+
+  <body>
+    <div metal:fill-slot="main">
+      <div id="copyright" class="top-portlet">
+        <div
+          tal:condition="context/currentrelease"
+          tal:content="structure context/currentrelease/@@+copyright"/>
+
+        <p tal:condition="not: context/currentrelease"
+           class="informational message">
+          There are no copyright associated with this source package.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

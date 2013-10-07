@@ -1,0 +1,40 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="malone"
+>
+<body>
+  <div metal:fill-slot="main">
+
+    <div metal:use-macro="context/@@launchpad_form/form">
+
+      <div metal:fill-slot="extra_info" class="documentDescription">
+        <tal:is_patch condition="view/is_patch">
+          <p>
+            <strong>This file looks like a patch.</strong>
+            <small>
+              <a href="https://help.launchpad.net/Bugs/BugAttachments">
+                What is a patch?
+             </a>
+            </small>
+          </p>
+        </tal:is_patch>
+        <tal:is_not_patch condition="not: view/is_patch">
+          <p>
+            <strong>This file does not look like a patch.
+            </strong>
+            <small>
+              <a href="https://help.launchpad.net/Bugs/BugAttachments">
+                What is a patch?
+             </a>
+            </small>
+          </p>
+        </tal:is_not_patch>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,374 @@
+# XXX bug=569189, bac 2010-04-23
+# This test is disabled due to a bug which prevents authenticated
+# users from writing data or reading any data with a permission
+# attached.
+
+==============
+Project Groups
+==============
+
+
+Project group collection
+------------------------
+
+It is possible to get a batched list of all the project groups.
+
+    >>> from launchpadlib.launchpad import Launchpad
+    >>> from lp.testing._login import logout
+    >>> logout()
+    >>> lp_anon = Launchpad.login_anonymously('launchpadlib test',
+    ...                                       'http://api.launchpad.dev/')
+    >>> len(lp_anon.project_groups)
+    7
+
+    >>> project_groups = sorted(lp_anon.project_groups, key=lambda X: X.name)
+    >>> project_groups[0].self_link
+    u'http://.../aaa'
+
+    >>> for project_group in project_groups:
+    ...     print "%s (%s)" % (project_group.name, project_group.display_name)
+    aaa (the Test Project)
+    apache (Apache)
+    gimp (the GiMP Project)
+    gnome (GNOME)
+    iso-codes-project (iso-codes)
+    launchpad-mirrors (Launchpad SCM Mirrors)
+    mozilla (the Mozilla Project)
+
+It's possible to search the list and get a subset of the project groups.
+
+    >>> lp_anon = Launchpad.login_anonymously('launchpadlib test',
+    ...                                       'http://api.launchpad.dev/')
+    >>> project_groups = lp_anon.project_groups.search(text="Apache")
+    >>> for project_group in project_groups:
+    ...   print project_group.display_name
+    Apache
+
+Searching without providing a search string is the same as getting all
+the project groups.
+
+    >>> project_groups = lp_anon.project_groups.search()
+    >>> project_groups = sorted(project_groups, key=lambda X: X.name)
+    >>> for project_group in project_groups:
+    ...     print "%s (%s)" % (project_group.name, project_group.display_name)
+    aaa (the Test Project)
+    apache (Apache)
+    gimp (the GiMP Project)
+    gnome (GNOME)
+    iso-codes-project (iso-codes)
+    launchpad-mirrors (Launchpad SCM Mirrors)
+    mozilla (the Mozilla Project)
+
+Project group object
+--------------------
+
+An individual project group can be accessed using dictionary-like syntax.
+
+    >>> mozilla = lp_anon.project_groups['mozilla']
+
+A project group supplies many attributes, collections, operations.
+
+    >>> from operator import attrgetter
+    >>> def pprint_object(obj):
+    ...     groups = ['lp_attributes',
+    ...               'lp_collections',
+    ...               'lp_entries']
+    ...     items = []
+    ...     for group in groups:
+    ...         items.extend(attrgetter(group)(obj))
+    ...     items.remove('http_etag')
+    ...     for item in sorted(items):
+    ...         value = attrgetter(item)(obj)
+    ...         print "%s: %s" % (item, value)
+
+The project group object has a large set of properties that can be
+accessed directly.
+
+    >>> pprint_object(mozilla)
+    active: True
+    active_milestones: <lazr.restfulclient.resource.Collection object...>
+    all_milestones: <lazr.restfulclient.resource.Collection object ...>
+    bug_reporting_guidelines: None
+    bug_tracker: None
+    date_created: 2004-09-24 20:58:02.177698+00:00
+    description: The Mozilla Project produces several internet applications ...
+    display_name: the Mozilla Project
+    driver: None
+    freshmeat_project: None
+    homepage_content: None
+    homepage_url: http://www.mozilla.org/
+    icon: <lazr.restfulclient.resource.HostedFile object ...>
+    logo: <lazr.restfulclient.resource.HostedFile object ...>
+    mugshot: <lazr.restfulclient.resource.HostedFile object ...>
+    name: mozilla
+    official_bug_tags: []
+    owner: http://.../~name12
+    projects: <lazr.restfulclient.resource.Collection object ...>
+    registrant: http://.../~name12
+    resource_type_link: http://.../#project_group
+    reviewed: False
+    self_link: http://.../mozilla
+    sourceforge_project: None
+    summary: The Mozilla Project is the largest open source web browser...
+    title: The Mozilla Project
+    wiki_url: None
+
+The milestones can be accessed through the active_milestones
+collection and the all_milestones collection.
+
+    >>> def print_collection(collection, attrs=None):
+    ...     items = [str(item) for item in collection]
+    ...     for item in sorted(items):
+    ...         print item
+
+    >>> print_collection(sorted(mozilla.active_milestones))
+    http://api.launchpad.dev/.../mozilla/+milestone/1.0
+
+    >>> print_collection(sorted(mozilla.all_milestones))
+    http://.../mozilla/+milestone/0.8
+    http://.../mozilla/+milestone/0.9
+    http://.../mozilla/+milestone/0.9.1
+    http://.../mozilla/+milestone/0.9.2
+    http://.../mozilla/+milestone/1.0
+    http://.../mozilla/+milestone/1.0.0
+
+
+An individual milestone can be retrieved.  None is returned if it
+doesn't exist.
+
+    >>> print mozilla.getMilestone(name="1.0")
+    http://.../mozilla/+milestone/1.0
+
+    >>> print mozilla.getMilestone(name="fnord")
+    None
+
+
+Project objects
+---------------
+
+The Launchpad 'projects' collection is used to select an individual
+project, which has a large number of attributes.  Some of the
+attributes are marked as 'redacted' as they are only visible to
+project administrators.
+
+    >>> firefox = lp_anon.projects['firefox']
+    >>> pprint_object(firefox)
+    active: True
+    active_milestones: <lazr.restfulclient.resource.Collection object...>
+    all_milestones: <lazr.restfulclient.resource.Collection object...>
+    brand: <lazr.restfulclient.resource.HostedFile object...>
+    bug_reporting_guidelines: None
+    bug_tracker: None
+    commercial_subscription: None
+    commercial_subscription_is_due: True
+    date_created: 2004-09-24 20:58:02.185708+00:00
+    description: The Mozilla Firefox web browser
+    development_focus: http://.../firefox/trunk
+    display_name: Mozilla Firefox
+    download_url: None
+    driver: None
+    freshmeat_project: None
+    homepage_url: None
+    icon: <lazr.restfulclient.resource.HostedFile object...>
+    is_permitted: ...redacted
+    license_approved: ...redacted
+    license_info: None
+    project_reviewed: ...redacted
+    licenses: []
+    logo: <lazr.restfulclient.resource.HostedFile object...>
+    name: firefox
+    official_bug_tags: []
+    owner: http://.../~name12
+    programming_language: None
+    project_group: http://.../mozilla
+    qualifies_for_free_hosting: False
+    registrant: http://.../~name12
+    releases: <lazr.restfulclient.resource.Collection object...>
+    remote_product: None
+    resource_type_link: http://.../#project
+    reviewer_whiteboard: ...redacted
+    screenshots_url: None
+    self_link: http://.../firefox
+    series: <lazr.restfulclient.resource.Collection object...>
+    sourceforge_project: None
+    summary: The Mozilla Firefox web browser
+    title: Mozilla Firefox
+    translation_focus: None
+    wiki_url: None
+
+Getting a Launchpad object based on an administrator's credentials
+allows the previously redacted attributes to be seen.
+
+    >>> lp_mark = launchpadlib_for(
+    ...     'launchpadlib test', 'mark', 'READ_PRIVATE')
+    >>> print lp_mark.me.name
+    mark
+    >>> firefox = lp_mark.projects['firefox']
+    >>> print firefox.project_reviewed
+    False
+
+In Launchpad project names may not have uppercase letters in their
+name.  As a convenience, requests for projects using the wrong case
+return the correct project.
+
+    >>> firefox = lp_anon.projects['Firefox']
+    >>> print firefox.title
+    Mozilla Firefox
+
+The milestones can be accessed through the active_milestones
+collection and the all_milestones collection.
+
+    >>> # This should not be needed but using the object fetched above causes a
+    >>> # 301-Moved Permanently exception.
+    >>> firefox = lp_anon.projects['firefox']
+    >>> print_collection(sorted(firefox.active_milestones))
+    http://api.launchpad.dev/.../firefox/+milestone/1.0
+
+    >>> print_collection(sorted(firefox.all_milestones))
+    http://.../firefox/+milestone/0.9
+    http://.../firefox/+milestone/0.9.1
+    http://.../firefox/+milestone/0.9.2
+    http://.../firefox/+milestone/1.0
+    http://.../firefox/+milestone/1.0.0
+
+An individual milestone can be retrieved.  None is returned if it
+doesn't exist.
+
+    >>> print firefox.getMilestone(name="1.0")
+    http://.../firefox/+milestone/1.0
+
+    >>> print firefox.getMilestone(name="fnord")
+    None
+
+A list of series can be accessed through the series_collection_link.
+
+    >>> print_collection(firefox.series)
+    http://.../firefox/1.0
+    http://.../firefox/trunk
+
+"getSeries" returns the series for the given name.
+
+    >>> series = firefox.getSeries(name="1.0")
+    >>> print series.self_link
+    http://.../firefox/1.0
+
+A list of releases can be accessed through the releases_collection_link.
+
+    >>> print_collection(firefox.releases)
+    http://.../firefox/1.0/1.0.0
+    http://.../firefox/trunk/0.9
+    http://.../firefox/trunk/0.9.1
+    http://.../firefox/trunk/0.9.2
+
+"getRelease" returns the release for the given version.
+
+    >>> release = firefox.getRelease(version="0.9.1")
+    >>> print release.self_link
+    http://.../firefox/trunk/0.9.1
+
+The development focus series can be accessed through the
+development_focus attribute.
+
+    >>> print firefox.development_focus.self_link
+    http://.../firefox/trunk
+
+Attributes can be edited, but not by the anonymous user.
+
+    >>> mark = lp_anon.people['mark']
+    >>> firefox.driver = mark
+    >>> firefox.lp_save()
+    Traceback (most recent call last):
+      ...
+    HTTPError: HTTP Error 401: Unauthorized...
+
+A project administrator can modify attributes on the project.
+
+    >>> mark = lp_mark.people['mark']
+    >>> firefox = lp_mark.projects['firefox']
+    >>> firefox.driver = mark
+    >>> firefox.homepage_url = 'http://sf.net/firefox'
+    >>> firefox.lp_save()
+
+    >>> print firefox.driver.self_link
+    http://.../~mark
+    >>> print firefox.homepage_url
+    http://sf.net/firefox
+
+Changing the owner of a project can change other attributes as well.
+
+    >>> # Create a product with a series and release.
+    >>> login('test@canonical.com')
+    >>> test_project_owner = factory.makePerson(name='test-project-owner')
+    >>> test_project = factory.makeProduct(
+    ...     name='test-project', owner=test_project_owner)
+    >>> test_series = factory.makeProductSeries(
+    ...     product=test_project, name='test-series',
+    ...     owner=test_project_owner)
+    >>> test_milestone = factory.makeMilestone(
+    ...     product=test_project, name='test-milestone',
+    ...     productseries=test_series)
+    >>> test_project_release = factory.makeProductRelease(
+    ...     product=test_project, milestone=test_milestone)
+    >>> logout()
+
+    >>> nopriv = lp_mark.people['no-priv']
+    >>> test_project = lp_mark.projects['test-project']
+    >>> test_project.owner = nopriv
+    >>> test_project.lp_save()
+    >>> print test_project.owner.self_link
+    http://.../~name12
+    >>> test_series = test_project.getSeries(name="test-series")
+    >>> print test_series.owner.self_link
+    http://.../~name12
+
+    >>> release = test_project.getMilestone(name='test-milestone')
+    >>> print release.owner.self_link
+    http://.../~name12
+
+Read-only attributes cannot be changed.
+
+    >>> firefox.registrant = nopriv
+    >>> firefox.lp_save()
+    Traceback (most recent call last):
+      ...
+    HTTPError: HTTP Error 400: Bad Request
+    ...
+    registrant_link: You tried to modify a read-only attribute...
+
+"get_timeline" returns a list of dictionaries, corresponding to each
+milestone and release.
+
+    >>> print pretty(firefox.get_timeline())
+    [{u'is_development_focus': False,
+      u'landmarks': [{u'code_name': u'First Stable Release',
+                      u'date': u'2004-06-28',
+                      u'name': u'1.0.0',
+                      u'type': u'release',
+                      u'uri': u'/firefox/1.0/1.0.0'}],
+      u'name': u'1.0',
+      u'status': u'Active Development',
+      u'uri': u'/firefox/1.0'},
+     {u'is_development_focus': True,
+      u'landmarks': [{u'code_name': None,
+                      u'date': u'2056-10-16',
+                      u'name': u'1.0',
+                      u'type': u'milestone',
+                      u'uri': u'/firefox/+milestone/1.0'},
+                     {u'code_name': u'One (secure) Tree Hill',
+                      u'date': u'2004-10-15',
+                      u'name': u'0.9.2',
+                      u'type': u'release',
+                      u'uri': u'/firefox/trunk/0.9.2'},
+                     {u'code_name': u'One Tree Hill (v2)',
+                      u'date': u'2004-10-15',
+                      u'name': u'0.9.1',
+                      u'type': u'release',
+                      u'uri': u'/firefox/trunk/0.9.1'},
+                     {u'code_name': u'One Tree Hill',
+                      u'date': u'2004-10-15',
+                      u'name': u'0.9',
+                      u'type': u'release',
+                      u'uri': u'/firefox/trunk/0.9'}],
+      u'name': u'trunk',
+      u'status': u'Active Development',
+      u'uri': u'/firefox/trunk'}]

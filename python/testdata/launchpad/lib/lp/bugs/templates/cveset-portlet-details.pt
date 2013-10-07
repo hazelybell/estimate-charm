@@ -1,0 +1,12 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  class="portlet" id="portlet-details">
+  <div>
+    Launchpad includes full support for
+    <a href="http://cve.mitre.org/">the CVE framework</a>.
+    We update the Launchpad CVE database daily to ensure it includes details of
+    all known vulnerabilities.
+  </div>
+</div>

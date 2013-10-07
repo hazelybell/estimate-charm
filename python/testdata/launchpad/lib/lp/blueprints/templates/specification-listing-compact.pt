@@ -1,0 +1,12 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<tr>
+  <td><a tal:attributes="href context/fmt:url;
+                         class context/image:sprite_css"
+         tal:content="context/title">Spec Title Here</a></td>
+</tr>
+</tal:root>

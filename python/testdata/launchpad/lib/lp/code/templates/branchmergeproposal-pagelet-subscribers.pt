@@ -1,0 +1,34 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  class="portlet" id="portlet-subscribers">
+
+  <h2 class="unnecessary">Subscribers</h2>
+
+    <p>
+      <tal:people tal:condition="view/has_subscribers">
+        People
+      </tal:people>
+      <tal:no-one tal:condition="not: view/has_subscribers">
+        No one
+      </tal:no-one>
+      subscribed via source and target branches
+    </p>
+
+    <div id="full-subscribers" tal:condition="view/full_subscribers">
+      <img src="/@@/mail"/> to all changes:
+      <ul tal:repeat="subscriber view/full_subscribers">
+        <li tal:content="structure subscriber/fmt:link"/>
+      </ul>
+    </div>
+
+    <div id="status-subscribers" tal:condition="view/status_subscribers">
+      <img src="/@@/mail"/> to status/vote changes:
+      <ul tal:repeat="subscriber view/status_subscribers" >
+        <li tal:content="structure subscriber/fmt:link"/>
+      </ul>
+    </div>
+</div>
+
+

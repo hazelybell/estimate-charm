@@ -1,0 +1,75 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+  <body>
+
+    <div metal:fill-slot="main">
+      <div class="top-portlet">
+        <p>
+          This page is a quick way for you to link the
+          <tal:series replace="context/title" /> to a package in
+          the <strong>current development series of Ubuntu</strong>. We will
+          use this information to improve the flow of bug fixes and
+          translations from Ubuntu to the
+          <span tal:replace="context/product/displayname">Firefox</span> team.
+        </p>
+        <p>
+          Verify that the version packaged in the Ubuntu series is based on
+          the <tal:series replace="context/title" />. Don&rsquo;t link "HEAD",
+          "MAIN", "MASTER", or "TRUNK" to an Ubuntu package unless you are
+          certain that the package is based on the trunk of development.
+        </p>
+
+        <div metal:use-macro="context/@@launchpad_form/form" />
+      </div>
+
+      <div class="portlet"
+        tal:condition="view/ubuntu_history">
+        <h2>
+          History of Ubuntu packages for
+          <tal:series replace="context/title" />
+        </h2>
+
+        <table class="listing">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Ubuntu Series</th>
+              <th>Package</th>
+              <th>By</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr tal:repeat="packaging view/ubuntu_history">
+              <td>
+                <span
+                  tal:attributes="title packaging/datecreated/fmt:datetime"
+                  tal:content="packaging/datecreated/fmt:approximatedate">
+                  13-05-2004
+                </span>
+              </td>
+              <td>
+                <a tal:replace="structure packaging/distroseries/fmt:link" />
+              </td>
+              <td>
+                <a
+                  tal:attributes="href string:${packaging/distroseries/fmt:url}/+source/${packaging/sourcepackagename/name}"
+                  tal:content="packaging/sourcepackagename/name" />
+              </td>
+              <td>
+                <a
+                  tal:condition="packaging/owner"
+                  tal:replace="structure packaging/owner/fmt:link" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>

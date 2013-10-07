@@ -1,0 +1,27 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  metal:use-macro="view/macro:page/main_only"
+>
+
+<body>
+
+<div metal:fill-slot="main">
+
+  <div metal:use-macro="context/@@launchpad_form/form">
+
+    <h1 metal:fill-slot="heading" tal:content="structure view/label">
+        Change question status
+    </h1>
+
+    <p metal:fill-slot="extra_info" class="documentDescription">
+      You can change a question's status while making a comment.
+      If a mistake was made, e.g. a question was wrongly
+      rejected, you can use this page to correct it.
+    </p>
+  </div>
+</div>
+
+</body>
+</html>

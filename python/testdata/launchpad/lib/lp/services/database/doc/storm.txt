@@ -1,0 +1,171 @@
+Note: A more readable version of this is in db-policy.txt. Most of this
+doctest will disappear soon when the auth replication set is collapsed
+back into the main replication set as part of login server separation.
+-- StuartBishop 20100222
+
+In addition to what Storm provides, we also have some Launchpad
+specific Storm tools to cope with our master and slave store arrangement.
+
+    >>> from lp.services.identity.interfaces.emailaddress import (
+    ...     EmailAddressStatus,
+    ...     IEmailAddressSet,
+    ...     )
+    >>> from lp.services.database.interfaces import (
+    ...     IMasterObject,
+    ...     IMasterStore,
+    ...     ISlaveStore,
+    ...     IStore,
+    ...     )
+    >>> from lp.services.identity.model.emailaddress import EmailAddress
+    >>> from zope.security.proxy import ProxyFactory
+    >>> from lp.registry.interfaces.person import IPersonSet
+    >>> from lp.registry.model.person import Person
+
+
+You need to use the correct master Store to make changes to
+a Launchpad database object. You can use adapters to
+retrieve the correct Store.
+
+    >>> main_master = IMasterStore(Person)
+
+You can detect if a store is writable by checking what interfaces it
+provides.
+
+    >>> IMasterStore.providedBy(main_master)
+    True
+    >>> ISlaveStore.providedBy(main_master)
+    False
+
+
+Changes to the slave Stores will lag behind the master Stores. If
+you only need to read an object but require it to be in sync with the
+master, you should use the default Store. Launchpad will give you the
+slave store if it is sure all your recent changes have been replicated.
+Otherwise, it gives you the master. See IStoreSelector for details.
+
+    >>> main_default = IStore(Person)
+    >>> main_slave = ISlaveStore(Person)
+    >>> main_default is main_master
+    True
+    >>> main_default is main_slave
+    False
+
+
+You can also adapt database object instances to Stores, although
+this is less generally useful.
+
+    >>> janitor = ISlaveStore(Person).find(Person, name='janitor').one()
+    >>> ISlaveStore(janitor) is ISlaveStore(Person)
+    True
+    >>> IMasterStore(janitor) is IMasterStore(Person)
+    True
+    >>> IMasterStore(janitor) is ISlaveStore(Person)
+    False
+
+
+If we need the master copy of an object, we can adapt it to IMasterObject.
+Good defensive programming is to use this adapter if you want to make
+changes to an object, just in case you have been passed an instance
+from a store other than the correct Master.
+
+    >>> main_slave = ISlaveStore(Person)
+    >>> t = transaction.begin()
+    >>> person = main_slave.find(Person, name='mark').one()
+    >>> person.displayname = 'Cannot change'
+    >>> transaction.commit()
+    Traceback (most recent call last):
+    ...
+    InternalError: ...
+
+    >>> transaction.abort()
+    >>> t = transaction.begin()
+    >>> person = main_slave.find(Person, name='mark').one()
+    >>> IMasterObject(person).displayname = 'Can change'
+    >>> transaction.commit()
+
+
+If the adapted object was security proxied, the master copy is
+similarly wrapped.
+
+    >>> from zope.security.proxy import removeSecurityProxy
+    >>> person = getUtility(IPersonSet).getByEmail('no-priv@canonical.com')
+    >>> removeSecurityProxy(person) is person
+    False
+    >>> person.displayname
+    u'No Privileges Person'
+    >>> person.name = 'foo'
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...
+
+    >>> person = IMasterObject(person)
+    >>> removeSecurityProxy(person) is person
+    False
+    >>> person.displayname
+    u'No Privileges Person'
+    >>> person.name = 'foo'
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...
+
+    >>> person = IMasterObject(removeSecurityProxy(person))
+    >>> removeSecurityProxy(person) is person
+    True
+    >>> person.displayname
+    u'No Privileges Person'
+    >>> person.name = 'foo'
+
+Our objects may compare equal even if they have come from different
+stores.
+
+    >>> master_email = IMasterStore(EmailAddress).find(
+    ...     EmailAddress, Person.name == 'janitor',
+    ...     EmailAddress.person==Person.id).one()
+    >>> slave_email = ISlaveStore(EmailAddress).find(
+    ...     EmailAddress, Person.name == 'janitor',
+    ...     EmailAddress.person==Person.id).one()
+    >>> master_email is slave_email
+    False
+    >>> master_email == slave_email
+    True
+    >>> master_email != slave_email
+    False
+
+Comparison works for security wrapped objects too.
+
+    >>> wrapped_email = getUtility(IEmailAddressSet).getByEmail(
+    ...     master_email.email)
+    >>> removeSecurityProxy(wrapped_email) is master_email
+    True
+    >>> wrapped_email is master_email
+    False
+    >>> wrapped_email == master_email
+    True
+    >>> wrapped_email != master_email
+    False
+
+Objects not yet flushed to the database also compare equal.
+
+    >>> unflushed = EmailAddress(
+    ...     email='notflushed@example.com', status=EmailAddressStatus.NEW,
+    ...     personID=1)
+    >>> unflushed == unflushed
+    True
+    >>> unflushed != unflushed
+    False
+    >>> wrapped_unflushed = ProxyFactory(unflushed)
+    >>> wrapped_unflushed is unflushed
+    False
+    >>> wrapped_unflushed == unflushed
+    True
+    >>> wrapped_unflushed != unflushed
+    False
+
+Objects differing by class never compare equal.
+
+    >>> email_one = IMasterStore(EmailAddress).get(EmailAddress, 1)
+    >>> person_one = IMasterStore(Person).get(Person, 1)
+    >>> email_one == person_one
+    False
+    >>> email_one != person_one
+    True

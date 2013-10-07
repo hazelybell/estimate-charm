@@ -1,0 +1,47 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad">
+
+<body>
+
+<metal:side fill-slot="side">
+
+  <div tal:define="menu context/menu:branches"
+       tal:condition="view/show_action_menu"
+       class="first portlet">
+  </div>
+
+  <tal:summary replace="structure context/@@+codesummary"/>
+
+</metal:side>
+
+<div metal:fill-slot="main"
+     tal:define="branches view/branches">
+
+  <p id="junk-branch-directions" tal:condition="view/show_junk_directions">
+    You can push (upload) personal branches
+    (those not related to a project) with the following command:
+    <br/>
+    <tt class="command">bzr push lp:~<tal:name
+      replace="view/user/name"/>/+junk/<em>BRANCHNAME</em></tt>
+  </p>
+
+  <div id="no-branch-message" tal:condition="view/is_branch_count_zero">
+    <p tal:content="view/no_branch_message">
+      There are no branches related to Eric the Viking today.
+    </p>
+  </div>
+
+  <tal:has-branches condition="not: view/is_branch_count_zero">
+    <tal:branchlisting
+        content="structure branches/@@+branch-listing" />
+  </tal:has-branches>
+
+  <tal:teambranches replace="structure context/@@+portlet-teambranches" />
+</div>
+</body>
+</html>

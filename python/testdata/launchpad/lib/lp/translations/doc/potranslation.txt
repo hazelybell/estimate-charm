@@ -1,0 +1,44 @@
+POTranslation
+=============
+
+This is the class that holds the text of translations in the database.
+
+    >>> from lp.translations.model.potranslation import POTranslation
+
+Creating one is easy.
+
+    >>> created = POTranslation(translation="This is a launchpad test")
+
+To get hold of a PO translation, use POTranslation.byTranslation.
+
+    >>> got = POTranslation.byTranslation("This is a launchpad test")
+    >>> got == created
+    True
+    >>> got.translation
+    u'This is a launchpad test'
+
+However, if the translation doesn't already exist, you'll get an error.
+
+    >>> got = POTranslation.byTranslation("In Xanadu did Kubla Khan")
+    Traceback (most recent call last):
+    ...
+    SQLObjectNotFound: In Xanadu did Kubla Khan
+
+If you want to get hold of one, and have it automatically created if it
+doesn't already exist, use POTranslation.getOrCreateTranslation.
+
+    >>> got = POTranslation.getOrCreateTranslation("In Xanadu did Kubla Khan")
+    >>> got.translation
+    u'In Xanadu did Kubla Khan'
+
+If you want to pass non-ascii characters to either of these, it had better be
+either UTF-8 string or, better, a unicode object.
+
+    >>> got = POTranslation.getOrCreateTranslation('\xc3\x81')
+    >>> got = POTranslation.getOrCreateTranslation(u'\u00c2')
+
+    >>> got = POTranslation.getOrCreateTranslation('\xc0')
+    Traceback (most recent call last):
+    ...
+    UnicodeDecodeError: 'utf8' codec can't decode byte 0xc0 in position...
+

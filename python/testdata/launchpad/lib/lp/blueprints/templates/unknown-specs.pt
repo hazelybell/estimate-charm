@@ -1,0 +1,73 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+>
+<head>
+  <tal:head_epilogue metal:fill-slot="head_epilogue">
+    <meta name="robots" content="noindex,nofollow" />
+  </tal:head_epilogue>
+</head>
+
+<body>
+<div metal:fill-slot="main">
+  <div class="top-portlet">
+    <div id="specs-unknown">
+      <strong>
+        <tal:is-project condition="view/is_project">
+          <p>
+            Launchpad does not know how
+            <tal:project replace="view/context/displayname" /> tracks feature
+            planning or documentation.
+          </p>
+        </tal:is-project>
+
+        <tal:not-project
+          condition="not:view/is_project">
+          <tal:blueprints define="blueprints_usage view/context/blueprints_usage">
+          <p tal:condition="blueprints_usage/enumvalue:EXTERNAL">
+            <tal:project replace="view/context/displayname" /> does not use Launchpad
+            for planning or documentation.
+          </p>
+          <p tal:condition="blueprints_usage/enumvalue:NOT_APPLICABLE">
+            <tal:project replace="view/context/displayname" /> does not track
+            feature planning or documentation.
+          </p>
+          <p tal:condition="blueprints_usage/enumvalue:UNKNOWN">
+            Launchpad does not know how
+            <tal:project replace="view/context/displayname" /> tracks feature
+            planning or documentation.
+          </p>
+          </tal:blueprints>
+        </tal:not-project>
+      </strong>
+
+      <tal:has-wiki tal:condition="view/has_wiki">
+      <p id="wiki-fallback"
+        tal:define="wiki view/context/wikiurl"
+        tal:condition="wiki">
+        <tal:project replace="view/context/displayname" /> has a wiki, which
+        may be used for feature plannning and documentation.<br />
+        <a tal:attributes="href view/context/wikiurl">
+          <tal:project replace="view/context/displayname" /> wiki
+        </a>
+      </p>
+      </tal:has-wiki>
+    </div>
+
+    <p id="configure-support"
+      tal:condition="view/can_configure_blueprints">
+      Launchpad Blueprints allow your project to track feature planning and
+      documentation.<br />
+      <a class="info sprite"
+        href="https://help.launchpad.net/BlueprintDocumentation">
+        Read more about tracking feature planning with blueprints</a><br />
+      <a tal:replace="structure context/menu:overview/configure_blueprints/fmt:link" /><br />
+    </p>
+  </div>
+</div>
+</body>
+</html>

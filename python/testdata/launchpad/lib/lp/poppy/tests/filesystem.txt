@@ -1,0 +1,607 @@
+
+This is an implementation of IFileSystem which the FTP Server in Zope3
+uses to know what to do when people make FTP commands.
+
+    >>> from lp.poppy.filesystem import UploadFileSystem
+
+The UploadFileSystem class implements the interface IFileSystem.
+
+    >>> from zope.server.interfaces.ftp import IFileSystem
+    >>> IFileSystem.implementedBy(UploadFileSystem)
+    True
+
+First we need to setup our test environment.
+
+    >>> import os
+    >>> import shutil
+    >>> import tempfile
+    >>> rootpath = tempfile.mkdtemp()
+
+    >>> testfile = "testfile"
+    >>> full_testfile = os.path.join(rootpath, testfile)
+    >>> testfile_contents = "contents of the file"
+    >>> open(full_testfile, 'w').write(testfile_contents)
+
+    >>> testdir = "testdir"
+    >>> full_testdir = os.path.join(rootpath, testdir)
+    >>> os.mkdir(full_testdir)
+    >>> propaganda = """
+    ...    GNU is aimed initially at machines in the 68000/16000 class with
+    ... virtual memory, because they are the easiest machines to make it run
+    ... on.  The extra effort to make it run on smaller machines will be left
+    ... to someone who wants to use it on them.
+    ... """
+
+When you create an UploadFileSystem you pass it a directory location
+to use.
+
+    >>> ufs = UploadFileSystem(rootpath)
+
+An UploadFileSystem object provides the interface IFileSystem.
+
+    >>> from zope.interface.verify import verifyObject
+    >>> verifyObject(IFileSystem, ufs)
+    True
+
+mkdir
+=====
+
+"mkdir" should work as expected, directory will be created as
+requested by the clients:
+
+    >>> ufs.mkdir("anything")
+    >>> os.path.exists(os.path.join(rootpath, "anything"))
+    True
+
+    >>> os.rmdir(os.path.join(rootpath, "anything"))
+
+It recursively creates directories:
+
+    >>> ufs.mkdir("anything/something/whatever")
+
+    >>> wanted_path = os.path.join(rootpath, "anything/something/whatever")
+
+    >>> os.path.exists(wanted_path)
+    True
+
+    >>> oct(os.stat(wanted_path).st_mode)
+    '040775'
+
+    >>> shutil.rmtree(os.path.join(rootpath, "anything"))
+
+rmdir
+=====
+
+Check if it complains on removal request of an existent dir
+
+    >>> ufs.rmdir("does-not-exist")
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Not exists:] does-not-exist
+
+Check if it works as expected after the directory creation:
+
+    >>> ufs.mkdir("new-dir")
+    >>> ufs.rmdir("new-dir")
+
+    >>> os.path.exists(os.path.join(rootpath, "new-dir"))
+    False
+
+
+lsinfo
+======
+
+Return information for a unix-style ls listing for the path.
+
+See zope3's interfaces/ftp.py:IFileSystem for details of the
+dictionary's content.
+
+Setup a default dictionary used for generating the dictionaries we
+expect lsinfo to return.
+
+    >>> def clean_mtime(stat_info):
+    ...     """Return a datetime from an mtime, sans microseconds."""
+    ...     mtime = stat_info.st_mtime
+    ...     datestamp = datetime.datetime.fromtimestamp(mtime)
+    ...     datestamp.replace(microsecond=0)
+    ...     return datestamp
+
+    >>> import copy
+    >>> import datetime
+    >>> import stat
+    >>> def_exp = {"type": 'f', 
+    ...     "owner_name": "upload",
+    ...     "owner_readable": True,
+    ...     "owner_writable": True,
+    ...	    "owner_executable": False,
+    ...	    "group_name": "upload",
+    ...	    "group_readable": True,
+    ...     "group_writable": False,
+    ...	    "group_executable": False,
+    ...	    "other_readable": True,
+    ...     "other_writable": False,
+    ...	    "other_executable": False,
+    ...     "nlinks": 1}
+    ...
+
+    >>> os.chmod(full_testfile, stat.S_IRUSR | stat.S_IWUSR | \
+    ...                         stat.S_IRGRP | stat.S_IROTH)
+    >>> exp = copy.copy(def_exp)
+    >>> s = os.stat(full_testfile)
+    >>> exp["name"] = testfile
+    >>> exp["mtime"] = clean_mtime(s)
+    >>> exp["size"] = s[stat.ST_SIZE]
+    >>> info = ufs.lsinfo(testfile)
+    >>> info == exp
+    True
+
+ls
+==
+
+`ls` a sequence of item info objects (see ls_info) for the files in a
+directory.
+
+    >>> expected = [exp]
+    >>> for i in [ "foo", "bar" ]:
+    ...     filename = os.path.join(rootpath, i)
+    ...     x = open(filename, 'w')
+    ...     os.chmod(filename, stat.S_IRUSR | stat.S_IWUSR | \
+    ...                         stat.S_IRGRP | stat.S_IROTH)
+    ...     exp = copy.copy(def_exp)
+    ...	    s = os.stat(filename)
+    ...	    exp["name"] = i
+    ...	    exp["mtime"] = clean_mtime(s)
+    ...     exp["size"] = s[stat.ST_SIZE]
+    ...     expected.append(exp)
+    ...
+
+    >>> dir_exp = copy.copy(def_exp)
+    >>> s = os.stat(full_testdir)
+    >>> dir_exp["type"] = "d"
+    >>> dir_exp["name"] = testdir
+    >>> dir_exp["mtime"] = clean_mtime(s)
+    >>> dir_exp["size"] = s[stat.ST_SIZE]
+    >>> dir_exp["nlinks"] = s[stat.ST_NLINK]
+    >>> dir_exp["owner_executable"] = True
+    >>> dir_exp["other_executable"] = True
+    >>> dir_exp["group_executable"] = True
+    >>> expected.append(dir_exp)
+
+We need a helper function to turn the returned and expected data into reliably
+sorted orders for comparison.
+
+    >>> from operator import itemgetter
+    >>> def sorted_listings(ls_infos):
+    ...     # ls_infos will be a sequence of dictionaries.  They need to be
+    ...     # sorted for the sequences to compare equal, so do that on the
+    ...     # dictionary's 'name' key.  The equality test used here
+    ...     # doesn't care about the sort order of the dictionaries.
+    ...     return sorted(ls_infos, key=itemgetter('name'))
+
+    >>> expected.sort()
+    >>> returned = ufs.ls(".")
+    >>> returned.sort()
+    >>> sorted_listings(expected) == sorted_listings(returned)
+    True
+
+If `filter` is not None, include only those names for which `filter`
+returns a true value.
+
+    >>> def always_false_filter(name):
+    ...     return False
+    >>> def always_true_filter(name):
+    ...     return True
+    >>> def arbitrary_filter(name):
+    ...    if name == "foo" or name == "baz":
+    ...        return True
+    ...    else:
+    ...        return False
+    ...
+    >>> for i in expected:
+    ...     if i["name"] == "foo":
+    ...         filtered_expected = [i];
+    >>> returned = ufs.ls(".", always_true_filter)
+    >>> returned.sort()
+    >>> sorted_listings(expected) == sorted_listings(returned)
+    True
+    >>> returned = ufs.ls(".", always_false_filter)
+    >>> returned.sort()
+    >>> returned == []
+    True
+    >>> returned = ufs.ls(".", arbitrary_filter)
+    >>> returned.sort()
+    >>> sorted_listings(filtered_expected) == sorted_listings(returned)
+    True
+    >>> for i in [ "foo", "bar" ]:
+    ...     ufs.remove(i)
+    ...
+
+readfile
+========
+
+We are not implementing `readfile` as a precautionary measure, i.e. in
+case anyone bypasses the per-session separate directories they still
+aren't able to read any other files and therefore can't abuse the
+server for warez/child porn etc.
+
+Unlike `mkdir` and `rmdir` we will raise an exception so that the
+server returns an error to the client and the client does not receive
+bogus or empty data.
+
+    >>> ufs.readfile(testfile, None)
+    Traceback (most recent call last):
+    ...
+    Unauthorized
+
+The 'type' command returns 'f' for a file, 'd' for a directory and
+None if there is no file.
+ 
+    >>> ufs.type(testfile)
+    'f'
+    
+    >>> ufs.type(testdir)
+    'd'
+    
+    >>> ufs.type("does-not-exist") is None
+    True
+
+size
+====
+
+The 'size' command returns the size of the file.  If the file does not
+exist None is returned.
+
+    >>> ufs.size("does-not-exist") is None
+    True
+    
+    >>> ufs.size(testfile) == os.path.getsize(full_testfile)
+    True
+    
+    >>> ufs.size(testdir) == os.path.getsize(full_testdir)
+    True
+
+mtime
+=====
+
+The 'mtime' command returns the mtime of the file.  If the file does not
+exist None is returned.
+
+    >>> ufs.size("does-not-exist") is None
+    True
+    
+    >>> ufs.mtime(testfile) == os.path.getmtime(full_testfile)
+    True
+    
+    >>> ufs.mtime(testdir) == os.path.getmtime(full_testdir)
+    True
+
+remove
+======
+
+The 'remove' command removes a file.  An exception is raised if the
+file does not exist or is a directory.
+
+    >>> ufs.remove("does-not-exist")
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Not exists:] does-not-exist
+    
+    >>> ufs.remove(testfile)
+    >>> os.path.exists(full_testfile)
+    False
+    >>> open(full_testfile, 'w').write("contents of the file")
+    
+    >>> ufs.remove(testdir)
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Is a directory:] testdir
+
+rename
+======
+
+The 'rename' command renames a file.  An exception is raised if the
+old filename doesn't exist or if the old or new filename is a
+directory.
+
+    >>> new_testfile = "baz"
+    >>> new_full_testfile = os.path.join(rootpath, new_testfile)
+    
+    >>> ufs.rename("does-not-exist", new_testfile)
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Not exists:] does-not-exist
+
+    >>> new_testfile = "baz"
+    >>> new_full_testfile = os.path.join(rootpath, new_testfile)
+    >>> ufs.rename(testfile, new_testfile)
+    >>> os.path.exists(full_testfile)
+    False
+    >>> os.path.exists(new_full_testfile)
+    True
+    >>> open(new_full_testfile).read() == testfile_contents
+    True
+    >>> ufs.rename(new_testfile, testfile)
+    
+    >>> ufs.rename(testdir, new_testfile)
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Is a directory:] testdir
+    
+    >>> ufs.rename(testfile, testdir)
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Is a directory:] testdir
+
+names
+=====
+
+The `names` command returns a sequence of the names in the `path`.
+
+    >>> sorted(ufs.names("."))
+    ['testdir', 'testfile']
+
+`path` is normalized before used.
+
+    >>> sorted(ufs.names("some-directory/..")) 
+    ['testdir', 'testfile']
+
+'path' under the server root is not allowed:
+
+    >>> ufs.names("..")
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Path not allowed:] ..
+
+
+If the `filter` argument is provided, each name is only returned if
+the given `filter` function returns True for it.
+
+    >>> ufs.names(".", always_false_filter)
+    []
+
+    >>> sorted(ufs.names(".", always_true_filter))
+    ['testdir', 'testfile']
+
+    >>> for i in [ "foo", "bar", "baz", "bat" ]:
+    ...     x = open(os.path.join(rootpath, i), 'w')
+    >>> names = ufs.names(".", arbitrary_filter)
+    >>> names.sort()
+    >>> names == ['baz', 'foo']
+    True
+    >>> for i in [ "foo", "bar", "baz", "bat" ]:
+    ...     os.unlink(os.path.join(rootpath, i))
+
+writefile
+=========
+
+`writefile` writes data to a file.
+
+    >>> from StringIO import StringIO
+    >>> ufs.writefile("upload", StringIO(propaganda))
+    >>> open(os.path.join(rootpath, "upload")).read() == propaganda
+    True
+    >>> ufs.remove("upload")
+
+If neither `start` nor `end` are specified, then the file contents
+are overwritten.
+
+    >>> ufs.writefile(testfile, StringIO("MOO"))
+    >>> open(full_testfile).read() == "MOO"
+    True
+    >>> ufs.writefile(testfile, StringIO(testfile_contents))
+
+If `start` or `end` are specified, they must be non-negative.
+
+    >>> ufs.writefile("upload", StringIO(propaganda), -37)
+    Traceback (most recent call last):
+    ...
+    ValueError: ('Negative start argument:', -37)
+
+    >>> ufs.writefile("upload", StringIO(propaganda), 1, -43)
+    Traceback (most recent call last):
+    ...
+    ValueError: ('Negative end argument:', -43)
+
+If `start` or `end` is not None, then only part of the file is
+written. The remainder of the file is unchanged.
+
+    >>> ufs.writefile(testfile, StringIO("MOO"), 9, 12)
+    >>> open(full_testfile).read() == "contents MOOthe file"
+    True
+    >>> ufs.writefile(testfile, StringIO(testfile_contents))
+
+If `end` is None, then the file is truncated after the data are
+written.  
+
+    >>> ufs.writefile(testfile, StringIO("MOO"), 9)
+    >>> open(full_testfile).read() == "contents MOO"
+    True
+    >>> ufs.writefile(testfile, StringIO(testfile_contents))
+
+If `start` is specified and the file doesn't exist or is shorter
+than start, the file will contain undefined data before start.
+
+    >>> ufs.writefile("didnt-exist", StringIO("MOO"), 9)
+    >>> open(os.path.join(rootpath, "didnt-exist")).read() == "\x00\x00\x00\x00\x00\x00\x00\x00\x00MOO"
+    True
+    >>> ufs.remove("didnt-exist")
+
+If `end` is not None and there isn't enough data in `instream` to fill
+out the file, then the missing data is undefined.
+
+    >>> ufs.writefile(testfile, StringIO("MOO"), 9, 15)
+    >>> open(full_testfile).read() == "contents MOOthe file"
+    True
+    >>> ufs.writefile(testfile, StringIO(testfile_contents))
+
+If `end` is less than or the same as `start no data is writen to the file.
+
+    >>> ufs.writefile(testfile, StringIO("MOO"), 9, 4)
+    >>> open(full_testfile).read() == "contents of the file"
+    True
+
+    >>> ufs.writefile(testfile, StringIO("MOO"), 9, 9)
+    >>> open(full_testfile).read() == "contents of the file"
+    True
+
+If `append` is true the file is appended to rather than being
+overwritten.
+
+    >>> ufs.writefile(testfile, StringIO("MOO"), append=True)
+    >>> open(full_testfile).read() == "contents of the fileMOO"
+    True
+    >>> ufs.writefile(testfile, StringIO(testfile_contents))
+
+Additionally, if `append` is true, `start` and `end` are ignored.
+
+    >>> ufs.writefile(testfile, StringIO("MOO"), 10, 13, append=True)
+    >>> open(full_testfile).read() == "contents of the fileMOO"
+    True
+    >>> ufs.writefile(testfile, StringIO(testfile_contents))
+
+'writefile' is able to create inexistent directories in a requested
+path:
+
+    >>> os.path.exists(os.path.join(rootpath, "foo"))
+    False
+    >>> ufs.writefile("foo/bar", StringIO("fake")) is None
+    True
+    >>> os.path.exists(os.path.join(rootpath, "foo/bar"))
+    True
+    >>> open(os.path.join(rootpath, "foo/bar")).read()
+    'fake'
+
+
+writable
+========
+
+`writable` returns a boolean indicating whether `path` is writable or
+not.
+
+    >>> ufs.writable(testfile)
+    True
+
+`writable` returns True if `path` is a non-existent file.
+
+    >>> ufs.writable("does-not-exist")
+    True
+
+`writable` returns False if `path` is a directory as we don't allow
+the creation of sub-directories.
+
+    >>> ufs.writable(testdir)
+    False
+
+path checking
+=============
+
+`path` arguments must be normalized.
+
+    >>> ufs.type(os.path.join("non-existent-dir", "..", testfile))
+    'f'
+
+
+Cleanup the server root:
+
+    >>> for leaf in os.listdir(rootpath):
+    ...     full_path = os.path.join(rootpath, leaf)
+    ...     if os.path.isdir(full_path):
+    ...          shutil.rmtree(full_path)
+    ...     else:
+    ...          os.remove(full_path)
+
+
+Dealing with inexistent path:
+
+    >>> ufs.type("foo/bar") is None
+    True
+    >>> ufs.mtime("foo/bar") is None
+    True
+    >>> ufs.size("foo/bar") is None
+    True
+    >>> ufs.writable("foo/bar")
+    True
+    >>> ufs.names("foo/bar")
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Not exists:] foo/bar
+    >>> ufs.ls("foo/bar")
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Not exists:] foo/bar
+    >>> ufs.lsinfo("foo/bar")
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Not exists:] foo/bar
+    >>> ufs.remove("foo/bar")
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Not exists:] foo/bar
+    >>> ufs.rename("foo/bar", "baz")
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Not exists:] foo/bar
+    >>> ufs.rename("baz", "foo/bar")
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Not exists:] baz
+
+
+Dealing with paths outside the server root directory:
+
+    >>> ufs.type("..")
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Path not allowed:] ..
+    >>> ufs.mtime("..")
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Path not allowed:] ..
+    >>>	ufs.size("..")
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Path not allowed:] ..
+    >>> ufs.writable("..")
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Path not allowed:] ..
+    >>> ufs.names("..")
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Path not allowed:] ..
+    >>> ufs.ls("..")
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Path not allowed:] ..
+    >>> ufs.lsinfo("..")
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Path not allowed:] ..
+    >>> ufs.remove("..")
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Path not allowed:] ..
+    >>> ufs.rename("..", "baz")
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Path not allowed:] ..
+    >>> ufs.rename("baz", "..")
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Path not allowed:] ..
+    >>> ufs.mkdir("..")
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Path not allowed:] ..
+    >>> ufs.rmdir("..")
+    Traceback (most recent call last):
+    ...
+    OSError: [Errno Path not allowed:] ..
+
+
+------------------------------------------------------------------------
+
+Finally, cleanup after ourselves.
+
+    >>> shutil.rmtree(rootpath)
+

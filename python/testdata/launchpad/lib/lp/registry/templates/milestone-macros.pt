@@ -1,0 +1,65 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  omit-tag="">
+
+
+
+  <tal:milestone-bugtasks metal:define-macro="milestone_bugtasks">
+    <table class="listing sortable" id="milestone_bugtasks">
+      <thead>
+        <tr>
+          <th colspan="4">Bug report</th>
+          <th style="width: 14em"
+            tal:condition="view/is_project_milestone">
+            Project
+          </th>
+          <th style="width: 9em;">Importance</th>
+          <th style="width: 14em;">Assignee</th>
+          <th style="width: 10em;">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr tal:repeat="bugtask bugtasks">
+          <td class="icon left">
+            <span class="sortkey" tal:content="bugtask/bug/id" />
+            <span tal:content="structure bugtask/image:icon" />
+          </td>
+          <td tal:content="string:#${bugtask/bug/id}" class="amount">12345</td>
+          <td>
+            <a tal:attributes="href bugtask/bug/fmt:url"
+               tal:content="bugtask/bug/title">
+               Bug Title Here
+            </a>
+          </td>
+          <td style="padding-right: 5px; text-align:right">
+            <img src="/@@/info" tal:replace="structure bugtask/image:badges" />
+          </td>
+          <td tal:condition="view/is_project_milestone">
+            <span class="sortkey" tal:content="bugtask/target/displayname" />
+            <a tal:attributes="href bugtask/milestone/fmt:url"
+               tal:content="bugtask/target/displayname" />
+          </td>
+          <td>
+            <span class="sortkey" tal:content="bugtask/importance/sortkey" />
+            <span tal:content="bugtask/importance/title"
+                  tal:attributes="
+                  class string:importance${bugtask/importance/name}">High</span>
+          </td>
+          <td>
+            <a tal:condition="bugtask/assignee"
+               tal:replace="structure bugtask/assignee/fmt:link" />&nbsp;
+          </td>
+          <td
+            tal:attributes="title bugtask/last_significant_change_date/fmt:displaydate">
+            <span class="sortkey" tal:content="bugtask/status/sortkey" />
+            <span
+                tal:content="bugtask/status/title"
+                tal:attributes="
+                class string:status${bugtask/status/name}">High</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </tal:milestone-bugtasks>
+</tal:root>

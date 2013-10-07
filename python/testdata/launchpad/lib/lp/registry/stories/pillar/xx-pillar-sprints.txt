@@ -1,0 +1,25 @@
+= Sprints relevant for pillars =
+
+For Products, ProjectGroups and Distributions, we have a +sprints page which lists
+all events relevant to that pillar.
+
+    >>> import re
+    >>> def print_sprints(contents):
+    ...     maincontent = find_tag_by_id(contents, 'maincontent')
+    ...     for link in maincontent.findAll('a'):
+    ...         if re.search('/sprints/[a-z0-9]', link['href']) is not None:
+    ...             print link.renderContents()
+
+    >>> anon_browser.open('http://launchpad.dev/firefox/+sprints')
+    >>> print_sprints(anon_browser.contents)
+    Future Mega Meeting
+    Ubuntu Below Zero
+
+    >>> anon_browser.open('http://launchpad.dev/mozilla/+sprints')
+    >>> print_sprints(anon_browser.contents)
+    Future Mega Meeting
+    Ubuntu Below Zero
+
+    >>> anon_browser.open('http://launchpad.dev/ubuntu/+sprints')
+    >>> print_sprints(anon_browser.contents)
+    Future Mega Meeting

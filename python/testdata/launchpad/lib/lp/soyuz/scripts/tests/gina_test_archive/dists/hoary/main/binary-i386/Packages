@@ -1,0 +1,622 @@
+Package: python-pam
+Priority: optional
+Installed-Size: 48
+Maintainer: Dima Barsky <dima@debian.org>
+Architecture: all
+Version: 0.4.2-10.1ubuntu3
+Depends: python (<< 2.5), python2.4-pam, python (>= 2.4)
+Filename: pool/main/p/python-pam/python-pam_0.4.2-10.1ubuntu3_all.deb
+Size: 4078
+MD5sum: 8f5010857148244bb2198afa3ba8fce3
+Description: A Python interface to the PAM library
+ This is a dummy package which depends on the python-pam module for the
+ default version of Python.
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+Task: ubuntu-desktop
+
+Package: python2.4-pam
+Priority: optional
+Section: python
+Installed-Size: 84
+Maintainer: Dima Barsky <dima@debian.org>
+Architecture: i386
+Source: python-pam
+Version: 0.4.2-10.1ubuntu3
+Depends: python2.4, libc6 (>= 2.3.2.ds1-4), libpam0g (>= 0.76)
+Filename: pool/main/p/python-pam/python2.4-pam_0.4.2-10.1ubuntu3_i386.deb
+Size: 11780
+MD5sum: 875924f4eb6c7cf74905722baab0e8f5
+Description: A Python interface to the PAM library
+ This module makes the PAM (Pluggable Authentication Modules) functions
+ available in Python. With this module you can write Python applications
+ that implement authentication services using PAM.
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+Task: ubuntu-desktop
+
+Package: python-sqlite
+Priority: optional
+Section: python
+Installed-Size: 32
+Maintainer: Joel Rosdahl <joel@debian.org>
+Architecture: all
+Version: 1.0.1-1ubuntu1
+Depends: python (<< 2.5), python (>= 2.4), python2.4-sqlite
+Filename: pool/main/p/python-sqlite/python-sqlite_1.0.1-1ubuntu1_all.deb
+Size: 2680
+MD5sum: 3970b3701483e421f5a74b1795cf6ef9
+Description: Python interface to SQLite
+ pysqlite is an interface to the SQLite database server for
+ Python. It aims to be fully compliant with Python database
+ API version 2.0 while also exploiting the unique features of
+ SQLite.
+ .
+ This package is an empty dummy package that always depends on
+ a package built for Debian's default Python version.
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+Task: ubuntu-desktop
+
+Package: python2.4-sqlite
+Priority: optional
+Section: python
+Installed-Size: 124
+Maintainer: Joel Rosdahl <joel@debian.org>
+Architecture: i386
+Source: python-sqlite
+Version: 1.0.1-1ubuntu1
+Depends: libc6 (>= 2.3.2.ds1-4), libsqlite0 (>= 2.8.15), python2.4
+Recommends: python-egenix-mxdatetime
+Filename: pool/main/p/python-sqlite/python2.4-sqlite_1.0.1-1ubuntu1_i386.deb
+Size: 22660
+MD5sum: 20210cdbdfaf7f4ad3357247f9e2c021
+Description: Python interface to SQLite
+ pysqlite is an interface to the SQLite database server for
+ Python. It aims to be fully compliant with Python database
+ API version 2.0 while also exploiting the unique features of
+ SQLite.
+ .
+ This package is built for Python 2.4.
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+Task: ubuntu-desktop
+
+Package: ubuntu-base
+Priority: optional
+Section: base
+Installed-Size: 32
+Maintainer: Matt Zimmerman <mdz@ubuntu.com>
+Architecture: i386
+Source: ubuntu-meta
+Version: 0.43
+Depends: adduser, alsa-base, apt, apt-utils, aptitude, at, base-config, base-files , base-passwd, bash, bind9-host, bsdutils, bzip2, console-tools, coreutils, cpio, cron, debconf, debianutils, dhcp3-client, diff, discover1, dmidecode, dmsetup, dnsutils, dosfstools, dpkg, e2fsprogs, ed, eject, ethtool, evms, evms-ncurses, fdutils, file, findutils, ftp, gettext-base, gnupg, grep, grepmap, gzip, hdparm, hostname, hotplug, ifrename, ifupdown, info, initrd-tools, initscripts, iproute, iptables, iputils-arping, iputils-ping, iputils-tracepath, jfsutils, less, libc6-i686, libfribidi0, libreiserfs0.3-0, locales, login, logrotate, lsb-release, lshw, lsof, ltrace, lvm10, lvm2, mailx, makedev, man-db, manpages, mawk, mdadm, memtest86+, mii-diag, mime-support, module-init-tools, mount, mtr-tiny, mutt, nano, ncurses-base, ncurses-bin, net-tools, netbase, netcat, netkit-inetd, ntp, ntpdate, openssh-client, parted, passwd, pciutils, perl-base, popularity-contest, postfix, postfix-tls, ppp, pppconfig, pppoeconf, procps, psmisc, python, reiser4progs, reiserfsprogs, reportbug, rsync, sed, strace, sudo, sysklogd, sysvinit, tar, tcpdump, telnet, time, ubuntu-keyring, udev, usbutils, util-linux, vim, w3m, wget, wireless-tools, xfsprogs
+Filename: pool/main/u/ubuntu-meta/ubuntu-base_0.43_i386.deb
+Size: 5472
+MD5sum: 7cbae38a9cdc0659b066e9792233aadc
+Description: The Ubuntu base system
+ This package depends on all of the packages in the Ubuntu base system.
+ .
+ It is safe to remove this package if some of the base system packages are not
+ desired.  However, it is recommended that you keep it installed, because it is
+ used to carry out certain upgrade transitions (such as adding new packages to
+ the system).
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+
+Package: ubuntu-desktop
+Priority: optional
+Section: base
+Installed-Size: 32
+Maintainer: Matt Zimmerman <mdz@ubuntu.com>
+Architecture: i386
+Source: ubuntu-meta
+Version: 0.43
+Depends: acpi, acpi-support, acpid, anacron, apmd, bc, bicyclerepair, bogofilter, bug-buddy, cdparanoia, cdrecord, contact-lookup-applet, cupsys, cupsys-bsd, cupsys-client, cupsys-driver-gimpprint, dbus-1-utils, dc, desktop-file-utils, diveintopython, doc-base, doc-debian, dvd+rw-tools, eog, esound, evolution, evolution-exchange, evolution-webcal, fetchmail, file-roller, foomatic-db, foomatic-db-engine, foomatic-db-gimp-print, foomatic-db-hpijs, foomatic-filters, foomatic-filters-ppds, fortune-mod, gaim, gamin, gcalctool, gconf-editor, gdm, gedit, gimp, gimp-python, gnome-about, gnome-app-install, gnome-applets, gnome-btdownload, gnome-control-center, gnome-cups-manager, gnome-games, gnome-gv, gnome-icon-theme, gnome-media, gnome-menus, gnome-netstatus-applet, gnome-nettool, gnome-panel, gnome-pilot-conduits, gnome-session, gnome-spell, gnome-system-monitor, gnome-system-tools, gnome-terminal, gnome-themes, gnome-utils, gnome-volume-manager, gnome2-user-guide, gnomemeeting, gs-esp, gstreamer0.8-alsa, gstreamer0.8-audiofile, gstreamer0.8-cdparanoia, gstreamer0.8-dv, gstreamer0.8-dvd, gstreamer0.8-esd, gstreamer0.8-flac, gstreamer0.8-gnomevfs, gstreamer0.8-gsm, gstreamer0.8-hermes, gstreamer0.8-jpeg, gstreamer0.8-misc, gstreamer0.8-oss, gstreamer0.8-plugin-apps, gstreamer0.8-sdl, gstreamer0.8-speex, gstreamer0.8-theora, gstreamer0.8-vorbis, gstreamer0.8-x, gthumb, gtk2-engines-clearlooks, gtk2-engines-industrial, gtk2-engines-mist, gtk2-engines-smooth, gucharmap, hal, hal-device-manager, hwdb-client, irssi-text, lftp, libesd0, libglib2.0-data, libglut3, libgnome2-perl, libgstreamer-gconf0.8-0, libgstreamer-plugins0.8-0, libgstreamer0.8-0, libsasl2-modules, lsb, metacity, mkisofs, mozilla-firefox, mozilla-firefox-gnome-support, nautilus, nautilus-cd-burner, nautilus-sendto, openoffice.org, openoffice.org-gtk-gnome, pnm2ppa, powermanagement-interface, powernowd, procmail, python-adns, python-apt, python-cddb, python-clientcookie, python-crypto, python-egenix-mxproxy, python-egenix-mxstack, python-egenix-mxtexttools, python-egenix-mxtools, python-epydoc, python-eunuchs, python-examples, python-gadfly, python-gd, python-gdbm, python-gdchart, python-genetic, python-geoip, python-glade2, python-gnome2, python-gnupginterface, python-gst, python-gtk2, python-htmlgen, python-htmltmpl, python-id3lib, python-imaging, python-imaging-sane, python-jabber, python-kjbuckets, python-ldap, python-musicbrainz, python-mysqldb, python-netcdf, python-newt, python-numarray, python-numeric, python-opengl, python-osd, python-pam, python-parted, python-pexpect, python-pgsql, python-pisock, python-pqueue, python-pyao, python-pylibacl, python-pyopenssl, python-pyorbit, python-pyvorbis, python-pyxattr, python-reportlab, python-simpletal, python-soappy, python-sqlite, python-stats, python-syck, python-twisted, python-unit, python-xdg, python-xmpp, python2.4-dbus, python2.4-dictclient, python2.4-librdf, python2.4-libxml2, python2.4-libxslt1, python2.4-pycurl, python2.4-samba, readahead, rhythmbox, rss-glx, screen, scrollkeeper, slocate, smbclient, sound-juicer, ssh-askpass-gnome, synaptic, totem, tsclient, ttf-arabeyes, ttf-arphic-bkai00mp, ttf-arphic-bsmi00lp, ttf-arphic-gbsn00lp, ttf-arphic-gkai00mp, ttf-baekmuk, ttf-bitstream-vera, ttf-freefont, ttf-indic-fonts, ttf-kochi-gothic, ttf-kochi-mincho, ttf-malayalam-fonts, ubuntu-quickguide, ubuntu-sounds, unzip, update-notifier, vino, wvdial, x-ttcidfont-conf, x-window-system-core, xchat, xlibmesa-gl, xorg-driver-synaptics, xpdf, xsane, xscreensaver, xscreensaver-gl, xterm, xvncviewer, yelp, zenity, zip
+Filename: pool/main/u/ubuntu-meta/ubuntu-desktop_0.43_i386.deb
+Size: 6250
+MD5sum: 99a024a69cb10b7d2cab41ac739906a6
+Description: The Ubuntu desktop system
+ This package depends on all of the packages in the Ubuntu desktop system
+ .
+ It is safe to remove this package if some of the desktop system
+ packages are not desired.  However, it is recommended that you keep
+ it installed, because it is used to carry out certain upgrade
+ transitions (such as adding new packages to the system).
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+Task: ubuntu-desktop
+
+Package: ubuntu-live
+Priority: optional
+Section: base
+Installed-Size: 32
+Maintainer: Matt Zimmerman <mdz@ubuntu.com>
+Architecture: i386
+Source: ubuntu-meta
+Version: 0.43
+Depends: language-pack-ar, language-pack-bn, language-pack-ca, language-pack-de, language-pack-en, language-pack-es, language-pack-fr, language-pack-hi, language-pack-ja, language-pack-pt, language-pack-ru, language-pack-zh, language-support-en, ntfsprogs, pcmcia-cs
+Filename: pool/main/u/ubuntu-meta/ubuntu-live_0.43_i386.deb
+Size: 4888
+MD5sum: 7c6a97f4407e89ee81205bbec4156006
+Description: Additional packages for the Ubuntu live CD
+ This package depends on a set of packages which will be included on
+ the Ubuntu live CD, in addition to the standard desktop packages.
+ .
+ It is not generally useful to install this package in other
+ environments.
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+
+Package: libdb1-compat
+Priority: required
+Section: oldlibs
+Installed-Size: 112
+Maintainer: Colin Watson <cjwatson@debian.org>
+Architecture: i386
+Source: db1-compat
+Version: 2.1.3-7
+Replaces: libc6 (<< 2.2.5-13), libc6.1 (<< 2.2.5-13), libc0.3 (<< 2.2.5-13)
+Depends: libc6 (>= 2.3.2.ds1-4)
+Filename: pool/main/d/db1-compat/libdb1-compat_2.1.3-7_i386.deb
+Size: 32974
+MD5sum: 1bd686bed25271d3bacffcf515b2d542
+Description: The Berkeley database routines [glibc 2.0/2.1 compatibility]
+ libdb is a library for manipulating database files, developed at Berkeley.
+ .
+ It supports three kinds of file formats:
+  * btree. A representation of a sorted, balanced tree structure.
+  * hashed. An extensible, dynamic hashing scheme.
+  * UNIX file oriented. A byte stream file with fixed or variable length
+    records.
+ .
+ This library exists for compatibility with applications built against
+ glibc 2.0 or 2.1. There is intentionally no corresponding development
+ package. Do not link new applications against this library!
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+
+Package: libcap-bin
+Priority: optional
+Section: devel
+Installed-Size: 84
+Maintainer: Michael Vogt <mvo@debian.org>
+Architecture: i386
+Source: libcap
+Version: 1:1.10-14
+Replaces: libcap-progs
+Depends: libcap1
+Filename: pool/main/libc/libcap/libcap-bin_1.10-14_i386.deb
+Size: 16052
+MD5sum: 4c27ddb721e343c2a959f4f8272d844e
+Description: basic utility programs for using capabilities
+ This packages contains the programs sucap, execap, getpcaps, setpcaps
+ for manipulation of capabilities.
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+
+Package: libcap-dev
+Priority: optional
+Section: libdevel
+Installed-Size: 112
+Maintainer: Michael Vogt <mvo@debian.org>
+Architecture: i386
+Source: libcap
+Version: 1:1.10-14
+Depends: libcap1 (= 1:1.10-14), libc6-dev
+Filename: pool/main/libc/libcap/libcap-dev_1.10-14_i386.deb
+Size: 20350
+MD5sum: f51bf0363393e8ca0b448b5c1e057dd0
+Description: development libraries and header files for libcap
+ Contains the necessary support for building applications that use
+ capabilities.
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+
+Package: libcap1
+Priority: required
+Section: libs
+Installed-Size: 60
+Maintainer: Michael Vogt <mvo@debian.org>
+Architecture: i386
+Source: libcap
+Version: 1:1.10-14
+Depends: libc6 (>= 2.3.2.ds1-4)
+Filename: pool/main/libc/libcap/libcap1_1.10-14_i386.deb
+Size: 9070
+MD5sum: ceab0a60c0a4a69bc1060207ec5e0cdd
+Description: support for getting/setting POSIX.1e capabilities
+ This library implements the user-space interfaces to the POSIX
+ 1003.1e capabilities available in Linux kernels.  These capabilities are
+ a partitioning of the all powerful root privilege into a set of distinct
+ privileges.  Note that it will not provide any functionality with kernels
+ below 2.2
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+
+Package: bsdutils
+Essential: yes
+Priority: required
+Section: base
+Installed-Size: 164
+Maintainer: LaMont Jones <lamont@debian.org>
+Architecture: i386
+Source: util-linux (2.12p-2ubuntu2)
+Version: 1:2.12p-2ubuntu2
+Pre-Depends: libc6 (>= 2.3.2.ds1-4)
+Recommends: bsdmainutils
+Filename: pool/main/u/util-linux/bsdutils_2.12p-2ubuntu2_i386.deb
+Size: 65534
+MD5sum: 14fbf9bfe63c7e0cabec11a196c8a6ca
+Description: Basic utilities from 4.4BSD-Lite
+ This package contains the bare minimum number of BSD utilities needed
+ to boot a Debian system.  You should probably also install
+ bsdmainutils to get the remaining standard BSD utilities.
+ .
+ Included are: logger, renice, replay, script, wall
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+
+Package: mount
+Essential: yes
+Priority: required
+Section: base
+Installed-Size: 316
+Maintainer: LaMont Jones <lamont@debian.org>
+Architecture: i386
+Source: util-linux
+Version: -ewePP2.12p-2ubuntu2
+Pre-Depends: libblkid1 (>= 1.35-8ubuntu2), libc6 (>= 2.3.2.ds1-4), libuuid1
+Filename: pool/main/u/util-linux/mount_2.12p-2ubuntu2_i386.deb
+Size: 140492
+MD5sum: bc6a5e1fc6efc5bfcf94c6d44771df26
+Description: Tools for mounting and manipulating filesystems
+ This package provides the mount(8), umount(8), swapon(8),
+ swapoff(8), and losetup(8) commands.
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+
+Package: util-linux
+Essential: yes
+Priority: required
+Section: base
+Installed-Size: 1012
+Maintainer: LaMont Jones <lamont@debian.org>
+Architecture: i386
+Version: 2.12p-2ubuntu2
+Replaces: miscutils, setterm, fdisk
+Depends: lsb-base (>= 1.3-9ubuntu3)
+Pre-Depends: libc6 (>= 2.3.2.ds1-4), libncurses5 (>= 5.4-1), libuuid1, slang1a-utf8 (>> 1.4.9dbs-4), zlib1g (>= 1:1.2.1)
+Suggests: util-linux-locales, kbd | console-tools, dosfstools
+Conflicts: setterm, fdisk, kbd (<< 1.05-3), console-tools (<< 1:0.2.3-21)
+Filename: pool/main/u/util-linux/util-linux_2.12p-2ubuntu2_i386.deb
+Size: 377732
+MD5sum: 7dc1406c317eabcd6b56a564cd362730
+Description: Miscellaneous system utilities
+ This package contains a number of important utilities, most of which
+ are oriented towards maintenance of your system.  Some of the more
+ important utilities included in this package allow you to partition
+ your hard disk, view kernel messages, and create new filesystems.
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+
+Package: util-linux-locales
+Priority: optional
+Section: utils
+Maintainer: LaMont Jones <lamont@debian.org>
+Architecture: all
+Source: util-linux
+Version: 2.12p-2ubuntu2
+Replaces: util-linux (<< 2.11b)
+Depends: util-linux (>= 2.12p-0), util-linux (<< 2.12p.0-0)
+Filename: pool/main/u/util-linux/util-linux-locales_2.12p-2ubuntu2_all.deb
+Size: 1071684
+MD5sum: 6ae903fb878994ba649d1d8b92cbb378
+Description: Locales files for util-linux
+ This package contains the internationalization files of for the util-linux
+ package.
+ .
+ They are needed when you want the programs in util-linux to print their
+ messages in other languages than English.
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+
+Package: ed
+Section: editors
+Installed-Size: 144
+Maintainer: James Troup <james@nocrew.org>
+Architecture: i386
+Version: 0.2-20
+Depends: libc6 (>= 2.3.2.ds1-4)
+Filename: pool/main/e/ed/ed_0.2-20_i386.deb
+Size: 44766
+MD5sum: 940994b63a5a90c1fa9a65a899cce215
+Description: The classic unix line editor
+ ed is a line-oriented text editor.  It is used to
+ create, display, modify and otherwise manipulate text
+ files.
+ .
+ red is a restricted ed: it can only edit files in the
+ current directory and cannot execute shell commands.
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+Task: edubuntu-standard
+
+Package: cpp
+Priority: standard
+Section: interpreters
+Installed-Size: 84
+Maintainer: Debian GCC maintainers <debian-gcc@lists.debian.org>
+Architecture: i386
+Source: gcc-defaults (1.19)
+Version: 4:3.3.5-1
+Depends: cpp-3.3 (>= 1:3.3.5-1)
+Suggests: cpp-doc
+Conflicts: cpp-doc (<< 1:2.95.3)
+Filename: pool/main/g/gcc-defaults/cpp_3.3.5-1_i386.deb
+Size: 29442
+MD5sum: ba877c1fbdf0495d09e8394421c8d752
+Description: The GNU C preprocessor (cpp)
+ The GNU C preprocessor is a macro processor that is used automatically
+ by the GNU C compiler to transform programs before actual compilation.
+ .
+ This package has been separated from gcc for the benefit of those who
+ require the preprocessor but not the compiler.
+ .
+ This is a dependency package providing the default GNU C preprocessor.
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+Task: ubuntu-desktop
+
+Package: cpp-doc
+Priority: optional
+Section: devel
+Installed-Size: 32
+Maintainer: Debian GCC maintainers <debian-gcc@lists.debian.org>
+Architecture: i386
+Source: gcc-defaults (1.19)
+Version: 4:3.3.5-1
+Depends: cpp-3.3-doc (>= 1:3.3.5-1)
+Suggests: cpp (>= 4:3.3.5-1)
+Filename: pool/main/g/gcc-defaults/cpp-doc_3.3.5-1_i386.deb
+Size: 1010
+MD5sum: 3171aa11a7d93418fd39ba909e356954
+Description: Documentation for the GNU C preprocessor (cpp)
+ Documentation for the GNU C preprocessor in info  (dependency package).
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+
+Package: g++
+Priority: standard
+Section: devel
+Installed-Size: 40
+Maintainer: Debian GCC maintainers <debian-gcc@lists.debian.org>
+Architecture: i386
+Source: gcc-defaults (1.19)
+Version: 4:3.3.5-1
+Provides: c++-compiler
+Depends: cpp (>= 4:3.3.5-1), gcc (>= 4:3.3.5-1), g++-3.3 (>= 1:3.3.5-1), gcc-3.3 (>= 1:3.3.5-1)
+Filename: pool/main/g/gcc-defaults/g++_3.3.5-1_i386.deb
+Size: 1380
+MD5sum: 67229f992b9d97c6dad88bf37f246d8e
+Description: The GNU C++ compiler
+ This is the GNU C++ compiler, a fairly portable optimizing compiler for C++.
+ .
+ This is a dependency package providing the default GNU C++ compiler.
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+
+Package: g77
+Priority: optional
+Section: devel
+Installed-Size: 40
+Maintainer: Debian GCC maintainers <debian-gcc@lists.debian.org>
+Architecture: i386
+Source: gcc-defaults (1.19)
+Version: 4:3.3.5-1
+Provides: fortran-compiler
+Depends: cpp (>= 4:3.3.5-1), gcc (>= 4:3.3.5-1), g77-3.3 (>= 1:3.3.5-1), gcc-3.3 (>= 1:3.3.5-1)
+Suggests: g77-doc
+Filename: pool/main/g/gcc-defaults/g77_3.3.5-1_i386.deb
+Size: 1244
+MD5sum: 3f7dc699fa66f5ab929884345b7d9029
+Description: The GNU Fortran 77 compiler
+ This is the GNU g77 Fortran compiler, which compiles Fortran 77 on platforms
+ supported by the gcc compiler. It uses the gcc backend to generate optimized
+ code.
+ .
+ This is a dependency package providing the default GNU Fortran 77 compiler.
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+
+Package: g77-doc
+Priority: optional
+Section: devel
+Installed-Size: 32
+Maintainer: Debian GCC maintainers <debian-gcc@lists.debian.org>
+Architecture: i386
+Source: gcc-defaults (1.19)
+Version: 4:3.3.5-1
+Depends: g77-3.3-doc (>= 1:3.3.5-1)
+Suggests: g77 (>= 4:3.3.5-1)
+Filename: pool/main/g/gcc-defaults/g77-doc_3.3.5-1_i386.deb
+Size: 958
+MD5sum: 7c1b7eaa5099242737bf03767d03d953
+Description: Documentation for the GNU Fortran compiler (g77)
+ Documentation for the GNU Fortran compiler in info  (dependency package).
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+
+Package: gcc
+Priority: standard
+Section: devel
+Installed-Size: 64
+Maintainer: Debian GCC maintainers <debian-gcc@lists.debian.org>
+Architecture: i386
+Source: gcc-defaults (1.19)
+Version: 4:3.3.5-1
+Provides: c-compiler
+Depends: cpp (>= 4:3.3.5-1), gcc-3.3 (>= 1:3.3.5-1), cpp-3.3 (>= 1:3.3.5-1)
+Recommends: libc-dev
+Suggests: make, manpages-dev, autoconf, automake, libtool, flex, bison, gdb, gcc-doc
+Conflicts: gcc-doc (<< 1:2.95.3)
+Filename: pool/main/g/gcc-defaults/gcc_3.3.5-1_i386.deb
+Size: 4892
+MD5sum: ea1151275986b69cb78249e37854fc91
+Description: The GNU C compiler
+ This is the GNU C compiler, a fairly portable optimizing compiler for C.
+ .
+ This is a dependency package providing the default GNU C compiler.
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+
+Package: gcc-doc
+Priority: optional
+Section: devel
+Installed-Size: 32
+Maintainer: Debian GCC maintainers <debian-gcc@lists.debian.org>
+Architecture: i386
+Source: gcc-defaults (1.19)
+Version: 4:3.3.5-1
+Depends: gcc-3.3-doc (>= 1:3.3.5-1)
+Suggests: gcc (>= 4:3.3.5-1)
+Filename: pool/main/g/gcc-defaults/gcc-doc_3.3.5-1_i386.deb
+Size: 1010
+MD5sum: 73e6f176c0812642ff1410015ca32926
+Description: Documentation for the GNU C compilers (gcc, gobjc, g++)
+ Documentation for the GNU compilers in info  (dependency package).
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+
+Package: gcj
+Priority: optional
+Section: devel
+Installed-Size: 36
+Maintainer: Debian GCC maintainers <debian-gcc@lists.debian.org>
+Architecture: i386
+Source: gcc-defaults (1.19)
+Version: 4:3.3.5-1
+Provides: java-compiler
+Depends: cpp (>= 4:3.3.5-1), gcc (>= 4:3.3.5-1), g++ (>= 4:3.3.5-1), gcj-3.3 (>= 1:3.3.5-1)
+Recommends: gij (>= 4:3.3.5-1)
+Filename: pool/main/g/gcc-defaults/gcj_3.3.5-1_i386.deb
+Size: 1218
+MD5sum: 5713b3f7639a82112ff896c663fe8096
+Description: The GNU Java compiler
+ GCJ is a front end to the GCC compiler which can natively compile both
+ Java(tm) source and bytecode files. The compiler can also generate class
+ files.
+ .
+ This is a dependency package providing the default GNU Java compiler.
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+
+Package: gij
+Priority: optional
+Section: devel
+Installed-Size: 36
+Maintainer: Debian GCC maintainers <debian-gcc@lists.debian.org>
+Architecture: i386
+Source: gcc-defaults (1.19)
+Version: 4:3.3.5-1
+Depends: cpp (>= 4:3.3.5-1), gij-3.3 (>= 1:3.3.5-1)
+Suggests: gcj (>= 4:3.3.5-1)
+Conflicts: libgcj2 (<= 3.0.2-4)
+Filename: pool/main/g/gcc-defaults/gij_3.3.5-1_i386.deb
+Size: 1178
+MD5sum: 097ff3f6b119a38ed29cc0925cc45908
+Description: The GNU Java bytecode interpreter
+ GIJ is not limited to interpreting bytecode. It includes a class loader which
+ can dynamically load shared objects, so it is possible to give it the name
+ of a class which has been compiled and put into a shared library on the
+ class path.
+ .
+ This is a dependency package providing the default GNU Java bytecode
+ interpreter.
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+
+Package: gobjc
+Priority: optional
+Section: devel
+Installed-Size: 20
+Maintainer: Debian GCC maintainers <debian-gcc@lists.debian.org>
+Architecture: i386
+Source: gcc-defaults (1.19)
+Version: 4:3.3.5-1
+Provides: objc-compiler
+Depends: cpp (>= 4:3.3.5-1), gcc (>= 4:3.3.5-1), gobjc-3.3 (>= 1:3.3.5-1), gcc-3.3 (>= 1:3.3.5-1)
+Filename: pool/main/g/gcc-defaults/gobjc_3.3.5-1_i386.deb
+Size: 836
+MD5sum: 26e12f89efcdf046129fb095c8992259
+Description: The GNU Objective-C compiler
+ This is the GNU Objective-C compiler, which compiles Objective-C on platforms
+ supported by the gcc compiler. It uses the gcc backend to generate optimized
+ code.
+ .
+ This is a dependency package providing the default GNU Objective-C compiler.
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+
+Package: 3dchess
+Priority: optional
+Section: games
+Installed-Size: 148
+Maintainer: Stephen Stafford <bagpuss@debian.org>
+Architecture: i386
+Version: 0.8.1-11
+Depends: libc6 (>= 2.3.2.ds1-4), libx11-6 | xlibs (>> 4.1.0), libxext6 | xlibs (>> 4.1.0), libxmu6 | xlibs (>> 4.1.0), libxpm4 | xlibs (>> 4.1.0), libxt6 | xlibs (>> 4.1.0), xaw3dg (>= 1.5+E-1)
+Filename: pool/main/3/3dchess/3dchess_0.8.1-11_i386.deb
+Size: 32260
+MD5sum: aed3a660329cde29baae96174b9b4bde
+Description: 3D chess for X11
+ 3 dimensional Chess game for X11R6.  There are three boards, stacked
+ vertically; 96 pieces of which most are the traditional chess pieces with
+ just a couple of additions; 26 possible directions in which to move.  The
+ AI isn't wonderful, but provides a challenging enough game to all but the
+ most highly skilled players.
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+
+Package: 9wm
+Priority: optional
+Section: x11
+Installed-Size: 108
+Maintainer: Decklin Foster <decklin@red-bean.com>
+Architecture: i386
+Version: 1.2-6
+Provides: x-window-manager
+Depends: libc6 (>= 2.3.2.ds1-4), libx11-6 | xlibs (>> 4.1.0), libxext6 | xlibs (>> 4.1.0)
+Filename: pool/main/9/9wm/9wm_1.2-6_i386.deb
+Size: 24462
+MD5sum: 4a7f8eed705ffde901d6d84a668bea47
+Description: emulation of the Plan 9 window manager 8-1/2
+ 9wm is an X window manager which attempts to emulate the Plan 9 window
+ manager 8-1/2 as far as possible within the constraints imposed by X.
+ .
+ It provides a simple yet comfortable user interface, without garish
+ decorations or title-bars. Or icons. And it's click-to-type.
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+
+Package: rioutil
+Priority: optional
+Section: sound
+Installed-Size: 272
+Maintainer: Jens Schmalzing <jensen@debian.org>
+Architecture: i386
+Version: 1.4.4-1.0.1
+Depends: libc6 (>= 2.3.2.ds1-4), libusb-0.1-4 (>= 1:0.1.8), zlib1g (>= 1:1.2.1)
+Filename: pool/main/r/rioutil/rioutil_1.4.4-1_i386.deb
+Size: 70884
+MD5sum: ae2f24614a8fcf50e7b9f19107981347
+Description: Talk to USB based Diamond MM products
+ rioutil is a program designed to interface with the MP3 players
+ by Sonic Blue, Diamond MM and Digital Networks NA.  It is known
+ to work with a number of models from the Rio series, namely 600,
+ 800, 900, Riot, S-Series and psa[play.  The models Nitrus, Cali,
+ Chiba and Fuse are also supported.  The package includes headers
+ and a set of libraries apart from the tool itself.
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+

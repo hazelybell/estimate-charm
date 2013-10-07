@@ -1,0 +1,43 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<body>
+
+<div metal:fill-slot="main">
+
+  <div id="top-navigation" style="margin-bottom: 1em;">
+    <tal:navigation content="structure view/members/@@+navigation-links-upper" />
+  </div>
+
+  <div class="gridflow"
+       tal:define="current_batch nocall:view/members/currentBatch">
+
+    <ul>
+    <tal:per_member repeat="member current_batch">
+      <li>
+        <span>
+          <a tal:attributes="href member/fmt:url;
+                             title member/displayname">
+            <img tal:replace="structure member/image:mugshot" />
+            <div tal:content="member/displayname" />
+          </a>
+        </span>
+      </li>
+    </tal:per_member>
+    </ul>
+
+  </div>
+
+  <div>
+    <tal:navigation content="structure view/members/@@+navigation-links-lower" />
+  </div>
+
+</div>
+</body>
+</html>

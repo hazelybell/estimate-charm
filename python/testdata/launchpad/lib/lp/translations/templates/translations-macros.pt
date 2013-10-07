@@ -1,0 +1,181 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  omit-tag="">
+
+<metal:render-suggestion define-macro="render-suggestion">
+<tal:submission condition="submission">
+  <tal:not-empty condition="not:submission/is_empty">
+    <tr tal:attributes="class string:secondary ${dismissable} ${submission/translation_html_id};
+                        id submission/row_html_id">
+      <th colspan="3" tal:content="section_title">
+        In Upstream:
+      </th>
+      <td class="icon left right">
+        <tal:form-writeable condition="form_is_writeable">
+        <tal:user-is-official-translator
+          condition="user_is_official_translator">
+        <input
+          type="radio"
+          tal:attributes="
+            name string:${submission/translation_html_id}_radiobutton;
+            id string:${submission/suggestion_html_id}_radiobutton;
+            value string:${submission/suggestion_html_id};
+            " />
+        </tal:user-is-official-translator>
+        <tal:user-is-not-official-translator condition="not:user_is_official_translator">
+        <a href=""
+          tal:attributes="
+            id string:${submission/suggestion_html_id}_singular_copy_text;
+            name string:${submission/translation_html_id}_singular_copy_text;
+          "><img alt="Copy text" title="Copy text" src="/@@/copy" /></a>
+        </tal:user-is-not-official-translator>
+        </tal:form-writeable>
+      </td>
+      <td>
+        <div tal:condition="not:submission/suggestion_text">
+          (not translated yet)
+        </div>
+        <div
+          tal:condition="python: not user_is_official_translator and submission.suggestion_text"
+          tal:attributes="
+            lang submission/language/dashedcode;
+            dir submission/language/abbreviated_text_dir;
+            id string:${submission/suggestion_html_id}"
+          tal:content="structure submission/suggestion_text">
+          suggestion
+        </div>
+        <label
+          style="white-space: normal"
+          tal:condition="python: user_is_official_translator and submission.suggestion_text"
+          tal:attributes="
+            lang submission/language/dashedcode;
+            dir submission/language/abbreviated_text_dir;
+            id string:${submission/suggestion_html_id};
+            for string:${submission/suggestion_html_id}_radiobutton;"
+          tal:content="structure submission/suggestion_text">
+          suggestion
+        </label>
+      </td>
+    </tr>
+    <tr
+      tal:condition="submission/suggestion_text"
+      tal:attributes="id string:${submission/origin_html_id};
+                      class string:lesser secondary ${dismissable}">
+      <td colspan="3"></td>
+      <td class="icon left right">
+        <tal:legal-warning condition="submission/legal_warning">
+          <a href="https://help.launchpad.net/Translations/ReusingPackagedTranslations"
+             class="legal-warning">
+            <img alt="Legal warning" title="Do not use this translation before checking for licence compatibility" src="/@@/warning" /></a>
+        </tal:legal-warning>
+      </td>
+      <td style="overflow: auto;"
+          tal:condition="submission/is_local_to_pofile">
+        Suggested by
+        <a tal:content="submission/person/displayname"
+           tal:attributes="href submission/person/fmt:url">Foo Bar</a>
+        <span
+          tal:attributes="title submission/date_created/fmt:datetime"
+          tal:content="submission/date_created/fmt:displaydate">
+          2006-08-05
+        </span>
+      </td>
+      <td style="overflow: auto;"
+          tal:condition="not:submission/is_local_to_pofile">
+        <tal:source content="string:${context/title}" />
+        <a tal:condition="submission/is_traversable"
+           tal:content="submission/pofile/potemplate/displayname"
+           tal:attributes="href string:${submission/translationmessage/fmt:url}/+translate">
+           Spanish translation for evolution </a>
+        <tal:fallback
+          condition="not:submission/is_traversable"
+          content="submission/pofile/potemplate/displayname" /> by
+        <a tal:content="submission/person/displayname"
+           tal:attributes="href submission/person/fmt:url">Foo Bar</a>
+        <span
+          tal:attributes="title submission/date_created/fmt:datetime"
+          tal:content="submission/date_created/fmt:displaydate">
+          2006-08-05
+        </span>
+      </td>
+    </tr>
+
+  </tal:not-empty>
+</tal:submission>
+
+</metal:render-suggestion>
+
+
+<metal:nav-pofile-subpages define-macro="nav-pofile-subpages">
+      <ul
+          class="horizontal"
+          id="nav-pofile-subpages"
+          style="margin-top: 1em; margin-bottom: 1em;"
+          tal:define="navigation_menu context/menu:navigation">
+        <li
+            tal:define="link navigation_menu/download"
+            tal:condition="link/enabled"
+            tal:content="structure link/render"></li>
+        <li
+            tal:define="link navigation_menu/upload"
+            tal:condition="link/enabled"
+            tal:content="structure link/render"></li>
+        <li
+            tal:define="link navigation_menu/details"
+            tal:condition="link/enabled"
+            tal:content="structure link/render"></li>
+        <li tal:condition="view/user_is_official_translator"
+            id="translation-switch-working-mode-container"
+            class="hidden">
+          <span>
+          <a id="translation-switch-working-mode"
+             class="sprite edit js-action widget-hd">
+             Reviewer mode</a>&nbsp;<!--
+            -->(<a href="/+help-translations/working-modes.html" target="help"><!--
+                -->What's&nbsp;this?</a>)
+          </span>
+        </li>
+      </ul>
+</metal:nav-pofile-subpages>
+
+
+<metal:pofile-js-footer define-macro="pofile-js-footer">
+    <script type="text/javascript"
+        tal:content="
+        structure string:
+        var autofocus_field = '${view/autofocus_html_id}';
+        var translations_order = '${view/translations_order}';
+        var plural_forms = ${context/plural_forms};
+        "></script>
+</metal:pofile-js-footer>
+
+
+<metal:languages-table-js define-macro="languages-table-js">
+      <script type="text/javascript">
+      LPJS.use('lp.translations.languages', 'event', function(Y) {
+          Y.on("click", function(e) {
+            Y.lp.translations.languages.toggle_languages_visibility(e);
+          }, "#toggle-languages-visibility");
+
+          Y.on('domready', function(e) {
+              Y.lp.translations.languages.initialize_languages_table(Y);
+          });
+      });
+      </script>
+</metal:languages-table-js>
+
+
+<metal:languages-table-actions define-macro="languages-table-actions">
+  <div align="right">
+    [ <a href="/+editmylanguages">Change your preferred languages...</a>
+      <tal:has-preferred condition="view/translatable_languages">&mdash;
+        <a href="#" id="toggle-languages-visibility">
+          View all languages</a>
+      </tal:has-preferred>
+    ]
+   </div>
+</metal:languages-table-actions>
+
+</tal:root>
+

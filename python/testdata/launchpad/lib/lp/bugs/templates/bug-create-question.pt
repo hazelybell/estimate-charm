@@ -1,0 +1,59 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="malone">
+
+  <body>
+    <tal:main metal:fill-slot="main">
+      <div class="top-portlet">
+        <metal:form use-macro="context/@@launchpad_form/form">
+          <div metal:fill-slot="extra_info">
+            <p tal:condition="not: view/can_be_a_question">
+              This bug cannot be converted into a question.
+              <tal:question condition="context/bug/getQuestionCreatedFromBug">
+                A question was already created from this bug.
+              </tal:question>
+              <tal:uses-malone
+                condition="not: context/pillar/bug_tracking_usage/enumvalue:LAUNCHPAD">
+                <tal:target
+                  replace="context/target/displayname">Firefox</tal:target>
+                does not use Launchpad to track bugs.
+              </tal:uses-malone>
+              <tal:uses-answers
+                condition="not: context/pillar/answers_usage/enumvalue:LAUNCHPAD">
+                <tal:target
+                  replace="context/target/displayname">Firefox</tal:target>
+                does not use Launchpad for support questions.
+              </tal:uses-answers>
+              This bug may be valid in other locations, or it is not valid in
+              any locations. Only one location must be valid for a bug to be
+              convertible to a question.
+            </p>
+
+            <p>
+              Some bug reports are really questions, or the reporter
+              is confused, and an explanation is needed. In such cases,
+              the bug can made into a question. When a bug is made into a
+              question, the bug's status is set to Invalid. The new question
+              will be linked to the bug.
+            </p>
+            <p>See also
+              <a href="https://help.launchpad.net/TurningABugIntoAQuestion">
+              Turning a bug into a question</a>.
+            </p>
+          </div>
+
+          <div class="actions" metal:fill-slot="buttons">
+            <input tal:repeat="action view/actions"
+              tal:replace="structure action/render"
+              tal:condition="view/can_be_a_question" />
+          </div>
+        </metal:form>
+      </div>
+    </tal:main>
+
+  </body>
+</html>

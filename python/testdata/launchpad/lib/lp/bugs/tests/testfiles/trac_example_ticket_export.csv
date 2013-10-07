@@ -1,0 +1,13 @@
+id,summary,owner,type,status,priority,resolution
+1,Cannot specify extra name->address mappings,somebody,enhancement,closed,minor,fixed
+143,Borken example,lennart,defect,closed,critical,fixed
+144,avahi-glib.pc needs to depend on avahi-client.pc,lennart,defect,assigned,minor,--
+145,patch to compile on solaris,lennart,enhancement,closed,major,duplicate
+146,fails to build without libnotify,lennart,defect,closed,major,invalid
+147,Add --script option to avahi-autoipd,lennart,enhancement,closed,major,worksforme
+148,libdaemon's daemon_close_all() stargs usage is wrong,lennart,defect,closed,major,wontfix
+149,[PATCH] Various FreeBSD enhancements and fixes,lathiat,enhancement,reopened,major,--
+150,we should allow a hybrid mode for ipv4 and ipv6 where all RRs are registered on both but queries only sent via ipv4,lennart,enhancement,new,major,--
+151,Handle 63 character service names properly in avahi_alternative_service_name(),lennart,defect,new,major,--
+152,Manpages and data installed for programs that are not,lennart,defect,new,minor,--
+153,Include avahi-find-hosts,lennart,enhancement,new,minor,--

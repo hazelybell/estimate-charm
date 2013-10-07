@@ -1,0 +1,43 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<body>
+  <metal:block fill-slot="head_epilogue">
+    <metal:yui-dependencies
+      use-macro="context/@@launchpad_widget_macros/yui2calendar-dependencies" />
+  </metal:block>
+
+<div metal:fill-slot="main">
+
+  <div metal:use-macro="context/@@launchpad_form/form">
+
+    <div metal:fill-slot="extra_info" class="documentDescription">
+      Indicate the times during which you will be available for meetings at
+      the sprint. The sprint runs from
+      <tal:start replace="view/local_start" />, till
+      <tal:end replace="view/local_end" /> in the time zone:
+      <tal:tz replace="context/time_zone">UTC</tal:tz>.
+    </div>
+
+  </div>
+
+  <p class="aside">
+    Note: Please be as accurate as possible with the time that you will
+    arrive and depart from the conference or sprint venue. This allows the
+    event organisers to schedule the sessions knowing who can attend at
+    various times on the opening and closing day.
+  </p>
+
+</div>
+
+
+
+</body>
+</html>
+

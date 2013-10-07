@@ -1,0 +1,76 @@
+Received: with rfc822 via encapsulated-mail id 030315345717004;
+          Fri, 03 Mar 1995 15:34:58 GMT
+From cus.cam.ac.uk!iwj10 Fri Mar  3 07:33:06 1995
+Return-Path: <iwj10@cus.cam.ac.uk>
+Received: from pixar.com by mongo.pixar.com with smtp
+	(Smail3.1.28.1 #15) id m0rkZLk-0005pqC; Fri, 3 Mar 95 07:33 PST
+Received: from bootes.cus.cam.ac.uk by pixar.com with SMTP id AA20800
+  (5.65c/IDA-1.4.4 for <debian-bugs@pixar.com>); Fri, 3 Mar 1995 07:32:46 -0800
+Received: by bootes.cus.cam.ac.uk
+	(Smail-3.1.29.0 #30) id m0rkYPp-000C0dC; Fri, 3 Mar 95 14:33 GMT
+Received: by chiark (Smail3.1.28.1 #3)
+	id m0rkP9u-0002gOZ; Fri, 3 Mar 95 04:40 GMT
+Message-Id: <m0rkP9u-0002gOZ.ijackson@nyx.cs.du.edu>
+Date: Fri, 3 Mar 95 04:40 GMT
+From: iwj10@cus.cam.ac.uk (Ian Jackson)
+To: Debian bugs submission address <debian-bugs@pixar.com>
+Subject: tar -x fails to overwrite or check for symlinks
+
+Package: tar
+Version: 1.11.2-1 (and others?)
+
+chiark:~/junk> rm a b
+chiark:~/junk> ln -s a b
+chiark:~/junk> ll a b
+/bin/ls: a: No such file or directory
+lrwxrwxrwx   1 ian      ian             1 Mar  3 04:35 b -> a
+chiark:~/junk> tar vvcf t b
+lrwxrwxrwx ian/ian           0 Mar  3 04:35 1995 b -> a
+
+OK so far.
+
+chiark:~/junk> tar vvxf t
+lrwxrwxrwx ian/ian           0 Mar  3 04:35 1995 b -> a
+tar: Could not create symlink to a : File exists
+
+Ooops.  tar should have overwritten b (silently).
+
+chiark:~/junk> rm b
+chiark:~/junk> echo hi >b
+chiark:~/junk> tar vvxf t
+lrwxrwxrwx ian/ian           0 Mar  3 04:35 1995 b -> a
+tar: Could not create symlink to a : File exists
+
+It can't overwrite a plain file with link.
+
+chiark:~/junk> ll a b
+/bin/ls: a: No such file or directory
+-rw-rw-r--   1 ian      ian             3 Mar  3 04:36 b
+chiark:~/junk> tar vvcf t b
+-rw-rw-r-- ian/ian           3 Mar  3 04:36 1995 b
+
+OK, put the file in the archive.
+
+chiark:~/junk> tar vvxf t
+-rw-rw-r-- ian/ian           3 Mar  3 04:36 1995 b
+
+And we can extract it.
+
+chiark:~/junk> rm a b
+rm: a: No such file or directory
+chiark:~/junk> ln -s a b
+
+Make the link.
+
+chiark:~/junk> tar vvxf t
+-rw-rw-r-- ian/ian           3 Mar  3 04:36 1995 b
+chiark:~/junk> ll a b
+-rw-rw-r--   1 ian      ian             3 Mar  3 04:36 a
+lrwxrwxrwx   1 ian      ian             1 Mar  3 04:37 b -> a
+
+Now when we extract it follows the link !  Aargh !  This is horrible.
+
+chiark:~/junk> rm a b
+chiark:~/junk>
+
+Ian.

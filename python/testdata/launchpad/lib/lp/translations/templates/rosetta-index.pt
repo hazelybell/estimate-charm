@@ -1,0 +1,84 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/searchless"
+  i18n:domain="launchpad">
+
+  <body>
+    <h1 metal:fill-slot="heading">Software translations</h1>
+
+    <div metal:fill-slot="main">
+      <ul class="rollover buttons">
+        <li>
+          <a href="/+tour/translation"
+             tal:attributes="href string:${rooturl}+tour/translation">
+            <img
+              alt="Take a tour"
+              src="/+icing/but-lrg-takeatour.gif"
+            />
+          </a>
+        </li>
+      </ul>
+
+      <form class="central" action="/projects/" method="get">
+        <input id="text" name="text" size="50" type="text" />
+        <input type="submit" value="Search Projects" />
+      </form>
+
+      <p id="application-summary">
+        Launchpad helps you build a community to translate your project into
+        almost any language. Translators use this simple web interface to
+        contribute translations in a wiki-style of collaboration.
+        (<a href="https://help.launchpad.net/Translations"
+            id="link-to-translations-help">Read our guide</a>)
+      </p>
+
+      <div class="columns">
+
+        <div class="three column left">
+          <h2>Translatable operating systems</h2>
+          <ul class="distroseries">
+            <li tal:repeat="distroseries context/translatable_distroseriess">
+              <a tal:attributes="href string:/${distroseries/distribution/name}/${distroseries/name}/+translations">
+                <tal:distroname replace="distroseries/distribution/displayname" />
+                <tal:version replace="distroseries/named_version" /></a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="three column middle">
+          <h2>Translatable projects</h2>
+          <span 
+             tal:repeat="product context/featured_products"
+             tal:attributes="style string:font-size:${product/font_size}%;">
+            <a
+              tal:attributes="
+                href product/pillar/fmt:url:translations/+translations"
+              tal:content="product/pillar/displayname" />
+          </span>
+          <div>
+            <a href="+products-with-translations">&raquo; List all translatable projects...</a>
+          </div>
+        </div>
+
+        <div class="three column right" id="preferred-languages">
+          <h2>Your preferred languages</h2>
+          <ul>
+            <li tal:repeat="language view/translatable_languages">
+              <a tal:replace="structure language/fmt:link">
+                Spanish
+              </a>
+            </li>
+          </ul>
+          <a href="/+editmylanguages" id="change-languages">&raquo; Change your preferred languages...</a>
+        </div>
+
+      </div>
+
+      <div id="application-footer"
+           tal:content="structure context/@@+portlet-stats" />
+    </div><!--main-->
+  </body>
+</html>

@@ -1,0 +1,4 @@
+
+If you would like to subscribe to the team list, use the link below
+to update your Mailing List Subscription preferences.
+  <%(editemails_url)s>

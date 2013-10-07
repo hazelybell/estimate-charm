@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <meta content="Launchpad is a supermarket of free software projects. As a project owner, you can tell the world everything they need to know about your work: where you track bugs, where you host your code, who&rsquo;s involved, the details of your release plans and more. Free software community members and other projects can use Launchpad to either directly learn information about your project or use Launchpad&rsquo;s extensive search to discover your work." name="description"/>
+    <meta content="canonical, launchpad, tour" name="keywords"/>
+    <meta content="en-US" name="language"/>
+    <title>Commercial subscriptions and joining Launchpad &mdash; Launchpad tour</title>
+    <style media="all" type="text/css">
+        @import "launchpad-tour.css";
+    </style>
+    <script type="text/javascript" src="jquery-1.2.6.pack.js"></script>
+    <script type="text/javascript" src="launchpad-tour.js"></script>
+    <script type="text/javascript" src="selector.js"></script>
+</head>
+<body>
+
+
+
+
+    <div id="container">
+        <p class="page-number">11 of 11</p>
+        <ul id="navigation-drop-down">
+            <li class="button-next"><a id="btnNext" href="index" taborder="1" accesskey="1" title="Return to the start of the Launchpad tour">Start</a></li>
+            <li class="home"><a href="index" accesskey="2">Launchpad tour home</a></li>
+            <li><a href="bugs" accesskey="3">Cross-project bug tracking</a></li>
+            <li><a href="branch-hosting-tracking" accesskey="4">Code hosting and review</a></li>
+            <li><a href="translation" accesskey="5">Web-based translation</a></li>
+            <li><a href="community" accesskey="6">Mailing lists and teams</a></li>
+            <li><a href="ppa" accesskey="7">Software distribution</a></li>
+            <li><a href="community-support" accesskey="8">Community support</a></li>
+            <li><a href="api" accesskey="9">Beta: web services API</a></li>
+            <li><a href="feature-tracking" accesskey="a">Light-weight specifications</a></li>
+            <li><a href="release-management" accesskey="b">Release management</a></li>
+            <li class="current"><a href="join-launchpad" accesskey="c">Join Launchpad!</a></li>
+        </ul>
+        <div id="page-intro-top"></div>
+        <div id="page-intro">
+            <h1>Bring your project to Launchpad</h1>
+            <p>
+                <img src="images/join/main-image.png" alt="Bring your project -- open source or closed -- to Launchpad today" />
+            </p>
+            <p class="intro-text">
+                <strong><a href="https://launchpad.net/projects/+new">Register your project</a> to collaborate with a community of thousands.</strong> Join <a href="https://launchpad.net/mysql">MySQL</a>, <a href="https://launchpad.net/zope">Zope</a> and <a href="https://launchpad.net/ubuntu">Ubuntu</a> in choosing Launchpad for your project.
+<br /><br />
+Launchpad is free to use for <a href="https://help.launchpad.net/Legal/ProjectLicensing">open source</a> software projects and available at a low annual subscription for all other projects. Read on for details of our <a href="#commercial">commercial plans</a>.</p>
+            <div id="link-holder"><a href="https://launchpad.net/projects/+new">Add your project to Launchpad &gt;</a></div>
+        </div>
+        <div id="page-intro-bottom"></div>
+        <ul id="secondary-navigation">
+            <li class="button-prev">
+                <a title="Back to the release management page" href="release-management" accesskey="d" tabindex="2">Back</a>
+            </li>
+            <li class="button-next">
+                <a href="index" title="Return to the start of the Launchpad tour" accesskey="3" tabindex="3">Start</a>
+            </li>
+        </ul>
+        <div id="further-information">
+            <div class="furthur-information-block">
+                <div class="furthur-information-block-top"></div>
+                <div class="furthur-information-block-mid">
+                    <div class="block">
+                        <h3><a name="commercial"></a>Subscriptions for commercial projects</h3>
+                        <h4>Host your closed-source project and join our beta of additional privacy features by buying a commercial subscription.</h4>
+                        <p class="screen-holder">
+                            <img src="images/join/1.png" alt="Commercial subscriptions" />                        </p>
+                        <p>Get all the benefits of hosting your closed-source project on Launchpad for just $250* a year. Easily share bug reports, code and more across your development community and, optionally, plug into the open source projects you rely on.</p><br />
+                        <p>At the same time, try out our privacy features, including:</p><br />
+			<ul>
+				<li>private code branches</li>
+				<li>private bugs by default</li>
+				<li>private teams and mailing lists</li>
+				<li>private PPAs.</li>
+			</ul><br />
+			<p>To get going, register your project and select <em>Other/Proprietary</em> as its licence.</p><br />
+			<p>Want to know more? <a href="mailto:commercial@launchpad.net">Get in touch</a>!</p><br />
+			<p><small>* US Dollars. Add VAT at 20% if you're in the European Union. Subscription is per project. Prices may change in the future.</small></p>
+			<p style="float: right;"><a href="https://launchpad.net/projects/+new">Register your project &gt;</a></p><br />
+
+                        </p>
+                    </div>
+                    <div class="block odd">
+                        <h3>What Launchpad offers your project</h3>
+                        <h4>Whether you're starting out or moving from elsewhere, Launchpad offers a tightly integrated hosting and collaboration platform for community-driven software development.</h4>
+                        <p class="screen-holder">
+                            <img src="images/join/2.png" alt="Publishing your software"  />                       </p>
+                        <p>
+                           Your project can use any or all of Launchpad's applications:</p><br />
+                   			<ul>
+				                  <li><strong><a href="bugs">Bug tracking</a>:</strong> across project and tool boundaries</li>
+				                  <li><strong><a href="branch-hosting-tracking">Code hosting and review</a>:</strong> open up to drive-by contributions with Bazaar branch hosting/mirroring and imports from git, Subversion and CVS.</li>
+				                  <li><strong><a href="translation">Web-based translation</a>:</strong> make your software available to a global audience with help from Launchpad's 35,000 translators.</li>
+				                  <li><strong><a href="ppa">Ubuntu package building and hosting</a>:</strong> use your Personal Package Archives to distribute software, with updates, to Ubuntu users.</li>
+				                  <li><strong><a href="community">Mailing lists and teams</a>:</strong> hassle-free mailing list hosting and easy role delegation through teams.</li>
+				                  <li><strong><a href="community-support">Support request tracking</a>:</strong> build a multi-lingual help community.</li>
+				                  <li><strong><a href="feature-tracking">Feature planning</a>:</strong> light-weight specification management and tracking.</li>
+				                  <li><strong><a href="api">Web services API</a>:</strong> build applications that interact with Launchpad.</li>
+                		  </ul><br />
+                		  <p style="float: right;"><a href="mailto:help@launchpad.net">Email us</a> with questions or <a href="https://launchpad.net/projects/+new">register your project now &gt;</a></p>
+
+                    </div>
+
+                    <div class="clear"></div>
+                </div>
+                <div class="furthur-information-block-bot"></div>
+            </div>
+
+        </div>
+        <ul id="footer-navigation">
+            <li class="button-prev">
+                <a title="Back to the release management page" href="release-management" accesskey="f" tabindex="4">Back</a>
+            </li>
+            <li class="button-next">
+                <a href="index" title="Return to the start of the Launchpad tour" accesskey="g" tabindex="5">Start</a>
+            </li>
+             <li class="copyright">
+                &copy; 2004-2013 Canonical Ltd. <a href="https://help.launchpad.net/Legal" accesskey="h" tabindex="6">Terms of Use</a> &#58; <a href="https://help.launchpad.net/Feedback" accesskey="i" tabindex="7">Feedback</a> &#58; <a href="https://answers.launchpad.net/launchpad-project/+faqs" accesskey="j" tabindex="8">FAQ</a>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

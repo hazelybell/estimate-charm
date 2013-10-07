@@ -1,0 +1,13 @@
+id,activity,title,creator,assignee,status
+1,2007-08-23.20:13:18,2to3 crashes on input files with no trailing newlines,3936,None,1
+2,2007-08-24.19:02:52,Patch to rename HTMLParser module to lower_case,3941,None,2
+3,2007-08-23.20:53:16,zipfile password fails validation,3939,None,3
+4,2007-08-23.21:41:28,MultiMethods with type annotations in 3000,3937,None,4
+5,2007-08-23.22:14:57,Patches to rename Queue module to queue,3941,None,5
+9,2007-08-25.09:21:28,"Implementation of PEP 3101, Advanced String Formatting",2799,None,6
+10,2007-08-26.17:49:52,cgi:  parse_qs and parse_qsl misbehave on empty strings,3959,None,7
+11,2007-08-24.22:55:24,[PATCH] Updated fix for string to unicode fixes in time and datetime,3961,None,8
+12,2007-08-25.11:25:16,Cleanup pass on _curses and _curses_panel,3946,None,3
+13,2007-08-25.17:27:41,pydoc doesn't work on pyexpat,35,None,4
+14,2007-08-25.17:33:36,logging.basicConfig does not allow to set NOTSET level,3970,None,5
+

@@ -1,0 +1,58 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:tal="http://xml.zope.org/namespaces/tal"
+     xmlns:metal="http://xml.zope.org/namespaces/metal">
+
+  <table tal:define="site_url view/feed/site_url"
+          style="border: 1px solid black">
+    <tr>
+      <th colspan="2" style="background: #dddddd">Affects</th>
+      <th style="background: #dddddd">Status</th>
+      <th style="background: #dddddd">Importance</th>
+      <th style="background: #dddddd">Assigned&nbsp;to</th>
+      <th style="background: #dddddd">Bug watch</th>
+    </tr>
+
+    <tal:comment condition="nothing">
+      Bugtask
+    </tal:comment>
+    <tr tal:repeat="bugtask context/bugtasks">
+      <tal:product condition="bugtask/product">
+        <td>
+          <img alt="" tal:attributes="src string:${site_url}/@@/product" />
+        </td>
+        <td tal:content="bugtask/target/name">Fake BugTask Name</td>
+      </tal:product>
+
+      <tal:milestone condition="not:bugtask/product">
+        <td>
+          <img alt="" tal:attributes="src string:${site_url}/@@/milestone" />
+        </td>
+        <td tal:content="bugtask/target/name">Fake BugTask Name</td>
+      </tal:milestone>
+      <td tal:content="bugtask/status/title">Won't Fix</td>
+      <td tal:content="bugtask/importance/title">Unknown</td>
+      <td tal:content="bugtask/assignee/displayname|string:-">Person</td>
+      <td>
+        <a tal:condition="bugtask/bugwatch"
+            tal:attributes="href bugtask/bugwatch/url"
+            tal:content="bugtask/bugwatch/title">bugwatch
+        </a>
+      </td>
+    </tr>
+
+    <tal:comment condition="nothing">
+      Nomination for series in above bugtask
+    </tal:comment>
+    <tr tal:repeat="nomination context/getNominations">
+      <td colspan="6" style="padding-left: 3em">Nominated for
+        <span tal:replace="nomination/target/title">Trunk</span> by
+        <a tal:attributes="href nomination/owner/fmt:url:bugs"
+           tal:content="nomination/owner/fmt:displayname">
+          Edwin Grubbs
+        </a>
+      </td>
+    </tr>
+
+  </table>
+
+</div>

@@ -1,0 +1,53 @@
+<!-- Copyright 2009-2010 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:xmlrpc="http://namespaces.zope.org/xmlrpc"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="launchpad">
+
+  <include package=".browser"/>
+
+  <class class="lp.services.oauth.model.OAuthConsumer">
+      <allow interface="lp.services.oauth.interfaces.IOAuthConsumer"/>
+  </class>
+
+  <class class="lp.services.oauth.model.OAuthConsumerSet">
+      <allow interface="lp.services.oauth.interfaces.IOAuthConsumerSet"/>
+  </class>
+
+  <securedutility
+      class="lp.services.oauth.model.OAuthConsumerSet"
+      provides="lp.services.oauth.interfaces.IOAuthConsumerSet">
+      <allow
+          interface="lp.services.oauth.interfaces.IOAuthConsumerSet"/>
+  </securedutility>
+
+  <class class="lp.services.oauth.model.OAuthRequestToken">
+      <allow interface="lp.services.oauth.interfaces.IOAuthRequestToken"/>
+      <require
+          permission="launchpad.Edit"
+          set_schema="lp.services.oauth.interfaces.IOAuthRequestToken"/>
+  </class>
+
+  <securedutility
+      class="lp.services.oauth.model.OAuthRequestTokenSet"
+      provides="lp.services.oauth.interfaces.IOAuthRequestTokenSet">
+      <allow
+          interface="lp.services.oauth.interfaces.IOAuthRequestTokenSet"/>
+  </securedutility>
+
+  <class class="lp.services.oauth.model.OAuthAccessToken">
+      <allow interface="lp.services.oauth.interfaces.IOAuthAccessToken"/>
+      <require
+          permission="launchpad.Edit"
+          set_schema="lp.services.oauth.interfaces.IOAuthAccessToken"/>
+  </class>
+
+  <class class="lp.services.oauth.model.OAuthNonce">
+      <allow interface="lp.services.oauth.interfaces.IOAuthNonce"/>
+  </class>
+</configure>

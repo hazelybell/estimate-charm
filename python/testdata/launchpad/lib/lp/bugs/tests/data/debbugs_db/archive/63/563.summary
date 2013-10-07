@@ -1,0 +1,9 @@
+Format-Version: 2
+Done: unknown
+Subject: tar -x fails to overwrite or check for symlinks
+Date: 794245681
+Submitter: iwj10@cus.cam.ac.uk (Ian Jackson)
+Package: tar
+Message-Id: <m0rkP9u-0002gOZ.ijackson@nyx.cs.du.edu>
+Forwarded-To: pinard@iro.umontreal.ca
+Severity: normal

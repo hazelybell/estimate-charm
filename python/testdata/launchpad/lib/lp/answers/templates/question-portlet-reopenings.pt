@@ -1,0 +1,21 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+  <div id="portlet-reopenings"
+    tal:condition="context/reopenings">
+    <h2>This question was reopened</h2>
+
+    <ul>
+      <li tal:repeat="reop context/reopenings">
+        <span
+          tal:attributes="title reop/datecreated/fmt:datetime"
+          tal:content="reop/datecreated/fmt:approximatedate">
+          2005-10-05
+        </span> by
+        <a tal:replace="structure reop/reopener/fmt:link">Foo Bar</a>
+      </li>
+    </ul>
+  </div>
+</tal:root>

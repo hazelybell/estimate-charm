@@ -1,0 +1,26 @@
+Format: 1.8
+Date: Thu, 15 Apr 2009 15:14:09 +0100
+Source: debug
+Binary: debug-bin debug-bin-dbgsym
+Architecture: source
+Version: 1.0-1
+Distribution: hoary
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Celso Providelo <cprov@canonical.com>
+Description: 
+ debug-bin  - Stuff for testing
+ debug-bin-dbgsym - Stuff for testing DDEBs
+Changes: 
+ debug (1.0-1) hoary; urgency=low
+ .
+   * Testing debug binaries
+Checksums-Sha1: 
+ f30c2462e897e07534a5c9960a8f653d5a51b066 434 debug_1.0-1.dsc
+ 6851f625a32f6c83a1af4c972b5bead14fbee06c 740 debug_1.0-1.tar.gz
+Checksums-Sha256: 
+ ab5e1eea2551828761d8734224d1a024be401ac05e83010494a0d9c69b8982c3 434 debug_1.0-1.dsc
+ 1a1ed198644169f16eeee93c843ab8b7d9eef25cd91b83f55f497dbe744d3c95 740 debug_1.0-1.tar.gz
+Files: 
+ 81d19cae151472dfd2f797a69a2c1f54 434 devel optional debug_1.0-1.dsc
+ 8225b515f30dd8c0252847f17f4b7069 740 devel optional debug_1.0-1.tar.gz

@@ -1,0 +1,70 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<div class="portlet" id="portlet-translatable-branches"
+     tal:condition="context/translatable_series">
+  <h3>All translatable series</h3>
+
+    <ul>
+      <li class="translations"
+          tal:repeat="series context/translatable_series">
+        <a tal:content="series/title"
+               tal:attributes="href series/fmt:url:translations/+translations">
+          series title</a>
+      </li>
+    </ul>
+</div>
+
+<div tal:condition="view/allow_series_translation">
+  <div class="portlet" id="portlet-untranslatable-branches"
+       tal:condition="view/untranslatable_series">
+    <h3>Set up translations for a series</h3>
+
+      <ul>
+        <li class="translations"
+            tal:repeat="series view/untranslatable_series">
+          <a tal:content="series/title"
+             tal:attributes="href series/fmt:url:translations/+translations">
+            series title</a> —
+          <a tal:attributes="
+              href series/fmt:url:translations/+translations-upload">
+            manual</a> or
+          <a tal:attributes="
+              href series/fmt:url:translations/+translations-settings">
+            automatic import</a>.
+        </li>
+      </ul>
+  </div>
+</div>
+
+<div class="portlet" id="portlet-translatable-packages"
+     tal:condition="context/translatable_packages">
+
+  <h3>All translatable distribution packages</h3>
+
+    <ul>
+      <li class="translations"
+          tal:repeat="pkg context/translatable_packages">
+        <a tal:content="pkg/title"
+               tal:attributes="href string:/${pkg/distribution/name}/${pkg/distroseries/name}/+sources/${pkg/name}/+translations">
+          package title</a>
+      </li>
+    </ul>
+
+</div>
+
+<div class="portlet"
+     tal:condition="context/required:launchpad.TranslationsAdmin"
+     id="custom-language-codes">
+  If necessary, you may
+  <a tal:attributes="href context/fmt:url:translations/+custom-language-codes"
+     class="edit sprite">
+    define custom language codes
+  </a>
+  for this project.
+</div>
+
+</tal:root>

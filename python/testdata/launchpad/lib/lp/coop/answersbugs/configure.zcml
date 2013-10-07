@@ -1,0 +1,53 @@
+<!-- Copyright 2009-2010 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+  xmlns="http://namespaces.zope.org/zope"
+  xmlns:browser="http://namespaces.zope.org/browser"
+  xmlns:i18n="http://namespaces.zope.org/i18n"
+  i18n_domain="launchpad">
+<facet facet="answers">
+
+<subscriber
+   for="lp.bugs.interfaces.bugtask.IBugTask
+        lazr.lifecycle.interfaces.IObjectModifiedEvent"
+   handler=".notification.dispatch_linked_question_notifications"
+   />
+
+  <class class=".model.QuestionBug">
+    <allow interface=".interfaces.IQuestionBug"/>
+  </class>
+
+    <subscriber
+        for=".interfaces.IQuestionBug
+             lazr.lifecycle.interfaces.IObjectCreatedEvent"
+        handler=".karma.question_bug_added"
+        />
+
+  <browser:page
+    name="+makebug"
+    for="lp.answers.interfaces.question.IQuestion"
+    class=".browser.QuestionMakeBugView"
+    permission="launchpad.AnyPerson"
+    template="../../app/templates/generic-edit.pt"
+    />
+
+  <browser:page
+    name="+linkbug"
+    for="lp.answers.interfaces.question.IQuestion"
+    class="lp.bugs.browser.buglinktarget.BugLinkView"
+    permission="launchpad.AnyPerson"
+    template="templates/question-linkbug.pt"
+    />
+
+  <browser:page
+    name="+unlinkbug"
+    for="lp.answers.interfaces.question.IQuestion"
+    class="lp.bugs.browser.buglinktarget.BugsUnlinkView"
+    permission="launchpad.AnyPerson"
+    template="templates/question-unlinkbugs.pt"
+    />
+
+</facet>
+</configure>

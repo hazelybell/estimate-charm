@@ -1,0 +1,128 @@
+BugTaskSourcePackageNameWidget
+------------------------------
+
+When dealing with bugs and packages, we associate bugs with only source
+packages internally, not binary packages. However, sometimes users know
+which binary package the bug is in, and they get confused why they
+can't file a bug on that package. To allow people to enter a binary
+package name, and to convert it to a source package name, we have a
+custom widget.
+
+    >>> from lp.bugs.browser.widgets.bugtask import (
+    ...     BugTaskSourcePackageNameWidget)
+
+If we pass a valid source package name to it, the corresponding
+SourcePackageName will be returned by getInputValue(). In order for us
+to map the package names, we need a distribution, so we give the widget
+a distribution task to work with.
+
+    >>> from lp.services.webapp.servers import LaunchpadTestRequest
+    >>> from lp.bugs.interfaces.bug import IBugSet
+    >>> from lp.bugs.interfaces.bugtask import IBugTask
+    >>> bug_one = getUtility(IBugSet).get(1)
+    >>> ubuntu_task = bug_one.bugtasks[-2]
+    >>> ubuntu_task.distribution.name
+    u'ubuntu'
+
+    >>> package_field = IBugTask['sourcepackagename'].bind(ubuntu_task)
+
+    >>> request = LaunchpadTestRequest(
+    ...     form={'field.sourcepackagename': 'evolution'})
+    >>> widget = BugTaskSourcePackageNameWidget(
+    ...     package_field, package_field.vocabulary, request)
+    >>> widget.getInputValue()
+    <SourcePackageName ...>
+    >>> widget.getInputValue().name
+    u'evolution'
+
+
+If we pass in a binary package name, which can be mapped to a source
+package name, the corresponding SourcePackageName is returned.
+
+    >>> request = LaunchpadTestRequest(
+    ...     form={'field.sourcepackagename': 'linux-2.6.12'})
+    >>> widget = BugTaskSourcePackageNameWidget(
+    ...     package_field, package_field.vocabulary, request)
+    >>> widget.getInputValue()
+    <SourcePackageName ...>
+    >>> widget.getInputValue().name
+    u'linux-source-2.6.15'
+
+For some distribution we don't know exactly which source packages it
+contains, so IDistribution.guessPublishedSourcePackageName will raise a
+NotFoundError.
+
+    >>> debian_task = bug_one.bugtasks[-1]
+    >>> debian_task.distribution.name
+    u'debian'
+    >>> debian_task.distribution.guessPublishedSourcePackageName('evolution')
+    Traceback (most recent call last):
+    ...
+    NotFoundError...
+
+At that point we'll fallback to the vocabulary, so a SourcePackageName
+will still be returned.
+
+    >>> package_field = IBugTask['sourcepackagename'].bind(debian_task)
+    >>> request = LaunchpadTestRequest(
+    ...     form={'field.sourcepackagename': 'evolution'})
+    >>> widget = BugTaskSourcePackageNameWidget(
+    ...     package_field, package_field.vocabulary, request)
+    >>> widget.getInputValue()
+    <SourcePackageName ...>
+    >>> widget.getInputValue().name
+    u'evolution'
+
+If we pass in a package name that doesn't exist in Launchpad, we get a
+ConversionError saying that the package name doesn't exist.
+
+    >>> request = LaunchpadTestRequest(
+    ...     form={'field.sourcepackagename': 'no-package'})
+    >>> widget = BugTaskSourcePackageNameWidget(
+    ...     package_field, package_field.vocabulary, request)
+    >>> widget.getInputValue()
+    Traceback (most recent call last):
+    ...
+    ConversionError...
+
+
+BugTaskAlsoAffectsSourcePackageNameWidget
+-----------------------------------------
+
+The +distrotask page accepts both source and binary package names, but
+the distribution can't be obtained from the widget's context. For this
+page, BugTaskAlsoAffectsSourcePackageNameWidget exists, which gets the
+distribution from the request.
+
+    >>> from lp.bugs.browser.widgets.bugtask import (
+    ...     BugTaskAlsoAffectsSourcePackageNameWidget)
+    >>> request = LaunchpadTestRequest(
+    ...     form={'field.distribution': 'debian',
+    ...           'field.sourcepackagename': 'linux-2.6.12'})
+    >>> widget = BugTaskAlsoAffectsSourcePackageNameWidget(
+    ...     package_field, package_field.vocabulary, request)
+    >>> widget.getDistribution().name
+    u'debian'
+
++distrotask always supplies a valid distribution name. If the widget
+doesn't get a name, or the name isn't the name of a distro,
+UnexpectedFormData is raised.
+
+    >>> request = LaunchpadTestRequest(
+    ...     form={'field.distribution': 'non-existing',
+    ...           'field.sourcepackagename': 'linux-2.6.12'})
+    >>> widget = BugTaskAlsoAffectsSourcePackageNameWidget(
+    ...     package_field, package_field.vocabulary, request)
+    >>> widget.getDistribution().name
+    Traceback (most recent call last):
+    ...
+    UnexpectedFormData: ...
+
+    >>> request = LaunchpadTestRequest(
+    ...     form={'field.sourcepackagename': 'linux-2.6.12'})
+    >>> widget = BugTaskAlsoAffectsSourcePackageNameWidget(
+    ...     package_field, package_field.vocabulary, request)
+    >>> widget.getDistribution().name
+    Traceback (most recent call last):
+    ...
+    UnexpectedFormData: ...

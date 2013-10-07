@@ -1,0 +1,49 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="malone"
+>
+
+<head>
+  <tal:head-epilogue metal:fill-slot="head_epilogue">
+    <script type="text/javascript">
+      LPJS.use('lp.registry.structural_subscription', function(Y) {
+          var module = Y.lp.registry.structural_subscription;
+          var config = {
+              content_box: "#structural-subscription-content-box",
+              add_filter_description: true};
+          Y.on('domready', function() {
+              module.setup_bug_subscriptions(config);
+              module.setup_subscription_link(
+                  config, '#create-new-subscription');
+          });
+      });
+    </script>
+
+  </tal:head-epilogue>
+</head>
+<body>
+  <div metal:fill-slot="main">
+
+    <div id="maincontent">
+      <div id="nonportlets">
+        <div>
+          <a class="sprite add" id="create-new-subscription"
+             href="#">Add a subscription</a>
+        </div>
+
+        <div id="subscription-listing"></div>
+
+            <div id="structural-subscription-content-box"></div>
+
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<table class="summary" id="translations-to-review-table">
+  <tr tal:repeat="target_info view/top_projects_and_packages_to_review">
+    <td>
+      <tal:product condition="target_info/is_product"
+		   replace="structure target_info/target/fmt:link">
+	alsa-utils
+      </tal:product>
+      <tal:package condition="not: target_info/is_product">
+	<a tal:attributes="href target_info/target/fmt:url">
+	  <img src="/@@/distribution" />
+	  <tal:packagename replace="target_info/target/name">
+	    alsa-utils
+	  </tal:packagename>
+	</a>
+      </tal:package>
+    </td>
+    <td>
+      needs
+      <a tal:attributes="href target_info/link">
+	<tal:stringcount replace="target_info/count_wording">
+	  1 string
+	</tal:stringcount>
+	reviewed </a> in
+    <tal:languages replace="target_info/languages">
+      Spanish
+    </tal:languages>
+    </td>
+  </tr>
+</table>
+</tal:root>

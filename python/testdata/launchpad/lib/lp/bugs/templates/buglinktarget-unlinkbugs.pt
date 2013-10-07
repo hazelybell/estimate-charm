@@ -1,0 +1,42 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  metal:define-macro="master"
+  metal:extend-macro="view/macro:page/main_only">
+
+<body>
+
+<div metal:fill-slot="main">
+  <tal:nobugs condition="not:context/bugs">
+    <p class="informational message">
+      There are no links to bug reports to remove.
+    </p>
+  </tal:nobugs>
+
+  <tal:somebugs condition="context/bugs">
+    <tal:nopermission condition="not:view/bugsWithPermission">
+      <p class="informational message">
+        There are no links that you are allowed to remove.
+      </p>
+    </tal:nopermission>
+
+    <tal:form condition="view/bugsWithPermission">
+      <div metal:use-macro="context/@@launchpad_form/form">
+        <metal:heading fill-slot="heading">
+        </metal:heading>
+
+        <metal:description fill-slot="extra_info">
+          <metal:slot define-slot="extra_info" />
+        </metal:description>
+      </div>
+    </tal:form>
+  </tal:somebugs>
+
+</div>
+</body>
+</html>
+

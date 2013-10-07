@@ -1,0 +1,43 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+<body>
+  <tal:heading metal:fill-slot="heading">
+    <h1>News and announcements</h1>
+  </tal:heading>
+  <div metal:fill-slot="main">
+    <div class="top-portlet" style="margin-top: 0.5em;">
+      <p tal:condition="not: view/announcement_nav/batch/listlength">
+        There are no announcements for this project.
+      </p>
+
+      <div tal:condition="view/announcement_nav/batch/listlength"
+           id="announcements">
+        <tal:per_announcement
+           define="show_title python:True"
+           repeat="announcement view/announcement_nav/currentBatch">
+          <div class="top-portlet"
+               tal:condition="repeat/announcement/start">
+            <metal:announcement-body
+               use-macro="announcement/@@+announcement-macros/announcement-listing"
+               />
+          </div>
+          <div class="portlet"
+               tal:condition="not: repeat/announcement/start">
+            <metal:announcement-body
+               use-macro="announcement/@@+announcement-macros/announcement-listing"
+               />
+          </div>
+        </tal:per_announcement>
+      </div>
+    </div>
+    <div class="lesser"
+         tal:content="structure view/announcement_nav/@@+navigation-links-lower"
+         />
+  </div>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<div
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    class="portlet" id="portlet-projects">
+  <h2>Related projects</h2>
+  <p>
+    You can link a <a href="/projects/">registered project</a> to a
+    registered bug tracker in the project's &ldquo;Change
+    details&rdquo; page.
+  </p>
+  <ul tal:define="related_projects view/related_projects">
+    <li tal:repeat="project related_projects">
+      <a tal:replace="structure project/fmt:link" />
+    </li>
+    <li tal:condition="not: related_projects">
+      <i>There are no projects linked to this bug tracker.</i>
+    </li>
+  </ul>
+</div>

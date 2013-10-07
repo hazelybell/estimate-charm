@@ -1,0 +1,19 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+  <div tal:attributes="id string:diff-for-${context/version}"
+       tal:define="diffs context/package_diffs"
+       tal:condition="diffs">
+
+    <h3>Available diffs</h3>
+
+    <ul>
+       <li tal:repeat="diff diffs" tal:content="structure diff/fmt:link" />
+    </ul>
+
+  </div>
+
+</tal:root>

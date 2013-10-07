@@ -1,0 +1,30 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  class="portlet" id="portlet-published">
+
+  <h2>Published versions</h2>
+
+    <ul tal:condition="context/current_publishings">
+      <li class="binary package" tal:repeat="pub context/current_publishings">
+        <a tal:attributes="href
+            pub/distroarchseriesbinarypackagerelease/fmt:url">
+          <span tal:replace="pub/distroarchseriesbinarypackagerelease/name">
+          pmount
+          </span>
+          <span tal:replace="pub/distroarchseriesbinarypackagerelease/version">
+          1.1
+          </span>
+          in
+          <span tal:replace="pub/distroarchseries/architecturetag">
+            i386
+          </span>
+          (<span tal:replace="pub/pocket/title">Release</span>)
+        </a>
+      </li>
+    </ul>
+    <p tal:condition="not: context/current_publishings">
+      <i>Not published at present.</i>
+    </p>
+</div>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metal:block
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:lp="http://api.launchpad.net/schema"
+    xmlns:metal="http://xml.zope.org/namespaces/metal">
+<metal:entry metal:define-macro="feed-entry"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:lp="http://api.launchpad.net/schema"
+    xmlns:metal="http://xml.zope.org/namespaces/metal">
+    <title tal:content="structure entry/title/content"
+           tal:attributes="type entry/title/content_type" />
+    <link rel="alternate" tal:condition="entry/link_alternate"
+          tal:attributes="href entry/link_alternate" />
+    <published
+        tal:condition="entry/date_published"
+        tal:content="entry/date_published/fmt:isodate" />
+    <updated tal:content="entry/date_updated/fmt:isodate" />
+    <id tal:content="entry/id">tag:launchpad.net,2007-11-25:/ubuntu/+announcement/1</id>
+    <author tal:repeat="author entry/authors">
+      <name tal:content="author/name" />
+      <uri tal:condition="author/uri"
+           tal:content="author/uri" />
+      <email tal:condition="author/email"
+             tal:content="author/email" />
+    </author>
+    <contributor tal:repeat="contributor entry/contributors">
+        <tal:name tal:condition="contributor/name">
+            <name tal:content="contributor/name" />
+            <uri tal:condition="contributor/uri"
+                 tal:content="contributor/uri" />
+            <email tal:condition="contributor/email"
+                   tal:content="contributor/email" />
+        </tal:name>
+    </contributor>
+    <content tal:condition="entry/content"
+             tal:content="structure entry/content/content"
+             tal:attributes="type entry/content/content_type" />
+</metal:entry>
+</metal:block>

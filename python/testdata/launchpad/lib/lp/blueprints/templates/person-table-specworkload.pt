@@ -1,0 +1,85 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<p tal:condition="not: view/workload">
+  <i><span tal:replace="context/displayname">James Blackwell</span> is not
+  currently responsible for any specifications that meet your criteria.</i>
+</p>
+
+<tal:workload condition="view/workload">
+
+  <table class="listing sortable"
+         tal:attributes="id string:specwork_${context/name}">
+    <thead>
+      <tr>
+        <th>Priority</th>
+        <th>Specification</th>
+        <th>Definition</th>
+        <th>Delivery</th>
+        <th>Assign</th>
+        <th>Draft</th>
+        <th>Approve</th>
+      </tr>
+    </thead>
+    <tbody class="lesser">
+      <tr tal:repeat="personspec view/workload">
+        <tal:spec define="spec personspec/spec">
+          <td width="80">
+            <span class="sortkey" tal:content="spec/priority/sortkey" />
+            <span tal:content="spec/priority/title"
+                  tal:attributes="
+                  class string:specpriority${spec/priority/name}">High
+            </span>
+          </td>
+          <td>
+            <a tal:content="spec/name"
+               tal:attributes="href spec/fmt:url">foo-bar</a>
+          </td>
+          <td width="80">
+            <span class="sortkey" tal:content="spec/definition_status/sortkey" />
+            <span tal:content="spec/definition_status/title"
+                  tal:attributes="
+                  class string:specstatus${spec/definition_status/name}">Approved
+            </span>
+          </td>
+          <td width="80">
+            <span class="sortkey" tal:content="spec/implementation_status/sortkey" />
+            <span tal:content="spec/implementation_status/title"
+                  tal:attributes="
+                  class string:specdelivery${spec/implementation_status/name}">Slow
+            </span>
+          </td>
+          <tal:not_assignee condition="not: personspec/assignee">
+            <td width="40">&nbsp;</td>
+          </tal:not_assignee>
+          <tal:assignee condition="personspec/assignee">
+            <td width="40" align="center">
+              <img src="/@@/yes" alt="X" />
+            </td>
+          </tal:assignee>
+          <tal:not_drafter condition="not: personspec/drafter">
+            <td width="40">&nbsp;</td>
+          </tal:not_drafter>
+          <tal:drafter condition="personspec/drafter">
+            <td width="40" align="center">
+              <img src="/@@/yes" alt="X" />
+            </td>
+          </tal:drafter>
+          <tal:not_approver condition="not: personspec/approver">
+            <td width="40">&nbsp;</td>
+          </tal:not_approver>
+          <tal:approver condition="personspec/approver">
+            <td width="40" align="center">
+              <img src="/@@/yes" alt="X" />
+            </td>
+          </tal:approver>
+        </tal:spec>
+      </tr>
+    </tbody>
+  </table>
+
+</tal:workload>
+</tal:root>

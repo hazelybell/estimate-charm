@@ -1,0 +1,92 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+  <body>
+    <div metal:fill-slot="main">
+      <div metal:use-macro="context/@@launchpad_form/form">
+        <div metal:fill-slot="extra_info" class="documentDescription">
+          <div id="cannot-delete"
+            tal:condition="not: view/can_delete">
+            <p tal:condition="view/context/is_development_focus"
+              tal:content="view/development_focus_message">
+              You cannot delete the focus of development.
+            </p>
+            <p tal:condition="view/has_linked_packages"
+              tal:content="structure view/linked_packages_message">
+              You cannot delete a series with packaging links.
+            </p>
+            <p tal:condition="view/has_translations"
+              tal:content="view/translations_message">
+              A series with translations cannot be deleted.
+            </p>
+          </div>
+          <tal:can-delete condition="view/can_delete">
+            <p>
+              Are you sure you want to delete series
+              <strong tal:content="context/name">0.1</strong> of
+              <strong tal:content="context/product/displayname">Product</strong>?
+            </p>
+
+            <p id="milestones-and-files" tal:condition="view/milestones">
+              The associated milestones and releases
+              <tal:files tal:condition="view/product_release_files">
+                and their files will be also be <em>deleted</em>:
+              </tal:files>
+              <tal:no-files tal:condition="not: view/product_release_files">
+              will be also be <em>deleted</em>.
+              </tal:no-files>
+            </p>
+
+            <ul id="milestones" class="subordinate"
+              tal:condition="view/milestones">
+              <li tal:repeat="milestone view/milestones">
+                <strong>
+                  <a class="sprite milestone"
+                    tal:attributes="href milestone/fmt:url"><tal:name
+                    content="milestone/name">0.9</tal:name><tal:codename
+                      condition="milestone/code_name">
+                        "<tal:name
+                          replace="milestone/code_name"/>"</tal:codename></a>
+                </strong>
+              </li>
+            </ul>
+
+            <ul id="files" class="subordinate"
+              tal:condition="view/product_release_files">
+              <li tal:repeat="file view/product_release_files">
+                <strong tal:content="file/libraryfile/filename">foo.tgz</strong>
+              </li>
+            </ul>
+
+            <p tal:condition="view/has_bugtasks_and_specifications">
+              The following bugs and blueprints will be <em>untargeted</em>:
+            </p>
+
+            <ul id="bugtasks-and-blueprints" class="subordinate"
+              tal:condition="view/has_bugtasks_and_specifications">
+              <li tal:repeat="bugtask view/bugtasks"
+                tal:content="structure bugtask/bug/fmt:link">bug 1
+              </li>
+              <li tal:repeat="spec view/specifications"
+                tal:content="structure spec/fmt:link">a spec
+              </li>
+            </ul>
+
+            <p tal:condition="view/has_linked_branch">
+              The associated branch will be <em>unlinked</em>:
+              <a tal:replace="structure view/context/branch/fmt:link" />
+            </p>
+
+            <p>
+              Series deletion is permanent.
+            </p>
+          </tal:can-delete>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

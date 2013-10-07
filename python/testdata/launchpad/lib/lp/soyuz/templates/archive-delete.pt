@@ -1,0 +1,32 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+<body>
+
+  <div metal:fill-slot="main">
+
+    <div class="top-portlet"
+         tal:condition="view/can_be_deleted">
+      <p>Deleting a PPA will destroy all of its packages,
+         files and the repository area.</p>
+      <p>This deletion is PERMANENT and cannot be undone.</p>
+      <p>Are you sure ?</p>
+
+      <div metal:use-macro="context/@@launchpad_form/form" />
+    </div>
+
+    <div class="top-portlet"
+         tal:condition="view/waiting_for_deletion">
+      <p>This archive is marked for deletion and will be removed
+         shortly.</p>
+    </div>
+
+  </div> <!-- main -->
+
+</body>
+</html>

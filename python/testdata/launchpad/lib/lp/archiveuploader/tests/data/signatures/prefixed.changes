@@ -1,0 +1,56 @@
+-----BEGIN PGP SIGNED MESSAGE
+Hash: SHA1
+
+Format: 1.6
+Date: Thu, 06 Jun 2006 06:06:06 +0000
+Source: evil
+Binary: evil
+Architecture: source
+Version: 1.0-1
+Distribution: evil
+Urgency: low
+Maintainer: Evil person <owner@evil.example.com>
+Changed-By: Evil minion <minion@evil.example.com>
+Description: 
+ evil        - Stuff for evil
+Changes: 
+ evil (1.0-1) evil; urgency=low
+ .
+   * Evil prefixed version.
+Files: 
+ eeeeeeeeeeeeeeeeeeeeeeeeeeeeevil 512 devel optional evil_1.0-1.dsc
+ eeeeeeeeeeeeeeeeeeeeeeeeeeeeevil 160 devel optional evil_1.0.orig.tar.gz
+ eeeeeeeeeeeeeeeeeeeeeeeeeeeeevil 563 devel optional evil_1.0-1.diff.gz
+
+-----BEGIN PGP SIGNATURE
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Format: 1.7
+Date: Thu, 16 Feb 2006 15:34:09 +0000
+Source: foo
+Binary: foo
+Architecture: source
+Version: 1.0-1
+Distribution: breezy
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Daniel Silverstone <daniel.silverstone@canonical.com>
+Description: 
+ foo        - Stuff for testing
+Changes: 
+ foo (1.0-1) breezy; urgency=low
+ .
+   * Initial version
+Files: 
+ 7a7c9ecf9c5aa615e47813ac61118e65 512 devel optional foo_1.0-1.dsc
+ 4a7a1ab59ed8f9f1021825ba4b7ea826 160 devel optional foo_1.0.orig.tar.gz
+ d2093cb3512e747d92b7f7342a7cbb15 563 devel optional foo_1.0-1.diff.gz
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.3 (GNU/Linux)
+
+iD8DBQFFt77djn63CGxkqMURAholAKCd1ZfLy3T2PfOYT1cLx5bcm/fm6QCgh1HJ
+vtYGI10xoIYvU3E/XRshbPA=
+=yVGM
+-----END PGP SIGNATURE-----

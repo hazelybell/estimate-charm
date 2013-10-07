@@ -1,0 +1,267 @@
+=====================================
+DistroArchSeries Binary Package Pages
+=====================================
+
+In Launchpad, BinaryPackageReleases are directly attached to a
+DistroArchSeries by a publication record (see
+doc/publishedpackages.txt).
+
+A DistroArchSeriesBinaryPackage, is a collection of
+BinaryPackageReleases once published in a given DistroArchSeries.
+
+SourcePackages are available through the web UI after traversing
+through a DistroSeries and SourceName. The URL schema is:
+
+$LP/ubuntu/$DISTRORELEASE/+source/$BINARYNAME
+
+This specific page is not properly integrated in the navigation
+system, so it's impossible to get there except by typing the entire
+URL:
+
+    >>> browser.open(
+    ...     'http://launchpad.dev/ubuntu/warty/i386/mozilla-firefox')
+
+This page provides the publishing history of this BinaryPackage within
+this architecture:
+
+    >>> table = find_tag_by_id(browser.contents, 'publishing-summary')
+    >>> print extract_text(table)
+    Date                  Status    Target     Pocket  Component Section  Priority  Phased updates  Version
+    2006-04-11 13:00:01 UTC Published...Warty i386 release main     base Important                      1.0
+    Published on 2006-04-11
+    2005-06-18 00:00:00 UTC Published...Warty i386 release main     base     Extra                      0.9
+    Published on 2005-06-18
+    >>> print table.findAll("tr")[2].td["colspan"]
+    10
+
+It also provides a link to the currently published version:
+
+    >>> browser.getLink("0.9").click()
+    >>> print browser.title
+    0.9 : mozilla-firefox : i386 : Warty (4.10) : Ubuntu
+
+As well as a link to the related distribution source package:
+
+    >>> browser.open(
+    ...     'http://launchpad.dev/ubuntu/warty/i386/mozilla-firefox')
+    >>> browser.getLink(id="source_package").click()
+    >>> print browser.title.decode('ascii', 'ignore')
+    iceweasel package : Ubuntu
+
+If the binary distribution does not have a current release, then the
+link to the source package will not be present:
+
+    >>> browser.open(
+    ...     'http://launchpad.dev/debian/woody/i386/pmount')
+    >>> print browser.getLink(id="source_package")
+    Traceback (most recent call last):
+    ...
+    LinkNotFoundError
+
+A BinaryPackageRelease once published in a DistroArchSeries is
+represented by a DistroArchSeriesBinaryPackageRelease and easily
+reached by traversing a DistroArchSeriesBinaryPackage instance with a
+valid version, like:
+
+$LP/ubuntu/$DISTRORELEASE/$ARCHTAG/$BINARYNAME/$VERSION
+
+It's also reachable in a more natural way, starting from distribution page:
+
+    >>> browser.open('http://launchpad.dev/ubuntu')
+
+Then we get to the DistroSeries page:
+
+    >>> browser.getLink(url='/ubuntu/warty').click()
+
+Then the DistroArchSeries page:
+
+    >>> browser.getLink(url='/ubuntu/warty/i386').click()
+
+Now we are able to use the search box in this page:
+
+    >>> browser.getControl(name="text").value = "moz"
+    >>> browser.getControl("Search Packages").click()
+
+Click on the wanted name to get on the DistroArchSeriesBinaryPackageRelease:
+
+    >>> browser.getLink(url="mozilla-firefox/0.9").click()
+    >>> print browser.title
+    0.9 : mozilla-firefox : i386 : Warty (4.10) : Ubuntu
+
+This page represents an IDistroArchSeriesBinaryPackageRelease and is
+able to point the user to the IDistroSeriesSourcePackageRelease which
+originated itself:
+
+    >>> source_element = find_tag_by_id(browser.contents, 'source')
+    >>> print extract_text(source_element)
+    "mozilla-firefox" 0.9 source package in Ubuntu
+
+    >>> print source_element.find(name='a')['href']
+    /ubuntu/+source/mozilla-firefox/0.9
+
+Also provide a section with the contained files, including the build,
+the respective librarian URL and size:
+
+    >>> files_element = find_tag_by_id(browser.contents, 'files')
+    >>> print extract_text(files_element)
+    i386 build of mozilla-firefox 0.9 in ubuntu warty RELEASE
+    produced these files:
+    mozilla-firefox_0.9_i386.deb (3 bytes)
+
+    >>> dfiles_element = find_tag_by_id(
+    ...     browser.contents, 'downloadable-files')
+    >>> print dfiles_element.find(name='a')['href']
+    http://.../40/mozilla-firefox_0.9_i386.deb
+
+If the binary package did produce files, but those files have been
+subsequently deleted, this will also be indicated and the file will
+not be linked.
+
+    First we need to get a handle on the right binary file.
+    >>> login('admin@canonical.com')
+    >>> from zope.component import getUtility
+    >>> from lp.registry.interfaces.distribution import IDistributionSet
+    >>> warty = getUtility(IDistributionSet)['ubuntu']['warty']
+    >>> firefox_build = warty.getBuildRecords(
+    ...     name=u'mozilla-firefox', arch_tag='i386')[0]
+    >>> firefox_deb = firefox_build.binarypackages[0].files[0]
+    >>> print firefox_deb.libraryfile.filename
+    mozilla-firefox_0.9_i386.deb
+
+    Next we manually ensure that the file is deleted.
+    >>> firefox_deb.libraryfile.deleted
+    False
+    >>> from zope.security.proxy import removeSecurityProxy
+    >>> removeSecurityProxy(firefox_deb.libraryfile).content = None
+    >>> firefox_deb.libraryfile.deleted
+    True
+    >>> import transaction
+    >>> transaction.commit()
+    >>> logout()
+
+Now reload the page to see the deleted file without the link.
+
+    >>> browser.reload()
+    >>> files_element = find_tag_by_id(browser.contents, 'files')
+    >>> print extract_text(files_element)
+    i386 build of mozilla-firefox 0.9 in ubuntu warty RELEASE
+    produced these files:
+    mozilla-firefox_0.9_i386.deb (deleted)
+
+    >>> dfiles_element = find_tag_by_id(
+    ...     browser.contents, 'downloadable-files')
+    >>> print dfiles_element.find(name='a')
+    None
+
+Binary Packages with no files to present results in a clear statement
+intead of a empty section.
+
+    >>> browser.open(
+    ...     'http://launchpad.dev/ubuntu/hoary/i386/pmount/0.1-1')
+    >>> print extract_text(find_tag_by_id(browser.contents, 'files'))
+    i386 build of pmount 0.1-1 in ubuntu hoary RELEASE
+    produced no files for this binary package.
+
+DistroArchSeries Partner Binary Package Pages
+=============================================
+
+Binary partner packages in Launchpad differ from regular packages by
+two things:
+
+1. Their component is 'partner'
+2. Their archive is the partner archive, rather than the primary archive.
+
+Their page functionality is identical to regular packages, which is described
+in the previous section of this page.
+
+    >>> browser.open(
+    ...     'http://launchpad.dev/ubuntu/breezy-autotest/i386/commercialpackage')
+
+This page provides the publishing history of this BinaryPackage within
+this architecture:
+
+    >>> print extract_text(
+    ...     find_tag_by_id(browser.contents, 'publishing-summary'))
+    Date                  Status    Target     Pocket  Component Section Priority  Phased updates  Version
+    2007-08-09 21:56:39 UTC Published...B...t i386 release partner devel Optional                  1.0-1
+    Published on 2007-08-09
+
+It also provides a link to the currently published version:
+
+    >>> browser.getLink("1.0-1").click()
+    >>> print browser.title
+    1.0-1 : commercialpackage : i386 : Breezy Badger Autotest (6.6.6) : Ubuntu
+
+A BinaryPackageRelease once published in a DistroArchSeries is
+represented by a DistroArchSeriesBinaryPackageRelease and easily
+reached by traversing a DistroArchSeriesBinaryPackage instance with a
+valid version, like:
+
+$LP/ubuntu/$DISTRORELEASE/$ARCHTAG/$BINARYNAME/$VERSION
+
+It's also reachable in a more natural way, starting from distribution page:
+
+    >>> browser.open('http://launchpad.dev/ubuntu')
+
+Then we get to the DistroSeries page:
+
+    >>> browser.getLink('All series').click()
+    >>> browser.getLink('Breezy Badger Autotest').click()
+
+Then the DistroArchSeries page:
+
+    >>> browser.getLink('i386').click()
+
+Now we are able to use the search box in this page:
+
+    >>> browser.getControl(name="text").value = "commercialpackage"
+    >>> browser.getControl("Search Packages").click()
+
+Click on the wanted name to get on the DistroArchSeriesBinaryPackageRelease:
+
+    >>> browser.getLink("commercialpackage").click()
+    >>> print browser.title
+    1.0-1 : commercialpackage : i386 : Breezy Badger Autotest (6.6.6) : Ubuntu
+
+This page represents an IDistroArchSeriesBinaryPackageRelease and is
+able to point the user to the IDistroSeriesSourcePackageRelease which
+originated itself:
+
+    >>> print extract_text(find_tag_by_id(browser.contents, 'source'))
+    "commercialpackage" 1.0-1 source package in Ubuntu
+
+Also provide a section with the contained files, including respective
+librarian URL and size:
+
+    >>> print extract_text(find_tag_by_id(browser.contents, 'files'))
+    i386 build of commercialpackage 1.0-1 in ubuntu breezy-autotest RELEASE
+    produced these files:
+    commercialpackage_1.0-1_i386.deb (652 bytes)
+
+
+Tracing copied binary
+=====================
+
+Any user can view the publishing history details for a binary in the
+distribution PRIMARY archive, specifically in the
+DistroArchSeriesBinaryPackage page. It offers enough information to
+trace copied binaries
+
+If the publishing is a copy, the original location, distribution,
+distroseries and archive are shown.
+
+    >>> anon_browser.open(
+    ...     'http://launchpad.dev/ubuntu/warty/i386/pmount')
+
+    >>> print extract_text(
+    ...    find_tag_by_id(anon_browser.contents, 'publishing-summary'))
+    Date           Status      Target     Pocket  Component Section  Priority  Phased updates  Version
+    2007-09-13 ... Superseded...Warty i386 release universe editors Important                    0.1-1
+      Published on 2006-01-26
+      Copied from ubuntu hoary-release i386 in Primary Archive for Ubuntu Linux
+    2005-06-24 ... Published...Warty i386  release main        base     Extra                    0.1-1
+      Published on 2005-06-24
+      Copied from ubuntu hoary-release i386 in Primary Archive for Ubuntu Linux
+    2005-06-20 ... Published...Warty i386  release main        base     Extra                  2:1.9-1
+      Published on 2005-06-20
+      Copied from  ubuntu hoary-release hppa in Primary Archive for Ubuntu Linux

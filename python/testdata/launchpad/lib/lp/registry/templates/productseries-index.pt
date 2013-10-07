@@ -1,0 +1,244 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+>
+
+<body>
+  <metal:block fill-slot="head_epilogue">
+    <metal:yui-dependencies
+      use-macro="context/@@launchpad_widget_macros/yui2calendar-dependencies" />
+    <script id="milestone-script" type="text/javascript"
+      tal:condition="context/menu:overview/create_milestone/enabled"
+      tal:content="view/register_milestone_script"></script>
+    <tal:uses_launchpad_bugtracker
+       condition="context/bug_tracking_usage/enumvalue:LAUNCHPAD">
+      <script type="text/javascript">
+          LPJS.use('lp.registry.structural_subscription', function(Y) {
+              var module = Y.lp.registry.structural_subscription;
+              Y.on('domready', function() {
+                module.setup({content_box: "#structural-subscription-content-box"});
+              });
+          });
+      </script>
+    </tal:uses_launchpad_bugtracker>
+  </metal:block>
+
+    <tal:heading metal:fill-slot="heading">
+      <h1 tal:content="context/title">project 1.x series</h1>
+    </tal:heading>
+
+    <div metal:fill-slot="main"
+      tal:define="overview_menu context/menu:overview">
+
+      <div class="top-portlet">
+        <div id="description"
+          tal:content="structure context/summary/fmt:text-to-html" />
+
+        <div style="padding-top: 1em"
+             tal:define="auto_resize string:true; include_inactive string:true">
+          <iframe metal:use-macro="context/@@+timeline-macros/timeline-iframe"/>
+        </div>
+      </div>
+
+      <div class="yui-g">
+        <div class="yui-u first">
+          <div id="series-details" class="portlet">
+            <h2>Series information</h2>
+
+            <div class="two-column-list">
+              <dl id="series-project">
+                <dt>Project:</dt>
+                <dd><tal:link replace="structure context/product/fmt:link" /></dd>
+              </dl>
+
+              <dl id="series-name">
+                <dt>Series:</dt>
+                <dd><tal:name replace="context/name" /></dd>
+              </dl>
+
+              <dl id="series-drivers">
+                <dt>Project drivers:</dt>
+                <dd>
+                  <tal:per_driver repeat="driver context/drivers">
+                    <a tal:replace="structure driver/fmt:link">driver</a><tal:comma
+                      condition="not: repeat/driver/end">,</tal:comma>
+                  </tal:per_driver>
+                </dd>
+              </dl>
+
+              <dl id="series-release-manager">
+                <dt>Release manager:</dt>
+                <dd>
+                  <tal:no-driver condition="not: context/driver">None</tal:no-driver>
+                  <a
+                    tal:condition="context/driver"
+                    tal:replace="structure context/driver/fmt:link">series driver</a>
+                  <a tal:replace="structure overview_menu/driver/fmt:icon" />
+                 </dd>
+               </dl>
+
+              <dl id="series-status">
+                <dt>Status:</dt>
+                <dd>
+                  <tal:status content="context/status/title" />
+                  <a tal:replace="structure overview_menu/edit/fmt:icon" />
+                </dd>
+              </dl>
+
+              <dl id="series-focus">
+                <dt>Project development focus:</dt>
+                <dd>
+                  is
+                  <tal:not condition="not: context/is_development_focus">not</tal:not>
+                  the focus of development.
+                  <a tal:replace="structure context/product/menu:overview/edit/fmt:icon" />
+                </dd>
+              </dl>
+            </div>
+
+            <dl id="series-releasefileglob" style="margin-bottom: 1em;"
+              title="Launchpad automatically scans sites to import releases">
+              <dt>Release URL pattern:</dt>
+              <dd>
+                <tal:no-pattern condition="not: context/releasefileglob">
+                  None</tal:no-pattern>
+                <a
+                  tal:condition="context/releasefileglob"
+                  tal:replace="structure context/releasefileglob" />
+                <a tal:replace="structure overview_menu/edit/fmt:icon" />
+               </dd>
+            </dl>
+
+            <p>
+              <a tal:replace="structure overview_menu/rdf/fmt:icon-link" />
+            </p>
+          </div>
+        </div>
+
+        <div class="yui-u">
+          <div tal:replace="structure context/@@+code-summary" />
+
+          <p tal:condition="context/branch/required:launchpad.View|nothing">
+            <a tal:replace="structure context/branch/menu:context/source/fmt:link"/>
+          </p>
+        </div>
+      </div>
+
+      <div class="portlet">
+        <h2>Milestones and releases</h2>
+
+        <tal:comment condition="nothing">
+          This DIV is necessary for the table-actions:nth-child stylesheet.
+        </tal:comment>
+        <div>
+          <table tal:replace="structure context/@@+table-releases" />
+
+          <ul class="table-actions" style="margin-bottom: 1em;">
+            <li>
+              <a tal:replace="structure overview_menu/create_milestone/fmt:icon-link" />
+            </li>
+            <li>
+              <a tal:replace="structure overview_menu/create_release/fmt:icon-link" />
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="yui-g">
+        <div class="yui-u first">
+          <div
+            tal:content="structure context/@@+portlet-latestbugs"
+            tal:condition="context/@@+get-involved/official_malone" />
+
+          <div tal:content="structure context/@@+portlet-packages"
+               tal:condition="not: context/product/private" />
+        </div>
+
+        <div class="yui-u">
+          <div
+            tal:content="structure context/@@+portlet-latestspecs"
+            tal:condition="context/@@+get-involved/blueprints_usage/enumvalue:LAUNCHPAD" />
+
+          <div tal:replace="structure context/product/@@+portlet-coming-sprints" />
+
+          <div class="portlet">
+            <h2>Related series, milestones, and releases</h2>
+
+            <ul id="related-series">
+              <li>
+                <a class="sprite info"
+                  tal:attributes="href context/product/menu:overview/series/fmt:url">View
+                  series for the
+                  <tal:project replace="context/product/displayname" /> project</a>
+              </li>
+              <li>
+                <a class="sprite info"
+                  tal:attributes="href context/product/menu:overview/milestones/fmt:url">View
+                  milestones for the
+                  <tal:project replace="context/product/displayname" /> project</a>
+              </li>
+              <li>
+                <a class="sprite info"
+                  tal:attributes="href context/product/menu:overview/downloads/fmt:url">View
+                  downloads for the
+                  <tal:project replace="context/product/displayname" /> project</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="yui-u">
+          <div id="structural-subscription-content-box"></div>
+        </div>
+      </div>
+    </div>
+
+    <tal:side metal:fill-slot="side"
+      define="overview_menu context/menu:overview">
+      <div id="global-actions" class="portlet">
+        <ul>
+          <li tal:condition="overview_menu/edit/enabled">
+            <a tal:replace="structure overview_menu/edit/fmt:link" />
+          </li>
+          <li tal:condition="overview_menu/delete/enabled">
+            <a tal:replace="structure overview_menu/delete/fmt:link" />
+          </li>
+          <li tal:condition="overview_menu/subscribe_to_bug_mail/enabled|nothing">
+            <a tal:replace="structure overview_menu/subscribe_to_bug_mail/fmt:link" />
+          </li>
+          <li tal:condition="overview_menu/edit_bug_mail/enabled|nothing">
+            <a tal:replace="structure overview_menu/edit_bug_mail/fmt:link" />
+          </li>
+        </ul>
+      </div>
+
+      <tal:privacy replace="structure context/@@+portlet-privacy" />
+
+      <div id="downloads" class="top-portlet downloads"
+        tal:define="release view/latest_release_with_download_files">
+        <h2>Downloads</h2>
+
+        <tal:release condition="release">
+          <tal:downloads replace="structure release/@@+portlet-downloads"/>
+        </tal:release>
+
+        <p class="alternate">
+          <a class="sprite info"
+            tal:define="link context/product/menu:overview/downloads"
+            tal:condition="release"
+            tal:attributes="href link/fmt:url;
+                            title link/summary">All downloads</a>
+           <tal:no-files condition="not: release">
+             <tal:name replace="context/displayname" /> does not have any
+              download files.
+           </tal:no-files>
+        </p>
+      </div>
+
+      <div tal:replace="structure context/@@+get-involved" />
+    </tal:side>
+  </body>
+</html>

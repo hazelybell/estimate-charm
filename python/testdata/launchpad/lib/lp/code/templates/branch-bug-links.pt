@@ -1,0 +1,11 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+
+  <tal:bugs tal:define="branch context;
+                        show_edit python:True;">
+    <metal:bug-branch-links use-macro="context/@@+macros/bug-branch-links"/>
+  </tal:bugs>
+
+</div>

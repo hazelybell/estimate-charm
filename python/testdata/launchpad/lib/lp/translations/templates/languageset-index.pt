@@ -1,0 +1,118 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+>
+
+  <body>
+    <div metal:fill-slot="head_epilogue">
+      <script type="text/javascript">
+          LPJS.use('lp.languages', 'event', function(Y) {
+              Y.on('domready', function(e) {
+                  Y.lp.languages.initialize_languages_page(Y);
+              });
+          });
+      </script>
+    </div>
+    <div metal:fill-slot="main">
+      <div class="yui-b top-portlet">
+        <p>
+          Languages registered in Launchpad can be used for per-language
+          support with <a href="https://answers.launchpad.net">Answers</a>,
+          or for
+          <a href="https://translations.launchpad.net">Translations</a>.
+        </p>
+        <p>
+          If you can't find a language you are interested in, and you want
+          to add it to Launchpad for either Answers or Translations, please
+          follow
+          <a href="https://answers.launchpad.net/rosetta/+faq/23">
+            How to create a new language
+          </a>
+          FAQ entry.
+        </p>
+        <dl id="preferred_languages"
+            tal:condition="view/user">
+          <dt>Your preferred languages:
+            <a tal:attributes="href view/user/fmt:url:translations/+editlanguages"
+               class="edit sprite"></a>
+          </dt>
+          <dd tal:content="structure view/user_languages">
+              English
+          </dd>
+        </dl>
+        <div class="portlet searchform">
+          <h2>Find a language in Launchpad</h2>
+          <form method="get">
+            <p>
+              <label for="find">
+                Language name/code contains:
+              </label>
+              <input
+                size="30"
+                tal:replace="structure view/widgets/search_lang"
+              />
+              <input
+                 class="submit"
+                 type="submit"
+                 value="Find language"
+                 />
+            </p>
+            <tal:none condition="not: view/search_matches">
+                <script type="text/javascript"
+                    tal:define="script view/focusedElementScript"
+                    tal:condition="script"
+                    tal:content="structure script" />
+            </tal:none>
+          </form>
+        </div>
+        <div tal:condition="not:view/search_requested"
+             class="portlet">
+          <h2>Available languages in Launchpad</h2>
+          <p tal:condition="context/required:launchpad.Admin">
+            <a tal:attributes="href context/fmt:url/+add"
+                 class="add sprite">Add new language</a>
+          </p>
+          <p id="no_filter_matches" class="hidden">
+            No languages are matching your filter.
+          </p>
+          <ul id="all-languages" class="three-column-list">
+            <li tal:repeat="language context/common_languages">
+              <a tal:replace="structure language/fmt:link">English</a>
+            </li>
+          </ul>
+        </div>
+        <div tal:condition="view/search_requested" class="yui-b portlet">
+          <tal:block tal:define="results view/search_results">
+            <tal:none condition="not: view/search_matches">
+              <h2>No matching languages</h2>
+              <p>No languages matching
+                &#8220;<span tal:replace="view/language_search">
+                  Foo
+                </span>&#8221; were found.
+              </p>
+            </tal:none>
+            <tal:one condition="python: view.search_matches == 1">
+              <h2>One matching language</h2>
+            </tal:one>
+            <tal:more condition="python: view.search_matches > 1">
+              <h2>
+                <tal:count replace="view/search_matches">3</tal:count>
+                matching languages
+              </h2>
+            </tal:more>
+            <ul condition="view/search_matches" class="three-column-list">
+              <li language tal:repeat="language results">
+                <a tal:replace="structure language/fmt:link">
+                  Serbian (sr)
+                </a>
+              </li>
+            </ul>
+          </tal:block>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

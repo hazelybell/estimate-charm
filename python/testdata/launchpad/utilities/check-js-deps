@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# Copyright 2012 Canonical Ltd.  This software is licensed under the
+# GNU Affero General Public License version 3 (see the file LICENSE).
+
+set -e
+
+error=0
+for mod in $(grep '  LP' build/js/lp/meta.js | tr -s ' ' | cut -d\  -f2) ; do
+    if ! grep -q "modules\[$mod\]" build/js/lp/meta.js ; then
+        echo "ERROR: $mod is not mentioned in the meta file"
+        error=1
+    fi
+done
+exit $error
+

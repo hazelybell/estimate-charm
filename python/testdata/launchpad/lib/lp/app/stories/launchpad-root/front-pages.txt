@@ -1,0 +1,103 @@
+Launchpad front pages
+---------------------
+
+Visit our home page with the typical configuration:
+
+    >>> from lp.services.features.testing import FeatureFixture
+    >>> with FeatureFixture({"app.root_blog.enabled": True}):
+    ...     browser.open('http://launchpad.dev/')
+    >>> browser.url
+    'http://launchpad.dev/'
+
+It contains a string which our IS uses to determine whether or not
+Launchpad is alive:
+
+    >>> print browser.contents
+    <!DOCTYPE...
+    ...
+    <!-- Is your project registered yet? -->
+    ...
+
+And links to the important applications and facets:
+
+    >>> code_link = browser.getLink(url='code')
+    >>> code_link.url
+    'http://code.launchpad.dev/'
+
+It also includes a search form...
+
+    >>> print browser.getControl('Search Launchpad').value
+    Search Launchpad
+
+...and lists of featured projects and marketing material.
+
+    >>> featured = find_tag_by_id(browser.contents, 'homepage-featured')
+    >>> print extract_text(featured.renderContents())
+    Featured projects
+    ...
+    Ubuntu
+    ...
+
+The footer doesn't contain the links that are already present on the page.
+
+    >>> print find_tags_by_class(browser.contents, 'lp-arcana')
+    []
+
+The front page also lists the recent blog posts published on the Launchpad
+blog:
+
+    >>> print extract_text(
+    ...     find_tag_by_id(browser.contents, 'homepage-blogposts'))
+    Recent Launchpad blog posts
+    Launchpad EPIC 2010 photo
+    &ndash; 16 Jul 2010
+    The Launchpad and Bazaar teams have been in Prague this week...
+    Three tips for faster launchpadlib api clients
+    &ndash; 14 Jul 2010
+    Three tips from Leonard...
+    New Launchpad Bugs Status: Opinion...
+
+The homepage looks different when the user is logged in:
+
+    >>> user_browser = setupBrowser(auth="Basic test@canonical.com:test")
+    >>> user_browser.open('http://launchpad.dev/')
+
+Now there are links to create projects and teams:
+
+    >>> project_link = user_browser.getLink(url='/projects')
+    >>> project_link.url
+    'http://launchpad.dev/projects/+new'
+
+    >>> people_link = user_browser.getLink(url='/people')
+    >>> people_link.url
+    'http://launchpad.dev/people/+newteam'
+
+
+The front pages for the other applications, however, do have
+application tabs. On these pages, the tab normally named "Overview"
+is labelled "Launchpad Home" to make clear where it goes.
+
+    >>> anon_browser.open('http://code.launchpad.dev/')
+    >>> print_location_apps(anon_browser.contents)
+    * Launchpad Home - http://launchpad.dev/
+    * Code (selected) - http://code.launchpad.dev/
+    * Bugs - http://bugs.launchpad.dev/
+    * Blueprints - http://blueprints.launchpad.dev/
+    * Translations - http://translations.launchpad.dev/
+    * Answers - http://answers.launchpad.dev/
+
+    >>> user_browser.open('http://answers.launchpad.dev/')
+    >>> print_location_apps(user_browser.contents)
+    * Launchpad Home - http://launchpad.dev/
+    * Code - http://code.launchpad.dev/
+    * Bugs - http://bugs.launchpad.dev/
+    * Blueprints - http://blueprints.launchpad.dev/
+    * Translations - http://translations.launchpad.dev/
+    * Answers (selected) - http://answers.launchpad.dev/
+
+The footer of those pages contains the link to the front page, tour
+and guide:
+
+    >>> print extract_text(
+    ...     find_tags_by_class(user_browser.contents, 'lp-arcana')[0])
+    &bull; Take the tour &bull; Read the guide

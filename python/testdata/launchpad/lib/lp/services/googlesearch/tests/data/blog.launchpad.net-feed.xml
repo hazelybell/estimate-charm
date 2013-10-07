@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>Launchpad blog</title>
+	<atom:link href="http://blog.launchpad.net/feed" rel="self" type="application/rss+xml" />
+	<link>http://blog.launchpad.net</link>
+	<description>Thoughts from the Launchpad team</description>
+	<lastBuildDate>Fri, 16 Jul 2010 13:02:58 +0000</lastBuildDate>
+	<generator>http://wordpress.org/?v=2.8.4</generator>
+	<language>en</language>
+	<sy:updatePeriod>hourly</sy:updatePeriod>
+	<sy:updateFrequency>1</sy:updateFrequency>
+			<item>
+		<title>Launchpad EPIC 2010 photo</title>
+		<link>http://blog.launchpad.net/general/launchpad-epic-2010-photo</link>
+		<comments>http://blog.launchpad.net/general/launchpad-epic-2010-photo#comments</comments>
+		<pubDate>Fri, 16 Jul 2010 13:02:58 +0000</pubDate>
+		<dc:creator>Matthew Revell</dc:creator>
+				<category><![CDATA[General]]></category>
+
+		<guid isPermaLink="false">http://blog.launchpad.net/?p=1631</guid>
+		<description><![CDATA[The Launchpad and Bazaar teams have been in Prague this week. More on what we got done in later posts. For now, here&#8217;s a photo!
+]]></description>
+			<content:encoded><![CDATA[<p>The Launchpad and Bazaar teams have been in Prague this week. More on what we got done in later posts. For now, here&#8217;s a photo!<br />
+<div id="attachment_1632" class="wp-caption alignnone" style="width: 730px"><img src="/wp-content/uploads/2010/07/epic2010-team-photo.JPG" alt="The Launchpad and Bazaar teams in Prague" title="epic2010-team-photo" width="720" height="479" class="size-full wp-image-1632" /><p class="wp-caption-text">The Launchpad and Bazaar teams in Prague</p></div></p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.launchpad.net/general/launchpad-epic-2010-photo/feed</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+		</item>
+		<item>
+		<title>Three tips for faster launchpadlib api clients</title>
+		<link>http://blog.launchpad.net/api/three-tips-for-faster-launchpadlib-api-clients</link>
+		<comments>http://blog.launchpad.net/api/three-tips-for-faster-launchpadlib-api-clients#comments</comments>
+		<pubDate>Wed, 14 Jul 2010 13:30:04 +0000</pubDate>
+		<dc:creator>Martin Pool</dc:creator>
+				<category><![CDATA[API]]></category>
+		<category><![CDATA[clients]]></category>
+		<category><![CDATA[performance]]></category>
+		<category><![CDATA[tip]]></category>
+
+		<guid isPermaLink="false">http://blog.launchpad.net/?p=1626</guid>
+		<description><![CDATA[Three tips from Leonard&#8217;s lightning talk in Prague about writing faster Launchpadlib API clients:
+1. Use the latest launchpadlib. It gets faster from one release to the next.  (The versions in the current Ubuntu release should be fine; otherwise run from the branch or the latest tarball.)
+2. Profile:
+
+    import httplib2
+   [...]]]></description>
+			<content:encoded><![CDATA[<p>Three tips from <a href="http://launchpad.net/~leonardr">Leonard&#8217;s</a> lightning talk in Prague about writing faster <a href="https://help.launchpad.net/API/launchpadlib#preview">Launchpadlib</a> API clients:</p>
+<p><b>1. Use the latest launchpadlib.</b> It gets faster from one release to the next.  (The versions in the current Ubuntu release should be fine; otherwise run from the <a href="https://code.launchpad.net/~lazr-developers/launchpadlib/trunk">branch</a> or the latest <a href="https://launchpad.net/launchpadlib/+download">tarball</a>.)</p>
+<p><b>2. Profile:</b></p>
+<pre>
+    import httplib2
+    httplib2.debuglevel = 1
+</pre>
+<p>will show each http request and response, so that you can see what&#8217;s taking time.</p>
+<p><b>3. Fetch objects only once:</b></p>
+<p>Don&#8217;t do this:</p>
+<pre>
+    if bug.person is not None:
+        print bug.person.name
+</pre>
+<p>instead</p>
+<pre>
+    p = bug.person
+    if p is not None:
+        print p.name
+</pre>
+<p>In the first case, the client may fetch the Person object twice.  (We may fix this in future.)</p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.launchpad.net/api/three-tips-for-faster-launchpadlib-api-clients/feed</wfw:commentRss>
+		<slash:comments>5</slash:comments>
+		</item>
+		<item>
+		<title>New Launchpad Bugs Status: Opinion</title>
+		<link>http://blog.launchpad.net/bug-tracking/new-bugs-status-opinion</link>
+		<comments>http://blog.launchpad.net/bug-tracking/new-bugs-status-opinion#comments</comments>
+		<pubDate>Wed, 07 Jul 2010 08:18:33 +0000</pubDate>
+		<dc:creator>Deryck Hodge</dc:creator>
+				<category><![CDATA[Bug Tracking]]></category>
+
+		<guid isPermaLink="false">http://blog.launchpad.net/?p=1613</guid>
+		<description><![CDATA[Many different types of information are stored in bug reports in Launchpad. 
+Some are actual defects, some are feature requests, some are general issues, and so on.  It is not uncommon on Launchpad to have a bug that deals with an issue that a developer cannot resolve.  In Launchpad, we offer a couple of bug [...]]]></description>
+			<content:encoded><![CDATA[<p>Many different types of information are stored in bug reports in Launchpad. </p>
+<p>Some are actual defects, some are feature requests, some are general issues, and so on.  It is not uncommon on Launchpad to have a bug that deals with an issue that a developer cannot resolve.  In Launchpad, we offer a couple of bug statuses that allow a developer to close a bug report without actually doing what is requested in the report: these are <em>Won&#8217;t Fix</em> and <em>Invalid</em>. </p>
+<p>Often, though, there may still be a discussion. <em>Won&#8217;t Fix</em> and <em>Invalid</em> are useful for the developer, and the project, to know that they don&#8217;t need to schedule time for a fix. However, they can sometimes &mdash; rightly or wrongly &mdash; be seen as an attempt to close down to discussion.</p>
+<p>We&#8217;ve just added a new bug status to Launchpad: <em>Opinion</em>. Now, this is a fairly momentous occasion; we hardly ever make changes to bug statuses because they, naturally, have a great impact on how you and others use Launchpad to track bugs. However, we feel it&#8217;s important to find a way to balance a project&#8217;s need for useful work planning with the need for intelligent and open discussion.</p>
+<p><em>Opinion</em> says: there&#8217;s a difference of opinion around this bug and people are free to continue the discussion, but the project or package maintainers need to move to other work and are considering the issue closed.</p>
+<p>Like I said, adding a new bug status to Launchpad is a big deal. So, we&#8217;re treating <em>Opinion</em> as an experiment. We&#8217;ll watch how it is used over the next three months and then we&#8217;ll decide if the status is proving useful and effective at closing bugs while leaving the discussion open.</p>
+<p>I&#8217;d love to hear your views on this new status: leave a comment here, join us on the <a href="https://launchpad.net/~launchpad-users">launchpad-users</a> mailing list or <a href="https://launchpad.net/~deryck/+contactuser">mail me directly</a>.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.launchpad.net/bug-tracking/new-bugs-status-opinion/feed</wfw:commentRss>
+		<slash:comments>4</slash:comments>
+		</item>
+		<item>
+		<title>SFTP uploads to PPAs!</title>
+		<link>http://blog.launchpad.net/cool-new-stuff/sftp-uploads</link>
+		<comments>http://blog.launchpad.net/cool-new-stuff/sftp-uploads#comments</comments>
+		<pubDate>Wed, 07 Jul 2010 08:07:03 +0000</pubDate>
+		<dc:creator>Matthew Revell</dc:creator>
+				<category><![CDATA[Cool new stuff]]></category>
+		<category><![CDATA[PPA]]></category>
+
+		<guid isPermaLink="false">http://blog.launchpad.net/?p=1607</guid>
+		<description><![CDATA[You can now use SFTP to upload source packages to your Personal Package Archive!
+If you&#8217;re already familiar with uploading to a PPA, all you need to do is ensure your dput.cf includes the following:
+
+method = sftp
+login = &#60;your Launchpad account name&#62;
+
+If you&#8217;re new to PPAs, but already know how to create packages for Ubuntu, take [...]]]></description>
+			<content:encoded><![CDATA[<p>You can now use SFTP to upload source packages to your Personal Package Archive!</p>
+<p>If you&#8217;re already familiar with uploading to a PPA, all you need to do is ensure your <code>dput.cf</code> includes the following:</p>
+<p><code><br />
+method = sftp<br />
+login = &lt;your Launchpad account name&gt;<br />
+</code></p>
+<p>If you&#8217;re new to PPAs, but already know how to create packages for Ubuntu, <a href="https://help.launchpad.net/Packaging/PPA">take a look at our guide</a>.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.launchpad.net/cool-new-stuff/sftp-uploads/feed</wfw:commentRss>
+		<slash:comments>4</slash:comments>
+		</item>
+		<item>
+		<title>UPDATED: Launchpad read-only 23.00 UTC 6th July</title>
+		<link>http://blog.launchpad.net/notifications/launchpad-read-only-23-00-utc-1st-july</link>
+		<comments>http://blog.launchpad.net/notifications/launchpad-read-only-23-00-utc-1st-july#comments</comments>
+		<pubDate>Mon, 28 Jun 2010 16:23:37 +0000</pubDate>
+		<dc:creator>Matthew Revell</dc:creator>
+				<category><![CDATA[Notifications]]></category>
+
+		<guid isPermaLink="false">http://blog.launchpad.net/?p=1609</guid>
+		<description><![CDATA[This replaces the previously announced period of unavailability for the 1st of July.
+Launchpad&#8217;s web interface will be read-only, with other aspects offline, for around 90 minutes from 23.00 UTC on the 6th of July 2010.
+This is to allow for the release of the latest Launchpad code.
+Starts: 23.00 UTC 6th July 2010
+Expected back online: 00.30 UTC [...]]]></description>
+			<content:encoded><![CDATA[<p><strong>This replaces the previously announced period of unavailability for the 1st of July.</strong></p>
+<p>Launchpad&#8217;s web interface will be read-only, with other aspects offline, for around 90 minutes from 23.00 UTC on the 6th of July 2010.</p>
+<p>This is to allow for the release of the latest Launchpad code.</p>
+<p><strong>Starts:</strong> 23.00 UTC 6th July 2010<br />
+<strong>Expected back online:</strong> 00.30 UTC 7th July 2010</p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.launchpad.net/notifications/launchpad-read-only-23-00-utc-1st-july/feed</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+		</item>
+		<item>
+		<title>Take the Launchpad user survey!</title>
+		<link>http://blog.launchpad.net/general/take-the-launchpad-user-survey</link>
+		<comments>http://blog.launchpad.net/general/take-the-launchpad-user-survey#comments</comments>
+		<pubDate>Wed, 23 Jun 2010 12:26:00 +0000</pubDate>
+		<dc:creator>Matthew Revell</dc:creator>
+				<category><![CDATA[General]]></category>
+
+		<guid isPermaLink="false">http://blog.launchpad.net/?p=1604</guid>
+		<description><![CDATA[There are all sorts of different ways in which we in Canonical&#8217;s Launchpad team keep in touch with people who use Launchpad: informal conversations on IRC, attending Ubuntu Developer Summits, formal user research and so on.
+We want to hear from as many people who use Launchpad as possible. To help get there, I&#8217;ve created a [...]]]></description>
+			<content:encoded><![CDATA[<p>There are all sorts of different ways in which we in Canonical&#8217;s Launchpad team keep in touch with people who use Launchpad: informal conversations on IRC, attending Ubuntu Developer Summits, formal user research and so on.</p>
+<p>We want to hear from as many people who use Launchpad as possible. To help get there, I&#8217;ve created a survey with five questions. Tell us what you like about Launchpad, what you don&#8217;t and what sort of work you do in Launchpad:</p>
+<p><big><strong><a href="http://www.surveymonkey.com/s/launchpadsummer2010">Take the Launchpad user survey</a>!</strong></big></p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.launchpad.net/general/take-the-launchpad-user-survey/feed</wfw:commentRss>
+		<slash:comments>1</slash:comments>
+		</item>
+		<item>
+		<title>Meet Steve Kowalik</title>
+		<link>http://blog.launchpad.net/meet-the-devs/meet-steve-kowalik</link>
+		<comments>http://blog.launchpad.net/meet-the-devs/meet-steve-kowalik#comments</comments>
+		<pubDate>Mon, 21 Jun 2010 16:22:33 +0000</pubDate>
+		<dc:creator>Matthew Revell</dc:creator>
+				<category><![CDATA[Meet the devs]]></category>
+
+		<guid isPermaLink="false">http://blog.launchpad.net/?p=1597</guid>
+		<description><![CDATA[Steve Kowalik recently joined the Soyuz part of the Launchpad team at Canonical, so I asked him the, by now familiar, questions!
+Matthew: What were you doing before you joined the Launchpad team?
+Steve: I worked on the Ubuntu Mobile team for 2.5 years before switching to the Launchpad team to work on Soyuz.
+Matthew: Can we see [...]]]></description>
+			<content:encoded><![CDATA[<p><a href="https://launchpad.net/~stevenk">Steve Kowalik</a> recently joined the Soyuz part of the Launchpad team at Canonical, so I asked him the, by now familiar, questions!</p>
+<p><strong>Matthew: What were you doing before you joined the Launchpad team?</strong></p>
+<p><strong>Steve:</strong> I worked on the Ubuntu Mobile team for 2.5 years before switching to the Launchpad team to work on Soyuz.</p>
+<p><strong>Matthew: Can we see something that you&#8217;ve worked on from that time?</strong></p>
+<p><strong>Steve:</strong> You sure can. The images and large parts of the integration work for Ubuntu Netbook Remix 9.04 and Ubuntu Netbook Edition 9.10 were done by me. I was also responsible for image builds for the three ARM sub-architectures for the 9.10 release.</p>
+<p><strong>Matthew: Where do you work?</strong></p>
+<p><strong>Steve:</strong> I work from my apartment in Sydney, Australia.</p>
+<p><strong>Matthew: What can you see from your office window?</strong></p>
+<p><strong>Steve:</strong> Another apartment block, so not the most glamorous of settings. From the other side of my apartment, I can see the local river. So it depends on the definition of office, if it&#8217;s my &#8220;office&#8221; or the balcony I work from on summer days.</p>
+<p><strong>Matthew: What did you do before working at Canonical?</strong></p>
+<p><strong>Steve:</strong> I worked at a company in Burwood, NSW specializing in satellite communications, and worked on supporting and developing their in-house Debian-derived distribution.</p>
+<p><strong>Matthew: How did you get into free software?</strong></p>
+<p><strong>Steve:</strong> I became interested in Linux when I was in high school, after I came across the term and researched it on the Internet. I started running it in 1999, and switched to Debian from Red Hat in 2000. I became a Debian Developer in 2001, and switched to Ubuntu in mid 2005.</p>
+<p><strong>Matthew: What&#8217;s more important? Principle or pragmatism?</strong></p>
+<p><strong>Steve:</strong> I believe pragmatism is more important, as it allows people to use hard data to define the problem or solution space, and work within its boundaries.</p>
+<p><strong>Matthew: Do you/have you contribute(d) to any free software projects?</strong></p>
+<p><strong>Steve:</strong> I&#8217;ve had a large number of patches and changes in Ubuntu, some in Debian, and I&#8217;ve written a Debian package checker from scratch, called Linda. I&#8217;ve been involved in free software for over ten years now. </p>
+<p><strong>Matthew: Tell us something really cool about Launchpad that not enough people know about.</strong></p>
+<p><strong>Steve:</strong> You can now upload packages to PPAs and Ubuntu via SFTP! As an added bonus, I wrote the support for it in Launchpad.</p>
+<p><strong>Matthew: Is there anything in particular you plan to work on while you&#8217;re with Launchpad?</strong></p>
+<p><strong>Steve:</strong> I plan on helping to make Soyuz more stable, more feature-ful and hopefully, faster.</p>
+<p><strong>Matthew: Okay, <a href="https://launchpad.net/~kiko">Kiko</a>&#8217;s special question! You&#8217;re at your computer, you reach for your wallet: what are you most likely to be doing?</strong></p>
+<p><strong>Steve:</strong> I&#8217;m either paying a bill, or buying something online.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.launchpad.net/meet-the-devs/meet-steve-kowalik/feed</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+		</item>
+		<item>
+		<title>Faster pages</title>
+		<link>http://blog.launchpad.net/general/faster-pages</link>
+		<comments>http://blog.launchpad.net/general/faster-pages#comments</comments>
+		<pubDate>Fri, 11 Jun 2010 15:15:43 +0000</pubDate>
+		<dc:creator>Curtis Hovey</dc:creator>
+				<category><![CDATA[General]]></category>
+
+		<guid isPermaLink="false">http://blog.launchpad.net/?p=1561</guid>
+		<description><![CDATA[I am happy to report that caching rules I put in place on many pages last week are effective. I did not want to announce that pages were faster until I could see read a week of oops reports to verify that the slow pages owned by the Launchpad registry team were no longer listed [...]]]></description>
+			<content:encoded><![CDATA[<p>I am happy to report that caching rules I put in place on many pages last week are effective. I did not want to announce that pages were faster until I could see read a week of oops reports to verify that the slow pages owned by the Launchpad registry team were no longer listed as problems. I am honestly surprised that all the slow pages I changes are not listed. I expected to make a reduction in timeouts between 50% and 80%. This looks like a 100% success. I know it is not 100%, but I think this means that milestone, series, and project pages load quicker and you are seeing fewer timeouts.</p>
+<p>Launchpad pages now have access to memcached to store fragments of pages. Parts of pages that are costly to generate are cached for minutes or hours depending on how often the data can change. In the case of distro series pages, architecture data changes every few months so the cache rules are 6 hours. Milestone pages were a challenge to cache. Active milestones cache bugs for 10 minutes, Inactive milestones cache for 3 hours. The milestone summary of statuses and assignments cache for 1 hour. If you do not know this, you may suspect there is a bug in launchpad, or wonder if you did not update a bug as you thought. We need a mechanism to expire change when data is changed.</p>
+<p>We are now adding cache rules to other pages to improve page load times.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.launchpad.net/general/faster-pages/feed</wfw:commentRss>
+		<slash:comments>4</slash:comments>
+		</item>
+		<item>
+		<title>Change to 2nd June Launchpad read-only/down-time</title>
+		<link>http://blog.launchpad.net/notifications/change-to-2nd-june-launchpad-read-onlydown-time</link>
+		<comments>http://blog.launchpad.net/notifications/change-to-2nd-june-launchpad-read-onlydown-time#comments</comments>
+		<pubDate>Tue, 01 Jun 2010 14:29:55 +0000</pubDate>
+		<dc:creator>Matthew Revell</dc:creator>
+				<category><![CDATA[Notifications]]></category>
+
+		<guid isPermaLink="false">http://blog.launchpad.net/?p=1557</guid>
+		<description><![CDATA[We&#8217;ve had to alter the times between which Launchpad&#8217;s web interface will be read-only, while everything else is offline, for the release of Launchpad 10.05.
+New start time: 11.00 UTC 2nd June 2010
+New end time: 14.00 UTC 2nd June 2010
+]]></description>
+			<content:encoded><![CDATA[<p>We&#8217;ve had to alter the times between which Launchpad&#8217;s web interface will be read-only, while everything else is offline, for the release of Launchpad 10.05.</p>
+<p><strong>New start time:</strong> 11.00 UTC 2nd June 2010<br />
+<strong>New end time:</strong> 14.00 UTC 2nd June 2010</p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.launchpad.net/notifications/change-to-2nd-june-launchpad-read-onlydown-time/feed</wfw:commentRss>
+		<slash:comments>1</slash:comments>
+		</item>
+		<item>
+		<title>UPDATED: Launchpad read-only 08.00-11.00 UTC 2nd June 2010</title>
+		<link>http://blog.launchpad.net/notifications/launchpad-read-only-08-00-11-00-utc-2nd-june-2010</link>
+		<comments>http://blog.launchpad.net/notifications/launchpad-read-only-08-00-11-00-utc-2nd-june-2010#comments</comments>
+		<pubDate>Mon, 31 May 2010 15:28:13 +0000</pubDate>
+		<dc:creator>Matthew Revell</dc:creator>
+				<category><![CDATA[Notifications]]></category>
+
+		<guid isPermaLink="false">http://blog.launchpad.net/?p=1553</guid>
+		<description><![CDATA[See our new post on this.
+]]></description>
+			<content:encoded><![CDATA[<p><a href="http://blog.launchpad.net/notifications/change-to-2nd-june-launchpad-read-onlydown-time">See our new post on this</a>.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.launchpad.net/notifications/launchpad-read-only-08-00-11-00-utc-2nd-june-2010/feed</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+		</item>
+	</channel>
+</rss>

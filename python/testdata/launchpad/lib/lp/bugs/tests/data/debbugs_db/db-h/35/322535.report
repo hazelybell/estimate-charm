@@ -1,0 +1,53 @@
+Received: (at submit) by bugs.debian.org; 11 Aug 2005 09:25:25 +0000
+From jmm@inutil.org Thu Aug 11 02:25:25 2005
+Return-path: <jmm@inutil.org>
+Received: from ip0.serverflex.de (vserver151.vserver151.serverflex.de) [193.22.164.111] 
+	by spohr.debian.org with esmtp (Exim 3.36 1 (Debian))
+	id 1E39JV-00041P-00; Thu, 11 Aug 2005 02:25:25 -0700
+Received: from wlan-client-254.informatik.uni-bremen.de ([134.102.117.4] helo=localhost.localdomain)
+	by vserver151.vserver151.serverflex.de with esmtpsa (TLS-1.0:RSA_AES_256_CBC_SHA:32)
+	(Exim 4.50)
+	id 1E39JT-0000dz-8e
+	for submit@bugs.debian.org; Thu, 11 Aug 2005 11:25:23 +0200
+Received: from jmm by localhost.localdomain with local (Exim 4.52)
+	id 1E39Jq-0001kV-AR; Thu, 11 Aug 2005 11:25:46 +0200
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+From: Moritz Muehlenhoff <jmm@inutil.org>
+To: Debian Bug Tracking System <submit@bugs.debian.org>
+Subject: evolution: Multiple format string vulnerabilities in Evolution
+X-Mailer: reportbug 3.15
+Date: Thu, 11 Aug 2005 11:25:46 +0200
+Message-Id: <E1E39Jq-0001kV-AR@localhost.localdomain>
+X-SA-Exim-Connect-IP: 134.102.117.4
+X-SA-Exim-Mail-From: jmm@inutil.org
+X-SA-Exim-Scanned: No (on vserver151.vserver151.serverflex.de); SAEximRunCond expanded to false
+Delivered-To: submit@bugs.debian.org
+X-Spam-Checker-Version: SpamAssassin 2.60-bugs.debian.org_2005_01_02 
+	(1.212-2003-09-23-exp) on spohr.debian.org
+X-Spam-Level: 
+X-Spam-Status: No, hits=-8.0 required=4.0 tests=BAYES_00,HAS_PACKAGE 
+	autolearn=no version=2.60-bugs.debian.org_2005_01_02
+
+Package: evolution
+Severity: grave
+Tags: security
+
+Multiple exploitable format string vulnerabilities have been found in
+Evolution. Please see 
+http://www.securityfocus.com/archive/1/407789/30/0/threaded
+for details. 2.3.7 fixes all these issues.
+
+Cheers,
+        Moritz
+
+-- System Information:
+Debian Release: testing/unstable
+  APT prefers unstable
+  APT policy: (500, 'unstable')
+Architecture: i386 (i686)
+Shell:  /bin/sh linked to /bin/bash
+Kernel: Linux 2.6.12-rc5
+Locale: LANG=C, LC_CTYPE=de_DE.ISO-8859-15@euro (charmap=ISO-8859-15)
+

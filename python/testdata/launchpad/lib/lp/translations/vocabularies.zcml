@@ -1,0 +1,97 @@
+<!-- Copyright 2009 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <securedutility
+    name="FilteredDeltaLanguagePack"
+    component="lp.translations.vocabularies.FilteredDeltaLanguagePackVocabulary"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    >
+    <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+  </securedutility>
+
+  <class class="lp.translations.vocabularies.FilteredDeltaLanguagePackVocabulary">
+    <allow interface="lp.services.webapp.vocabulary.IHugeVocabulary"/>
+  </class>
+
+
+  <securedutility
+    name="FilteredFullLanguagePack"
+    component="lp.translations.vocabularies.FilteredFullLanguagePackVocabulary"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    >
+    <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+  </securedutility>
+
+  <class class="lp.translations.vocabularies.FilteredFullLanguagePackVocabulary">
+    <allow interface="lp.services.webapp.vocabulary.IHugeVocabulary"/>
+  </class>
+
+
+  <securedutility
+    name="FilteredLanguagePack"
+    component="lp.translations.vocabularies.FilteredLanguagePackVocabulary"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    >
+    <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+  </securedutility>
+
+  <class class="lp.translations.vocabularies.FilteredLanguagePackVocabulary">
+    <allow interface="lp.services.webapp.vocabulary.IHugeVocabulary"/>
+  </class>
+
+
+  <securedutility
+    name="TranslatableLanguage"
+    component="lp.translations.vocabularies.TranslatableLanguageVocabulary"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    >
+    <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+  </securedutility>
+
+  <class class="lp.translations.vocabularies.TranslatableLanguageVocabulary">
+    <allow interface="lp.services.webapp.vocabulary.IHugeVocabulary"/>
+  </class>
+
+
+  <securedutility
+    name="TranslationGroup"
+    component="lp.translations.vocabularies.TranslationGroupVocabulary"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    >
+    <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+  </securedutility>
+
+  <class class="lp.translations.vocabularies.TranslationGroupVocabulary">
+    <allow interface="lp.services.webapp.vocabulary.IHugeVocabulary"/>
+  </class>
+
+
+  <securedutility
+    name="TranslationMessage"
+    component="lp.translations.vocabularies.TranslationMessageVocabulary"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    >
+    <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+  </securedutility>
+
+  <class class="lp.translations.vocabularies.TranslationMessageVocabulary">
+    <allow interface="lp.services.webapp.vocabulary.IHugeVocabulary"/>
+  </class>
+
+
+  <securedutility
+    name="TranslationTemplate"
+    component="lp.translations.vocabularies.TranslationTemplateVocabulary"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    >
+    <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+  </securedutility>
+
+  <class class="lp.translations.vocabularies.TranslationTemplateVocabulary">
+    <allow interface="lp.services.webapp.vocabulary.IHugeVocabulary"/>
+  </class>
+
+</configure>

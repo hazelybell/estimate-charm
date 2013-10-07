@@ -1,0 +1,24 @@
+<tal:link-enabled
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  condition="context/enabled">
+
+  <tal:link-linked
+     condition="context/linked">
+     <a tal:attributes="
+         class view/css_class;
+         href view/url;
+         title view/summary;
+         "
+         tal:content="structure context/escapedtext"
+     />
+  </tal:link-linked>
+
+  <tal:link-not-linked
+      condition="not: context/linked">
+      <span
+          tal:attributes="class view/css_class"
+          tal:content="structure context/escapedtext"
+      >link text</span>
+  </tal:link-not-linked>
+
+</tal:link-enabled>

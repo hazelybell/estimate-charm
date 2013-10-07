@@ -1,0 +1,26 @@
+<!-- Copyright 2009 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:zope="http://namespaces.zope.org/zope"
+    i18n_domain="launchpad">
+
+    <class class="lp.services.salesforce.proxy.SalesforceVoucherProxy">
+        <allow interface="lp.services.salesforce.interfaces.ISalesforceVoucherProxy" />
+    </class>
+
+    <class class="lp.services.salesforce.proxy.Voucher">
+        <allow attributes="id voucher_id project status term_months __str__" />
+    </class>
+
+   <securedutility
+        class="lp.services.salesforce.tests.proxy.TestSalesforceVoucherProxy"
+        provides="lp.services.salesforce.interfaces.ISalesforceVoucherProxy">
+        <allow interface="lp.services.salesforce.interfaces.ISalesforceVoucherProxy" />
+    </securedutility>
+
+</configure>

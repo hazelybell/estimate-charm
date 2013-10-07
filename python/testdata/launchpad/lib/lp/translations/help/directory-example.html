@@ -1,0 +1,53 @@
+<html>
+  <head>
+    <title>Example directory layout for translation files</title>
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssreset/reset.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssfonts/fonts.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssbase/base.css" />
+  </head>
+  <body>
+    <h1>Example directory layout for translation files</h1>
+
+    <p>
+      Each template (<code>.pot</code>) file must be in its own
+      directory. For example:
+    </p>
+
+    <ul>
+      <li>template1/template1.pot
+        <ul>
+          <li>template1/de.po</li>
+          <li>template1/fr.po</li>
+        </ul>
+      </li>
+      <li>template2/template2.pot
+        <ul>
+          <li>template2/de.po</li>
+          <li>template2/fr.po</li>
+        </ul>
+      </li>
+    </ul>
+
+    <p>
+      You should follow Launchpad <a target="_blank"
+      href="https://help.launchpad.net/Translations/ImportPolicy">
+      translation import guidelines</a> to ensure your translation
+      files are imported successfully.
+    </p>
+
+    <h2>.mo-style layouts</h2>
+
+    <p>
+      Launchpad will not import your files if they use a <code>.mo</code>-style
+      directory layout, such as:
+    </p>
+
+    <p>
+      <strong>NOT SUPPORTED:</strong> <code>template1/LC_MESSAGES/de/template1.po</code>
+    </p>
+
+  </body>
+</html>

@@ -1,0 +1,90 @@
+.yui3-picker-search-box, .yui3-picker-footer-slot {
+    position: relative;
+    margin:15px auto 5px; /* Centered */
+    width: 70%;
+    padding-right: 24px; /* Give room for the search button */
+}
+
+.yui3-picker-footer-slot {
+    padding-bottom: 1em;
+}
+
+input.yui3-picker-search {
+    width: 100%;
+}
+
+.yui3-picker-search-box button.lazr-search {
+    /* The search button is floated right to avoid problems with
+     * the input.yui3-picker-search width in Safari 3.
+     */
+    float: right;
+    /* Ensure that the top of the image doesn't get cut off
+     * if the font size has a lower line height. Affects Safari 4beta.
+     */
+    height: 14px;
+}
+
+.yui3-picker-search-mode button.lazr-search {
+    background: url('../../../../ui/assets/skins/sam/spinner.gif') 
+                0.2em 0 no-repeat;
+}
+
+.yui3-picker-search-box .lazr-search {
+    position: absolute;
+    right: -4px; /* Puts the button within the parent padding area */
+}
+
+.yui3-picker-error {
+    padding-top: 0.3em;
+    color: red;
+}
+
+ul.yui3-picker-results {
+    margin: 0 0 1em;
+}
+
+ul.yui3-picker-results li {
+    position: relative;
+    list-style-image: none;
+    list-style-position: outside;
+    list-style:none;
+    cursor: pointer;
+}
+
+.yui3-picker-results li img {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+}
+
+.yui3-picker-results li {
+    /* Hard-code the space between items, keep the space on the left relative */
+    padding: 3px 0 3px 2em;
+}
+
+.yui3-picker-result-description {
+    color: #888888;
+}
+
+.yui3-picker-results li:hover {
+    background-color: #bbbbff;
+}
+
+.yui3-picker-no-results li:hover {
+    background-color: transparent;
+}
+
+.yui3-picker-batches {
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.yui3-picker-batches span {
+    margin-right: 2px;
+    cursor: pointer;
+}
+
+.yui3-picker-selected-batch {
+    font-weight: bold;
+}
+

@@ -1,0 +1,48 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+  <body>
+    <div metal:fill-slot="main">
+      <p>
+        A diff of each change to the feature rules is stored so that they
+        can be audited.
+      </p>
+
+      <ul class="horizontal" style="margin-bottom:1em;">
+        <li>
+          <a class="sprite edit" href="+feature-rules">Feature control</a>
+        </li>
+        <li>
+          <a class="sprite info" href="+feature-info">Feature flag info</a>
+        </li>
+      </ul>
+
+      <div style="margin-top: 1em">
+        <div class="results"
+          tal:content="structure view/changes/@@+navigation-links-upper" />
+
+        <dl id="changes">
+          <tal:item repeat="change view/changes/batch">
+            <dt>
+              <tal:date replace="change/date_changed/fmt:rfc822utcdatetime" />
+              by <a tal:replace="structure change/person/fmt:link" />
+            </dt>
+
+            <dd class="subordinate">
+              <p tal:content="change/comment">comment</p>
+
+              <div tal:content="structure change/diff/fmt:diff" />
+            </dd>
+          </tal:item>
+        </dl>
+
+        <div class="results"
+          tal:content="structure view/changes/@@+navigation-links-lower" />
+        </div>
+    </div>
+  </body>
+</html>

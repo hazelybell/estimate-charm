@@ -1,0 +1,65 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  tal:omit-tag=""
+>
+  <form
+    action=""
+    method="get"
+    accept-charset="UTF-8"
+    id=""
+    name=""
+    tal:attributes="
+      action string:${view/rooturl}+search;
+      id string:sitesearch${view/id_suffix};
+      name string:sitesearch${view/id_suffix};
+    "
+  >
+    <p class="error message"
+       tal:condition="view/errors"
+       tal:content="view/error_count" />
+
+    <p class="error message"
+      tal:repeat="form_wide_error view/form_wide_errors"
+      tal:content="structure form_wide_error">
+      Schema validation errors.
+    </p>
+
+    <div
+      tal:attributes="class view/error_class"
+      tal:omit-tag="not:view/error_class">
+      <div>
+        <input
+          class="textType"
+          type="text"
+          size="36"
+          id=""
+          value=""
+          name=""
+          tal:attributes="
+            id string:field.text${view/id_suffix};
+            name string:field.text;
+            value view/text;
+          "
+        />
+        <script
+          type="text/javascript"
+          tal:define="script view/focusedElementScript"
+          tal:condition="script"
+          tal:content="structure script">javascript</script>
+        <input
+          class="button"
+          type="submit"
+          value="Search"
+          tal:attributes="
+            id string:field.text${view/id_suffix};
+            name string:field.actions.search${view/id_suffix};
+          " />
+      </div>
+      <div class="message" style="max-width:25em;"
+        tal:condition="view/error"
+        tal:content="structure view/error">
+        Error message
+      </div>
+    </div>
+  </form>
+</tal:root>

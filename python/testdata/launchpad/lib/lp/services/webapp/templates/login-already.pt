@@ -1,0 +1,18 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+<html metal:use-macro="view/macro:page/main_only">
+  <body>
+    <div class="top-portlet" metal:fill-slot="main">
+      <h1>You are already logged in</h1>
+      <p>
+        You are already logged in as
+        <strong tal:content="request/lp:person/displayname">name</strong>.
+        If this is not you, please <a href="/+logout">log out now</a>.
+      </p>
+    </div>
+  </body>
+</html>
+</tal:root>

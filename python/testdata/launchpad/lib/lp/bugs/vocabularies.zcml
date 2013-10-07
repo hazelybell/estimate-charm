@@ -1,0 +1,109 @@
+<!-- Copyright 2011 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <securedutility
+    name="Bug"
+    component="lp.bugs.vocabularies.BugVocabulary"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    >
+    <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+  </securedutility>
+
+  <class class="lp.bugs.vocabularies.BugVocabulary">
+    <allow interface="lp.services.webapp.vocabulary.IHugeVocabulary"/>
+  </class>
+
+
+  <securedutility
+    name="BugNominatableSeries"
+    component="lp.bugs.vocabularies.BugNominatableSeriesVocabulary"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    >
+    <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+  </securedutility>
+
+  <class class="lp.bugs.vocabularies.BugNominatableProductSeriesVocabulary">
+    <allow interface="lp.services.webapp.vocabulary.IHugeVocabulary"/>
+  </class>
+
+  <class class="lp.bugs.vocabularies.BugNominatableDistroSeriesVocabulary">
+    <allow interface="lp.services.webapp.vocabulary.IHugeVocabulary"/>
+  </class>
+
+
+  <securedutility
+    name="BugTracker"
+    component="lp.bugs.vocabularies.BugTrackerVocabulary"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    >
+    <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+  </securedutility>
+
+  <class class="lp.bugs.vocabularies.BugTrackerVocabulary">
+    <allow interface="lp.services.webapp.vocabulary.IHugeVocabulary"/>
+  </class>
+
+
+  <securedutility
+    name="WebBugTracker"
+    component="lp.bugs.vocabularies.WebBugTrackerVocabulary"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    >
+    <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+  </securedutility>
+
+  <class class="lp.bugs.vocabularies.WebBugTrackerVocabulary">
+    <allow interface="lp.services.webapp.vocabulary.IHugeVocabulary"/>
+  </class>
+
+
+  <securedutility
+    name="BugWatch"
+    component="lp.bugs.vocabularies.BugWatchVocabulary"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    >
+    <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+  </securedutility>
+
+  <class class="lp.bugs.vocabularies.BugWatchVocabulary">
+    <allow interface="lp.services.webapp.vocabulary.IHugeVocabulary"/>
+  </class>
+
+
+  <securedutility
+    name="DistributionUsingMalone"
+    component="lp.bugs.vocabularies.DistributionUsingMaloneVocabulary"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    >
+    <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+  </securedutility>
+
+  <class class="lp.bugs.vocabularies.DistributionUsingMaloneVocabulary">
+    <allow interface="lp.services.webapp.vocabulary.IHugeVocabulary"/>
+  </class>
+
+
+  <securedutility
+    name="ProjectProductsUsingMalone"
+    component="lp.bugs.vocabularies.project_products_using_malone_vocabulary_factory"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    >
+    <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+  </securedutility>
+
+  <securedutility
+    name="BugTaskMilestone"
+    component="lp.bugs.vocabularies.BugTaskMilestoneVocabulary"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    >
+    <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+  </securedutility>
+
+  <class class="lp.bugs.vocabularies.BugTaskMilestoneVocabulary">
+    <allow interface="lp.services.webapp.vocabulary.IHugeVocabulary"/>
+  </class>
+
+</configure>

@@ -1,0 +1,23 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+<body>
+  <div metal:fill-slot="heading"><h1 tal:content="view/label" /></div>
+  <div metal:fill-slot="main">
+    <div class="top-portlet">
+      <p>These projects are translated in <a href="/">Launchpad</a>:</p>
+      <tal:navigation
+        replace="structure view/batchnav/@@+navigation-links-upper" />
+      <div tal:repeat="product view/batchnav/currentBatch"
+         tal:replace="structure product/@@+listing-detailed" />
+      <tal:navigation
+        replace="structure view/batchnav/@@+navigation-links-lower" />
+     </div>
+  </div>
+</body>
+</html>

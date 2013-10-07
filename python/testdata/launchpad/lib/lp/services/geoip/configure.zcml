@@ -1,0 +1,42 @@
+<!-- Copyright 2009-2010 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:zope="http://namespaces.zope.org/zope"
+    i18n_domain="launchpad">
+
+    <class class="lp.services.geoip.model.GeoIP">
+        <allow interface="lp.services.geoip.interfaces.IGeoIP" />
+    </class>
+
+    <securedutility
+        class="lp.services.geoip.model.GeoIP"
+        provides="lp.services.geoip.interfaces.IGeoIP">
+        <allow interface="lp.services.geoip.interfaces.IGeoIP" />
+    </securedutility>
+
+    <adapter
+        for="zope.publisher.interfaces.browser.IBrowserRequest"
+        factory="lp.services.geoip.model.RequestLocalLanguages"
+        provides="lp.services.geoip.interfaces.IRequestLocalLanguages" />
+
+    <adapter
+        for="zope.publisher.interfaces.browser.IBrowserRequest"
+        factory="lp.services.geoip.model.RequestPreferredLanguages"
+        provides="lp.services.geoip.interfaces.IRequestPreferredLanguages" />
+
+    <adapter
+        for="zope.publisher.interfaces.browser.IBrowserRequest"
+        factory="lp.services.geoip.helpers.request_country"
+        provides="lp.services.worlddata.interfaces.country.ICountry" />
+
+    <adapter
+        for="zope.publisher.interfaces.browser.IBrowserRequest"
+        factory="lp.services.geoip.model.GeoIPRequest"
+        provides="lp.services.geoip.interfaces.IGeoIPRecord" />
+
+</configure>

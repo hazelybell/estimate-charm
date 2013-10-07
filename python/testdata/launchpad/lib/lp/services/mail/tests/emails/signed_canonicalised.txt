@@ -1,0 +1,25 @@
+Content-Type: multipart/mixed; boundary="===============0670375710=="
+MIME-Version: 1.0
+Subject: Line endings have to be canonicalised to \r\n
+From: test@canonical.com
+
+--===============0670375710==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+
+The line endings in this text have to be canonicalised to
+\r\n in order for this signature verify properly.
+
+--===============0670375710==
+Content-Type: application/pgp-signature
+MIME-Version: 1.0
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.1 (GNU/Linux)
+
+iD8DBQBDhaRUuiuTid/SBUMRAmfSAJ9rajGT5F6WKXd9Jw9ibWPuBp8icQCglQj1
+onDRNL5Nf2TdmEAJyvCWdpk=
+=9k/U
+-----END PGP SIGNATURE-----
+--===============0670375710==--

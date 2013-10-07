@@ -1,0 +1,16 @@
+Package: archive-copier
+Priority: standard
+Section: debian-installer
+Installed-Size: 56
+Maintainer: Colin Watson <cjwatson@ubuntu.com>
+Architecture: i386
+Version: 0.1.5
+Depends: libc6 (>= 2.3.2.ds1-4), mounted-partitions, debootstrap-udeb
+Filename: pool/main/a/archive-copier/archive-copier_0.1.5_i386.udeb
+Size: 10860
+MD5sum: d13609e23206060a6efefb7f9aa0d379
+Description: Copy packages into an apt archive on the hard disk
+ This udeb copies packages from the CD into an apt archive on the
+ hard disk.
+installer-menu-item: 68
+

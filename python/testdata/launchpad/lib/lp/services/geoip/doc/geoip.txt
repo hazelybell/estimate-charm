@@ -1,0 +1,112 @@
+GeoIP
+=====
+
+GeoIP allows us to guess the location of a user based on his IP address.
+Our IGeoIP utility provides a couple methods to get location information
+from a given IP address.
+
+    >>> from lp.services.geoip.interfaces import IGeoIP
+    >>> geoip = getUtility(IGeoIP)
+
+The getCountryByAddr() method will return the country of the given IP
+address.
+
+    >>> geoip.getCountryByAddr('201.13.165.145').name
+    u'Brazil'
+
+When running tests the IP address will start with '127.', and GeoIP
+would, obviously, fail to find the country for, so we use a South
+African IP address in that case.
+
+    >>> geoip.getCountryByAddr('127.0.0.88').name
+    u'South Africa'
+
+We do the same trick for any IP addresses on private networks.
+
+    >>> geoip.getCountryByAddr('10.0.0.88').name
+    u'South Africa'
+
+    >>> geoip.getCountryByAddr('192.168.0.7').name
+    u'South Africa'
+
+    >>> geoip.getCountryByAddr('172.16.0.1').name
+    u'South Africa'
+
+IGeoIP also provides a getRecordByAddress() method, which returns a
+GeoIPRecord object, containing a bunch more information about that IP's
+location.
+
+    >>> record = geoip.getRecordByAddress('201.13.165.145')
+    >>> for key, value in sorted(record.items()):
+    ...     print "%s: %s" % (key, value)
+    area_code: ...
+    city: ...
+    country_code: BR
+    country_code3: BRA
+    country_name: Brazil
+    dma_code: ...
+    latitude: ...
+    longitude: ...
+    postal_code: ...
+    region: ...
+    region_name: ...
+    time_zone: ...
+
+And again we'll use a South African IP if the address starts with '127.'.
+
+    >>> record = geoip.getRecordByAddress('127.0.0.1')
+    >>> for key, value in sorted(record.items()):
+    ...     print "%s: %s" % (key, value)
+    area_code: ...
+    city: ...
+    country_code: ZA
+    country_code3: ZAF
+    country_name: South Africa
+    dma_code: ...
+    latitude: ...
+    longitude: ...
+    postal_code: ...
+    region: ...
+    region_name: ...
+    time_zone: ...
+
+If it can't find a GeoIPRecord for the given IP address, it will return
+None.
+
+    >>> print geoip.getRecordByAddress('255.255.255.255')
+    None
+
+We also have GeoIPRequest, which adapts an IBrowserRequest into an
+IGeoIPRecord, providing the latitude, longitude and time zone of the
+request's originating IP address.
+
+    >>> from lp.services.webapp.servers import LaunchpadTestRequest
+    >>> from lp.services.geoip.interfaces import IGeoIPRecord
+    >>> request = LaunchpadTestRequest()
+
+Since our request won't have an originating IP address, we'll use that
+same South African IP address.
+
+    >>> from lp.services.geoip.helpers import ipaddress_from_request
+    >>> print ipaddress_from_request(request)
+    None
+    >>> geoip_request = IGeoIPRecord(request)
+    >>> geoip_request.latitude
+    -33...
+    >>> geoip_request.longitude
+    18...
+    >>> geoip_request.time_zone
+    'Africa/Johannesburg'
+
+If the request had an originating IP address, though, it'd be used when
+we adapted it into an IGeoIPRecord.
+
+    >>> request = LaunchpadTestRequest(
+    ...     environ={'REMOTE_ADDR': '201.13.165.145'})
+    >>> geoip_request = IGeoIPRecord(request)
+    >>> geoip_request.latitude
+    -23...
+    >>> geoip_request.longitude
+    -45...
+    >>> geoip_request.time_zone in ('Brazil/Acre', 'America/Sao_Paulo')
+    True

@@ -1,0 +1,332 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<body>
+
+<div metal:fill-slot="head_epilogue">
+  <script type="text/javascript">
+    LPJS.use('node', 'lp.app.widgets.expander', function(Y) {
+        Y.on('domready', function() {
+            var all_expanders = Y.all('.expander-link');
+            all_expanders.each(function(link) {
+                var base_id = link.get('id').replace('-icon', '');
+                var content = Y.one('tbody.' + base_id);
+                var content_rows = content.all('tr td *');
+                var expander = new Y.lp.app.widgets.expander.Expander(
+                    link, content, { no_animation: true });
+                expander.setUp();
+            });
+        });
+    });
+  </script>
+</div>
+
+<div metal:fill-slot="main"
+     tal:define="setup view/setupQueueList;
+                 message view/performQueueAction;
+                 error view/error|nothing">
+
+  <div class="error message" tal:condition="error">
+    <span tal:content="error"></span>
+  </div>
+
+  <div class="top-portlet queue_list">
+
+    <tal:batch define="batch view/decoratedQueueBatch|nothing">
+
+    <form name="queue_items_state" action="" method="GET">
+
+      Show:
+
+      <select name="queue_state" size="1">
+
+        <option tal:repeat="option view/filtered_options"
+                tal:attributes="selected option/selected;
+                                value option/value"
+                tal:content="option/name" />
+
+      </select>
+
+      uploads with names like:
+
+      <input size="20" type="text" name="queue_text"
+                       tal:attributes="value view/name_filter" />
+
+      <input type="submit" value="Update" />
+
+    </form>
+
+    <br />
+
+     <tal:navigation
+        replace="structure view/batchnav/@@+navigation-links-upper" />
+
+     <form name="queue_items_action" action="" method="POST">
+     <input tal:attributes="type string:hidden;
+                            name string:queue_state;
+                            value view/state/value"/>
+     <table class="listing sortable" tal:condition="batch"
+            id="distroseriesqueue">
+       <thead>
+         <tr class="queue-row">
+           <tal:checkbox condition="view/availableActions">
+             <th colspan="3"> Package </th>
+           </tal:checkbox>
+           <tal:nocheckbox condition="not: view/availableActions">
+             <th colspan="2"> Package </th>
+           </tal:nocheckbox>
+           <th> Version </th>
+           <th> Component </th>
+           <th> Section </th>
+           <th> Priority </th>
+           <th> Sets </th>
+           <th> Pocket </th>
+           <th> When </th>
+         </tr>
+       </thead>
+       <tal:batch repeat="packageupload batch">
+         <tal:block define="filelist_class string:queue-${packageupload/id}">
+           <tbody>
+             <tr class="queue-row">
+                <tal:comment condition="nothing">
+                  Every column is top-padded apart from the checkbox
+                  because Firefox renders it offset anyway.  This will make
+                  other browsers look odd, now. :/
+                </tal:comment>
+                <td width="14" style="padding-top: 5px">
+                  <span tal:attributes="id string:${filelist_class}-icon"
+                        class="expander-link">&nbsp;</span>
+                </td>
+                <td class="icon left" tal:condition="view/availableActions">
+                     <input type="checkbox" name="QUEUE_ID"
+                            tal:attributes="value packageupload/id"/>
+                </td>
+                <td
+                  style="padding-top: 5px"
+                  tal:content="structure packageupload/icons_and_name">
+                </td>
+
+                <td style="padding-top: 5px"
+                    tal:content="packageupload/displayversion">2.0.17-6
+                </td>
+                <tal:is_source define="is_source packageupload/contains_source">
+                  <td
+                    style="padding-top: 5px"
+                    tal:content="packageupload/display_component">
+                  </td>
+                  <td
+                    style="padding-top: 5px"
+                    tal:content="packageupload/display_section">
+                  </td>
+                  <td
+                    style="padding-top: 5px"
+                    tal:content="packageupload/display_priority">
+                  </td>
+                  <td
+                    style="padding-top: 5px"
+                    tal:content="packageupload/display_package_sets">
+                  </td>
+                </tal:is_source>
+                <td style="padding-top: 5px"
+                    tal:content="packageupload/pocket/title">Updates
+                </td>
+                <td style="padding-top: 5px">
+                  <span class="sortkey"
+                    tal:content="packageupload/date_created/fmt:datetime" />
+                  <span
+                    tal:attributes="title packageupload/date_created/fmt:datetime"
+                    tal:content="packageupload/date_created/fmt:approximatedate">
+                    2006-03-15
+                  </span>
+                </td>
+             </tr>
+           </tbody>
+           <tbody tal:attributes="class string:${filelist_class}">
+             <metal:filelist use-macro="template/macros/package-filelist"/>
+           </tbody>
+         </tal:block>
+       </tal:batch>
+       <tbody>
+         <tr tal:condition="view/availableActions">
+           <td colspan="4" style="text-align: right;
+                                  vertical-align: bottom;
+                                  padding-bottom: 5px">
+             <label>Rejection comment:</label>
+           </td>
+           <td colspan="3" style="vertical-align: bottom">
+             <input style="width: 100%" type="text" name="rejection_comment" />
+           </td>
+           <td style="vertical-align: bottom">
+             <input
+               tal:condition="view/state/enumvalue:REJECTED"
+               disabled="true" value="Reject" name="Reject" type="submit"/>
+             <input
+               tal:condition="not:view/state/enumvalue:REJECTED"
+               value="Reject" name="Reject" type="submit"/>
+           </td>
+         </tr>
+         <tr tal:condition="view/availableActions">
+           <td colspan="4" style="text-align: right;
+                                  vertical-align: bottom;
+                                  padding-bottom: 5px">
+             <label>Override for selected uploads:</label>
+           </td>
+           <td style="vertical-align: bottom">
+             <label>Component:</label><br/>
+             <select name="component_override" size="1">
+               <option value="" selected="selected">(no change)</option>
+               <option tal:repeat="option context/components"
+                       tal:attributes="value option/name"
+                       tal:content="option/name"/>
+             </select>
+           </td>
+           <td style="vertical-align: bottom">
+             <label>Section:</label><br/>
+             <select name="section_override" size="1">
+               <option value="" selected="selected">(no change)</option>
+               <option tal:repeat="option view/sortedSections"
+                       tal:attributes="value option/name"
+                       tal:content="option/name"/>
+             </select>
+           </td>
+           <td style="vertical-align: bottom">
+             <label>Priority (binary):</label><br/>
+             <select name="priority_override" size="1">
+               <option value="" selected="selected">(no change)</option>
+               <option tal:repeat="option view/priorities"
+                       tal:attributes="value option/title/lower"
+                       tal:content="option/title/lower"/>
+             </select>
+           </td>
+           <td colspan="2" style="vertical-align: bottom">
+             <input value="Accept" name="Accept" type="submit"/>
+           </td>
+         </tr>
+       </tbody>
+     </table>
+
+     </form>
+
+     <div class="message" tal:condition="not: batch">
+       The <span tal:replace="view/state/title" /> queue is empty.
+     </div>
+
+     <tal:navigation
+        replace="structure view/batchnav/@@+navigation-links-lower" />
+
+     </tal:batch>
+  </div>
+
+</div>
+
+
+<metal:macros fill-slot="bogus">
+<metal:macro define-macro="package-filelist">
+
+  <tal:comment replace="nothing">
+    This macro expects the following variables defined:
+    :packageupload: A PackageUpload record for which we display files.
+  </tal:comment>
+
+    <tal:sync condition="packageupload/package_copy_job">
+      <tr>
+        <td />
+        <td tal:condition="view/availableActions" />
+        <td colspan="7"
+            tal:define="pcj packageupload/package_copy_job;
+                        visible pcj/source_archive/required:launchpad.View">
+          Sync from
+          <a tal:condition="visible"
+             tal:replace="structure pcj/source_archive/fmt:link"
+             /><span tal:condition="not:visible">private archive</span>,
+          requested by
+          <tal:requester content="structure pcj/job/requester/fmt:link" />
+        </td>
+      </tr>
+    </tal:sync>
+
+    <tr tal:repeat="file packageupload/source_files">
+      <td/>
+      <td tal:condition="view/availableActions"/>
+      <td
+        tal:define="libraryfilealias file/libraryfile"
+        tal:condition="libraryfilealias">
+        <metal:file use-macro="template/macros/package-file"/>
+      </td>
+      <td colspan="6"/>
+    </tr>
+
+    <tal:package repeat="package packageupload/binary_packages">
+      <tal:define
+        define="is_new python:view.is_new(package);
+                component_name package/component/name/lower;
+                section_name package/section/name/lower;
+                version package/version">
+        <tr tal:repeat="file python:packageupload.binary_packages[package]">
+          <td/>
+          <td tal:condition="view/availableActions"/>
+          <td tal:define="libraryfilealias file/libraryfile">
+            <metal:file use-macro="template/macros/package-file"/>
+            <span style="color: red" tal:condition="is_new">NEW</span>
+          </td>
+          <td tal:content="version"/>
+          <td tal:content="component_name"/>
+          <td tal:content="section_name"/>
+          <td tal:content="package/priority/name/lower"/>
+          <td colspan="2"/>
+        </tr>
+      </tal:define>
+    </tal:package>
+
+    <tal:custom define="customfiles packageupload/customfiles">
+      <tr tal:repeat="custom python:list(customfiles)">
+        <td/>
+        <td tal:condition="view/availableActions"></td>
+        <td tal:define="libraryfilealias custom/libraryfilealias">
+          <metal:file use-macro="template/macros/package-file"/>
+        </td>
+        <td colspan="6"/>
+      </tr>
+    </tal:custom>
+
+    <tal:diffs condition="packageupload/sourcepackagerelease">
+      <tr tal:define="diffs packageupload/sourcepackagerelease/package_diffs"
+          tal:repeat="diff diffs">
+        <td/>
+        <td tal:condition="view/availableActions"></td>
+        <td>
+          <tal:difflink replace="structure diff/fmt:link" />
+        </td>
+        <td colspan="6"/>
+      </tr>
+    </tal:diffs>
+
+</metal:macro>
+
+<metal:macro define-macro="package-file">
+  <tal:comment replace="nothing">
+    This macro expects the following variables defined:
+    :libraryfilealias: A LibraryFileAlias to link to. If it is expired,
+      no link will be created.
+  </tal:comment>
+  <tal:unexpired tal:condition="libraryfilealias/content">
+    <a tal:attributes="href libraryfilealias/http_url">
+      <tal:filename replace="libraryfilealias/filename"/>
+    </a>
+    (<span tal:replace="libraryfilealias/content/filesize/fmt:bytes" />)
+  </tal:unexpired>
+  <tal:expired tal:condition="not:libraryfilealias/content">
+    <span tal:content="libraryfilealias/filename"/>
+  </tal:expired>
+</metal:macro>
+
+</metal:macros>
+
+</body>
+</html>

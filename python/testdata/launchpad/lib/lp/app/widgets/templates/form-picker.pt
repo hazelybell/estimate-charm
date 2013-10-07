@@ -1,0 +1,8 @@
+<tal:root
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    omit-tag="">
+
+<metal:form-picker use-macro="context/@@form-picker-macros/form-picker"/>
+
+</tal:root>

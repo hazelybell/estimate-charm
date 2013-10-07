@@ -1,0 +1,199 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+  <body>
+
+    <tal:registering metal:fill-slot="registering">
+        created
+        <span tal:content="context/date_created/fmt:displaydate"
+              tal:attributes="title context/date_created/fmt:datetime"
+          >on 2005-01-01</span>
+    </tal:registering>
+
+    <div metal:fill-slot="main">
+
+      <div class="yui-g">
+
+        <div id="status" class="yui-u first">
+          <div class="portlet">
+            <div metal:use-macro="template/macros/status" />
+          </div>
+        </div>
+
+        <div id="details" class="yui-u">
+          <div class="portlet">
+            <div metal:use-macro="template/macros/details" />
+          </div>
+        </div>
+
+      </div> <!-- yui-g  -->
+
+      <div id="buildlog" class="portlet"
+           tal:condition="context/status/enumvalue:BUILDING">
+        <div metal:use-macro="template/macros/buildlog" />
+      </div>
+
+   </div> <!-- main -->
+
+
+<metal:macros fill-slot="bogus">
+
+  <metal:macro define-macro="details">
+    <tal:comment replace="nothing">
+      Details section.
+    </tal:comment>
+    <h2>Build details</h2>
+    <div class="two-column-list">
+      <dl>
+        <dt>Recipe:</dt>
+          <dd>
+            <tal:recipe replace="structure context/recipe/fmt:link" />
+          </dd>
+      </dl>
+      <dl>
+        <dt>Archive:</dt>
+          <dd>
+            <span tal:replace="structure context/archive/fmt:link"
+             >Celso PPA</span>
+          </dd>
+      </dl>
+      <dl>
+        <dt>Series:</dt>
+          <dd><a class="sprite distribution"
+                 tal:define="series context/distroseries"
+                 tal:attributes="href series/fmt:url"
+                 tal:content="series/displayname">Breezy Badger</a>
+          </dd>
+      </dl>
+      <dl>
+        <dt>Pocket:</dt>
+          <dd><span tal:replace="context/pocket/title">Release</span></dd>
+      </dl>
+      <dl>
+        <dt>Binary builds:</dt>
+        <dd tal:repeat="binary view/binary_builds"
+            tal:content="structure binary/fmt:link">
+        </dd>
+        <dd tal:condition="not: view/binary_builds">None</dd>
+      </dl>
+    </div>
+  </metal:macro>
+
+  <metal:macro define-macro="status">
+    <tal:comment replace="nothing">
+      Status section.
+    </tal:comment>
+    <h2>Build status</h2>
+    <p>
+      <span tal:replace="structure context/image:icon" />
+      <span tal:attributes="
+            class string:buildstatus${context/status/name};"
+            tal:content="context/status/title">Fully built</span>
+      <tal:building condition="context/status/enumvalue:BUILDING">
+        on <a tal:content="context/buildqueue_record/builder/title"
+              tal:attributes="href context/buildqueue_record/builder/fmt:url"/>
+      </tal:building>
+      <tal:built condition="context/builder">
+        on <a tal:content="context/builder/title"
+              tal:attributes="href context/builder/fmt:url"/>
+      </tal:built>
+    </p>
+
+    <ul>
+      <li tal:condition="context/dependencies">
+        Missing build dependencies: <em
+         tal:content="context/dependencies">x, y, z</em>
+     </li>
+      <tal:reallypending condition="context/buildqueue_record">
+      <tal:pending condition="context/buildqueue_record/job/status/enumvalue:WAITING">
+        <li tal:define="eta context/buildqueue_record/getEstimatedJobStartTime">
+          Start <tal:eta
+          replace="eta/fmt:approximatedate">in 3 hours</tal:eta>
+          (<span tal:replace="context/buildqueue_record/lastscore"/>)
+          <a href="https://help.launchpad.net/Packaging/BuildScores"
+             target="_blank">What's this?</a>
+        </li>
+      </tal:pending>
+      </tal:reallypending>
+      <tal:started condition="context/date_started">
+        <li tal:condition="context/date_started">
+          Started <span
+           tal:define="start context/date_started"
+           tal:attributes="title start/fmt:datetime"
+           tal:content="start/fmt:displaydate">2008-01-01</span>
+        </li>
+      </tal:started>
+      <tal:finish condition="not: context/date_finished">
+        <li tal:define="eta view/eta" tal:condition="view/eta">
+          Estimated finish <tal:eta
+            replace="eta/fmt:approximatedate">in 3 hours</tal:eta>
+        </li>
+      </tal:finish>
+
+      <li tal:condition="context/date_finished">
+        Finished <span
+          tal:attributes="title context/date_finished/fmt:datetime"
+          tal:content="context/date_finished/fmt:displaydate">2008-01-01</span>
+        <tal:duration condition="context/duration">
+          (took <span tal:replace="context/duration/fmt:exactduration"/>)
+        </tal:duration>
+      </li>
+      <li tal:define="file context/log"
+          tal:condition="file">
+        <a class="sprite download"
+           tal:attributes="href context/log_url">buildlog</a>
+        (<span tal:replace="file/content/filesize/fmt:bytes" />)
+      </li>
+      <li tal:define="file context/upload_log"
+          tal:condition="file">
+        <a class="sprite download"
+           tal:attributes="href context/upload_log_url">uploadlog</a>
+        (<span tal:replace="file/content/filesize/fmt:bytes" />)
+      </li>
+    </ul>
+
+    <div
+      style="margin-top: 1.5em"
+      tal:define="context_menu view/context/menu:context;
+                  link context_menu/cancel"
+      tal:condition="link/enabled"
+      >
+      <a tal:replace="structure link/fmt:link" />
+    </div>
+    <div
+      style="margin-top: 1.5em"
+      tal:define="context_menu view/context/menu:context;
+                  link context_menu/rescore"
+      tal:condition="link/enabled"
+      >
+      <a tal:replace="structure link/fmt:link" />
+    </div>
+
+
+  </metal:macro>
+
+  <metal:macro define-macro="buildlog">
+    <tal:comment replace="nothing">
+      Buildlog section.
+    </tal:comment>
+    <h2>Buildlog</h2>
+    <div id="buildlog-tail" class="logtail"
+         tal:define="logtail context/buildqueue_record/logtail"
+         tal:content="structure logtail/fmt:text-to-html">
+      <p>Things are crashing and burning all over the place.</p>
+    </div>
+    <p class="lesser" tal:condition="view/user">
+      Updated on <span tal:replace="structure view/user/fmt:local-time"/>
+    </p>
+  </metal:macro>
+
+</metal:macros>
+
+  </body>
+</html>

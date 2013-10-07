@@ -1,0 +1,132 @@
+A common error of traversal methods is that they raise a KeyError,
+IndexError, LookupError NotFoundError etc. instead of
+zope.interfaces.NotFound. This means they generate a System Error page
+instead of a correct 404 page. So we test them to ensure the correct
+HTTP status is returned.
+
+    >>> def check_not_found(url, host='launchpad.dev'):
+    ...     output = http("GET %s HTTP/1.1\nHost: %s" % (url, host))
+    ...     status = output.getStatus()
+    ...     if status != 404:
+    ...         return "%s returned status %s instead of 404\n\n%s" % (
+    ...             url, status, str(output))
+
+    >>> def check_redirect(url, auth=False, host='launchpad.dev', status=303):
+    ...     get_cmd = """
+    ... GET %s HTTP/1.1
+    ... Host: %s
+    ... """
+    ...     if auth:
+    ...         get_cmd += ("Authorization: "
+    ...                     "Basic Zm9vLmJhckBjYW5vbmljYWwuY29tOnRlc3Q=\n")
+    ...     rc = http(get_cmd % (url, host)).getStatus()
+    ...     if rc != status:
+    ...         return ("%s returned status %s instead of %d" %
+    ...             (url, rc, status))
+
+    >>> check_redirect("/legal", status=301)
+    >>> check_redirect("/faq", status=301)
+    >>> check_redirect("/feedback", status=301)
+    >>> check_redirect("/support/", status=301)
+
+    >>> check_redirect("/", host='feeds.launchpad.dev', status=301)
+    >>> check_redirect("/+index", host='feeds.launchpad.dev', status=301)
+
+The +translate page in the main host is obsolete so it's now a redirect
+to the translations site. This way, we don't break existing links to it.
+Before removing this, you must be completely sure that no supported
+Ubuntu release is still pointing to this old URL (see bug #138090).
+
+    >>> check_redirect("/mozilla/+translations", status=301)
+    >>> check_redirect("/products", status=301)
+    >>> check_redirect("/firefox/1.0/+translations", status=301)
+    >>> check_redirect("/firefox/+translations", status=301)
+    >>> check_redirect("/projects/firefox", status=301)
+    >>> check_redirect("/ubuntu/+source/evolution/+editbugcontact")
+    >>> check_redirect("/ubuntu/hoary/+translations", status=301)
+    >>> check_redirect("/ubuntu/hoary/+latest-full-language-pack",
+    ...       host="translations.launchpad.dev")
+    >>> check_redirect("/ubuntu/hoary/+source/evolution/+translations",
+    ...     status=301)
+    >>> check_redirect("/ubuntu/hoary/+source/mozilla-firefox/+pots",
+    ...     host='translations.launchpad.dev')
+    >>> check_redirect(
+    ...     "/ubuntu/hoary/+source/pmount/+pots/pmount/apa/+translate",
+    ...     status=301)
+    >>> check_redirect("/~name18/+translations", status=301)
+
+Viewing a bug in the context of an upstream where the bug has already
+been reported (including checking the various pages that hang off that
+one.)
+
+    >>> check_redirect("/bugs/assigned")
+    >>> check_redirect("/bugs/1")
+    >>> check_redirect("/firefox/+bug")
+
+Bug attachments in the context of a bugtask are all redirected to be at
++attachment/<id>. The old attachments/<id> form is deprecated.
+
+    >>> login('test@canonical.com')
+    >>> attachment = factory.makeBugAttachment(1)
+    >>> logout()
+
+    >>> check_redirect("/firefox/+bug/1/attachments/1", status=301)
+    >>> check_redirect("/firefox/+bug/1/attachments/1/+edit", status=301)
+    >>> check_redirect("/bugs/1/attachments/1", status=301)
+    >>> check_redirect("/bugs/1/attachments/1/+edit", status=301)
+
+Check a bug is traversable by nickname:
+
+    >>> check_redirect("/bugs/blackhole")
+    >>> check_redirect("/bugs/blackhole")
+    >>> check_not_found("/bugs/invalid-nickname")
+
+Note that you should not be able to directly file a bug on a
+distroseries or sourcepackage; an IBugTask reported against a
+distroseries or sourcepackage is *targeted* to be fixed in that specific
+release. Instead, you get redirected to the appropriate distro or
+distrosourcepackage filebug page.
+
+    >>> check_redirect("/ubuntu/warty/+filebug", auth=True)
+    >>> check_redirect(
+    ...     "/ubuntu/warty/+source/mozilla-firefox/+filebug", auth=True)
+
+The old +filebug-advanced form now redirects to the +filebug form.
+
+    >>> check_redirect("/firefox/+filebug-advanced", auth=True, status=301)
+    >>> check_redirect("/ubuntu/+filebug-advanced", auth=True, status=301)
+    >>> check_redirect(
+    ...     "/ubuntu/+source/mozilla-firefox/+filebug-advanced", auth=True,
+    ...     status=301)
+
+And this is for a person:
+
+    >>> check_redirect("/~name12/+branch/gnome-terminal/pushed/", status=301)
+    >>> check_redirect(
+    ...     "/~name12/+branch/gnome-terminal/pushed/+edit",
+    ...     auth=True, status=301)
+    >>> check_redirect("/~name16/+packages", status=301)
+    >>> check_redirect("/~name16/+projects", status=301)
+    >>> check_redirect("/+builds", status=301)
+    >>> check_redirect("/translations/groups/", status=301)
+    >>> check_redirect("/translations/imports/", status=301)
+
+The pillar set is published through the web service, but not through the
+website.
+
+    >>> check_not_found("/pillars")
+    >>> check_not_found("/sourcepackagenames")
+    >>> check_not_found("/binarypackagenames")
+    >>> check_not_found("/++resource++error")
+
+Check legacy URL redirects
+
+    >>> check_redirect("/distros/ubuntu", status=301)
+    >>> check_redirect("/products/ubuntu-product", status=301)
+    >>> check_redirect("/people/stub", status=301)
+
+Check redirects of Unicode URLs works
+
+    >>> check_not_found("/ubuntu/foo%C3%A9")
+    >>> check_not_found("/@@")
+    >>> check_not_found("//@@")

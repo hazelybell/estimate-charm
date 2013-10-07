@@ -1,0 +1,104 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+  >
+<body>
+
+<div metal:fill-slot="main">
+  <div class="top-portlet">
+    <tal:cannot_copy condition="not: view/can_copy">
+      <p>To be able to copy packages you have to participate in at least one
+         PPA. Activate your own PPA or join a team with an active PPA.</p>
+      <p><tal:activate_ppa
+        define="link view/user/menu:overview/activate_ppa"
+        replace="structure link/fmt:icon-link" /> or
+        <a tal:attributes="href context/menu:overview/packages/fmt:url">
+          &laquo;back</a>
+      </p>
+
+    </tal:cannot_copy>
+
+    <tal:can_copy condition="view/can_copy">
+
+      <tal:inactive_ppa_header condition="not: view/has_sources">
+        <p>This PPA does not contain any source packages published.</p>
+      </tal:inactive_ppa_header>
+
+      <tal:package_filter_form condition="view/has_sources">
+        <metal:package_filter_form
+          use-macro="context/@@+macros/package-filter-form" />
+      </tal:package_filter_form>
+
+      <div metal:use-macro="context/@@launchpad_form/form">
+
+      <div class="form" metal:fill-slot="widgets"
+           tal:condition="view/has_sources">
+
+        <metal:selectable-sources
+          use-macro="context/@@+macros/source-package-list" />
+
+        <tal:selectable_sources_end
+               define="widget nocall:view/widgets/selected_sources;
+                       field_name widget/context/__name__;
+                       error python:view.getFieldError(field_name);">
+          <input tal:attributes="name string:${widget/name}-empty-marker"
+                 type="hidden" value="1" />
+          <div class="error message" tal:condition="error"
+               tal:content="structure error">Error message</div>
+        </tal:selectable_sources_end>
+
+        <table style="margin-top: 1em;"
+          tal:condition="view/has_sources_for_display">
+
+          <tal:archive
+            define="widget nocall:view/widgets/destination_archive|nothing"
+            condition="widget">
+            <metal:widget
+              metal:use-macro="context/@@launchpad_form/widget_row" />
+          </tal:archive>
+
+          <tal:series
+            define="widget nocall:view/widgets/destination_series|nothing"
+            condition="widget">
+            <metal:widget
+              metal:use-macro="context/@@launchpad_form/widget_row" />
+          </tal:series>
+
+          <tal:binaries
+            define="widget nocall:view/widgets/include_binaries|nothing"
+            condition="widget">
+            <metal:widget
+              metal:use-macro="context/@@launchpad_form/widget_row" />
+          </tal:binaries>
+
+          <tr>
+            <td colspan="2">
+              <input
+                tal:replace="structure view/actions/field.actions.copy/render" />
+                or
+                <a tal:attributes="href context/menu:overview/packages/fmt:url">
+                  Cancel</a>
+            </td>
+          </tr>
+
+        </table>
+
+        </div> <!-- widgets -->
+
+        <div class="actions" metal:fill-slot="buttons">
+        </div> <!--empties buttons section -->
+
+      </div> <!-- launchpad_form -->
+
+    </tal:can_copy>
+
+  </div> <!--top-portlet -->
+
+</div> <!--main -->
+
+</body>
+</html>

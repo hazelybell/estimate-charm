@@ -1,0 +1,126 @@
+Getting remote products from SourceForge projects
+=================================================
+
+Launchpad Products can be linked to SourceForge projects by setting
+their 'sourceforgeproject' attribute.
+
+It's possible to get a list of the Products that are linked to a
+SourceForge project but which have no remote_product set by calling
+IProductSet.getSFLinkedProductsWithNoneRemoteProduct().
+
+There are currently no Products in the database linked to a SourceForge
+project without a remote_product set.
+
+    >>> from zope.component import getUtility
+    >>> from lp.registry.interfaces.product import IProductSet
+    >>> products = getUtility(
+    ...     IProductSet).getSFLinkedProductsWithNoneRemoteProduct()
+
+    >>> print products.count()
+    0
+
+If we add a Product and link it to a SourceForge project,
+getSFLinkedProductsWithNoneRemoteProduct() will return it.
+
+    >>> from lp.testing.factory import LaunchpadObjectFactory
+    >>> from transaction import commit
+    >>> factory = LaunchpadObjectFactory()
+
+    >>> product_1 = factory.makeProduct(name='my-first-product')
+    >>> product_1.sourceforgeproject = 'fronobulator'
+    >>> commit()
+
+    >>> products = getUtility(
+    ...     IProductSet).getSFLinkedProductsWithNoneRemoteProduct()
+
+    >>> for product in products:
+    ...     print product.name, product.sourceforgeproject
+    my-first-product fronobulator
+
+We'll use a test version of SourceForgeRemoteProductFinder that won't
+try to access SourceForge.
+
+    >>> from lp.services.log.logger import FakeLogger
+    >>> from lp.bugs.tests.sfremoteproductfinder import (
+    ...     TestSFRemoteProductFinder)
+    >>> from lp.testing.layers import LaunchpadZopelessLayer
+    >>> finder = TestSFRemoteProductFinder(
+    ...     txn=LaunchpadZopelessLayer.txn, logger=FakeLogger())
+
+SourceForgeRemoteProductFinder has a method,
+getRemoteProductFromSourceForge(), which does all the heavy lifting of finding
+the bug tracker for a given SourceForge project. It does this by fetching the
+SourceForge project page about each of them. It then finds the link to the
+project's 'Tracker' index within that page and follows it. Finally, it
+extracts the URL of the project's bug tracker and returns the group_id and
+atid therein as an ampersand-separated string.
+
+    >>> remote_product = finder.getRemoteProductFromSourceForge(
+    ...     'fronobulator')
+    DEBUG...Getting page projects/fronobulator
+    DEBUG...Getting page tracker/?group_id=5570
+
+    >>> print remote_product
+    5570&105570
+
+If an error is raised when trying to fetch the project pages from the
+remote server, it will be logged.
+
+    >>> from lp.bugs.tests.sfremoteproductfinder import (
+    ...     TestBrokenSFRemoteProductFinder)
+    >>> broken_finder = TestBrokenSFRemoteProductFinder(
+    ...     txn=LaunchpadZopelessLayer.txn, logger=FakeLogger())
+    >>> broken_finder.getRemoteProductFromSourceForge('fronobulator')
+    ERROR...Error fetching project...: HTTP Error 500: This is an error
+
+SourceForgeRemoteProductFinder.setRemoteProductsFromSourceForge()
+iterates over the list of products returned by
+getSFLinkedProductsWithNoneRemoteProduct() and then calls
+getRemoteProductFromSourceForge() to fetch their remote products.
+
+    >>> finder.setRemoteProductsFromSourceForge()
+    INFO...Updating 1 Products using SourceForge project data
+    DEBUG...Updating remote_product for Product 'my-first-product'
+    DEBUG...Getting page projects/fronobulator
+    DEBUG...Getting page tracker/?group_id=5570
+
+The product that was linked to SourceForge without a remote_product now has
+its remote_product set.
+
+    >>> product_1 = getUtility(IProductSet).getByName('my-first-product')
+    >>> print product_1.remote_product
+    5570&105570
+
+There are no other SourceForge-linked products that have no remote product.
+
+    >>> products = getUtility(
+    ...     IProductSet).getSFLinkedProductsWithNoneRemoteProduct()
+
+    >>> print products.count()
+    0
+
+
+update-sourceforge-remote-products.py
+-------------------------------------
+
+There is a cronscript, update-sourceforge-remote-products.py, which will use
+the SourceForgeRemoteProductFinder to periodically update Products'
+remote_product fields.
+
+    >>> import subprocess
+    >>> process = subprocess.Popen(
+    ...     ['cronscripts/update-sourceforge-remote-products.py', '-v'],
+    ...     stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+    ...     stderr=subprocess.PIPE)
+    >>> (out, err) = process.communicate()
+    >>> out
+    ''
+    >>> process.returncode
+    0
+
+    >>> print err
+    DEBUG   ...
+    INFO    No Products to update.
+    INFO    Time for this run: ... seconds.
+    DEBUG   updateremoteproduct ran in ...s (excl. load & lock)
+    DEBUG   Removing lock file:...

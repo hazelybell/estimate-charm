@@ -1,0 +1,285 @@
+Vocabularies
+============
+
+Introduction
+------------
+
+Vocabularies are lists of terms. In Launchpad's Component Architecture
+(CA), a vocabulary is a list of terms that a widget (normally a selection
+style widget) "speaks", i.e., its allowed values.
+
+    >>> from zope.component import getUtility
+    >>> from lp.testing import login
+    >>> from lp.services.database.sqlbase import flush_database_updates
+    >>> from lp.services.webapp.interfaces import IOpenLaunchBag
+    >>> from lp.registry.interfaces.person import IPersonSet
+    >>> from lp.registry.interfaces.product import IProductSet
+    >>> person_set = getUtility(IPersonSet)
+    >>> product_set = getUtility(IProductSet)
+    >>> login('foo.bar@canonical.com')
+    >>> launchbag = getUtility(IOpenLaunchBag)
+    >>> launchbag.clear()
+
+
+Values, Tokens, and Titles
+..........................
+
+In Launchpad, we generally use "tokenized vocabularies." Each term in
+a vocabulary has a value, token and title. A term is rendered in a
+select widget like this:
+
+<option value="$token">$title</option>
+
+The $token is probably the data you would store in your DB. The Token is
+used to uniquely identify a Term, and the Title is the thing you display
+to the user.
+
+
+Launchpad Vocabularies
+----------------------
+
+There are two kinds of vocabularies in Launchpad: enumerable and
+non-enumerable. Enumerable vocabularies are short enough to render in a
+select widget. Non-enumerable vocabularies require a query interface to make
+it easy to choose just one or a couple of options from several hundred,
+several thousand, or more.
+
+Vocabularies should not be imported - they can be retrieved from the
+vocabulary registry.
+
+    >>> from zope.schema.vocabulary import getVocabularyRegistry
+    >>> from zope.security.proxy import removeSecurityProxy
+    >>> vocabulary_registry = getVocabularyRegistry()
+    >>> def get_naked_vocab(context, name):
+    ...     return removeSecurityProxy(
+    ...         vocabulary_registry.get(context, name))
+    >>> product_vocabulary = vocabulary_registry.get(None, "Product")
+    >>> product_vocabulary.displayname
+    'Select a project'
+
+
+Iterating over non-enumerable vocabularies, while possible, will
+probably kill the database. Instead, these vocabularies are
+search-driven.
+
+
+BinaryAndSourcePackageNameVocabulary
+....................................
+
+The list of binary and source package names, ordered by name.
+
+    >>> package_name_vocabulary = vocabulary_registry.get(
+    ...     None, "BinaryAndSourcePackageName")
+    >>> package_name_vocabulary.displayname
+    'Select a Package'
+
+When a package name matches both a binary package name and a source
+package of the exact same name, the binary package name is
+returned. This allows us, in bug reporting for example, to collect the
+most specific information possible.
+
+Let's demonstrate by searching for "mozilla-firefox", for which there is
+both a source and binary package of that name.
+
+    >>> package_name_terms = package_name_vocabulary.searchForTerms(
+    ...     "mozilla-firefox")
+    >>> package_name_terms.count()
+    2
+    >>> [(term.token, term.title) for term in package_name_terms]
+    [('mozilla-firefox', u'mozilla-firefox'),
+     ('mozilla-firefox-data', u'mozilla-firefox-data')]
+
+Searching for "mozilla" should return the binary package name above, and
+the source package named "mozilla".
+
+    >>> package_name_terms = package_name_vocabulary.searchForTerms("mozilla")
+    >>> package_name_terms.count()
+    3
+    >>> [(term.token, term.title) for term in package_name_terms]
+    [('mozilla', u'mozilla'),
+     ('mozilla-firefox', u'mozilla-firefox'),
+     ('mozilla-firefox-data', u'mozilla-firefox-data')]
+
+The search does a case-insensitive, substring match.
+
+    >>> package_name_terms = package_name_vocabulary.searchForTerms("lInuX")
+    >>> package_name_terms.count()
+    2
+    >>> [(term.token, term.title) for term in package_name_terms]
+    [('linux-2.6.12', u'linux-2.6.12'),
+     ('linux-source-2.6.15', u'linux-source-2.6.15')]
+
+
+BinaryPackageNameVocabulary
+...........................
+
+All the binary packages in Launchpad.
+
+    >>> bpn_vocabulary = vocabulary_registry.get(None, 'BinaryPackageName')
+    >>> len(bpn_vocabulary)
+    8
+
+    >>> bpn_terms = bpn_vocabulary.searchForTerms("mozilla")
+    >>> len(bpn_terms)
+    2
+    >>> [(term.token, term.title) for term in bpn_terms]
+    [('mozilla-firefox', u'iceweasel huh ?'),
+     ('mozilla-firefox-data', u'Mozilla Firefox Data is .....')]
+
+
+SourcePackageNameVocabulary
+...........................
+
+All the source packages in Launchpad.
+
+    >>> spn_vocabulary = vocabulary_registry.get(None, 'SourcePackageName')
+    >>> len(spn_vocabulary)
+    17
+
+    >>> spn_terms = spn_vocabulary.searchForTerms("mozilla")
+    >>> len(spn_terms)
+    2
+    >>> [(term.token, term.title) for term in spn_terms]
+    [('mozilla', u'mozilla'), ('mozilla-firefox', u'mozilla-firefox')]
+
+    >>> spn_terms = spn_vocabulary.searchForTerms("pmount")
+    >>> len(spn_terms)
+    1
+    >>> [(term.token, term.title) for term in spn_terms]
+    [('pmount', u'pmount')]
+
+
+Processor
+.........
+
+All processors type available in Launchpad.
+
+    >>> vocab = vocabulary_registry.get(None, "Processor")
+    >>> vocab.displayname
+    'Select a processor'
+
+    >>> [term.token for term in vocab.searchForTerms('386')]
+    ['386']
+
+
+PPA
+...
+
+The PPA vocabulary contains all the PPAs available in a particular
+collection. It provides the IHugeVocabulary interface.
+
+    >>> from lp.testing import verifyObject
+    >>> from lp.services.webapp.vocabulary import IHugeVocabulary
+
+    >>> vocabulary = get_naked_vocab(None, 'PPA')
+    >>> verifyObject(IHugeVocabulary, vocabulary)
+    True
+
+    >>> print vocabulary.displayname
+    Select a PPA
+
+Iterations over the PPA vocabulary will return on PPA archives.
+
+    >>> sorted([term.value.owner.name for term in vocabulary])
+    [u'cprov', u'mark', u'no-priv']
+
+PPA vocabulary terms contain:
+
+ * token: the PPA owner name combined with the archive name (using '/');
+ * value: the IArchive object;
+ * title: the first line of the PPA description text.
+
+    >>> cprov_term = vocabulary.getTermByToken('cprov/ppa')
+
+    >>> print cprov_term.token
+    cprov/ppa
+
+    >>> print cprov_term.value
+    <Archive ...>
+
+    >>> print cprov_term.title
+    packages to help my friends.
+
+Not found terms result in LookupError.
+
+    >>> vocabulary.getTermByToken('foobar')
+    Traceback (most recent call last):
+    ...
+    LookupError: foobar
+
+PPA vocabulary searches consider the owner FTI and the PPA FTI.
+
+    >>> def print_search_results(results):
+    ...     for archive in results:
+    ...         term = vocabulary.toTerm(archive)
+    ...         print '%s: %s' % (term.token, term.title)
+
+    >>> cprov_search = vocabulary.search(u'cprov')
+    >>> print_search_results(cprov_search)
+    cprov/ppa: packages to help my friends.
+
+    >>> celso_search = vocabulary.search(u'celso')
+    >>> print_search_results(celso_search)
+    cprov/ppa: packages to help my friends.
+
+    >>> friends_search = vocabulary.search(u'friends')
+    >>> print_search_results(friends_search)
+    cprov/ppa: packages to help my friends.
+
+We will create an additional PPA for Celso named 'testing'
+
+    >>> from lp.soyuz.enums import ArchivePurpose
+    >>> from lp.soyuz.interfaces.archive import IArchiveSet
+
+    >>> login('foo.bar@canonical.com')
+    >>> cprov = getUtility(IPersonSet).getByName('cprov')
+    >>> cprov_testing = getUtility(IArchiveSet).new(
+    ...     owner=cprov, name='testing', purpose=ArchivePurpose.PPA,
+    ...     description='testing packages.')
+
+Now, a search for 'cprov' will return 2 ppas and the result is ordered
+by PPA name.
+
+    >>> cprov_search = vocabulary.search(u'cprov')
+    >>> print_search_results(cprov_search)
+    cprov/ppa: packages to help my friends.
+    cprov/testing: testing packages.
+
+The vocabulary search also supports specific named PPA lookups
+follwing the same combined syntax used to build unique tokens.
+
+    >>> named_search = vocabulary.search(u'cprov/testing')
+    >>> print_search_results(named_search)
+    cprov/testing: testing packages.
+
+As mentioned the PPA vocabulary term title only contains the first
+line of the PPA description.
+
+    >>> cprov.archive.description = "Single line."
+    >>> flush_database_updates()
+
+    >>> cprov_term = vocabulary.getTermByToken('cprov/ppa')
+    >>> print cprov_term.title
+    Single line.
+
+    >>> cprov.archive.description = "First line\nSecond line."
+    >>> flush_database_updates()
+
+    >>> cprov_term = vocabulary.getTermByToken('cprov/ppa')
+    >>> print cprov_term.title
+    First line
+
+PPAs with empty description are identified and have a title saying so.
+
+    >>> cprov.archive.description = None
+    >>> flush_database_updates()
+
+    >>> cprov_term = vocabulary.getTermByToken('cprov/ppa')
+    >>> print cprov_term.title
+    No description available
+
+Queries on empty strings also results in a valid SelectResults.
+
+    >>> empty_search = vocabulary.search(u'')
+    >>> empty_search.count() == 0
+    True

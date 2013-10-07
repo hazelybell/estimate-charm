@@ -1,0 +1,86 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+>
+  <body>
+  
+    <metal:side fill-slot="side">
+      <tal:menu replace="structure context/@@+global-actions" />
+    </metal:side>
+
+    <div metal:fill-slot="main">
+      <h1>Package bugs</h1>
+
+      <p>
+        <tal:person content="context/fmt:displayname">Sample Person</tal:person>
+        is subscribed to these packages.
+      </p>
+    <table class="listing">
+      <thead>
+      <tr>
+        <th class="amount" width="40%">Package</th>
+        <th class="amount" width="15%">Open</th>
+        <th class="amount" width="15%">Critical</th>
+        <th class="amount" width="15%">Unassigned</th>
+        <th class="amount" width="15%">In&nbsp;Progress</th>
+      </tr>
+      <tr tal:define="total_counts view/total_bug_counts">
+        <td>
+          Totals
+        </td>
+        <td class="amount">
+          <tal:open_bugs replace="total_counts/open_bugs_count" />
+        </td>
+        <td class="amount">
+          <tal:critical_bugs replace="total_counts/critical_bugs_count" />
+        </td>
+        <td class="amount">
+          <tal:unassigned_bugs replace="total_counts/unassigned_bugs_count" />
+        </td>
+        <td class="amount">
+          <tal:inprogress_bugs replace="total_counts/inprogress_bugs_count" />
+        </td>
+      </tr>
+      </thead>
+      <tbody>
+      <tr tal:repeat="package_bug_counts view/package_bug_counts">
+        <td>
+          <a href="#"
+             tal:content="package_bug_counts/package_name"
+             tal:attributes="href package_bug_counts/package_search_url">
+            mozilla-firefox (Ubuntu)
+          </a>
+        </td>
+        <td class="amount">
+          <a href="#"
+             tal:attributes="href package_bug_counts/open_bugs_url"
+             tal:content="package_bug_counts/open_bugs_count">2</a>
+        </td>
+        <td class="amount">
+          <a href="#"
+             tal:attributes="href package_bug_counts/critical_bugs_url"
+             tal:content="package_bug_counts/critical_bugs_count">2</a>
+        </td>
+        <td class="amount">
+          <a href="#"
+             tal:attributes="href package_bug_counts/unassigned_bugs_url"
+             tal:content="package_bug_counts/unassigned_bugs_count">2</a>
+        </td>
+        <td class="amount">
+          <a href="#"
+             tal:attributes="href package_bug_counts/inprogress_bugs_url"
+             tal:content="package_bug_counts/inprogress_bugs_count">2</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

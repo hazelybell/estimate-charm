@@ -1,0 +1,165 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  tal:define="context_menu view/context/menu:context">
+
+  <tal:imported-branch tal:condition="context/branch_type/enumvalue:IMPORTED">
+    <div id="import-details" tal:define="branch context;
+                                         code_import branch/code_import">
+      <tal:has-codeimport condition="branch/code_import"
+                          define="code_import branch/code_import">
+
+        <div><strong>Import Status:</strong>
+          <span tal:attributes="class string:codeimport${code_import/review_status/name}"
+                tal:content="code_import/review_status/title"/>
+            <form tal:attributes="action string:${context/fmt:url}/@@+try-again"
+                  tal:condition="python:view.user and code_import.review_status.name == 'FAILING'"
+                  style="display: inline; padding-left: 1em"
+                  id="tryagain"
+                  name="tryagain"
+                  method="post"
+                  enctype="multipart/form-data" accept-charset="UTF-8">
+              <input
+                 type="hidden"
+                 name="tryagain.actions.tryagain"
+                 value="" />
+              <input type="submit" id="tryagain.actions.tryagain"
+                 name="tryagain.actions.tryagain" value="Try Again"
+                 class="button"  />
+              <a href="#" class="hidden sprite retry"
+                id="tryagainlink">Try again</a>
+              <script type="text/javascript">
+                  LPJS.use('lp.code.util', function(Y) {
+                      Y.on("domready", function () {
+                          Y.lp.code.util.hookUpRetyImportSubmission(Y);
+                      }, window);});
+              </script>
+            </form>
+        </div>
+
+        <tal:git-import condition="code_import/rcs_type/enumvalue:GIT">
+          <p>This branch is an import of the HEAD branch of the Git repository at
+            <tal:is-web-url condition="view/url_is_web">
+              <a tal:attributes="href code_import/url"
+                 tal:content="code_import/url" />.
+            </tal:is-web-url>
+            <tal:not-web-url condition="not: view/url_is_web">
+              <span tal:replace="code_import/url" />.
+            </tal:not-web-url>
+          </p>
+        </tal:git-import>
+
+        <tal:bzr-import condition="code_import/rcs_type/enumvalue:BZR">
+          <p>This branch is an import of the Bazaar branch at
+            <tal:is-web-url condition="view/url_is_web">
+              <a tal:attributes="href code_import/url"
+                 tal:content="code_import/url" />.
+            </tal:is-web-url>
+            <tal:not-web-url condition="not: view/url_is_web">
+              <span tal:replace="code_import/url" />.
+            </tal:not-web-url>
+          </p>
+        </tal:bzr-import>
+
+        <tal:svn-import condition="view/is_svn_import">
+          <p id="svn-import-details">
+            This branch is an import of the
+            <span tal:attributes="title code_import/rcs_type/title">Subversion</span>
+            branch from
+            <tal:is-web-url condition="view/url_is_web">
+              <a tal:attributes="href code_import/url"
+                 tal:content="code_import/url" />.
+            </tal:is-web-url>
+            <tal:not-web-url condition="not: view/url_is_web">
+              <span tal:replace="code_import/url" />.
+            </tal:not-web-url>
+          </p>
+        </tal:svn-import>
+
+        <tal:cvs-import condition="code_import/rcs_type/enumvalue:CVS">
+          <p>This branch is an import of the CVS module
+          <strong tal:content="code_import/cvs_module"/> from
+          <strong tal:content="code_import/cvs_root"/>.
+          </p>
+        </tal:cvs-import>
+
+        <tal:has-job define="job code_import/import_job"
+                     condition="job">
+          <div>
+          <tal:is-running condition="job/state/enumvalue:RUNNING">
+            An import is currently running on
+            <tal:machine content="structure job/machine/fmt:link" />,
+            and was started
+            <tal:date-started replace="job/date_started/fmt:displaydate">
+              2 hours ago
+            </tal:date-started>.
+            <tal:is-logtail condition="job/logtail">
+              The last few lines of the job's output were:
+              <div class="logtail">
+                <tal:logtail content="structure job/logtail/fmt:nice_pre" />
+              </div>
+            </tal:is-logtail>
+          </tal:is-running>
+          <tal:not-running condition="not: job/state/enumvalue:RUNNING">
+            The next import is scheduled to run
+            <tal:overdue condition="job/isOverdue">
+              as soon as possible<tal:requested-by
+                condition="job/requesting_user">
+                (requested by
+                <tal:requested-by-user
+                   replace="structure job/requesting_user/fmt:link">
+                  Some user.
+                </tal:requested-by-user>)</tal:requested-by>.
+            </tal:overdue>
+            <tal:not-overdue condition="not: job/isOverdue">
+              <tal:date-started replace="job/date_due/fmt:displaydate">
+                in 2 hours
+              </tal:date-started>.
+              <tal:button
+                 condition="view/user"
+                 replace="structure view/context/@@+request-import" />
+            </tal:not-overdue>
+          </tal:not-running>
+          </div>
+        </tal:has-job>
+
+        <tal:failing condition="code_import/review_status/enumvalue:FAILING">
+          <div id="failing-try-again" class="message warning">
+            The import has been suspended because it failed
+            <tal:failure-limit content="modules/lp.services.config/config/codeimport/consecutive_failure_limit"/>
+            or more times in succession.
+          </div>
+        </tal:failing>
+
+        <tal:last-successful condition="code_import/date_last_successful">
+          <p>
+            Last successful import was
+            <tal:last-successful replace="code_import/date_last_successful/fmt:displaydate">
+              2 hours ago
+            </tal:last-successful>.
+          </p>
+        </tal:last-successful>
+
+        <div id="import-results" tal:condition="view/latest_code_import_results">
+          <tal:result repeat="result view/latest_code_import_results">
+            <metal:result use-macro="code_import/@@+macros/show_result"/>
+          </tal:result>
+        </div>
+
+        <div class="actions">
+          <div
+            tal:define="link context_menu/edit_import"
+            tal:condition="link/enabled"
+            >
+            <a id="edit-import"
+               class="sprite add"
+               tal:attributes="href link/url"
+               tal:content="link/text" />
+          </div>
+        </div>
+      </tal:has-codeimport>
+    </div>
+  </tal:imported-branch>
+
+</div>

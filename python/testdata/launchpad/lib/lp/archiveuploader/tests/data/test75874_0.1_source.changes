@@ -1,0 +1,20 @@
+Format: 1.7
+Date: Fri, 15 Dec 2006 12:02:42 +0000
+Source: test75874
+Binary: test75874
+Architecture: source
+Version: 0.1
+Distribution: feisty
+Urgency: low
+Maintainer: Colin Watson <cjwatson@ubuntu.com>
+Changed-By: Colin Watson <cjwatson@ubuntu.com>
+Description: 
+ test75874  - test case for https://launchpad.net/products/soyuz/+bug/75874
+Changes: 
+ test75874 (0.1) feisty; urgency=low
+ .
+   * Initial release.
+Files: 
+ 80a38659e6df3fcba1b6344457141d5b 249 debian-installer extra test75874_0.1.dsc
+ f26bb9b29b1108e53139da3584a4dc92 1511 debian-installer extra test75874_0.1.tar.gz
+Package-Type: udeb

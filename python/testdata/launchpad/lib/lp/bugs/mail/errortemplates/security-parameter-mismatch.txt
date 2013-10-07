@@ -1,0 +1,5 @@
+The 'security' command expects either 'yes' or 'no'.
+
+For example:
+
+    security yes

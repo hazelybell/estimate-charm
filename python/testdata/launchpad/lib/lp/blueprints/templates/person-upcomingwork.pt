@@ -1,0 +1,155 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+<body>
+
+<head>
+  <tal:block metal:fill-slot="head_epilogue">
+    <script type="text/javascript">
+      LPJS.use('node', 'event', 'lp.app.widgets.expander', 'lp.workitems.expanders', function(Y) {
+          Y.on('domready', function() {
+            Y.lp.workitems.expanders.setUpWorkItemExpanders();
+          })
+        });
+    </script>
+    <!-- TODO: Once this page is done and no longer guarded with a feature
+    flag, move this to the appropriate css files. -->
+    <style type="text/css">
+      .collapsible-body {
+        background-color: #eee;
+      }
+      tr.padded td {
+        padding-left: 2em;
+      }
+    </style>
+  </tal:block>
+</head>
+
+<div metal:fill-slot="main">
+
+  <div tal:repeat="pair view/work_item_containers" class="workitems-group"
+       tal:attributes="id string:milestone_${repeat/pair/index}">
+  <div tal:define="date python: pair[0]; containers python: pair[1]">
+    <h2>Work items due in <span tal:replace="date/fmt:date" /></h2>
+
+    <div>
+      <div style="float: left">Overall completion: &nbsp;</div>
+      <div tal:define="percent_done_or_postponed python: view.progress_per_date[date]"
+           tal:attributes="title string:${percent_done_or_postponed}% of items completed;"
+           style="border: 1px solid gray; width: 300px; float:left">
+        <img tal:attributes="id string:progressbar_${repeat/pair/index};
+                             width string:${percent_done_or_postponed}%"
+             style="display: block"
+             src="/@@/green-bar"
+             height="15"/>
+      </div>
+      <div style="clear: both" />
+    </div>
+
+    <p>
+      From
+      <tal:milestones repeat="milestone python: view.milestones_per_date[date]">
+        <a tal:replace="structure milestone/fmt:link"
+          /><span tal:condition="not: repeat/milestone/end">,</span>
+      </tal:milestones>
+    </p>
+
+    <p>
+      There are <span tal:replace="python: view.workitem_counts[date]" />
+      Blueprint work items and
+      <span tal:replace="python: view.bugtask_counts[date]" /> Bugs due
+      in <span tal:content="date/fmt:date" /> which are assigned to
+      <tal:team condition="context/is_team">members of this team.</tal:team>
+      <tal:not-team condition="not: context/is_team">
+        <span tal:replace="context/displayname" />
+      </tal:not-team>
+    </p>
+
+    <table class="listing">
+      <thead>
+      <tr>
+        <th>
+          <div style="float: right; font-weight: normal;">All:
+            <a href="#expandall" class="expandall_link"
+               tal:attributes="id string:expand_milestone_${repeat/pair/index}">Expand</a>
+            <a href="#collapseall" class="collapseall_link"
+               tal:attributes="id string:collapse_milestone_${repeat/pair/index}">Collapse</a>
+            <a href="#defaultall" class="defaultall_link"
+               tal:attributes="id string:default_milestone_${repeat/pair/index}">Default</a>
+          </div>
+          Blueprint
+        </th>
+        <th>Target</th>
+        <th>Assignee</th>
+        <th>Priority</th>
+        <th>Progress</th>
+      </tr>
+      </thead>
+      <tal:containers repeat="container containers">
+      <tbody>
+        <tr class="expandable">
+          <td>
+            <span class="expander">
+                <span class="action-icon">Expand or Collapse</span>
+            </span>
+            <span tal:replace="structure container/html_link" />
+          </td>
+          <td tal:content="structure container/target_link" />
+          <td tal:content="structure container/assignee_link" />
+          <td tal:content="container/priority_title" />
+          <td>
+            <div tal:attributes="title string:${container/percent_done_or_postponed}% of items completed;"
+                 style="border: 1px solid gray; width: 60px">
+              <img tal:attributes="
+                     id string:container_progressbar_${repeat/container/index};
+                     width string:${container/percent_done_or_postponed}%"
+                   style="display: block"
+                   src="/@@/green-bar"
+                   height="10"/>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+
+      <tal:conditional condition="container/has_incomplete_work">
+        <tal:block define="global upcoming_work_class_name string:expanded"/>
+        <tal:block define="global expander_init_state string:default-expanded"/>
+      </tal:conditional>
+
+      <tal:conditional condition="not: container/has_incomplete_work">
+        <tal:block define="global upcoming_work_class_name string:"/>
+        <tal:block define="global expander_init_state string:default-collapsed"/>
+      </tal:conditional>
+
+      <tbody tal:attributes="class string:collapsible-body ${upcoming_work_class_name} ${expander_init_state}">
+        <tr tal:repeat="workitem container/items" class="padded">
+          <td>
+            <span tal:condition="not: container/spec|nothing"
+                  tal:content="structure workitem/actual_workitem/fmt:link" />
+            <span tal:condition="container/spec|nothing"
+                  tal:content="workitem/title/fmt:shorten/120" />
+          </td>
+          <td>
+            <span tal:condition="not: container/spec|nothing"
+                  tal:replace="structure workitem/target/fmt:link" />
+          </td>
+          <td><a tal:replace="structure workitem/assignee/fmt:link" /></td>
+          <td>
+            <span tal:condition="not: container/spec|nothing"
+                  tal:replace="workitem/priority/title" />
+          </td>
+          <td><span tal:replace="workitem/status/title" /></td>
+        </tr>
+      </tbody>
+      </tal:containers>
+    </table>
+  </div>
+  </div>
+</div>
+
+</body>
+</html>

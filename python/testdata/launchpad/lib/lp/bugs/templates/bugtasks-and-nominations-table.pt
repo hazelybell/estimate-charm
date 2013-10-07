@@ -1,0 +1,27 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  omit-tag="">
+    <table
+      id="affected-software"
+      tal:attributes="class python: context.duplicateof and 'duplicate listing' or 'listing'"
+    >
+      <thead>
+        <tr>
+          <th colspan="2">Affects</th>
+          <th>Status</th>
+          <th>Importance</th>
+          <th>Assigned to</th>
+          <th>Milestone</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tal:bugtask-or-nomination
+            repeat="task_or_nom_view view/getBugTaskAndNominationViews">
+          <tal:block replace="structure task_or_nom_view" />
+        </tal:bugtask-or-nomination>
+      </tbody>
+
+    </table>
+</tal:root>

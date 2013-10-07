@@ -1,0 +1,26 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+  <body>
+    <div metal:fill-slot="main">
+      <div class="top-portlet">
+        <div metal:use-macro="context/@@launchpad_form/form">
+          <p metal:fill-slot="extra_info">
+            These images are used throughout Launchpad to represent
+            <span tal:replace="context/displayname">Ubuntu Linux</span>.
+            Changing them here will affect every page related to
+            <span tal:replace="context/displayname">Ubuntu Linux</span> as
+            well as listings which include it.
+            You must use <strong>exactly</strong> the correct size of image.
+          </p>
+        </div>
+      </div>
+
+      <tal:menu replace="structure view/@@+related-pages" />
+    </div>
+  </body>
+</html>

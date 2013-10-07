@@ -1,0 +1,52 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  i18n:domain="launchpad">
+  <head>
+    <title>Oops!</title>
+    <style type="text/css">
+      html {
+          font-family: Ubuntu, 'Bitstream Vera Sans', 'DejaVu Sans', Tahoma, sans-serif;
+          }
+      h1 {
+          font-size: 30px;
+          line-height: 34px;
+          }
+      .oopsid {
+          color: #cc0000;
+          font-weight: bold;
+          }
+    </style>
+  </head>
+  <body>
+    <h1 class="exception">Oops!</h1>
+    <div>
+      <p>
+        Sorry, something just went wrong in Launchpad.
+      </p>
+      <p>
+        We&#8217;ve recorded what happened,
+        and we&#8217;ll fix it as soon as possible.
+        Apologies for the inconvenience.
+      </p>
+      <p>
+        (Error <abbr>ID</abbr>:
+        <tal:oops replace="structure view/oops_id_text" />)
+      </p>
+      <tal:traceback replace="structure view/maybeShowTraceback" />
+      <div class="related">
+        <ul>
+          <li>
+            <a tal:attributes="href modules/lp.services.webapp.vhosts/allvhosts/configs/mainsite/rooturl"
+            >Return to the Launchpad front page</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>

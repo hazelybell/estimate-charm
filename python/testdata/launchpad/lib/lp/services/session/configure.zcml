@@ -1,0 +1,12 @@
+<!-- Copyright 2011 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="launchpad">
+    <adapter factory=".adapters.session_master_store" />
+    <adapter factory=".adapters.session_slave_store" />
+    <adapter factory=".adapters.session_default_store" />
+</configure>

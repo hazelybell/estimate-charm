@@ -1,0 +1,101 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+<table tal:condition="view/has_pofiles"
+       class="sortable listing" id="language-chart" width="100%">
+  <thead>
+    <tr>
+      <th>Language</th>
+      <th>Status</th>
+      <th>Untranslated</th>
+      <th>Need review</th>
+      <th>Changed</th>
+      <th>Last Edited</th>
+      <th>By</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr tal:repeat="pfview view/pofiles"
+        tal:attributes="id string:${pfview/context/potemplate/name}_${pfview/context/language/code}">
+      <tal:block define="pf pfview/context">
+        <td>
+          <a tal:attributes="href string:${pf/fmt:url}/+translate"
+             tal:content="pf/language/englishname/fmt:shorten/25">
+             Language Name
+          </a>
+        </td>
+        <td style="white-space: nowrap">
+          <div tal:replace="structure pf/@@+barchart" />
+        </td>
+        <td>
+          <span class="sortkey" tal:content="pf/untranslatedCount">0</span>
+          <a tal:attributes="href string:${pf/fmt:url}/+translate?show=untranslated"
+              tal:condition="pf/untranslatedCount"
+              tal:content="pf/untranslatedCount"
+              >0</a>
+          <tal:count condition="not: pf/untranslatedCount">
+            &mdash;
+          </tal:count>
+        </td>
+        <td>
+          <span class="sortkey" tal:content="pf/unreviewedCount">0</span>
+          <a tal:attributes="href string:${pf/fmt:url}/+translate?show=new_suggestions"
+              tal:condition="pf/unreviewedCount"
+              tal:content="pf/unreviewedCount"
+              >0</a>
+          <tal:count condition="not: pf/unreviewedCount">
+            &mdash;
+          </tal:count>
+        </td>
+        <td>
+          <span class="sortkey" tal:content="pf/updatesCount">0</span>
+          <a tal:attributes="href string:${pf/fmt:url}/+translate?show=changed_in_ubuntu"
+              tal:condition="pf/updatesCount"
+              tal:content="pf/updatesCount"
+              >0</a>
+          <tal:count condition="not: pf/updatesCount">
+            &mdash;
+          </tal:count>
+        </td>
+        <td>
+          <span class="sortkey"
+            tal:condition="pf/date_changed"
+            tal:content="
+              pf/date_changed/fmt:datetime">
+            time sort key
+          </span>
+          <span
+            tal:condition="pf/date_changed"
+            tal:attributes="
+              title pf/date_changed/fmt:datetime"
+            tal:content="
+              pf/date_changed/fmt:approximatedate"
+            >
+            2007-02-10
+          </span>
+          <tal:block condition="not: pf/date_changed">
+              &mdash;
+          </tal:block>
+        </td>
+        <td>
+          <tal:XXX condition="nothing">
+            # XXX CarlosPerelloMarin 2007-02-12: This code is exactly the
+            # same as in distroserieslanguage-index.pt
+          </tal:XXX>
+          <tal:block condition="pf/lasttranslator">
+            <a tal:attributes="
+                 href pf/lasttranslator/fmt:url"
+               tal:content="pf/lasttranslator/displayname/fmt:shorten/25"></a>
+          </tal:block>
+          <tal:block condition="not: pf/lasttranslator">
+              &mdash;
+          </tal:block>
+        </td>
+      </tal:block>
+    </tr>
+  </tbody>
+</table>
+</tal:root>

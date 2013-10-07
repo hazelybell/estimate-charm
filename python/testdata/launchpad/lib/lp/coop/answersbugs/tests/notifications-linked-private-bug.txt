@@ -1,0 +1,30 @@
+Linked Bug Status Changed Notification (Private)
+================================================
+
+See `answer-tracker-notifications-linked-bug.txt` for public bug behavior.
+
+Question subscribers are not sent notifications about private bugs, because
+they are indirect subscribers.
+
+    >>> from zope.event import notify
+    >>> from zope.interface import providedBy
+    >>> from lazr.lifecycle.event import ObjectModifiedEvent
+    >>> from lazr.lifecycle.snapshot import Snapshot
+    >>> from lp.answers.tests.test_question_notifications import (
+    ...     pop_questionemailjobs)
+    >>> from lp.bugs.interfaces.bugtask import BugTaskStatus
+    >>> from lp.registry.interfaces.person import IPersonSet
+
+    >>> no_priv = getUtility(IPersonSet).getByName('no-priv')
+    >>> bugtask = get_bugtask_linked_to_question()
+
+    >>> bugtask.bug.setPrivate(True, bugtask.bug.owner)
+    True
+    >>> original_bugtask = Snapshot(bugtask, providing=providedBy(bugtask))
+    >>> bugtask.transitionToStatus(BugTaskStatus.FIXCOMMITTED, no_priv)
+    >>> ignore = pop_questionemailjobs()
+    >>> notify(ObjectModifiedEvent(
+    ...     bugtask, original_bugtask, ['status'], user=no_priv))
+    >>> notifications = pop_questionemailjobs()
+    >>> len(notifications)
+    0

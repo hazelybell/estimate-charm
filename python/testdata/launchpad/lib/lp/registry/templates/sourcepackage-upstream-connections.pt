@@ -1,0 +1,97 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<tal:comment condition="nothing">
+  view.request.annotations['show_edit_buttons'] can be set in views
+  that include this page to display the edit and remove buttons.
+</tal:comment>
+<div id="upstreams" tal:define="series context/productseries">
+  <dl>
+    <dd>
+      <tal:has_pg condition="series/product/project">
+        <a tal:replace="structure series/product/project/fmt:link" /> &rArr;
+      </tal:has_pg>
+      <a tal:replace="structure series/product/fmt:link" /> &rArr;
+      <a tal:content="series/name"
+          tal:attributes="href series/fmt:url" />
+      <span tal:condition="request/annotations/show_edit_buttons | nothing">
+        <a tal:replace="
+          structure context/menu:overview/edit_packaging/fmt:icon" />
+        <a tal:replace="
+          structure context/menu:overview/remove_packaging/fmt:icon " />
+      </span>
+    </dd>
+  </dl>
+  <p tal:content="series/product/summary"/>
+
+  <style>
+    #upstream-fields dd {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+  <div id="upstream-fields" class="two-column-list">
+    <dl>
+      <dd title="Bug supervisor">
+        Bug supervisor:
+        <tal:yes-no replace="structure series/product/bug_supervisor/image:boolean"/>
+      </dd>
+
+      <dd title="Bug tracker">
+        Bug tracker:
+        <tal:yes-no replace="structure view/has_bugtracker/image:boolean"/>
+      </dd>
+    </dl>
+    <dl>
+      <dd title="Series branch">
+        Branch:
+        <tal:yes-no replace="structure series/branch/image:boolean"/>
+      </dd>
+      <dd title="Series translations auto import"
+          tal:condition="context/has_translation_templates"
+          tal:define="bool not:series/translations_autoimport_mode/enumvalue:NO_IMPORT">
+        Translations:
+        <tal:yes-no replace="structure bool/image:boolean"/>
+      </dd>
+    </dl>
+  </div>
+
+  <tal:upstream-version
+    define="release series/getLatestRelease;
+            tracking view/current_release_tracking">
+    <p id="no-upstream-version"
+      tal:condition="tracking/enumvalue:NONE">
+      <span class="sprite no">There are no registered releases</span>
+      for the <tal:project replace="series/product/displayname" />
+      &rArr; <tal:series replace="series/name" />.
+    </p>
+    <p id="newer-upstream-version"
+      tal:condition="tracking/enumvalue:NEWER">
+      <strong class="sprite warning-icon">A newer version of
+      <tal:name replace="context/name"/> is available for
+      packaging: <a
+        tal:replace="structure release/fmt:link" /></strong>
+    </p>
+    <p id="older-upstream-version"
+      tal:condition="tracking/enumvalue:OLDER">
+      <span class="sprite warning-icon"><a
+        tal:replace="structure release/fmt:link" /></span> is older than the
+      current packaged version. Launchpad may be missing release information
+      for the <a tal:content="string:${series/name} series"
+        tal:attributes="href series/fmt:url" /> or this package is linked
+        to the wrong
+        <a tal:attributes="href series/product/menu:overview/series/fmt:url"
+           tal:content="string: ${series/product/displayname} series" />.
+    </p>
+    <p id="current-upstream-version"
+      tal:condition="tracking/enumvalue:CURRENT">
+      <span class="sprite yes">Packaging is up-to-date</span> for
+      <a tal:replace="structure release/fmt:link" />.
+    </p>
+  </tal:upstream-version>
+</div>
+
+</tal:root>

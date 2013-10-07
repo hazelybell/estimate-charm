@@ -1,0 +1,535 @@
+= Tests for our PO parser =
+
+The PO parser handles GNU gettext format human readable files.
+
+    >>> from zope.interface.verify import verifyObject
+    >>> from lp.translations.interfaces.translationcommonformat import (
+    ...     ITranslationHeaderData)
+    >>> from lp.translations.utilities.gettext_po_parser import (
+    ...     POHeader, POParser)
+
+
+== POParser ==
+
+PO files with empty headers are not allowed.
+
+    >>> parser = POParser()
+    >>> parser.parse('msgid "foo"\nmsgstr ""\n')
+    Traceback (most recent call last):
+    ...
+    TranslationFormatSyntaxError:...
+
+PO files with context after msgids are reported as broken.
+
+    >>> parser.parse('msgid ""\nmsgstr ""\n'
+    ...              'msgid "blah"\nmsgctxt "foo"\nmsgstr "bar"\n')
+    Traceback (most recent call last):
+    ...
+    TranslationFormatSyntaxError:...
+
+And a msgctxt followed by msgctxt is caught as well.
+
+    >>> parser.parse('msgid ""\nmsgstr ""\n'
+    ...              'msgctxt "foo"\nmsgctxt "foo1"\n'
+    ...              'msgid "blah"\nmsgstr "bar"\n')
+    Traceback (most recent call last):
+    ...
+    TranslationFormatSyntaxError:...
+
+When a string is followed by non-string, non-space data, it is caught
+as an error.
+
+    >>> parser.parse('msgid ""\nmsgstr "something"\n'
+    ...              '"foo"  whatever\n')
+    Traceback (most recent call last):
+    ...
+    TranslationFormatSyntaxError:...Extra content found after string...
+
+Unrecognized escape sequences are caught as well.
+
+    >>> parser.parse('msgid "\!"\nmsgstr ""\n')
+    Traceback (most recent call last):
+    ...
+    TranslationFormatSyntaxError:...Unknown escape sequence...
+
+Unclosed strings (missing closing quotes) are caught.
+
+    >>> parser.parse('msgid ""\nmsgstr "\n')
+    Traceback (most recent call last):
+    ...
+    TranslationFormatSyntaxError:...String not terminated...
+
+
+== POHeader ==
+
+A POHeader is the first entry in a .po file, and it is treated specially
+because its translation contains metadata about the .po file.  The msgid of
+this special entry is the empty string ("").
+
+It must implement ITranslationHeaderData.
+
+    >>> content = """
+    ...     msgid ""
+    ...     msgstr ""
+    ...     "Content-Type: text/plain; charset=ASCII\n"
+    ...     """
+    >>> verifyObject(ITranslationHeaderData, POHeader(content))
+    True
+
+Creating a new POHeader with broken plural forms still gives us a valid
+POHeader.
+
+    >>> new_header_string = '''Project-Id-Version: es
+    ... POT-Creation-Date: 2004-08-18 11:10+0200
+    ... PO-Revision-Date: 2005-08-18 13:22+0000
+    ... Last-Translator: Carlos Perell\xc3\xb3 Mar\xc3\xadn <carlos@canonical.com>
+    ... Language-Team: Spanish <traductores@es.gnome.org>
+    ... MIME-Version: 1.0
+    ... Content-Type: text/plain; charset=UTF-8
+    ... Content-Transfer-Encoding: 8bit
+    ... Report-Msgid-Bugs-To: serrador@hispalinux.es
+    ... Plural-Forms: n != 1'''
+    >>> new_header = POHeader(new_header_string)
+
+Plural forms are now the default ones. No plural forms.
+
+    >>> print new_header.plural_form_expression
+    0
+    >>> new_header.number_plural_forms
+    1
+
+And the translation_revision_date is exactly the one in the header string.
+
+    >>> print new_header.translation_revision_date
+    2005-08-18 13:22:00+00:00
+
+
+=== translation_revision_date ===
+
+This attribute gives you a datetime object representing the
+PO-Revision-Date field.
+
+    >>> header = POHeader("""
+    ... Project-Id-Version: foo
+    ... Report-Msgid-Bugs-To: foo@bar.com
+    ... POT-Creation-Date: 2005-01-26 01:01+0100
+    ... PO-Revision-Date: 2004-03-06 20:06+0100
+    ... Last-Translator: Foo translator <footranslator@bar.com>
+    ... MIME-Version: 1.0
+    ... Content-Type: text/plain; charset=UTF-8
+    ... Content-Transfer-Encoding: 8bit
+    ... """)
+    >>> header.translation_revision_date
+    datetime.datetime(2004, 3, 6, 20, 6, tzinfo=tzinfo(60))
+
+
+It defaults to None.
+
+    >>> header = POHeader("""
+    ... Project-Id-Version: foo
+    ... Report-Msgid-Bugs-To: foo@bar.com
+    ... POT-Creation-Date: 2005-01-26 01:01+0100
+    ... Last-Translator: Foo translator <footranslator@bar.com>
+    ... MIME-Version: 1.0
+    ... Content-Type: text/plain; charset=UTF-8
+    ... Content-Transfer-Encoding: 8bit
+    ... """)
+    >>> print header.translation_revision_date
+    None
+
+
+If the PO-Revision-Date header contains non-ASCII characters, we get a
+valid header but no revision date.
+
+    >>> header = POHeader("""
+    ... Project-Id-Version: foo
+    ... Report-Msgid-Bugs-To: foo@bar.com
+    ... POT-Creation-Date: 2005-01-26 01:01+0100
+    ... PO-Revision-Date: \xc3\xa1 2004-03-06 20:06+0100
+    ... Last-Translator: Foo translator <footranslator@bar.com>
+    ... MIME-Version: 1.0
+    ... Content-Type: text/plain; charset=UTF-8
+    ... Content-Transfer-Encoding: 8bit
+    ... """)
+    >>> print header.translation_revision_date
+    None
+
+
+Likewise, if the PO-Revision-Date header is semantically nonsensical
+(usually because of an insane timezone offset), it is simply ignored.
+
+    >>> header = POHeader("""
+    ... Project-Id-Version: foo
+    ... Report-Msgid-Bugs-To: foo@bar.com
+    ... POT-Creation-Date: 2005-01-26 01:01+0100
+    ... PO-Revision-Date: 2004-03-06 20:06+10000
+    ... Last-Translator: Foo translator <footranslator@bar.com>
+    ... MIME-Version: 1.0
+    ... Content-Type: text/plain; charset=UTF-8
+    ... Content-Transfer-Encoding: 8bit
+    ... """)
+    >>> print header.translation_revision_date
+    None
+
+
+=== updateFromTemplateHeader(template_header) ===
+
+This method sets some header fields based on the given template_header.
+
+
+We need an standard template header.
+
+    >>> template_header = POHeader("""
+    ...     Project-Id-Version: PACKAGE VERSION
+    ...     Report-Msgid-Bugs-To: 
+    ...     POT-Creation-Date: 2007-07-09 03:39+0100
+    ...     PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE
+    ...     Last-Translator: FULL NAME <EMAIL@ADDRESS>
+    ...     Language-Team: LANGUAGE <LL@li.org>
+    ...     MIME-Version: 1.0
+    ...     Content-Type: text/plain; charset=CHARSET
+    ...     Content-Transfer-Encoding: 8bit
+    ...     Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;
+    ...     """)
+
+and a translation header with some fields set.
+
+    >>> translation_header = POHeader("""
+    ...     POT-Creation-Date: 2006-12-30 13:23+0400
+    ...     PO-Revision-Date: 2007-04-13 18:45+0000
+    ...     Last-Translator: Carlos Perello Marin <carlos@canonical.com>
+    ...     Language-Team: Spanish <es@li.org>
+    ...     MIME-Version: 1.0
+    ...     Content-Type: text/plain; charset=UTF-8
+    ...     Content-Transfer-Encoding: 8bit
+    ...     Plural-Forms: nplurals=2; plural=n != 1;
+    ...     """)
+
+Once we do the update, the resulting output will be a mix between both headers.
+
+    >>> translation_header.updateFromTemplateHeader(template_header)
+    >>> print translation_header.getRawContent()
+    Project-Id-Version: PACKAGE VERSION
+    Report-Msgid-Bugs-To:
+    POT-Creation-Date: 2007-07-09 03:39+0100
+    PO-Revision-Date: 2007-04-13 18:45+0000
+    Last-Translator: Carlos Perello Marin <carlos@canonical.com>
+    Language-Team: Spanish <es@li.org>
+    MIME-Version: 1.0
+    Content-Type: text/plain; charset=UTF-8
+    Content-Transfer-Encoding: 8bit
+    X-Launchpad-Export-Date: ...
+    X-Generator: Launchpad (build ...)
+
+If the header knows there are plural forms, the plural form information
+will appear in the export.
+
+    >>> translation_header.has_plural_forms = True
+    >>> print translation_header.getRawContent()
+    Project-Id-Version: PACKAGE VERSION
+    Report-Msgid-Bugs-To:
+    POT-Creation-Date: 2007-07-09 03:39+0100
+    PO-Revision-Date: 2007-04-13 18:45+0000
+    Last-Translator: Carlos Perello Marin <carlos@canonical.com>
+    Language-Team: Spanish <es@li.org>
+    MIME-Version: 1.0
+    Content-Type: text/plain; charset=UTF-8
+    Content-Transfer-Encoding: 8bit
+    Plural-Forms: nplurals=2; plural=n != 1;
+    X-Launchpad-Export-Date: ...
+    X-Generator: Launchpad (build ...)
+
+Drupal uses a non standard field to note the translation domain for the
+translation catalog. The update method must copy it if it exists in the
+template.
+
+    >>> template_header = POHeader("""
+    ...     Project-Id-Version: PACKAGE VERSION
+    ...     Report-Msgid-Bugs-To: 
+    ...     POT-Creation-Date: 2007-07-09 03:39+0100
+    ...     PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE
+    ...     Last-Translator: FULL NAME <EMAIL@ADDRESS>
+    ...     Language-Team: LANGUAGE <LL@li.org>
+    ...     MIME-Version: 1.0
+    ...     Content-Type: text/plain; charset=CHARSET
+    ...     Content-Transfer-Encoding: 8bit
+    ...     Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;
+    ...     Domain: blahdomain
+    ...     """)
+    >>> translation_header.updateFromTemplateHeader(template_header)
+    >>> print translation_header.getRawContent()
+    Project-Id-Version: PACKAGE VERSION
+    Report-Msgid-Bugs-To:
+    POT-Creation-Date: 2007-07-09 03:39+0100
+    PO-Revision-Date: 2007-04-13 18:45+0000
+    Last-Translator: Carlos Perello Marin <carlos@canonical.com>
+    Language-Team: Spanish <es@li.org>
+    MIME-Version: 1.0
+    Content-Type: text/plain; charset=UTF-8
+    Content-Transfer-Encoding: 8bit
+    Plural-Forms: nplurals=2; plural=n != 1;
+    X-Launchpad-Export-Date: ...
+    X-Generator: Launchpad (build ...)
+    Domain: blahdomain
+
+
+== Parsing a PO template ==
+
+Parsing a PO template:
+
+    >>> content = """
+    ... msgid ""
+    ... msgstr ""
+    ... "Project-Id-Version: Foobar 1.0\\n"
+    ... "Report-Msgid-Bugs-To: \\n"
+    ... "POT-Creation-Date: 2004-05-11 20:22+0800\\n"
+    ... "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\\n"
+    ... "Last-Translator: FULL NAME <EMAIL@ADDRESS>\\n"
+    ... "Language-Team: LANGUAGE <LL@li.org>\\n"
+    ... "MIME-Version: 1.0\\n"
+    ... "Content-Type: text/plain; charset=CHARSET\\n"
+    ... "Content-Transfer-Encoding: 8bit\\n"
+    ... #: foo/bar.c:42
+    ... msgid "Foo"
+    ... msgstr ""
+    ... """
+
+    >>> parser = POParser()
+    >>> translation_file = parser.parse(content)
+
+    >>> len(translation_file.messages)
+    1
+    >>> print translation_file.messages[0].msgid_singular
+    Foo
+
+PO templates, and other PO files that do not specify their encoding,
+are parsed as UTF-8 text.  If they contain non UTF-8 characters, parsing
+errors occur:
+
+    >>> chunk2 = """
+    ... #:foo/bar.c:42
+    ... msgid "Bar"
+    ... msgstr "\xb5\x7b\xa6\xa1\xbf\xf9\xbb\x7e"
+    ... #:foo/baz.c:42
+    ... msgid "Baz"
+    ... msgstr "abcdef"
+    ... """
+
+    >>> parser.parse(content + chunk2)
+    Traceback (most recent call last):
+    ...
+    TranslationFormatInvalidInputError: Line 13:
+    Could not decode input from UTF-8
+
+
+== Evil Big5 Multibyte Sequences ==
+
+To parse a PO file, it is necessary to know what encoding it is in,
+which is specified in the PO file header.
+
+This is particularly important with some encodings such as Big5, which
+may include backslashes inside multibyte sequences.  These backslashes
+must be interpreted as part of the character rather than as an escape
+character.
+
+    >>> content = """
+    ... msgid ""
+    ... msgstr ""
+    ... "Last-Translator:  \xb5\x7b\xa6\xa1\xbf\xf9\xbb\x7e\\n"
+    ... "Content-Type: text/plain; charset=Big5\\n"
+    ... "Content-Transfer-Encoding: 8bit\\n"
+    ... #: lib/regex.c:1367
+    ... msgid "Success"
+    ... msgstr "\xa6\xa8\xa5\\"
+    ... """
+
+    >>> translation_file = parser.parse(content)
+
+The Big5 characters in the PO header have been correctly converted and are
+displayed as unicode characters.
+
+    >>> translation_file.header.getRawContent()
+    u'...Last-Translator:   \u7a0b\u5f0f\u932f\u8aa4\n...'
+
+The translation of the first message has been interpreted correctly,
+despite the backslash in the second multibyte sequence, because is the same
+as decoding '\xa6\xa8\xa5\\' as BIG5 encoding.
+
+    >>> '\xa6\xa8\xa5\\'.decode('BIG5')
+    u'\u6210\u529f'
+    >>> translation_file.messages[0].translations
+    [u'\u6210\u529f']
+
+
+== Newline Formats ==
+
+Not everyone is using UNIX systems, so some submitted PO files will
+not use standard UNIX newlines.
+
+Windows style '\r\n' newlines don't cause much trouble since those
+files just appear to have some additional whitespace at the end of
+lines.
+
+Macintosh style '\r' newlines don't contain a '\n' character at all,
+which would cause problems if we naively use '\n' as a line separator.
+
+Change the last PO file to use Mac-style newlines:
+
+    >>> content = content.replace('\n', '\r')
+
+Verify that it still parses:
+
+    >>> translation_file = parser.parse(content)
+    >>> translation_file.messages[0].translations
+    [u'\u6210\u529f']
+
+
+== Escape Characters in Strings ==
+
+Message strings in PO files can contain C string escape sequences. Some of
+them have special meaning like 'new line': '\n' or 'tabs' '\t' and others are
+just the numeric representation of a character in the declared encoding by
+the Content-Type field of the header.
+
+    >>> content = """
+    ... msgid ""
+    ... msgstr ""
+    ... "POT-Creation-Date: 2004-05-11 20:22+0800\\n"
+    ... "PO-Revision-Date: 2004-05-11 20:22+0800\\n"
+    ... "Content-Type: text/plain; charset=UTF-8\\n"
+    ... "Content-Transfer-Encoding: 8bit\\n"
+    ... #: foo/bar.c: 42
+    ... msgid "Foo\\n"
+    ... "Bar\\n"
+    ... msgstr "\\a\\b\\v\\f\\t\\v\\\\\\"\\'\\n"
+    ... "\\70 \\070 \\0700 \\x70\\n"
+    ...
+    ... #: foo/bar.c: 50
+    ... msgid "view \\302\\253${version_title}\\302\\273"
+    ... msgstr ""
+    ... """
+
+    >>> translation_file = parser.parse(content)
+
+The special symbols and numeric representations of the chars '8', '80' and 'p'
+are decoded correctly.
+
+    >>> translation_file.messages[0].translations
+    [u'\x07\x08\x0b\x0c\t\x0b\\"\'\n8 8 80 p\n']
+
+In this case, the numeric representation are UTF-8 only characters and we can
+see that we get its Unicode equivalent.
+
+    >>> translation_file.messages[1].msgid_singular
+    u'view \xab${version_title}\xbb'
+
+== Plural forms mapping ==
+
+We map plural forms formulae in order to correctly import PO files with
+different plural form orders.
+
+For example, if we've got an English plural formula (n!=1, which evaluates to
+zero for n equal to 1 and to one for everything else), and an inverted English
+plural formula (n==1), first two elements in the map are pointing to each
+other:
+
+    >>> form_1 = 'n!=1'
+    >>> form_2 = 'n==1'
+    >>> from lp.translations.utilities.pluralforms import (
+    ...     plural_form_mapper)
+    >>> plural_form_mapper(form_1, form_2)
+    {0: 1, 1: 0, 2: 2, 3: 3, 4: 4, 5: 5}
+
+A practical example we can find on-line is that of Slovenian translations.
+Plural formula in GNOME and a preferred value is:
+
+    >>> form_1 = '(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || n%100==4 ? 3 : 0)'
+
+However, KDE uses the formula which returns indices shifted by one:
+
+    >>> form_2 = '(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3)'
+
+We can easily and correctly map between these:
+
+    >>> plural_form_mapper(form_1, form_2)
+    {0: 3, 1: 0, 2: 1, 3: 2, 4: 4, 5: 5}
+
+At the same time, if plural formulae are completely incompatible (i.e.
+have a different number of return forms, or they return different results),
+we'll get a return matrix which indicates no change (so we import them as-is):
+
+    >>> plural_form_mapper(form_1, 'n!=1')
+    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5}
+
+    # First form uses zero for both 0 and 1, compared to only 1 for the latter.
+    >>> plural_form_mapper('n>1', 'n!=1')
+    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5}
+
+Or, if we get the same number of plural forms, yet they are not being
+mapped to each other:
+
+    >>> plural_form_mapper('(n!=1)? 1: 2', 'n!=1')
+    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5}
+
+We also get the identity mapping if we try to use a dangerous '**' operator
+in any of the plural forms:
+
+    >>> plural_form_mapper('n**n**n', 'n!=1')
+    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5}
+
+Using floats should also be disallowed, and we should get an identity
+mapping as well:
+
+    >>> plural_form_mapper('(1.0 & n) == 1', 'n!=1')
+    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5}
+    >>> plural_form_mapper('(1E-1 & n) == 1', 'n!=1')
+    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5}
+
+Similar happens with division by zero and too big a plural form, or a
+syntax error:
+
+    >>> plural_form_mapper('1/n', 'n!=1')
+    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5}
+    >>> plural_form_mapper('(n!=1) ? 4 : 1', 'n!=1')
+    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5}
+    >>> plural_form_mapper('n==1? 0', 'n!=1')
+    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5}
+
+Symbols like '~' are disallowed:
+
+    >>> plural_form_mapper('~n', 'n!=1')
+    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5}
+
+While whitespace (including spaces and tabs) is ok:
+
+    >>> plural_form_mapper('n\t==  1', '  n != 1')
+    {0: 1, 1: 0, 2: 2, 3: 3, 4: 4, 5: 5}
+
+
+Let's parse a Spanish PO file with an inverted plural formula.
+
+    >>> spanish_pluralformula = 'n!=1'
+
+    >>> content = """
+    ... msgid ""
+    ... msgstr ""
+    ... "POT-Creation-Date: 2004-05-11 20:22+0800\\n"
+    ... "PO-Revision-Date: 2004-05-11 20:22+0800\\n"
+    ... "Content-Type: text/plain; charset=UTF-8\\n"
+    ... "Content-Transfer-Encoding: 8bit\\n"
+    ... "Plural-Forms: nplurals=2; plural=n==1\\n"
+    ... #: foo/bar.c: 42
+    ... msgid "file"
+    ... msgid_plural "files"
+    ... msgstr[0] "plural translation"
+    ... msgstr[1] "singular translation"
+    ... """
+
+    >>> parser = POParser(spanish_pluralformula)
+    >>> translation_file = parser.parse(content)
+
+The messages in the import are now inverted to match the expected plural
+formula for the Spanish language.
+
+    >>> translation_file.messages[0].translations
+    [u'singular translation', u'plural translation']

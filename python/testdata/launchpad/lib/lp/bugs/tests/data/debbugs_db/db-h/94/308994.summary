@@ -1,0 +1,7 @@
+Format-Version: 2
+Subject: gnome-volume-manager: dvd+rw unreadable when automounted in burner because mounted read/write
+Date: 1116002884
+Submitter: josh <jbuhl_nospam@gmx.de>
+Package: pmount
+Message-Id: <4284D7D1.6010208@gmx.de>
+Severity: important

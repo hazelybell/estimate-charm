@@ -1,0 +1,15 @@
+<div id="portlet-translation-permissions"
+     xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:tal="http://xml.zope.org/namespaces/tal">
+  <p id="translation-permissions">
+    <tal:product replace="structure context/fmt:link">This
+      project</tal:product> is translated
+    <tal:hasgroup condition="context/translationgroup">by
+      <a tal:replace="structure context/translationgroup/fmt:link"
+         >translators</a>
+    </tal:hasgroup>
+    with <a target="help" href="/+help-translations/permissions-policies.html"
+            tal:content="context/translationpermission/title">certain</a>
+    permissions.
+  </p>
+</div>

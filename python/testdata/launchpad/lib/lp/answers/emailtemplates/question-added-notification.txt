@@ -1,0 +1,4 @@
+New question #%(question_id)s on %(target_name)s:
+%(question_url)s
+
+%(comment)s

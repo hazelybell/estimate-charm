@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<!--
+Copyright 2012 Canonical Ltd.  This software is licensed under the
+GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<html>
+  <head>
+    <title>Test official_bug_tags</title>
+
+    <!-- YUI and test setup -->
+    <script type="text/javascript" src="../../../../../build/js/yui/yui/yui.js">
+    </script>
+    <link rel="stylesheet"
+      href="../../../../../build/js/yui/console/assets/console-core.css" />
+    <link rel="stylesheet"
+      href="../../../../../build/js/yui/test-console/assets/skins/sam/test-console.css" />
+    <link rel="stylesheet"
+      href="../../../../../build/js/yui/test/assets/skins/sam/test.css" />
+
+    <script type="text/javascript"
+      src="../../../../../build/js/lp/app/testing/testrunner.js"></script>
+    <link rel="stylesheet" href="../../../app/javascript/testing/test.css" />
+
+    <!-- Dependencies -->
+    <script type="text/javascript" src="../../../../../build/js/lp/app/ui/ui.js"></script>
+    <script type="text/javascript" src="../../../../../build/js/lp/app/overlay/overlay.js"></script>
+
+    <!-- The module under test. -->
+    <script type="text/javascript" src="../official_bug_tags.js"></script>
+
+    <!-- The test suite. -->
+    <script type="text/javascript" src="test_official_bug_tags.js"></script>
+  </head>
+  <body class="yui3-skin-sam">
+    <ul id="suites">
+      <li>lp.bugs.official_bug_tags.test</li>
+    </ul>
+
+    <div id="fixture"></div>
+
+    <script type="text/javascript">
+      // The page must provide these three global variables.
+      var used_bug_tags = {"trivial": 1, "easy": 1};
+      var official_bug_tags = ["exception", "feature", "ui"];
+      var valid_name_pattern = "^[a-z0-9][a-z0-9\\+\\.\\-]+$";
+    </script>
+
+    <script type="text/x-template" id="form-template">
+      <div>
+          <form name="launchpadform">
+              <input type="text" name="tags" />
+              <input type="submit" name="Save" />
+          </form>
+      </div>
+
+      <table id="layout-table" class="official-tags-layout-table hidden">
+        <tr>
+          <th>Official tags</th>
+          <th></th>
+          <th>Other tags</th>
+        </tr>
+        <tr>
+          <td id="left-column" class="left-column">
+            <div class="list-scrollable-area">
+              <ul id="official-tags-list">
+              </ul>
+            </div>
+          </td>
+          <td id="middle-column" class="middle-column">
+            <input type="submit" value="&larr;"
+                   id="add-official-tags" class="arrow-button"
+                   disabled="true" />
+            <br />
+            <input type="submit" value="&rarr;;"
+                   id="remove-official-tags" class="arrow-button"
+                   disabled="true" />
+            <br />
+            <form action="+manage-official-tags" method="post" id="save-form">
+              <input type="hidden"
+                id="field-official_bug_tags"
+                name="field.official_bug_tags" />
+              <input type="hidden" name="field.actions.save" value="Save" />
+            </form>
+          </td>
+          <td id="right-column" class="right-column">
+            <div class="list-scrollable-area">
+              <ul id="other-tags-list">
+              </ul>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="left-column">
+            <br />
+            <table class="input-field-layout-table">
+              <tr>
+                <td colspan="2">
+                  Add a new official tag:
+                </td>
+              </tr>
+              <tr>
+                <td style="width: 100%">
+                   <input type="text" id="new-tag-text" style="width: 100%" />
+                </td>
+                <td>
+                  <input type="submit" value="Add" id="new-tag-add"
+                    disabled="true" />
+                </td>
+              </tr>
+            </table>
+          </td>
+          <td class="middle-column">
+          </td>
+          <td class="right-column">
+          </td>
+        </tr>
+        <tr>
+          <td class="actions" colspan="3">
+            <input type="submit" value="Save" id="save-button"
+              disabled="true" />
+          </td>
+        </tr>
+      </table>
+    </script>
+  </body>
+</html>

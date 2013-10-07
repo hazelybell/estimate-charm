@@ -1,0 +1,107 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+  tal:define="page_title string:features;">
+
+<body metal:fill-slot="main">
+
+  <p>
+    Feature flags and feature scopes are self-documenting. Report bugs
+    about feature or scopes that are missing documentation.
+  </p>
+
+  <ul class="horizontal" style="margin-bottom:1em;">
+    <li>
+      <a class="sprite edit" href="+feature-rules">Feature control</a>
+    </li>
+    <li>
+      <a class="sprite info" href="+feature-changelog">Feature flag changelog</a>
+    </li>
+  </ul>
+
+  <h2>Documented flags</h2>
+
+  <table class="listing">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Value domain</th>
+        <th>Default value</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr tal:repeat="info view/flag_info">
+        <td tal:content="info/name">flag name here</td>
+        <td tal:content="info/domain">flag domain here</td>
+        <td tal:content="info/default">flag description here</td>
+        <td tal:content="info/description">flag description here</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p/>
+  <h2>Undocumented flags</h2>
+  These flags were referenced during this process' lifetime but are not
+  documented:
+  <strong tal:condition="not:view/undocumented_flags">
+    No undocumented feature flags have been used yet.
+  </strong>
+  <strong tal:content="view/undocumented_flags">list of flags</strong>
+
+  <p/>
+  <h2>Value domains</h2>
+  <table class="listing">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr tal:repeat="info view/value_domain_info">
+        <td tal:content="info/name">name here</td>
+        <td tal:content="info/description">description here</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p/>
+  <h2>Scopes</h2>
+
+  The table below describes the currently available scopes.  The first column
+  gives the regular expression the scope matches (for example, the
+  "pageid:foo" scopes match the regex "pageid:") and the second gives a
+  description of when the scope is active.
+
+  <p/>
+  <table class="listing">
+    <thead>
+      <tr>
+        <th>Form (a regex)</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr tal:repeat="info view/scope_info">
+        <td tal:content="info/regex">scope regex here</td>
+        <td><pre tal:content="info/description">scope description here</pre></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p/>
+  <h2>Undocumented scopes</h2>
+  These scopes were referenced during this process' lifetime but are not
+  documented:
+  <strong tal:condition="not:view/undocumented_scopes">
+    No undocumented scopes have been used yet.
+  </strong>
+  <strong tal:content="view/undocumented_scopes">list of scopes</strong>
+
+</body>
+</html>

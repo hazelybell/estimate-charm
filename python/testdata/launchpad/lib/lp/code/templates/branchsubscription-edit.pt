@@ -1,0 +1,25 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+  <body>
+
+<div metal:fill-slot="main">
+
+  <div metal:use-macro="context/@@launchpad_form/form" >
+    <metal:extra fill-slot="extra_info">
+      <p class="documentDescription">
+        If you unsubscribe from a branch it will no longer show up on your
+        personal pages.
+      </p>
+    </metal:extra>
+  </div>
+
+</div>
+
+</body>
+</html>

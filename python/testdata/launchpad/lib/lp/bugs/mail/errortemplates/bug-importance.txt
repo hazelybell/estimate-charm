@@ -1,0 +1,6 @@
+To make life a little simpler, Malone no longer has "priority" and "severity"
+fields. There is now an "importance" field, for developers and managers to
+prioritize their work.
+
+Recognized values for importance are
+"undecided", "wishlist", "low", "medium", "high", and "critical".

@@ -1,0 +1,36 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+  <body>
+    <metal:css fill-slot="head_epilogue">
+      <style type="text/css">
+        div.inlined-widget {
+          display: inline;
+        }
+
+        div.inlined-widget div {
+          display: inline;
+        }
+      </style>
+    </metal:css>
+
+    <div metal:fill-slot="main">
+      <p id="description">
+        These translation related entries are imported, blocked, deleted or
+        waiting to be imported in Launchpad for
+        <tal:displayname replace="context/displayname">trunk</tal:displayname>.
+        <tal:login condition="not:request/lp:person">
+          <a href="+login">Log in</a> to change items in this list.
+        </tal:login>
+      </p>
+
+      <metal:translation-import-queue
+        use-macro="view/translation_import_queue_content" />
+    </div>
+  </body>
+</html>

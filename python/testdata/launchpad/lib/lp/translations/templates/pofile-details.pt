@@ -1,0 +1,65 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+  <body>
+    <div metal:fill-slot="main">
+
+    <div class="yui-g">
+      <div class="yui-u first">
+        <div tal:replace="structure context/@@+portlet-details" />
+        <div class="portlet">
+        <h2>Related pages</h2>
+        <ul tal:define="navigation_menu context/menu:navigation">
+        <li
+            tal:define="link navigation_menu/translate"
+            tal:condition="link/enabled"
+            tal:content="structure link/render">Translate</li>
+        <li
+            tal:define="link navigation_menu/download"
+            tal:condition="link/enabled"
+            tal:content="structure link/render">Download translation</li>
+        <li
+            tal:define="link navigation_menu/upload"
+            tal:condition="link/enabled"
+            tal:content="structure link/render">Upload translation</li>
+        </ul>
+        </div>
+      </div>
+      <div class="yui-u">
+        <div tal:replace="structure context/@@+portlet-stats" />
+        <div class="portlet">
+        <h2>Contributors to this translation</h2>
+
+        <p tal:condition="view/contributors">
+          The following people have made some contribution to this specific
+          translation:
+        </p>
+
+        <ul tal:condition="view/contributors">
+          <tal:contributors-loop repeat="contributor view/contributors">
+          <li tal:condition="not: contributor/merged"> 
+              <a tal:replace="structure contributor/fmt:link">
+                Mister Potato
+              </a>
+              (<a tal:attributes="
+                href string:${context/fmt:url}/+filter?person=${contributor/name}"
+                >filter</a>)
+          </li>
+          </tal:contributors-loop>
+        </ul>
+
+          <p
+            tal:condition="not: view/contributors"
+            class="informational message"
+          >No contributors recorded for this PO file.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

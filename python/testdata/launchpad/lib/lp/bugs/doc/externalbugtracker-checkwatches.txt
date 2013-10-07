@@ -1,0 +1,57 @@
+= External Bug Tracker: checkwatches =
+
+Strictly speaking, checkwatches is the name of a cronscript and a
+module in the Launchpad codebase. In the absence of a more complete
+testing infrastructure for the external bug tracking system, this
+document will collect functional tests relating to both checkwatches
+elements.
+
+XXX Bug #126593 (Testing of external bug trackers is not extensive
+enough) is tracking the provision of a more extensive testing
+framework.
+  -- Gavin Panella, 2007-07-18
+
+
+== get_external_bugtracker ==
+
+get_external_bugtracker is used to get an ExternalBugTracker suitable
+for a particular bugtracker.
+
+    >>> from lp.bugs.externalbugtracker import (
+    ...     get_external_bugtracker)
+    >>> from lp.services.scripts import log
+    >>> from lp.bugs.interfaces.bugtracker import BugTrackerType
+
+get_external_bugtracker supports five external bug tracker types:
+
+    >>> bugtracker_types = [
+    ...     BugTrackerType.BUGZILLA,
+    ...     BugTrackerType.DEBBUGS,
+    ...     BugTrackerType.MANTIS,
+    ...     BugTrackerType.ROUNDUP,
+    ...     BugTrackerType.RT,
+    ...     BugTrackerType.SOURCEFORGE,
+    ...     BugTrackerType.TRAC]
+
+    >>> from lp.bugs.tests.externalbugtracker import (
+    ...     new_bugtracker)
+    >>> from lp.testing.layers import LaunchpadZopelessLayer
+    >>> txn = LaunchpadZopelessLayer.txn
+    >>> for bugtracker_type in bugtracker_types:
+    ...     bugtracker = new_bugtracker(bugtracker_type)
+    ...     try:
+    ...         # Suppress log messages in DebBugs
+    ...         log.setLevel(log.level + 100)
+    ...         external_bugtracker = get_external_bugtracker(bugtracker)
+    ...     finally:
+    ...         log.setLevel(log.level - 100)
+    ...     print "%s --> %s" % (bugtracker_type.title,
+    ...         external_bugtracker)
+    Bugzilla --> <lp.bugs...bugzilla.Bugzilla ...>
+    Debbugs --> <lp.bugs...debbugs.DebBugs ...>
+    Mantis --> <lp.bugs...mantis.Mantis object at ...>
+    Roundup --> <lp.bugs...roundup.Roundup ...>
+    Request Tracker (RT) --> <lp.bugs...rt.RequestTracker ...>
+    SourceForge or SourceForge derivative -->
+        <lp.bugs...sourceforge.SourceForge ...>
+    Trac --> <lp.bugs...trac.Trac ...>

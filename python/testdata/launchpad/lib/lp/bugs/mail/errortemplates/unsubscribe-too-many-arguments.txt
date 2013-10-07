@@ -1,0 +1,12 @@
+The 'unsubscribe' command expects at most one argument.
+
+For example, to subscribe yourself:
+
+    unsubscribe
+
+To unsubscribe someone else:
+
+    unsubscribe foo
+
+'foo' can be either the person's Launchpad name or the person's email
+address.

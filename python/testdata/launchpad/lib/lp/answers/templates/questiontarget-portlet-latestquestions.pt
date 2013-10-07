@@ -1,0 +1,23 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  class="portlet" id="portlet-latest-questions"
+  tal:define="questions view/getLatestQuestions"
+  tal:condition="questions">
+  <h2>
+    <span class="see-all"><a
+      tal:attributes="href context/fmt:url:answers">All questions</a></span>
+    Latest questions
+  </h2>
+
+  <ul tal:condition="questions">
+    <li tal:repeat="question questions">
+      <a
+        tal:attributes="class string: ${question/image:sprite_css};
+                        href question/fmt:url;"
+        tal:content="question/title/fmt:shorten/80">question title</a>
+      <br /><span class="registered">
+        Posted <tal:when replace="question/datecreated/fmt:displaydate" />
+      </span>
+    </li>
+  </ul>
+</div>

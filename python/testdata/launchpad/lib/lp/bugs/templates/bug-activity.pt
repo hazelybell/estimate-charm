@@ -1,0 +1,43 @@
+<bug-activity
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    metal:use-macro="view/macro:page/main_only">
+  <div metal:fill-slot="main">
+    <div class="yui-g">
+      <div class="top-portlet">
+        <h1>Activity log for bug #<span tal:replace="context/bug/id" /></h1>
+        <table class="listing">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Who</th>
+              <th>What changed</th>
+              <th>Old value</th>
+              <th>New value</th>
+              <th>Message</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr tal:repeat="log view/activity">
+              <tal:comment condition="nothing">
+                XXX: Gavin Panella 2009-08-12 bug=412963: Using strftime()
+                here because fmt:datetime changes timezone, even though we
+                always want to show only UTC.
+              </tal:comment>
+              <td tal:content="python:log.datechanged.strftime('%Y-%m-%d %T')">
+                2004-09-24 12:04:43
+              </td>
+              <td tal:content="structure log/person/fmt:link">person</td>
+              <td tal:content="log/whatchanged">description</td>
+              <td tal:content="log/oldvalue">old value</td>
+              <td tal:content="log/newvalue">new value</td>
+              <td tal:content="log/message">message</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</bug-activity>

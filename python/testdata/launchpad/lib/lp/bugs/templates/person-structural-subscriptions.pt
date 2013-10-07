@@ -1,0 +1,88 @@
+<html
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    xml:lang="en"
+    lang="en"
+    dir="ltr"
+    metal:use-macro="view/macro:page/main_only"
+    i18n:domain="launchpad">
+  <body>
+
+    <div metal:fill-slot="main"
+         tal:define="structural_subscriptions context/structural_subscriptions">
+
+      <ul class="horizontal">
+        <li
+            tal:define="link context/menu:overview/subscriptions"
+            tal:condition="link/enabled"
+            tal:content="structure link/fmt:link" />
+      </ul>
+
+      <div class="yui-g">
+        <div class="portlet" id="structural-subscriptions">
+
+          <ul tal:condition="python:not structural_subscriptions.is_empty()">
+            <li tal:repeat="subscription structural_subscriptions"
+                style="margin: 1em 0em; padding: 1em; border: 1px solid #ddd;">
+              <span tal:replace="structure subscription/target/fmt:link" />
+              <a tal:condition="view/canUnsubscribeFromBugTasks"
+                 tal:attributes="href subscription/target/fmt:url/+subscribe;
+                                 title string:Modify subscription to ${subscription/target/title};">
+                <img src="/@@/edit" />
+              </a>
+              <div style="padding: 1em 1em 0em 1em"
+                   tal:define="bug_filters python:list(subscription.bug_filters)">
+                <tal:filtered condition="bug_filters">
+                  <p>
+                    Bug mail for <span
+                    tal:content="subscription/subscriber/fmt:displayname"
+                    /> about <span
+                    tal:content="subscription/target/displayname" />
+                    is filtered; it will be sent only if it matches
+                    <tal:one-filter condition="python: len(bug_filters) == 1">
+                      the following filter:
+                    </tal:one-filter>
+                    <tal:multiple-filters condition="python: len(bug_filters) > 1">
+                      one or more of the following filters:
+                    </tal:multiple-filters>
+                  </p>
+                  <dl>
+                    <tal:definitions
+                        repeat="bug_filter bug_filters"
+                        content="structure bug_filter/@@+definition" />
+                  </dl>
+                </tal:filtered>
+                <tal:unfiltered condition="not:bug_filters">
+                  <p>
+                    Bug mail is <b>not</b> filtered; mail for <span
+                    tal:content="subscription/subscriber/fmt:displayname" />
+                    about
+                    <span tal:content="subscription/target/displayname" />
+                    will always be sent.
+                  </p>
+                </tal:unfiltered>
+                <div style="margin-top: 1em"
+                     tal:condition="subscription/required:launchpad.Edit">
+                  <a class="sprite add new-filter"
+                     tal:attributes="href subscription/fmt:url/+new-filter">
+                    Create a new filter
+                  </a>
+                </div>
+              </div>
+            </li>
+          </ul>
+
+          <p tal:condition="python: structural_subscriptions.is_empty()">
+            <tal:person content="context/fmt:displayname" /> does not
+            have any structural subscriptions.
+          </p>
+
+        </div>
+      </div>
+
+    </div>
+
+  </body>
+</html>

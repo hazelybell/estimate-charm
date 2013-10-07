@@ -1,0 +1,62 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  id="series-packaging" class="portlet"
+  tal:define="overview_menu context/menu:overview">
+  <h2>Upstream packaging</h2>
+
+  <p id="packaging-summary"
+     tal:define="count view/num_linked_packages;
+                 singular string:source package is;
+                 plural string:source packages are">
+    <strong tal:content="view/num_linked_packages"/>&nbsp;
+    <tal:plural
+       metal:use-macro="context/@@+base-layout-macros/plural-message"/>
+    linked to
+    registered upstream projects.
+    <strong tal:content="view/num_unlinked_packages"/>&nbsp;
+    <tal:needs define="singular string:needs;
+                       plural string:need">
+      <tal:plural
+         metal:use-macro="context/@@+base-layout-macros/plural-message"/>
+    </tal:needs>
+    linking.
+  </p>
+
+  <dl>
+    <dt id="recently-linked"
+        tal:condition="view/recently_linked">
+      Recently linked to upstream:
+    </dt>
+    <dd>
+      <tal:package repeat="package view/recently_linked">
+        <p>
+          <a class="sprite package-source"
+             tal:attributes="href package/sourcepackage/fmt:url"
+             tal:content="package/sourcepackage/name">evolution</a>
+          <tal:owner condition="package/owner">
+            <span class="lesser greyed-out">linked by</span>
+            <a tal:replace="structure package/owner/fmt:link" />
+          </tal:owner>
+          <tal:no_owner condition="not:package/owner">
+            <span class="lesser greyed-out">linked</span>
+          </tal:no_owner>
+            <span class="lesser greyed-out"
+              tal:attributes="title package/datecreated/fmt:datetime"
+              tal:content="package/datecreated/fmt:approximatedate" />
+        </p>
+      </tal:package>
+    </dd>
+  </dl>
+
+  <ul class="horizontal">
+    <li>
+      <a tal:replace="structure context/menu:overview/needs_packaging/fmt:link" />
+    </li>
+    <li>
+      <a tal:replace="structure context/menu:overview/packaging/fmt:icon-link" />
+    </li>
+  </ul>
+
+</div>

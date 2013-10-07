@@ -1,0 +1,5 @@
+<tal:bugtask-batch define="batch_navigator view/search">
+    <div id='bugs-batch-links-upper' class="lesser" tal:content="structure batch_navigator/@@+navigation-links-upper" />
+    <tal:buglisting replace="structure batch_navigator/@@+table-view-without-navlinks" />
+    <div id='bugs-batch-links-lower' class="lesser" tal:content="structure batch_navigator/@@+navigation-links-lower" />
+</tal:bugtask-batch>

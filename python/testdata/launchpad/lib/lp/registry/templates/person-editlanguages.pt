@@ -1,0 +1,95 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="rosetta"
+>
+<body>
+
+<div metal:fill-slot="main" >
+
+  <div metal:use-macro="context/@@launchpad_form/form">
+    <div metal:fill-slot="extra_info">
+      <p class="documentDescription">
+        Your preferred languages are used to configure some Launchpad
+        applications to work with the languages you know.
+        Launchpad Translations allows you to translate a project into your
+        preferred languages. Launchpad Answers allows you to ask and answer
+        questions in your preferred languages.  Launchpad's default language
+        is English, which is the only language for most Launchpad features.
+      </p>
+
+      <div class="two-column-list" style="max-width: 45em;">
+        <dl tal:define="languages view/browserLanguages"
+            id="portlet-browser-languages">
+          <dt>
+            <strong>Your browser languages:</strong>
+          </dt>
+          <dd class="sprite language"
+            tal:condition="languages"
+            tal:repeat="lang languages"
+            tal:content="lang/englishname"/>
+          <dd tal:condition="not: languages">
+            No configured languages
+          </dd>
+        </dl>
+
+        <dl tal:define="country view/requestCountry"
+            tal:condition="country"
+            id="portlet-country-languages">
+          <dt>
+            <strong>Languages in <tal:country replace="country/name" />
+            </strong>
+          </dt>
+          <tal:languages define="languages country/languages">
+            <dd class="sprite language"
+              tal:condition="languages"
+              tal:repeat="lang country/languages"
+              tal:content="lang/englishname"/>
+            <dd tal:condition="not: languages">
+              No languages are currently registered as being spoken in <span
+              tal:replace="country/name">country</span>.  If you have this
+              information, please see if it has already been submitted in the
+              <a tal:attributes="href view/answers_url">Answers</a>
+              application, and if it hasn't, file a new question about it.
+            </dd>
+          </tal:languages>
+        </dl>
+      </div>
+    </div>
+
+    <div metal:fill-slot="widgets">
+      <input name="redirection_url" type="hidden"
+            tal:attributes="value view/getRedirectionURL" />
+      <div class="listbox" style="width: 60em;">
+        <div style="width: 32%; float: left;"
+             tal:repeat="language view/visible_checked_languages">
+          <label>
+            <input type="checkbox" checked="checked"
+                  tal:attributes="name language/code;" />
+            <span tal:replace="language/englishname">Spanish</span>
+          </label>
+          <hr tal:condition="repeat/language/end" style="margin:0px; height:2px;" />
+        </div>
+        <div style="width: 32%; float: left;"
+             tal:repeat="language view/visible_unchecked_languages">
+          <label>
+            <input type="checkbox"
+                   tal:attributes="name language/code;" />
+            <span tal:replace="language/englishname">Spanish</span>
+          </label>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

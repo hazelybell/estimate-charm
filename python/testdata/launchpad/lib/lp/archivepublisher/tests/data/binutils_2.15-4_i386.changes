@@ -1,0 +1,40 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Format: 1.7
+Date: Thu, 23 Sep 2004 22:44:03 +0100
+Source: binutils
+Binary: binutils-dev binutils-hppa64 binutils-multiarch binutils binutils-doc
+Architecture: source i386 all
+Version: 2.15-4
+Distribution: unstable
+Urgency: low
+Maintainer: James Troup <james@nocrew.org>
+Changed-By: James Troup <james@nocrew.org>
+Description: 
+ binutils   - The GNU assembler, linker and binary utilities
+ binutils-dev - The GNU binary utilities (BFD development files)
+ binutils-doc - Documentation for the GNU assembler, linker and binary utilities
+ binutils-multiarch - Binary utilities that support multi-arch targets
+Closes: 272149
+Changes: 
+ binutils (2.15-4) unstable; urgency=low
+ .
+   * 120_mips_xgot_multigot_workaround.dpatch: new patch from Thiemo Seufer
+     to make multigot/xgot handling exclusive and fix mozilla builds on
+     mipsen.  Closes: #272149
+Files: 
+ 07e0db4eeb963feddd6630f4ea16c354 763 devel standard binutils_2.15-4.dsc
+ 2cf84daeca019220f5f3753121f012bb 36466 devel standard binutils_2.15-4.diff.gz
+ 1b29cd83dd589d65a4e4d6175d20ecf9 426536 doc optional binutils-doc_2.15-4_all.deb
+ 4273f4d0a451e2e40bced3b113cc408b 2222880 devel standard binutils_2.15-4_i386.deb
+ d4f3cfc00d155f2cec04c6c89996879a 2812822 devel extra binutils-dev_2.15-4_i386.deb
+ ab53bf819d632bf183835ba55edcdd28 7955284 devel extra binutils-multiarch_2.15-4_i386.deb
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.3 (GNU/Linux)
+
+iD8DBQFFt5082yWXVgK6XvYRAjZQAKCpdZ2fVQXPKSyrV/70NMOWPQMRYACg0Eea
+uxiKF9XjW+Ugiyw/8XSmDyA=
+=jKXn
+-----END PGP SIGNATURE-----

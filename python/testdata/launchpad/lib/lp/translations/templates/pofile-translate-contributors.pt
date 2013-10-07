@@ -1,0 +1,19 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag=""
+>
+  <p tal:condition="not:view/contributors"
+  >No-one has contributed to this translation yet.</p>
+  <p tal:condition="view/contributors">
+    Contributors to this translation:
+    <tal:contributors repeat="contributor view/contributors">
+      <tal:not-merged condition="not: contributor/merged">
+        <tal:contributor replace="structure contributor/fmt:link" /><tal:comma
+        condition="not:repeat/contributor/end">,</tal:comma><tal:period
+        condition="repeat/contributor/end">.</tal:period>
+      </tal:not-merged>
+    </tal:contributors>
+  </p>
+</tal:root>

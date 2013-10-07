@@ -1,0 +1,40 @@
+= Branch listings for distributions =
+
+All source package branches are associated with a distribution series, and
+hence a distribution.
+
+    >>> login('admin@canonical.com')
+    >>> mint = factory.makeDistribution(name='mint')
+    >>> old = factory.makeDistroSeries(mint, name='old')
+    >>> stable = factory.makeDistroSeries(mint, name='stable')
+    >>> eric = factory.makePerson(name='eric')
+    >>> twisted = factory.makeSourcePackageName('twisted')
+    >>> branch = factory.makePackageBranch(
+    ...     distroseries=old, sourcepackagename=twisted, owner=eric,
+    ...     name='old')
+    >>> branch = factory.makePackageBranch(
+    ...     distroseries=stable, sourcepackagename=twisted, owner=eric,
+    ...     name='new')
+    >>> logout()
+
+    >>> browser.open('http://launchpad.dev/mint')
+
+The code tab is now enabled at the distribution level.
+
+    >>> print_location_apps(browser.contents)
+    * Overview (selected) ...
+    * Code - http://code.launchpad.dev/mint
+    ...
+
+Going to this page shows us a listing ordered by most recently changed first.
+
+    >>> browser.open('http://code.launchpad.dev/mint')
+    >>> contents = browser.contents
+    >>> print_tag_with_id(contents, 'branchtable')
+    Name   Status   Last Modified  Last Commit
+    lp://dev/~eric/mint/stable/twisted/new   Development  ...
+    lp://dev/~eric/mint/old/twisted/old      Development ...
+    ...
+    >>> ordering_control = browser.getControl(name='field.sort_by')
+    >>> print ordering_control.displayValue
+    ['most recently changed first']

@@ -1,0 +1,9 @@
+Format-Version: 2
+Found-In: mozilla-firefox/1.0.6-4
+Subject: mozilla-firefox: [CAN-2005-2414] Race condition in the xpcom library
+Date: 1126388009
+Submitter: Florian Weimer <fw@deneb.enyo.de>
+Package: mozilla-firefox
+Tags: security
+Message-Id: <E1EECwV-0000Fi-MM@mid.deneb.enyo.de>
+Severity: important

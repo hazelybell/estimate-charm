@@ -1,0 +1,77 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+  >
+<body>
+
+<div metal:fill-slot="main">
+<div class="top-portlet">
+    <tal:inactive_ppa_header condition="not: view/has_sources">
+      <p>This PPA does not contain any source packages published.</p>
+    </tal:inactive_ppa_header>
+
+    <tal:package_filter_form condition="view/has_sources">
+      <metal:package_filter_form
+        use-macro="context/@@+macros/package-filter-form" />
+    </tal:package_filter_form>
+
+  <div metal:use-macro="context/@@launchpad_form/form">
+
+    <div class="form" metal:fill-slot="widgets"
+         tal:condition="view/has_sources">
+
+      <metal:selectable-sources
+        use-macro="context/@@+macros/source-package-list" />
+      <tal:selectable_sources_end
+             define="widget nocall:view/widgets/selected_sources;
+                     field_name widget/context/__name__;
+                     error python:view.getFieldError(field_name);">
+        <input tal:attributes="name string:${widget/name}-empty-marker"
+               type="hidden" value="1" />
+        <div class="error message" tal:condition="error"
+             tal:content="structure error">Error message</div>
+      </tal:selectable_sources_end>
+
+      <tal:actions condition="view/has_sources_for_display"
+                   define="widget nocall:view/widgets/deletion_comment;
+                           field_name widget/context/__name__;
+                           error python:view.getFieldError(field_name);">
+        <p>
+          <img src="/@@/warning" /> Package deletion can take some time
+          before the packages are actually removed.  See the full
+          <a href="https://help.launchpad.net/Packaging/PPA">PPA help page</a>.
+        </p>
+        <div style="margin-top: 1em;">
+          <p>
+            <input tal:replace="structure
+               view/actions/field.actions.delete/render" />
+            or <a tal:attributes="href context/menu:overview/packages/fmt:url">
+                 Cancel</a>
+          </p>
+          <label tal:attributes="for widget/name"
+                 tal:content="string:${widget/label}:">Label</label>
+          <input tal:replace="structure widget" />
+          <span class="formHelp">(Optional)</span>
+          <p class="formHelp" tal:condition="widget/hint"
+             tal:content="widget/hint">Some Help Text</p>
+        </div>
+        <div class="error message" tal:condition="error"
+             tal:content="structure error">Error message</div>
+      </tal:actions>
+
+   </div> <!-- widgets -->
+
+   <div class="actions" metal:fill-slot="buttons">
+   </div> <!--empties buttons section -->
+
+  </div> <!-- launchpad_form -->
+
+</div> <!--top-portlet -->
+</div> <!--main -->
+
+</body>
+</html>

@@ -1,0 +1,668 @@
+= Navigation components =
+
+You use navigation components to specify how objects get traversed and
+what their canonical url looks like, .  These are defined in
+`canonical/launchpad/browser/`, alongside the view classes.
+
+To define a navigation component, write a class that derives from
+lp.services.webapp.Navigation.
+
+    >>> from lp.services.webapp import Navigation
+
+When you write a navigation class, you can talk about four kinds of traversal.
+
+ - Say what object is stepped to when a particular name is the next step.
+   Example, for the root object:
+
+   @stepto('malone')
+   def malone(self):
+       return getUtility(IMaloneApplication)
+
+ - Say how traversal works when you going through the next step onto the one
+   after it.
+   Example, for a Product:
+
+   @stepthrough('+bug')
+   def traverse_bug(self, name):
+       return self.context.getBug(name)
+
+ - Say that particular steps result in a redirection to some other name.
+   Example, for a Product:
+
+   redirection('+bug', '+bugs')
+
+ - Say how traversal works for anything not handled by the other rules.
+   Example:
+
+   def traverse(self, name):
+       return self.context[name]
+
+Note that when you say you want to step to some name, then the method is
+named after the name you're stepping to.  When you say you want to step
+through some name, then you name the method 'traverse_name' as in
+'traverse_bug' above.  This is because the method takes a 'name' argument
+and you're saying how traversal is interpreted.  This is similar to the
+catch-all 'traverse()' method.
+
+You can also say that a new browser UI layer applies for this object.
+
+  newlayer = BugsLayer
+
+
+== Demonstrating a navigation class ==
+
+In order to demonstrate a navigation class, we need to create an interface
+for the thing being navigated.  Rather than use a standard Launchpad interface,
+we'll define one here.
+
+    >>> from zope.interface import Interface, Attribute, implements
+
+    >>> class IThingSet(Interface):
+    ...     """An interface we're using in this doctest."""
+    ...
+    ...     def getThing(name):
+    ...         """Returns the thing that has the given name.
+    ...
+    ...         Returns None if there is no thing.
+    ...         """
+
+    >>> from zope.publisher.interfaces.browser import IBrowserRequest
+
+    >>> class Response(object):
+    ...
+    ...     redirected_to = None
+    ...     status = None
+    ...
+    ...     def redirect(self, name, status=None):
+    ...         self.redirected_to = name
+    ...         self.status = status
+
+    >>> import lp.services.webapp.servers
+
+    >>> class StepsToGo(lp.services.webapp.servers.StepsToGo):
+    ...
+    ...     def __init__(self, stack):
+    ...         self.travstack = stack
+    ...
+    ...     @property
+    ...     def _stack(self):
+    ...         return self.travstack
+    ...
+    ...     def peek(self):
+    ...         try:
+    ...             return self.travstack[-1]
+    ...         except IndexError:
+    ...             return None
+    ...
+    ...     def consume(self):
+    ...         try:
+    ...             return self.travstack.pop()
+    ...         except IndexError:
+    ...             return None
+
+    >>> class Request(object):
+    ...     implements(IBrowserRequest)
+    ...
+    ...     def __init__(self):
+    ...         self.response = Response()
+    ...         self.traversal_stack = []
+    ...         self.traversed_objects = []
+    ...         self.query_string = None
+    ...
+    ...     @property
+    ...     def stepstogo(self):
+    ...         return StepsToGo(self.traversal_stack)
+    ...
+    ...     def getURL(self, idx=None, path_only=False):
+    ...         return 'URL %s' % idx
+    ...
+    ...     def getNearest(self, *some_interfaces):
+    ...         for context in reversed(self.traversed_objects):
+    ...             for iface in some_interfaces:
+    ...                 if iface.providedBy(context):
+    ...                     return (context, iface)
+    ...         else:
+    ...             return None, None
+    ...
+    ...     def get(self, name):
+    ...         if name == 'QUERY_STRING':
+    ...             return self.query_string
+    ...         else:
+    ...             return None
+
+    >>> request = Request()
+
+    >>> class IThing(Interface):
+    ...
+    ...     value = Attribute('the value of the thing')
+
+    >>> class Thing(object):
+    ...     implements(IThing)
+    ...
+    ...     def __init__(self, value):
+    ...         self.value = value
+    ...
+    ...     def __repr__(self):
+    ...         return "<Thing '%s'>" % self.value
+
+    >>> class ThingSet(object):
+    ...     implements(IThingSet)
+    ...
+    ...     def getThing(self, name):
+    ...         if name.startswith('t'):
+    ...             return Thing(name.upper())
+    ...         else:
+    ...             return None
+    ...
+    ...     def __repr__(self):
+    ...         return '<ThingSet>'
+
+    >>> thingset = ThingSet()
+
+    >>> class INewLayer(Interface):
+    ...     """New layer for the request."""
+
+
+Navigation components look up the next object to traverse to according to
+the following rules.
+
+    0. Before traversal, set a new layer, if required.
+    1. Look up views on the context object.
+    2. See if the name is registered as a 'stepto' traversal.  If so, do it.
+    3. See if the name is registered as a 'stepthrough' traversal.  If so,
+       do it.
+    4. Check whether a view is registered for that name.  If it is, use it.
+    5. If a redirection is registered for that name, do the redirection.
+    6. Finally, use the `traverse()` method.
+    7. If the `traverse()` method returns None or raises NotFoundError,
+       then issue a NotFound error page.
+
+To demonstrate the navigation rules, we'll start off with a simple
+navigation class, and gradually add in more complex traversal as we go.
+
+
+== Simple navigation class ==
+
+The first simple navigation class traverses according to the following
+rules:
+
+    0. Before traversal, set a new layer, if required.
+    1. Look up views on the context object.
+    6. Finally, use the `traverse()` method.
+    7. If the `traverse()` method returns None or raises NotFoundError,
+       then issue a NotFound error page.
+
+The 'traverse' method returns the object that is traversed to.  It can get
+the context and the request as `self.context` and `self.request`, as in view
+classes.  The method can either return `None` or raise NotFoundError (or a
+subclass of NotFoundError) to indicate that the object is not found.  Although
+in Python we usually aim for having just one way to do something, often we're
+dealing with traversing content objects using a variety of methods, some of
+which return None to indicate 'not found' and some that raise NotFoundError.
+
+
+    >>> class ThingSetNavigation(Navigation):
+    ...
+    ...     usedfor = IThingSet
+    ...
+    ...     newlayer = INewLayer
+    ...
+    ...     def traverse(self, name):
+    ...         return self.context.getThing(name)
+    ...
+
+    >>> navigation = ThingSetNavigation(thingset, request)
+
+The name doesn't begin with a 't', so it isn't found.
+
+    >>> INewLayer.providedBy(request)
+    False
+    >>> navigation.publishTraverse(request, 'xxx')
+    Traceback (most recent call last):
+    ...
+    NotFound: ...ThingSet...name: 'xxx'
+
+Note that the request has been put onto the INewLayer layer.
+
+    >>> INewLayer.providedBy(request)
+    True
+
+The name begins with a 't', so the thing's value is TTT.
+
+    >>> navigation.publishTraverse(request, 'ttt')
+    <Thing 'TTT'>
+
+The name begins with a 't', so the thing's value is THINGVIEW.
+
+    >>> navigation.publishTraverse(request, 'thingview')
+    <Thing 'THINGVIEW'>
+
+
+== ZCML for browser:navigation ==
+
+The zcml processor `browser:navigation` registers navigation classes.
+
+    >>> class ThingSetView:
+    ...
+    ...     def __call__(self):
+    ...         return "a view on a thingset"
+
+    >>> import lp.testing
+    >>> lp.testing.ThingSetView = ThingSetView
+    >>> lp.testing.ThingSetNavigation = ThingSetNavigation
+    >>> lp.testing.IThingSet = IThingSet
+
+    >>> from zope.configuration import xmlconfig
+    >>> zcmlcontext = xmlconfig.string("""
+    ... <configure xmlns:browser="http://namespaces.zope.org/browser">
+    ...   <include package="zope.browserpage" file="meta.zcml" />
+    ...   <include package="lp.services.webapp" file="meta.zcml" />
+    ...   <browser:navigation
+    ...       module="lp.testing"
+    ...       classes="ThingSetNavigation"
+    ...       />
+    ...   <browser:page
+    ...       for="lp.testing.IThingSet"
+    ...       name="thingview"
+    ...       class="lp.testing.ThingSetView"
+    ...       attribute="__call__"
+    ...       permission="zope.Public"
+    ...       layer="zope.publisher.interfaces.browser.IBrowserRequest"
+    ...       />
+    ... </configure>
+    ... """)
+
+Once registered, we can look the navigation up using getMultiAdapter().
+
+    >>> from zope.component import getMultiAdapter
+    >>> from zope.publisher.interfaces.browser import IBrowserPublisher
+    >>> from lp.services.webapp.servers import LaunchpadTestRequest
+    >>> navigation = getMultiAdapter(
+    ...     (thingset, LaunchpadTestRequest()), IBrowserPublisher, name='')
+
+This time, we get the view object for the page that was registered.
+
+    >>> navigation.publishTraverse(request, 'thingview')
+    <...ThingSetView object...>
+    >>> navigation.publishTraverse(request, 'thingview')()
+    'a view on a thingset'
+
+
+== stepto traversals ==
+
+You can say that there is a traversal to a fixed name that is handled by
+a particular method.  Use the function decorator @stepto('name') for this.
+
+This is step two:
+
+    2. See if the name is registered as a 'stepto' traversal.  If so, do it.
+
+A stepto traversal can return None or raise NotFoundError to indicate that
+the traversal actually failed.  If this happens, then the whole traversal
+will have failed.  No further steps, including default traversal, will be
+tried.
+
+Let's create a subclass of ThingSetNavigation, and add a 'stepto'.
+
+    >>> from lp.services.webapp import stepto
+    >>> from lp.app.errors import NotFoundError
+
+    >>> class ThingSetNavigation2(ThingSetNavigation):
+    ...
+    ...     @stepto('thistle')
+    ...     def thistle(self):
+    ...         return 'A little thistle'
+    ...
+    ...     @stepto('neverthere')
+    ...     def neverthere(self):
+    ...         return None
+    ...
+    ...     @stepto('neverthere2')
+    ...     def neverthere2(self):
+    ...         raise NotFoundError
+
+    >>> navigation2 = ThingSetNavigation2(thingset, request)
+
+    >>> navigation2.publishTraverse(request, 'ttt')
+    <Thing 'TTT'>
+    >>> navigation2.publishTraverse(request, 'thingview')()
+    'a view on a thingset'
+    >>> navigation2.publishTraverse(request, 'thistle')
+    'A little thistle'
+    >>> navigation2.publishTraverse(request, 'neverthere')
+    Traceback (most recent call last):
+    ...
+    NotFound: ...ThingSet..., name: 'neverthere'
+    >>> navigation2.publishTraverse(request, 'neverthere2')
+    Traceback (most recent call last):
+    ...
+    NotFound: ...ThingSet..., name: 'neverthere2'
+
+
+== stepthrough traversals ==
+
+You can say that there is a traversal to particular subobjects that occurs
+through a particular "namespace", such as '+bug' or '+language'.
+
+A stepthrough traversal can return None or raise NotFoundError to indicate that
+the traversal actually failed.  If this happens, then the whole traversal
+will have failed.  No further steps, including default traversal, will be
+tried.
+
+This is step three:
+
+    3. See if the name is registered as a 'stepthrough' traversal.  If so,
+       do it.
+
+Let's create another subclass and add a stepthrough.
+
+    >>> from lp.services.webapp import stepthrough
+
+    >>> class ThingSetNavigation3(ThingSetNavigation):
+    ...
+    ...     @stepthrough('toad')
+    ...     def traverse_toad(self, name):
+    ...         return 'the toad called %s' % name
+    ...
+    ...     @stepthrough('neverland')
+    ...     def traverse_neverland(self, name):
+    ...         return None
+    ...
+    ...     @stepthrough('neverland2')
+    ...     def traverse_neverland2(self, name):
+    ...         raise NotFoundError
+
+    >>> request.traversal_stack = ['prince', 'charming']
+    >>> navigation3 = ThingSetNavigation3(thingset, request)
+    >>> navigation3.publishTraverse(request, 'toad')
+    'the toad called charming'
+    >>> request.traversal_stack = ['prince', 'charming']
+    >>> navigation3 = ThingSetNavigation3(thingset, request)
+    >>> navigation3.publishTraverse(request, 'neverland')
+    Traceback (most recent call last):
+    ...
+    NotFound: ...ThingSet..., name: 'charming'
+    >>> request.traversal_stack = ['prince', 'charming']
+    >>> navigation3 = ThingSetNavigation3(thingset, request)
+    >>> navigation3.publishTraverse(request, 'neverland2')
+    Traceback (most recent call last):
+    ...
+    NotFound: ...ThingSet..., name: 'charming'
+
+
+Check that the request's state is as it should be.
+
+    >>> request.traversal_stack
+    ['prince']
+
+
+== redirection ==
+
+You can register that particular names are to be redirected to other names.
+You do this using the redirection() function in one of three ways:
+
+ 1. as a class advisor function:
+        redirection(namefrom, nameto)
+
+ 2. as a Navigation class method decorator:
+        @redirection(namefrom)
+        def redirect_namefrom(self):
+            return nameto
+
+ 3. returned by some other traversal function:
+        @stepto(namefrom)
+        def traverse_namefrom(self):
+            return redirection(nameto)
+
+
+This is step five:
+
+    5. If a redirection is registered for that name, do the redirection.
+
+You can provide an optional status=30x keyword argument to redirection to
+make it redirect with a different status code.  The default is 'None' which
+means to use 303 when the request is HTTP/1.1.
+
+Let's make another navigation class to test redirection.
+
+    >>> from lp.services.webapp import redirection
+
+    >>> class ThingSetNavigation4(ThingSetNavigation):
+    ...
+    ...     redirection('tree', 'trees', status=301)
+    ...     redirection('toad', 'toads')
+    ...
+    ...     def traverse(self, name):
+    ...         return redirection('/another/place', status=301)
+    ...
+    ...     @stepthrough('outerspace')
+    ...     def traverse_outerspace(self, name):
+    ...         return redirection('/siberia/%s' % name)
+    ...
+    ...     @redirection('here', status=301)
+    ...     def redirect_here(self):
+    ...         return '/there'
+
+    >>> navigation4 = ThingSetNavigation4(thingset, request)
+    >>> navigation4.publishTraverse(request, 'tree')
+    <...RedirectionView...>
+    >>> navigation4.publishTraverse(request, 'tree')()
+    u''
+    >>> request.response.redirected_to
+    'trees'
+    >>> print request.response.status
+    301
+
+    >>> navigation4.publishTraverse(request, 'toad')()
+    u''
+    >>> request.response.redirected_to
+    'toads'
+    >>> print request.response.status
+    None
+
+    >>> navigation4.publishTraverse(request, 'something')()
+    u''
+    >>> request.response.redirected_to
+    '/another/place'
+    >>> print request.response.status
+    301
+
+    >>> request.traversal_stack = ['tundra']
+    >>> navigation4.publishTraverse(request, 'outerspace')()
+    u''
+    >>> request.response.redirected_to
+    '/siberia/tundra'
+    >>> print request.response.status
+    None
+
+    >>> navigation4.publishTraverse(request, 'here')()
+    u''
+    >>> request.response.redirected_to
+    '/there'
+    >>> print request.response.status
+    301
+
+
+== Redirecting subtrees ==
+
+There are situations, especially during refactoring, where you want
+to keep old URLs working but have them redirect to the new URL, complete
+with the remainder of the URL and or query string.
+
+    >>> class ThingSetNavigation5(ThingSetNavigation):
+    ...     def traverse(self, name):
+    ...         return self.redirectSubTree('http://ubuntu.com/%s' % name)
+    ...
+    ...     @stepto('+foo')
+    ...     def traverse_foo(self):
+    ...         return self.redirectSubTree('http://wiki.canonical.com', status=303)
+
+    >>> navigation5 = ThingSetNavigation5(thingset, request)
+    >>> navigation5.publishTraverse(request, 'jobs')
+    <...RedirectionView...>
+    >>> navigation5.publishTraverse(request, 'jobs')()
+    u''
+    >>> request.response.redirected_to
+    'http://ubuntu.com/jobs'
+    >>> print request.response.status
+    301
+
+    >>> request.traversal_stack = ['LaunchpadMeeting']
+    >>> request.query_string = 'hilight=Time'
+    >>> navigation5.publishTraverse(request, '+foo')()
+    u''
+    >>> request.response.redirected_to
+    'http://wiki.canonical.com/LaunchpadMeeting?hilight=Time'
+    >>> print request.response.status
+    303
+
+
+Make a clean request.
+
+    >>> request = Request()
+
+
+== Putting it all together ==
+
+One of the advantages of using classes for traversal is that you can define
+a mix-in class that defines traversal and redirection for a particular
+namespace, and then mix this in where needed.  An example from Launchpad is
+to define a mix-in navigation class for bug targets that defines traversal
+stepping through '+bug' and also redirection from '+bug' to '+bugs'.
+
+Such a class can be mixed into the navigation class of any object that
+functions as a bug target.  Note that such a class will usually not be a
+Navigation class; that is, it should not derive from Navigation.
+
+Let's define one of those, using all the navigation classes we have made
+so far, and also defining some more stepthroughs and steptos and redirections.
+
+    >>> class UberEverythingThingNavigation(
+    ...     ThingSetNavigation2, ThingSetNavigation3, ThingSetNavigation4):
+    ...
+    ...     @stepto('teeth')
+    ...     def teeth(self):
+    ...         return 'some teeth'
+    ...
+    ...     @stepthrough('diplodocus')
+    ...     def traverse_diplodocus(self, name):
+    ...         return 'diplodocus called %s' % name
+    ...
+    ...     redirection('topology', 'topologies')
+
+    >>> ubernav = UberEverythingThingNavigation(thingset, request)
+
+Check out the traversals defined directly.
+
+    >>> ubernav.publishTraverse(request, 'teeth')
+    'some teeth'
+
+    >>> ubernav.publishTraverse(request, 'diplodocus')
+    <...RedirectionView...>
+
+    >>> request.traversal_stack = ['frank']
+    >>> ubernav.publishTraverse(request, 'diplodocus')
+    'diplodocus called frank'
+
+    >>> ubernav.publishTraverse(request, 'topology')()
+    u''
+    >>> request.response.redirected_to
+    'topologies'
+
+Check those from ThingSetNavigation, implicitly:
+
+    >>> ubernav.publishTraverse(request, 'thingview')()
+    'a view on a thingset'
+
+Check those from ThingSetNavigation2:
+
+    >>> ubernav.publishTraverse(request, 'thistle')
+    'A little thistle'
+
+Check those from ThingSetNavigation3:
+
+    >>> request.traversal_stack = ['prince', 'charming']
+    >>> ubernav.publishTraverse(request, 'toad')
+    'the toad called charming'
+
+    >>> request.traversal_stack = []
+
+Check those from ThingSetNavigation4:
+
+    >>> ubernav.publishTraverse(request, 'tree')()
+    u''
+    >>> request.response.redirected_to
+    'trees'
+
+    >>> ubernav.publishTraverse(request, 'toad')()
+    u''
+    >>> request.response.redirected_to
+    'toads'
+
+    >>> ubernav.publishTraverse(request, 'ttt')()
+    u''
+    >>> request.response.redirected_to
+    '/another/place'
+
+
+== Testing that multiple inheritence involving decorator advisors works ==
+
+    >>> class A:
+    ...
+    ...     @stepto('foo')
+    ...     def traverse_foo(self):
+    ...         return 'foo'
+    ...
+    ...     @stepto('foo2')
+    ...     def traverse_foo2(self):
+    ...         return 'foo2'
+
+    >>> class B:
+    ...
+    ...     @stepto('bar')
+    ...     def traverse_bar(self):
+    ...         return 'bar'
+
+    >>> class C(Navigation, A, B):
+    ...
+    ...     @stepto('baz')
+    ...     def traverse_baz(self):
+    ...         return 'baz'
+    ...
+    ...     @stepto('foo2')
+    ...     def traverse_another_foo(self):
+    ...         return 'foo2 from C'
+
+    >>> instance_of_c = C(thingset, request)
+    >>> instance_of_c.publishTraverse(request, 'foo')
+    'foo'
+    >>> instance_of_c.publishTraverse(request, 'bar')
+    'bar'
+    >>> instance_of_c.publishTraverse(request, 'baz')
+    'baz'
+    >>> instance_of_c.publishTraverse(request, 'foo2')
+    'foo2 from C'
+
+
+== Showing that the name of the function really doesn't matter ==
+
+    >>> class DupeNames(Navigation):
+    ...
+    ...     @stepto('foo')
+    ...     def doit_foo(self):
+    ...         return 'foo'
+    ...
+    ...     @stepto('bar')
+    ...     def doit_bar(self):
+    ...         return 'bar'
+
+    >>> instance_of_dupenames = DupeNames(thingset, request)
+    >>> instance_of_dupenames.publishTraverse(request, 'foo')
+    'foo'
+    >>> instance_of_dupenames.publishTraverse(request, 'bar')
+    'bar'
+
+The doit_*() methods still work though.
+
+    >>> instance_of_dupenames.doit_bar()
+    'bar'

@@ -1,0 +1,20 @@
+ <tal:root
+   xmlns:tal="http://xml.zope.org/namespaces/tal"
+   xmlns:metal="http://xml.zope.org/namespaces/metal"
+   omit-tag="">
+
+<metal:merge_queue_branches define-macro="merge_queue_branches">
+    <table class="listing">
+          <tbody>
+            <tal:mergequeue-branches repeat="branch mergeQueue/branches">
+              <tr>
+                <td>
+                  <a tal:attributes="href branch/fmt:url"
+                     tal:content="branch/name">Branch name</a>
+                </td>
+              </tr>
+            </tal:mergequeue-branches>
+          </tbody>
+    </table>
+</metal:merge_queue_branches>
+</tal:root>

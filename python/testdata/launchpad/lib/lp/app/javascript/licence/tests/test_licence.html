@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<!--
+Copyright 2012 Canonical Ltd.  This software is licensed under the
+GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<html>
+  <head>
+      <title>lp.app.licence Tests</title>
+
+      <!-- YUI and test setup -->
+      <script type="text/javascript"
+              src="../../../../../../build/js/yui/yui/yui.js">
+      </script>
+      <link rel="stylesheet"
+      href="../../../../../../build/js/yui/console/assets/console-core.css" />
+      <link rel="stylesheet"
+      href="../../../../../../build/js/yui/test-console/assets/skins/sam/test-console.css" />
+      <link rel="stylesheet"
+      href="../../../../../../build/js/yui/test/assets/skins/sam/test.css" />
+
+      <script type="text/javascript"
+              src="../../../../../../build/js/lp/app/testing/testrunner.js"></script>
+      <script type="text/javascript"
+              src="../../../../../../build/js/lp/app/testing/helpers.js"></script>
+
+      <link rel="stylesheet" href="../../../../app/javascript/testing/test.css" />
+
+      <!-- Dependencies -->
+      <script type="text/javascript" src="../../../../../../build/js/lp/app/anim/anim.js"></script>
+      <script type="text/javascript" src="../../../../../../build/js/lp/app/effects/effects.js"></script>
+
+
+      <!-- The module under test. -->
+      <script type="text/javascript" src="../licence.js"></script>
+
+      <!-- Placeholder for any css asset for this module. -->
+      <!-- <link rel="stylesheet" href="../assets/lp.bugs.bug_picker-core.css" /> -->
+
+      <!-- The test suite -->
+      <script type="text/javascript" src="test_licence.js"></script>
+
+    </head>
+    <body class="yui3-skin-sam">
+        <ul id="suites">
+            <li>lp.app.licence.test</li>
+        </ul>
+        <div id="fixture">
+        </div>
+        <script type="text/x-template" id="licence-fixture">
+            <div>
+            <input id="license_pending" name="license_status" type="radio" checked="checked" />
+            <label for="license_pending">I haven't specified the licence yet</label>
+            <input id="license_complete" name="license_status" type="radio" />
+            <label for="license_complete">
+              This project consists of code licensed under:
+            </label>
+            </div>
+            <div id="pending-div">
+            <div class="collapsible">
+            <legend>Recommended open source licences</legend>
+            <div id="recommended" class="hide-on-load expanded">
+            <table><tr>
+            <td><label for="field.licenses.1" style="font-weight: normal">
+                <input class="checkboxType" id="field.licenses.1" name="field.licenses"
+                       type="checkbox" value="LICENCE_1" /></label> </td>
+            <td><label for="field.licenses.2" style="font-weight: normal">
+                <input class="checkboxType" id="field.licenses.2" name="field.licenses"
+                       type="checkbox" value="LICENCE_2" /></label> </td>
+            </tr></table>
+            </div>
+            </div>
+
+            <div class="collapsible">
+            <legend>Other choices</legend>
+            <div id="special" class="hide-on-load "><table>
+            <tr>
+            <td><label for="field.licenses.3" style="font-weight: normal">
+                <input class="checkboxType" id="field.licenses.3" name="field.licenses"
+                       type="checkbox" value="OTHER_PROPRIETARY" /></label> </td>
+            <td><label for="field.licenses.4" style="font-weight: normal">
+                <input class="checkboxType" id="field.licenses.4" name="field.licenses"
+                       type="checkbox" value="OTHER_OPEN_SOURCE" /></label> </td>
+            </tr></table>
+            </div>
+            </div>
+            <div id="license-details" class="hide-on-load">
+              <label for="field.license_info">Licence details:</label>
+              <textarea id="field.license_info" name="field.license_info"></textarea>
+            </div>
+            </div>
+            <div id="proprietary" class="hidden">
+              Commercial and proprietary projects do not qualify for free hosting;
+              therefore a subscription needs to be purchased in order to host this
+              project on Launchpad.
+            </div>
+        </script>
+    </body>
+</html>

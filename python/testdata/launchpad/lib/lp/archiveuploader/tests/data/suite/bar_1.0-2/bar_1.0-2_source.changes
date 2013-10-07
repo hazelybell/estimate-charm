@@ -1,0 +1,34 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Format: 1.7
+Date: Thu, 30 Mar 2006 01:36:14 +0100
+Source: bar
+Binary: bar
+Architecture: source
+Version: 1.0-2
+Distribution: breezy
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Daniel Silverstone <daniel.silverstone@canonical.com>
+Launchpad-bugs-fixed: 6
+Description: 
+ bar        - Stuff for testing
+Changes: 
+ bar (1.0-2) breezy; urgency=low
+ .
+   * A second upload to ensure that binary overrides of _all work
+ . 
+   * Also closes Launchpad bug #6
+ .
+Files: 
+ bbaf6fbf41cdbbdd422b0382076f615a 512 devel optional bar_1.0-2.dsc
+ ac6b4efe44e31f47ec9f0d0fac6935f4 622 devel optional bar_1.0-2.diff.gz
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+
+iD8DBQFGe+Yjjn63CGxkqMURAuPGAJ9ub5UHjrzKnEGmUK1oCoRuOrdligCePKxt
+QRCBMda2V9lNtxldkGRtc88=
+=gtPz
+-----END PGP SIGNATURE-----

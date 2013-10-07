@@ -1,0 +1,13 @@
+Your question #%(question_id)s on %(target_name)s changed:
+%(question_url)s
+
+%(body)s
+
+-- 
+If this answers your question, please go to the following page to let us
+know that it is solved:
+%(question_url)s/+confirm?answer_id=%(new_message_id)s
+
+If you still need help, you can reply to this email or go to the
+following page to enter your feedback:
+%(question_url)s

@@ -1,0 +1,191 @@
+Code Review Comments
+====================
+
+Set up required objects
+
+    >>> # We need to be admin to add a landing target to a random branch
+    >>> login('foo.bar@canonical.com')
+    >>> eric = factory.makePerson(
+    ...     name="eric", email="eric@example.com",
+    ...     displayname="Eric the Viking")
+    >>> merge_proposal = factory.makeBranchMergeProposal(reviewer=eric)
+    >>> merge_proposal_url = canonical_url(merge_proposal)
+    >>> merge_proposal_path = canonical_url(
+    ...     merge_proposal, force_local_path=True)
+    >>> logout()
+
+    >>> eric_browser = setupBrowser(auth="Basic eric@example.com:test")
+    >>> eric_browser.open(merge_proposal_url)
+    >>> eric_browser.getLink('Add a review or comment').click()
+    >>> eric_browser.getControl(name='field.comment').value = ('This is a '
+    ... 'very long comment about what things should be done to the source '
+    ... 'branch to land it.  When this comment is replied to, it '
+    ... 'should wrap the line properly.')
+    >>> eric_browser.getControl(name='field.actions.add').click()
+    >>> eric_browser.url == merge_proposal_url
+    True
+
+Adding a comment or review to a merge proposal will take the user back
+to the main merge proposal page.
+
+    >>> anon_browser.open(merge_proposal_url)
+    >>> def print_comments(klass, browser=None, index=0):
+    ...     if browser is None:
+    ...         browser = anon_browser
+    ...     tags = find_tags_by_class(browser.contents, klass)
+    ...     for count, tag in enumerate(tags):
+    ...         if count == index:
+    ...             print extract_text(tag)
+
+    >>> print_comments('boardCommentDetails')
+    Eric the Viking (eric) wrote ...
+    >>> print_comments('boardCommentBody')
+    This is a very long comment about what things should be done to the
+    source branch to land it. When this comment is replied to, it should
+    wrap the line properly.
+    Reply
+    >>> print_comments('boardCommentFooter')
+
+The person's name links back to the main site for that person.
+
+    >>> print anon_browser.getLink('Eric the Viking').url
+    http://launchpad.dev/~eric
+
+Reply link is displayed even if the user isn't logged in.
+
+    >>> anon_browser.getLink('Reply').click()
+    Traceback (most recent call last):
+    Unauthorized:...
+
+We can reply to a comment.
+
+    >>> eric_browser.open(merge_proposal_url)
+    >>> eric_browser.getLink('Reply').click()
+
+
+XXX: Bjorn Tillenius 2010-05-19 bug=582842: Following test disabled,
+since it failed spuriously in buildbot.
+
+#    >>> print eric_browser.getControl(name='field.comment').value.replace(
+#    ...     '\r\n', '\n')
+#    This is a very long comment about what things should be done to the
+#    source branch to land it.  When this comment is replied to, it should
+#    wrap the line properly.
+
+    >>> eric_browser.getControl(name='field.comment').value = (
+    ...     'I like this.\n'
+    ...     'I wish I had time to review it properly\n\n'
+    ...     'This is a longer\nmessage with several\nlines\n'
+    ...     'Email me at eric@vikings-r-us.example.com for more details')
+    >>> eric_browser.getControl(name='field.actions.add').click()
+
+After this, we are taken to the main page for the merge proposal
+
+    >>> print_comments('boardCommentBody', eric_browser, index=1)
+    I like this.
+    I wish I had time to review it properly
+    This is a longer message with several lines
+    Email me at eric@vikings-r-us.example.com for more details
+    Reply
+
+Email addresses in code review comments are hidden for users not logged in.
+
+    >>> anon_browser.open(merge_proposal_url)
+    >>> print_comments('boardCommentBody', anon_browser, index=1)
+    I like this.
+    I wish I had time to review it properly
+    This is a longer message with several lines
+    Email me at &lt;email address hidden&gt; for more details
+    Reply
+
+If a merge proposal is resubmitted, the comments on the superseded proposal
+are also displayed in the new proposal.
+
+    >>> login('foo.bar@canonical.com')
+    >>> new_merge_proposal = merge_proposal.resubmit(
+    ...     merge_proposal.registrant)
+    >>> new_merge_proposal_url = canonical_url(new_merge_proposal)
+    >>> logout()
+    >>> anon_browser.open(new_merge_proposal_url)
+    >>> print_comments('boardCommentBody', anon_browser, index=0)
+    This is a very long comment about what things should be done to the
+    source branch to land it. When this comment is replied to, it should
+    wrap the line properly.
+    >>> print_comments('boardCommentDetails', anon_browser, index=0)
+    Eric the Viking (eric) wrote ... ago:
+    Posted in a previous version of this proposal #
+    >>> details = find_tags_by_class(
+    ...     anon_browser.contents, 'boardCommentDetails')[0]
+    >>> links = details.findAll('a')
+    >>> print links[1]['href'] == merge_proposal_path
+    True
+
+
+Reviewing
+---------
+
+If the user wants to review the branch, they click on the 'Add a review or
+comment' link.
+
+    >>> eric_browser.getLink('Add a review or comment').click()
+    >>> eric_browser.getControl(name='field.vote').displayValue = ['Abstain']
+    >>> eric_browser.getControl('Review type').value = 'timeless'
+    >>> eric_browser.getControl('Save Comment').click()
+
+    >>> print_comments('boardCommentDetails', eric_browser, index=2)
+    Eric the Viking ... ago: #
+    >>> print_comments('boardCommentFooter', eric_browser, index=0)
+    review: Abstain (timeless)
+    >>> print_comments('boardCommentBody', eric_browser, index=2)
+
+
+Vote summaries
+--------------
+
+The summary of the votes that have been made for a code review are shown
+in a table at the top of the page.
+
+    >>> print extract_text(find_tag_by_id(
+    ...     eric_browser.contents, 'code-review-votes'))
+    Reviewer                     Review Type    Date Requested    Status
+    Eric the Viking (community)  timeless       ...               Abstain...
+    a moment ago
+    Review via email: mp+1@code.launchpad.dev
+
+
+Commits shown in the conversation
+---------------------------------
+
+If the source branch is updated during the review process, the commits are
+shown as part of the conversation at the time they were pushed to Launchpad.
+
+    >>> login('admin@canonical.com')
+    >>> from lp.code.tests.helpers import add_revision_to_branch
+    >>> bmp = factory.makeBranchMergeProposal()
+    >>> from datetime import datetime, timedelta
+    >>> import pytz
+    >>> review_date = datetime(2009, 9, 10, tzinfo=pytz.UTC)
+    >>> bmp.requestReview(review_date)
+    >>> revision_date = review_date + timedelta(days=1)
+    >>> for date in range(2):
+    ...     ignored = add_revision_to_branch(
+    ...         factory, bmp.source_branch, revision_date,
+    ...         commit_msg='Testing commits in conversation')
+    ...     ignored = add_revision_to_branch(
+    ...         factory, bmp.source_branch, revision_date,
+    ...         commit_msg='and it works!')
+    ...     revision_date += timedelta(days=1)
+    >>> url = canonical_url(bmp)
+    >>> logout()
+
+    >>> browser.open(url)
+    >>> print_tag_with_id(browser.contents, 'conversation')
+    lp://dev/... updated on 2009-09-12 ...
+    1. By ... on 2009-09-11
+    Testing commits in conversation
+    2. By ... on 2009-09-11
+    and it works!
+    3. By ... on 2009-09-12
+    Testing commits in conversation
+    4. By ... on 2009-09-12
+    and it works!

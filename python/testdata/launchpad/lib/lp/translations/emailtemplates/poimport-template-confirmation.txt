@@ -1,0 +1,11 @@
+Hello %(importer)s,
+
+On %(dateimport)s (%(elapsedtime)s), you uploaded a translation template for %(template)s in Launchpad.
+
+The template has now been imported successfully.
+
+%(warnings)s
+
+Thank you,
+
+The Launchpad team

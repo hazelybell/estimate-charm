@@ -1,0 +1,323 @@
+ <tal:root
+   xmlns:tal="http://xml.zope.org/namespaces/tal"
+   xmlns:metal="http://xml.zope.org/namespaces/metal"
+   omit-tag="">
+<metal:branch-link define-macro="branch-heading-link">
+  <div id="branch-back-link">
+    <img src="/@@/branch" alt="" />
+    <a tal:attributes="href branch/fmt:url"
+       tal:content="branch/displayname" />
+    <tal:not-junk condition="branch/product">
+      for the
+      <tal:link replace="structure branch/product/fmt:link" />
+      project
+    </tal:not-junk>
+  </div>
+</metal:branch-link>
+
+<metal:merge-proposal define-macro="merge-proposal">
+
+  <tal:comment condition="nothing">
+    This macro requires the following defined variables:
+      mergeproposal - the proposal to show
+      branch - one of the branches of the merge proposal
+    The following variables define what is shown and are optional.
+      prerequisite_branch - the prerequisite branch to link to
+      show_status - show the proposal status
+      show_commit_message - show the commit message
+      show_associations - show the bugs and specs
+  </tal:comment>
+
+  <dl class="mergeproposal">
+  <tal:mp condition="branch/required:launchpad.View">
+    <dt>
+      <tal:branch-link replace="structure branch/fmt:link" />
+
+      <tal:show-lifecycle condition="show_lifecycle|nothing">
+        (<span tal:content="branch/lifecycle_status/title"
+               tal:attributes="
+               class string:branchstatus${branch/lifecycle_status/name}"
+               >Experimental</span>)
+      </tal:show-lifecycle>
+      -
+      <a tal:attributes="href mergeproposal/fmt:url">
+        view proposal details</a>
+    </dt>
+    <dd>
+      <div class="commit_message"
+           tal:condition="show_commit_message|nothing"
+           tal:content="structure mergeproposal/commit_message/fmt:text-to-html">
+        The commit message.
+      </div>
+      <tal:show-prerequisite condition="prerequisite_branch|nothing">
+        <div tal:condition="prerequisite_branch/required:launchpad.View">
+          Prerequisite
+          <tal:prerequisite replace="structure prerequisite_branch/fmt:link" />
+        </div>
+      </tal:show-prerequisite>
+      <tal:show-status condition="show_status|nothing">
+      <div tal:condition="not: mergeproposal/queue_status/enumvalue:MERGED">
+        <tal:proposal-status replace="mergeproposal/queue_status/title"/>
+      </div>
+      <div tal:condition="mergeproposal/queue_status/enumvalue:MERGED"
+           class="branchstatusMERGED">
+        Merged
+        <tal:merged replace="mergeproposal/date_merged/fmt:approximatedate">
+          2007-06-04
+        </tal:merged>
+        <tal:have-revno condition="mergeproposal/merged_revno">
+          at revision <tal:revno replace="mergeproposal/merged_revno"/>
+        </tal:have-revno>
+      </div>
+      </tal:show-status>
+      <tal:show-links condition="show_associations|nothing">
+
+        <tal:branch-link define="branch mergeproposal/source_branch">
+          <metal:branch-link use-macro="branch/@@+macros/bug-branch-links"/>
+        </tal:branch-link>
+
+        <div tal:repeat="spec_link view/spec_links">
+          <img src="/@@/blueprint"
+               tal:replace="structure spec_link/specification/image:icon" />
+          <a tal:attributes="href spec_link/specification/fmt:url:blueprints"
+             tal:content="spec_link/specification/title" />
+        </div>
+
+      </tal:show-links>
+    </dd>
+  </tal:mp>
+
+  </dl>
+</metal:merge-proposal>
+
+
+<metal:branch-bug-links define-macro="bug-branch-links">
+
+  <tal:comment condition="nothing">
+    This macro requires the following defined variables:
+      branch - the branch that has the bug branch links
+    The following variables define what is shown and are optional.
+      show_edit - show the edit form
+  </tal:comment>
+
+  <table>
+    <tal:bug-tasks repeat="bugtask view/linked_bugtasks">
+      <tr tal:condition="bugtask/bug/required:launchpad.View"
+           tal:define="show_edit show_edit|nothing;"
+           tal:attributes="id string:buglink-${bugtask/bug/id}"
+           class="bug-branch-summary">
+        <td tal:content="structure bugtask/fmt:link:bugs" class="first"/>
+        <td>
+          <span tal:content="bugtask/importance/title"
+                tal:attributes="class string:importance${bugtask/importance/name}"
+                >Critical</span>
+        </td>
+        <td>
+          <span tal:content="bugtask/status/title"
+                tal:attributes="class string:status${bugtask/status/name}"
+                >Triaged</span>
+        </td>
+        <td tal:condition="show_edit|nothing">
+          <a title="Remove link"
+             class="delete-buglink"
+             tal:attributes="href string:+bug/${bugtask/bug/id}/+delete;
+                             id string:delete-buglink-${bugtask/bug/id}">
+            <img src="/@@/remove" alt="Remove"/>
+          </a>
+        </td>
+      </tr>
+    </tal:bug-tasks>
+  </table>
+
+</metal:branch-bug-links>
+
+<metal:spec-branch-links define-macro="spec-branch-links">
+
+  <tal:comment condition="nothing">
+    This macro requires the following defined variables:
+      branch - the branch that has the spec branch links
+    The following variables define what is shown and are optional.
+      show_edit - show the edit form
+  </tal:comment>
+
+  <tal:spec-tasks repeat="spec_branch view/spec_links">
+    <div tal:define="has_edit_permission spec_branch/required:launchpad.AnyPerson;
+                     show_edit show_edit|nothing;
+                     show_edit python: show_edit and has_edit_permission;
+                     spec spec_branch/specification;
+                     ">
+      <div class="spec-branch-summary">
+      <tal:link replace="structure spec/fmt:link:blueprints" />
+      (<span tal:attributes="class string:specpriority${spec/priority/name}"
+             tal:content="spec/priority/title">High</span>)
+      <tal:show-edit condition="show_edit|nothing">
+      <a class="sprite edit action-icon"
+        tal:attributes="href spec_branch/fmt:url;">Edit</a>
+      </tal:show-edit>
+      </div>
+       <div tal:condition="show_edit|nothing"
+            tal:attributes="id string:specbranch${spec_branch/id}"
+            class="hidden"
+            >
+         <dl><dd>
+       </dd></dl>
+       </div>
+    </div>
+
+  </tal:spec-tasks>
+
+</metal:spec-branch-links>
+
+<metal:branch-revisions define-macro="branch-revisions">
+
+  <tal:comment condition="nothing">
+    This macro requires the following defined variables:
+      branch - the branch that has the revisions
+      Either:
+          revisions - the revisions to list.
+        or
+          revision_info - extended revision information (revision,
+                          merge_proposal, linked_bugtasks) to list.
+
+  </tal:comment>
+  <style type="text/css">
+    .subordinate {
+      margin-left: 1em;
+    }
+  </style>
+  <dl class="revision">
+    <!-- Display the extended revision listing -->
+    <tal:revision repeat="rev_info revision_info"
+                  define="codebrowse view/codebrowse_url"
+                  condition="revision_info | nothing">
+      <div tal:define="rev_no python:rev_info['revision']">
+        <metal:landing-target use-macro="branch/@@+macros/revision-text"/>
+      </div>
+    </tal:revision>
+    <!-- Display the standard revision listing -->
+    <tal:revision repeat="rev_no revisions"
+                  define="codebrowse view/codebrowse_url"
+                  condition="revisions | nothing">
+      <metal:landing-target use-macro="branch/@@+macros/revision-text"/>
+    </tal:revision>
+    <tal:ajax-revision-diffs
+        condition="request/features/code.ajax_revision_diffs.enabled">
+      <tal:diff-expander condition="show_diff_expander | nothing">
+  <div class="revision-group-diff" tal:condition="revisions | nothing">
+        <a href="#" class="hidden expander-icon js-action"
+            tal:define="start_revno python:revisions[0].sequence;
+       last_revno python:revisions[-1].sequence"
+       tal:attributes="id string:expandable-${start_revno}-${last_revno}"
+    >Changes added by revision <tal:revno replace="start_revno">1</tal:revno>
+      <tal:plural condition="python: start_revno!=last_revno">
+        to revision <tal:revno replace="last_revno">2</tal:revno>
+      </tal:plural></a>
+      <div class="hidden expander-content">Loading diff <img src="/@@/spinner"/></div>
+  </div>
+      </tal:diff-expander>
+    </tal:ajax-revision-diffs>
+  </dl>
+
+</metal:branch-revisions>
+
+<metal:revision-text define-macro="revision-text">
+
+  <tal:comment condition="nothing">
+    This macro requires the following defined variables:
+      Either:
+          rev_no - the branch revision to be displayed.
+        or
+          rev_info - a dict of the branch revision information (revision,
+                     merge_proposal, linked_bugtasks) to be displayed.
+      codebrowse - the branch's codebrowse root.
+
+    It is expected that this macro is called from within a definition
+    list (<dl></dl>)
+  </tal:comment>
+  <dt class="revision-details">
+    <tal:comment condition="nothing">
+      The end of the anchor and the start of the next tal expression
+      has no whitespace between the elements as we do not want any
+      space between the number and the fullstop.
+    </tal:comment>
+    <a tal:attributes="href string:${codebrowse}/revision/${rev_no/sequence}"
+       tal:content="rev_no/sequence"
+       tal:condition="rev_no/branch/code_is_browseable">
+      1
+    </a><tal:revno condition="not: rev_no/branch/code_is_browseable"
+                   replace="rev_no/sequence">1</tal:revno>.
+    By
+    <tal:revision-author define="revision_author rev_no/revision/revision_author">
+      <tal:known-person condition="revision_author/person">
+        <tal:person-link replace="structure revision_author/person/fmt:link"/>
+      </tal:known-person>
+      <tal:unknown-person condition="not: revision_author/person">
+        <strong tal:content="revision_author/name/fmt:obfuscate-email">
+          Sample Author
+        </strong>
+      </tal:unknown-person>
+    </tal:revision-author>
+
+    <span
+        tal:attributes="title rev_no/revision/revision_date/fmt:datetime"
+        tal:content="rev_no/revision/revision_date/fmt:displaydate"
+        >2005-10-05 14:34:22 WST</span>
+  </dt>
+  <dd class="subordinate revision-comment">
+    <tal:commit-message
+        replace="structure rev_no/revision/log_body/fmt:obfuscate-email/fmt:text-to-html">
+      The revision commit message.
+    </tal:commit-message>
+  </dd>
+
+  <div tal:condition="rev_info | nothing">
+    <div tal:define="merge_proposal python:rev_info['merge_proposal']"
+         tal:condition="merge_proposal">
+      <dd class="subordinate revision-comment">
+        Merged branch <a tal:attributes="href merge_proposal/fmt:url"
+                    tal:content="merge_proposal/source_branch/displayname">source branch</a>
+        <tal:linkedbugs
+                define="linked_bugtasks python:rev_info['linked_bugtasks']"
+                condition="linked_bugtasks">
+          <dl>
+              <tal:bug repeat="bugtask linked_bugtasks">
+                <dd class="subordinate revision-comment">
+                  <tal:bug-link replace="structure bugtask/fmt:link:bugs"/>
+                </dd>
+              </tal:bug>
+          </dl>
+        </tal:linkedbugs>
+      </dd>
+    </div>
+  </div>
+</metal:revision-text>
+
+<metal:no-revision-message define-macro="no-revision-message">
+
+  <tal:not-mirrored condition="not:branch/last_mirrored">
+    <tal:remote-branch tal:condition="branch/branch_type/enumvalue:REMOTE">
+      Revision details not available for <em>remote</em> branches.
+    </tal:remote-branch>
+    <tal:mirrored-branch tal:condition="branch/branch_type/enumvalue:MIRRORED">
+      This branch has not been mirrored yet.
+    </tal:mirrored-branch>
+    <tal:hosted-branch tal:condition="branch/branch_type/enumvalue:HOSTED">
+      This branch has not been pushed to yet.
+    </tal:hosted-branch>
+    <tal:imported-branch tal:condition="branch/branch_type/enumvalue:IMPORTED">
+      This branch has not been imported yet.
+    </tal:imported-branch>
+  </tal:not-mirrored>
+
+  <tal:mirrored condition="branch/last_mirrored">
+    <tal:not-scanned condition="not:branch/last_scanned">
+      This branch has not been scanned yet.
+    </tal:not-scanned>
+    <tal:scanned condition="branch/last_scanned">
+      This branch is empty.
+    </tal:scanned>
+  </tal:mirrored>
+
+</metal:no-revision-message>
+
+</tal:root>

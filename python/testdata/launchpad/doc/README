@@ -1,0 +1,6 @@
+This directory contains general system-level documentation for Launchpad.
+
+You can also find general documentation on <https://dev.launchpad.net> and
+documentation on specific parts of the system in doctests (look for *.txt
+files) or in docstrings.
+

@@ -1,0 +1,116 @@
+Received: (at submit) by bugs.debian.org; 12 Nov 2004 10:33:03 +0000
+From djoume@taket.org Fri Nov 12 02:33:03 2004
+Return-path: <djoume@taket.org>
+Received: from krepost.taket.org (localhost) [82.227.166.100] 
+	by spohr.debian.org with esmtp (Exim 3.35 1 (Debian))
+	id 1CSYjm-0000Vv-00; Fri, 12 Nov 2004 02:33:03 -0800
+Received: from djoume by localhost with local (Exim 4.34)
+	id 1CSYjb-0003PR-9h; Fri, 12 Nov 2004 11:32:51 +0100
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+From: Djoume SALVETTI <djoume@taket.org>
+To: Debian Bug Tracking System <submit@bugs.debian.org>
+Subject: is woody evolution still vulnerable to SSL Man-In-The-Middle Vulnerability?
+X-Mailer: reportbug 3.2
+Date: Fri, 12 Nov 2004 11:32:51 +0100
+X-Debbugs-Cc: djoume@taket.org
+Message-Id: <E1CSYjb-0003PR-9h@localhost>
+Delivered-To: submit@bugs.debian.org
+X-Spam-Checker-Version: SpamAssassin 2.60-bugs.debian.org_2004_03_25 
+	(1.212-2003-09-23-exp) on spohr.debian.org
+X-Spam-Status: No, hits=-11.0 required=4.0 tests=BAYES_00,HAS_PACKAGE,
+	X_DEBBUGS_CC autolearn=ham version=2.60-bugs.debian.org_2004_03_25
+X-Spam-Level: 
+
+Package: evolution
+Version: 2.0.2-3
+Severity: grave
+Tags: security
+Justification: user security hole
+
+
+Good day,
+
+I'm reviewing the list of 2002 CVEs to check if there is still
+some known vulnerables packages in testing.
+
+In CVE-2002-1471 it is written :
+
+| The camel component for Ximian Evolution 1.0.x and earlier does not
+| verify certificates when it establishes a new SSL connection after
+| previously verifying a certificate, which could allow remote attackers
+| to monitor or modify sessions via a man-in-the-middle attack.
+
+According to http://www.securityfocus.com/bid/5875/info/
+woody version of evolution is still vulnerable.
+
+Regards.
+
+-- System Information:
+Debian Release: 3.1
+  APT prefers unstable
+  APT policy: (500, 'unstable')
+Architecture: powerpc (ppc)
+Kernel: Linux 2.6.9-rfb-swsusp
+Locale: LANG=fr_FR@euro, LC_CTYPE=fr_FR@euro (charmap=ISO-8859-15)
+
+Versions of packages evolution depends on:
+ii  evolution-data-server     1.0.2-3        evolution database backend server
+ii  gconf2                    2.6.4-2        GNOME configuration database syste
+ii  gnome-icon-theme          1.2.3-1.1      GNOME Desktop icon theme
+ii  gtkhtml3.2                3.2.3-1        HTML rendering/editing library - b
+ii  libart-2.0-2              2.3.16-6       Library of functions for 2D graphi
+ii  libatk1.0-0               1.6.1-5        The ATK accessibility toolkit
+ii  libaudiofile0             0.2.6-4        Open-source version of SGI's audio
+ii  libbonobo2-0              2.6.2-7        Bonobo CORBA interfaces library
+ii  libbonoboui2-0            2.6.1-1        The Bonobo UI library
+ii  libc6                     2.3.2.ds1-18   GNU C Library: Shared libraries an
+ii  libcompfaceg1             1989.11.11-24  Compress/decompress images for mai
+ii  libebook8                 1.0.2-3        Client library for evolution addre
+ii  libecal6                  1.0.2-3        Client library for evolution calen
+ii  libedataserver3           1.0.2-3        Utily library for evolution data s
+ii  libegroupwise6            1.0.2-3        Client library for accessing group
+ii  libesd0                   0.2.35-2       Enlightened Sound Daemon - Shared 
+ii  libfontconfig1            2.2.3-3        generic font configuration library
+ii  libfreetype6              2.1.7-2.2      FreeType 2 font engine, shared lib
+ii  libgail-common            1.6.6b-1       GNOME Accessibility Implementation
+ii  libgail17                 1.6.6b-1       GNOME Accessibility Implementation
+ii  libgal2.2-1               2.2.3-1        G App Libs (run time library)
+ii  libgal2.2-common          2.2.3-1        G App Libs (common files)
+ii  libgconf2-4               2.6.4-2        GNOME configuration database syste
+ii  libgcrypt11               1.2.0-10       LGPL Crypto library - runtime libr
+ii  libglade2-0               1:2.4.0-1      Library to load .glade files at ru
+ii  libglib2.0-0              2.4.7-1        The GLib library of C routines
+ii  libgnome-keyring0         0.2.1-3        GNOME keyring services library
+ii  libgnome-pilot2           2.0.10-6.1     Support libraries for gnome-pilot
+ii  libgnome2-0               2.6.1.2-2      The GNOME 2 library - runtime file
+ii  libgnomecanvas2-0         2.6.1.1-2      A powerful object-oriented display
+ii  libgnomeprint2.2-0        2.8.0.1-2      The GNOME 2.2 print architecture -
+ii  libgnomeprintui2.2-0      2.6.2-1        The GNOME 2.2 print architecture U
+ii  libgnomeui-0              2.6.1.1cvs-1   The GNOME 2 libraries (User Interf
+ii  libgnomevfs2-0            2.6.2-2        The GNOME virtual file-system libr
+ii  libgnutls11               1.0.16-9       GNU TLS library - runtime library
+ii  libgpg-error0             1.0-1          library for common error values an
+ii  libgtk2.0-0               2.4.13-1       The GTK+ graphical user interface 
+ii  libgtkhtml3.2-11          3.2.3-1        HTML rendering/editing library - r
+ii  libice6                   4.3.0.dfsg.1-8 Inter-Client Exchange library
+ii  libjpeg62                 6b-9           The Independent JPEG Group's JPEG 
+ii  libldap2                  2.1.30-3       OpenLDAP libraries
+ii  libnspr4                  2:1.7.3-5      Netscape Portable Runtime Library
+ii  libnss3                   2:1.7.3-5      Network Security Service Libraries
+ii  liborbit2                 1:2.10.2-1.1   libraries for ORBit2 - a CORBA ORB
+ii  libpango1.0-0             1.4.1-4        Layout and rendering of internatio
+ii  libpisock8                0.11.8-10      Library for communicating with a P
+ii  libpisync0                0.11.8-10      Synchronization library for PalmOS
+ii  libpopt0                  1.7-5          lib for parsing cmdline parameters
+ii  libsm6                    4.3.0.dfsg.1-8 X Window System Session Management
+ii  libsoup2.2-7              2.2.1-1        an HTTP library implementation in 
+ii  libtasn1-2                0.2.10-4       Manage ASN.1 structures (runtime)
+ii  libx11-6                  4.3.0.dfsg.1-8 X Window System protocol client li
+ii  libxml2                   2.6.11-5       GNOME XML library
+ii  xlibs                     4.3.0.dfsg.1-8 X Window System client libraries m
+ii  zlib1g                    1:1.2.2-3      compression library - runtime
+
+-- no debconf information
+

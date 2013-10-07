@@ -1,0 +1,31 @@
+<bug-tracker-edit
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="malone">
+
+  <div metal:fill-slot="main">
+    <h1>Change bug tracker details</h1>
+    <div class="top-portlet">
+      <div id="bugtracker-delete-not-possible-reasons"
+           tal:define="reasons view/delete_not_possible_reasons"
+           tal:condition="reasons">
+        <p>
+          Please note, this bug tracker cannot be deleted because:
+        </p>
+        <ol>
+          <li tal:repeat="reason reasons" tal:content="reason" />
+        </ol>
+      </div>
+      <p>
+        If you need to change the type of bug tracker, please ask for
+        admin support on #launchpad (see the bottom of the page for
+        details).
+      </p>
+      <div metal:use-macro="context/@@launchpad_form/form" />
+    </div>
+  </div>
+
+</bug-tracker-edit>

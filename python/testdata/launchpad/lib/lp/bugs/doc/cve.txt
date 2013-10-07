@@ -1,0 +1,143 @@
+= Common Vulnerabilities and Exposures (CVE) =
+
+Malone supports attaching CVE references to bugs. From
+http://www.cve.mitre.org/about/ CVE is:
+
+    A list of standardized names for vulnerabilities and other
+    information security exposures - CVE aims to standardize the names
+    for all publicly known vulnerabilities and security exposures.
+
+For more information, consult the CVE website:
+
+    http://www.cve.mitre.org/
+
+== CveSet ==
+
+The ICveSet utility is used to create and get CVEs and BugCves.
+
+=== Creating CVE entries ===
+
+CVE references can be created with the ICveSet utility.
+
+    >>> from lp.testing import login
+    >>> login("test@canonical.com")
+
+    >>> from zope.component import getUtility
+    >>> from lp.bugs.interfaces.cve import CveStatus, ICveSet
+    >>> cveset = getUtility(ICveSet)
+
+To create a CVE, call ICveSet.new(sequence, description,
+    status=CveStatus.CANDIDATE)
+
+    >>> cve = cveset.new(sequence="2004-0276",
+    ...     description="A new CVE", status=CveStatus.ENTRY,
+    ...     )
+    >>> cve.displayname
+    u'CVE-2004-0276'
+
+=== Number of CVE links ===
+
+We can get the number of CVE links to bugs in Launchpad using
+getBugCveCount.
+
+    >>> cveset.getBugCveCount()
+    2
+
+If we add another link, the count will of course increase by one.  The
+supplied user is the person linking the CVEs.
+
+    >>> from lp.bugs.interfaces.bug import IBugSet
+    >>> from lp.registry.interfaces.person import IPersonSet
+    >>> no_priv = getUtility(IPersonSet).getByName('no-priv')
+    >>> bug_one = getUtility(IBugSet).get(1)
+    >>> bug_one.linkCVE(cve, user=no_priv)
+    <BugCve at ...>
+
+    >>> cveset.getBugCveCount()
+    3
+
+And if we unlink it, the count will decrease.
+
+    >>> bug_one.unlinkCVE(cve, user=no_priv)
+
+    >>> cveset.getBugCveCount()
+    2
+
+== Linking CVEs to Bugs ==
+
+You can link a CVE to a bug. You can also see which CVEs are currently
+linked to a bug:
+
+    >>> from lp.bugs.model.bug import Bug
+    >>> b = Bug.get(1)
+    >>> for c in b.cves:
+    ...     print c.displayname
+    CVE-1999-8979
+
+Let's add the new CVE:
+
+    >>> b.cves.count()
+    1
+    >>> b.linkCVE(cve, no_priv)
+    <BugCve at ...>
+    >>> b.cves.count()
+    2
+
+Ah, but that was a bad idea. Let's unlink it.
+
+    >>> b.unlinkCVE(cve, user=no_priv)
+    >>> b.cves.count()
+    1
+
+Alternatively, we can link CVEs to bugs by looking for CVEs in a
+string of text. The supplied user is the person linking the CVEs.
+
+    >>> b.findCvesInText('''
+    ...     This bug is related to CVE-2004-0276
+    ... ''', user=no_priv)
+    >>> cve in b.cves
+    True
+    >>> b.unlinkCVE(cve, user=no_priv)
+
+== CVE Reports ==
+
+Launchpad offers distributions, distribution releases and products with
+reports that inform on the status of bugs related to CVEs in the
+distribution. The method that drives this report is
+ICveSet.getBugCvesForBugTasks:
+
+    >>> from lp.bugs.interfaces.bugtasksearch import BugTaskSearchParams
+    >>> from lp.registry.model.distribution import Distribution
+    >>> params = BugTaskSearchParams(None)
+    >>> ubuntu = Distribution.selectOneBy(name="ubuntu")
+    >>> ubuntu_tasks = ubuntu.searchTasks(params)
+    >>> bugcves = cveset.getBugCvesForBugTasks(ubuntu_tasks)
+    >>> [(bug.id, cve.title) for (bug, cve) in bugcves]
+    [(1, u'CVE-1999-8979 (Entry)'),
+     (2, u'CVE-1999-2345 (Candidate)')]
+
+This method is used in the CVEReportView:
+
+    >>> from zope.component import getMultiAdapter
+    >>> from lp.services.webapp.servers import LaunchpadTestRequest
+    >>> request = LaunchpadTestRequest()
+    >>> cve_report = getMultiAdapter((ubuntu, request), name="+cve")
+    >>> cve_report.initialize()
+
+This view has a pair of methods that constructs a data structure that
+connects bugs to bugtasks and CVEs. The open_cve_bugtasks returned are, not
+surprisingly, the same the method above returned:
+
+    >>> for bugtaskcve in cve_report.open_cve_bugtasks:
+    ...    ([bugtask.title for bugtask in bugtaskcve.bugtasks],
+    ...     [cve['displayname'] for cve in bugtaskcve.cves])
+    ([u'Bug #1 in mozilla-firefox (Ubuntu): "Firefox does not support SVG"'],
+     [u'CVE-1999-8979'])
+    ([u'Bug #2 in Ubuntu: "Blackhole Trash folder"'],
+     [u'CVE-1999-2345'])
+
+There are no resolved bugtasks linked to CVEs in Ubuntu:
+
+    >>> cve_report.resolved_cve_bugtasks
+    []
+

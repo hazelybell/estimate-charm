@@ -1,0 +1,43 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+>
+
+  <body>
+    <tal:main metal:fill-slot="main">
+      <div class="top-portlet">
+        <h1>
+          Bugs that can expire in
+          <tal:target replace="context/displayname" />
+        </h1>
+
+        <p tal:condition="not: view/can_show_expirable_bugs">
+          This project has not enabled bug expiration. No bugs can expire.
+          Project administrator's may choose to enable bug expiration by
+          updating the project's details. See
+          <a href="https://help.launchpad.net/Bugs/Expiry">Bugs/Expiry.</a>
+
+        </p>
+
+        <tal:expirable-bugs condition="view/can_show_expirable_bugs">
+          <p>
+            Incomplete bug reports can expire if they are unattended and are
+            inactive. These bugs are not confirmed, or in a status that
+            indicates they were confirmed. An Incomplete bug can remain
+            in this list indefinitely, so long as the bug is regularly updated.
+            See <a href="https://help.launchpad.net/Bugs/Expiry">Bugs/Expiry.
+            </a>
+          </p>
+
+          <div tal:define="batch_navigator view/search">
+            <tal:buglisting content="structure batch_navigator/@@+table-view" />
+          </div>
+        </tal:expirable-bugs>
+      </div>
+    </tal:main>
+  </body>
+</html>

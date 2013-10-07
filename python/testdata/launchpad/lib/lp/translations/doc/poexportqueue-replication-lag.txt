@@ -1,0 +1,88 @@
+= Replication Lag and the Export Queue =
+
+Due to replication lag it's possible for the export queue to see a
+request on the slave store that it actually just removed from the master
+store.
+
+We start our story with an empty export queue.
+
+    >>> import transaction
+    >>> from zope.component import getUtility
+    >>> from lp.services.database.interfaces import IMasterStore
+    >>> from lp.translations.interfaces.poexportrequest import (
+    ...     IPOExportRequestSet)
+    >>> from lp.translations.interfaces.pofile import IPOFile
+    >>> from lp.translations.model.poexportrequest import POExportRequest
+    >>> query = IMasterStore(POExportRequest).execute(
+    ...     "DELETE FROM POExportRequest")
+
+    >>> queue = getUtility(IPOExportRequestSet)
+
+We have somebody making an export request.
+
+    >>> requester = factory.makePerson(
+    ...     email='punter@example.com', name='punter')
+
+    >>> template1 = factory.makePOTemplate()
+    >>> pofile1_be = factory.makePOFile('be', potemplate=template1)
+    >>> pofile1_ja = factory.makePOFile('ja', potemplate=template1)
+    >>> queue.addRequest(requester, template1, [pofile1_be, pofile1_ja])
+    >>> query = IMasterStore(POExportRequest).execute(
+    ...     "UPDATE POExportRequest SET date_created = '2010-01-10'::date")
+
+Later, a different and separate request follows.
+
+    >>> template2 = factory.makePOTemplate()
+    >>> pofile2_se = factory.makePOFile('se', potemplate=template2)
+    >>> pofile2_ga = factory.makePOFile('ga', potemplate=template2)
+    >>> queue.addRequest(requester, template2, [pofile2_se, pofile2_ga])
+
+The database is replicated in this state.
+
+    >>> transaction.commit()
+
+getRequest at this point returns the oldest request.
+
+    >>> def summarize_request(request_tuple):
+    ...     """Summarize files in export request."""
+    ...     person, sources, format, request_ids = request_tuple
+    ...     summary = []
+    ...     for source in sources:
+    ...         if IPOFile.providedBy(source):
+    ...             summary.append(source.language.code)
+    ...         else:
+    ...             summary.append('(template)')
+    ...     for entry in sorted(summary):
+    ...         print entry
+
+    >>> summarize_request(queue.getRequest())
+    (template)
+    be
+    ja
+
+It doesn't modify the queue, so it'd say the same thing again if we
+were to ask again.
+
+    >>> repeated_request = queue.getRequest()
+    >>> summarize_request(repeated_request)
+    (template)
+    be
+    ja
+
+The first request is removed from the master store after processing, but
+not yet from the slave store.  (Since this test is all one session, we
+can reproduce this by not committing the removal).  The second request
+is still technically on the queue, but no longer "live."
+
+    >>> person, sources, format, request_ids = repeated_request
+    >>> print len(request_ids)
+    3
+    >>> queue.removeRequest(request_ids)
+
+In this state, despite the replication lag, getRequest is smart enough
+to return the second request, not the first.
+
+    >>> summarize_request(queue.getRequest())
+    (template)
+    ga
+    se

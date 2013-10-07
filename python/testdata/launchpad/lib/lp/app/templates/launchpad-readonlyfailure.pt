@@ -1,0 +1,24 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+  <body>
+    <div class="top-portlet" metal:fill-slot="main">
+      <h1 class="exception">Sorry, you can't do this right now</h1>
+      <p>
+          You cannot make any changes at this time. Launchpad is
+          undergoing maintenance and is running in
+          <strong>read-only</strong> mode.
+      </p>
+      <p>Normal service will resume as soon as possible. You can find more
+         information on the <a href="http://identi.ca/launchpadstatus">
+         Launchpad system status</a> page.
+      </p>
+      <tal:replace tal:replace="structure view/maybeShowTraceback" />
+    </div>
+  </body>
+</html>

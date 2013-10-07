@@ -1,0 +1,15 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+  <tal:publishing-history define="
+    version_name context/distroarchseriesbinarypackagerelease/version;
+    version_url context/distroarchseriesbinarypackagerelease/fmt:url;
+    series_name context/distroarchseries/displayname;
+    series_url context/distroarchseries/fmt:url">
+
+    <span metal:use-macro="context/@@publishinghistory-macros/listing-summary" />
+  </tal:publishing-history>
+</tal:root>

@@ -1,0 +1,7 @@
+Sorry, something went wrong when Launchpad tried processing your mail.
+We've recorded what happened, and we'll fix it as soon as possible.
+Apologies for the inconvenience.
+
+If this is blocking your work, please file a question at
+https://answers.launchpad.net/launchpad/+addquestion
+and include the error ID %(oops_id)s in the description.

@@ -1,0 +1,20 @@
+Format: 1.7
+Date: Thu, 16 Apr 2007 14:34:09 -0300
+Source: multibar
+Binary: bar-bin bar-extra
+Architecture: source
+Version: 1.0-1
+Distribution: hoary
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Celso Providelo <cprov@canonical.com>
+Description: 
+ bar-bin    - Stuff for testing
+ bar-extra  - Stuff for testing
+Changes: 
+ multibar (1.0-1) hoary; urgency=low
+ .
+   * Testing multiple binaries and nascentupload-cataclysm
+Files: 
+ f941347f4f8a9bf2bca1230557fc7818 241 devel optional multibar_1.0-1.dsc
+ cbc2f622bf17c582b065250b19a03a1f 856 devel optional multibar_1.0-1.tar.gz

@@ -1,0 +1,37 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<a
+  tal:condition="context/required:launchpad.Driver"
+  tal:attributes="href string:${context/fmt:url}"
+  ><img tal:condition="context/status/enumvalue:ACCEPTED"
+        src="/@@/yes"
+        alt="Approved"
+        title="Approved for the meeting agenda"
+  /><img tal:condition="context/status/enumvalue:DECLINED"
+         src="/@@/no"
+         alt="Declined"
+         title="Declined for the meeting"
+  /><img tal:condition="context/status/enumvalue:PROPOSED"
+         src="/@@/maybe"
+         alt="Proposed"
+         title="Proposed for discussion at the meeting"
+         /></a><span
+  tal:condition="not: context/required:launchpad.Driver"
+  ><img tal:condition="context/status/enumvalue:ACCEPTED"
+        src="/@@/yes"
+        alt="Approved"
+        title="Approved for the meeting agenda"
+  /><img tal:condition="context/status/enumvalue:DECLINED"
+         src="/@@/no"
+         alt="Declined"
+         title="Declined for the meeting"
+  /><img tal:condition="context/status/enumvalue:PROPOSED"
+         src="/@@/maybe"
+         alt="Proposed"
+         title="Proposed for discussion at the meeting"
+         /></span>
+</tal:root>

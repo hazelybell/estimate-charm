@@ -1,0 +1,21 @@
+<!-- Copyright 2009 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure xmlns="http://namespaces.zope.org/zope">
+
+    <include file="common.zcml" />
+
+    <include files="package-includes/*-configure.zcml" />
+    <include files="package-includes/*-configure-normal.zcml" />
+
+    <includeOverrides files="override-includes/*-configure.zcml" />
+    <includeOverrides files="override-includes/*-configure-normal.zcml" />
+    <!-- No +config-overrides here, as the mail config can cause celery
+         tests to fail. -->
+
+    <!-- Add a hook to configure the email stuff using ZCML stored outside
+        of the launchpad tree -->
+    <include files="../../+*.zcml" />
+
+</configure>

@@ -1,0 +1,16 @@
+Hello %(importer)s,
+
+On %(dateimport)s (%(elapsedtime)s), you uploaded a file with %(language)s translations for %(template)s in Launchpad.
+
+We were unable to import it because either this file did not originate in Launchpad, or you removed the tag we use to mark files exported from Launchpad.
+
+The reason we require that tag is to prevent translators who work offline from inadvertently reverting translations made by others.
+
+To fix the problem, please get the latest export from Launchpad, apply your changes and upload the merged file.
+
+For your convenience, you can get the file you uploaded at:
+%(file_link)s
+
+Thank you,
+
+The Launchpad team

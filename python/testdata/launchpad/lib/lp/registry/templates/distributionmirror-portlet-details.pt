@@ -1,0 +1,29 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  class="portlet" id="portlet-details">
+
+  <h2><span tal:replace="context/title">Name</span> mirror details</h2>
+
+    <b>Registrant:</b>
+    <a tal:replace="structure context/owner/fmt:link" /><br />
+
+    <b>Speed:</b>
+    <span tal:content="context/speed/title" /><br />
+
+    <b>Country:</b>
+    <span tal:content="context/country/name" /><br />
+
+    <b>Content:</b>
+    <span tal:content="context/content/title" /><br />
+
+    <b>
+      <tal:official condition="context/isOfficial">Official</tal:official>
+      <tal:not-official condition="not:context/isOfficial">Unofficial</tal:not-official>
+      <span tal:replace="context/distribution/title" /> Mirror
+    </b>
+    <br />
+
+</div>
+

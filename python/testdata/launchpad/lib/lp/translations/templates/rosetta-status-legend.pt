@@ -1,0 +1,25 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<div id="legend" class="lesser">
+  <div>
+    <img
+      alt="Key to this table: &#8220;Unchanged&#8221; means"
+      src="/@@/green-bar"
+      style="height: 1em; width: 2em;"
+    />
+    Translated
+  </div>
+  <div>
+    <img
+      alt="and &#8220;untranslated&#8221; means just that,"
+      src="/@@/red-bar"
+      style="height: 1em; width: 2em;"
+    />
+    Untranslated
+  </div>
+</div>
+</tal:root>

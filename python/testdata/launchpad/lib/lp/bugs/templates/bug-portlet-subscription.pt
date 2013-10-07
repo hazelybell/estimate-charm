@@ -1,0 +1,61 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  class="portlet vertical"
+  id="portlet-subscription"
+  metal:define-macro="custom"
+>
+  <div class="section" tal:define="context_menu context/menu:context"
+       metal:define-slot="heading">
+    <div id="current_user_subscription"
+         tal:attributes="class python:view.other_subscription_notifications
+                         and 'has_other_subscriptions'">
+      <tal:block condition="not:view/muted">
+        <span tal:condition="not:view/only_other_subscription_notifications"
+              tal:content="view/notifications_text/not_only_other_subscription">
+        You are
+        </span>
+        <span tal:condition="view/only_other_subscription_notifications"
+              tal:content="view/notifications_text/only_other_subscription" />
+        <a tal:attributes="href string:${view/current_bugtask/fmt:url}/+subscribe"
+           class="menu-link-subscription sprite modify edit">
+           <tal:text condition="view/direct_all_notifications"
+                     replace="view/notifications_text/direct_all">
+           subscribed to all notifications for this bug.
+           </tal:text>
+           <tal:text condition="view/direct_metadata_notifications"
+                     replace="view/notifications_text/direct_metadata" />
+           <tal:text condition="view/direct_lifecycle_notifications"
+                     replace="view/notifications_text/direct_lifecycle" />
+           <tal:text condition="not:view/direct_notifications"
+                     replace="view/notifications_text/not_direct" />
+        </a>
+      </tal:block>
+      <span tal:condition="view/muted"
+            tal:content="view/notifications_text/muted" />
+    </div>
+    <div id="sub-unsub-spinner">Subscribing...</div>
+    <ul>
+      <li tal:condition="view/user">
+        <div tal:attributes="class python:
+                  'hidden' if not view.user_should_see_mute_link else None"
+            id="mute-link-container">
+          <span tal:replace="structure context_menu/mute_subscription/render"
+          /><a target="help" class="sprite maybe action-icon mute-help"
+              href="/+help-bugs/subscription-mute.html"
+            >Mute help</a>
+        </div>
+      </li>
+      <li tal:content="structure context_menu/editsubscriptions/render" />
+    </ul>
+  </div>
+  <script type="text/javascript">
+    LPJS.use('io-base', 'node',
+            'lp.bugs.bugtask_index.portlets.subscription', function(Y) {
+        Y.on('domready', function() {
+            Y.lp.bugs.bugtask_index.portlets.subscription.initialize();
+        });
+    });
+  </script>
+</div>

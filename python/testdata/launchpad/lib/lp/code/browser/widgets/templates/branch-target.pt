@@ -1,0 +1,24 @@
+<table>
+  <tr>
+    <td colspan="2">
+      <label>
+        <input
+            type="radio" value="package"
+            tal:replace="structure view/options/personal" />
+        Personal
+      </label>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label>
+        <input type="radio" value="product"
+               tal:replace="structure view/options/product" />
+       Project
+      </label>
+    </td>
+    <td>
+      <tal:product tal:replace="structure view/product_widget" />
+    </td>
+  </tr>
+</table>

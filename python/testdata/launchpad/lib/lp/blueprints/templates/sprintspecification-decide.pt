@@ -1,0 +1,75 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<body>
+
+<div metal:fill-slot="main">
+
+  <form method="POST" action=".">
+
+    <div>
+      <h2>Specification summary:</h2>
+
+      <div tal:content="structure context/specification/fmt:link" />
+
+      <p tal:content="context/specification/summary">
+        Summary here
+      </p>
+
+    </div>
+
+    <div>
+      <h2>Sprint details:</h2>
+
+      <p tal:content="context/sprint/summary">
+        Summary here
+      </p>
+    </div>
+
+    <p>
+      This topic was proposed by
+      <a tal:replace="structure context/registrant/fmt:link">Foo Bar</a>
+      <span
+        tal:attributes="title context/date_created/fmt:datetime"
+        tal:content="context/date_created/fmt:displaydate">2006-12-13</span>.
+      <tal:already_decided condition="context/decider">
+        It was previously marked "<span tal:replace="context/status/title">
+        Approved</span>" for the agenda by
+        <a tal:replace="structure context/decider/fmt:link">Foo Bar</a>
+        <span
+          tal:attributes="title context/date_decided/fmt:datetime"
+          tal:content="context/date_decided/fmt:displaydate">
+          2006-12-13
+        </span>.
+      </tal:already_decided>
+    </p>
+
+    <div class="actions">
+      <input
+        type="submit"
+        name="accept"
+        value="Accept"
+        />
+      <input
+        type="submit"
+        name="decline"
+        value="Decline"
+        />
+      <input
+        type="submit"
+        name="cancel"
+        value="Cancel"
+        />
+    </div>
+
+  </form>
+
+</div>
+</body>
+</html>

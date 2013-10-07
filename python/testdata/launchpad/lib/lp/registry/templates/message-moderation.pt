@@ -1,0 +1,34 @@
+<tr id="myid" tal:attributes="id view/widget_name">
+  <td><tt>
+    <strong>Subject:</strong>
+    <span tal:replace="view/subject">The subject</span>
+
+    <div><strong>From:</strong>
+    <span tal:replace="structure view/author">James T Kirk</span></div>
+
+    <div><strong>Date:</strong>
+    <span tal:replace="view/date">Wed, 16 Apr 2008 15:02:28 -0000</span></div>
+
+    <div><strong>Message-ID:</strong>
+    <span tal:replace="view/message_id">&lt;xyz123@example.com&gt;</span></div>
+    </tt>
+
+    <span class="foldable-quoted">
+    <br /><span tal:content="structure view/body_summary">First line of the message,</span>
+    <span class="foldable" tal:content="structure view/body_details">
+    followed by the subsequent lines of the message.</span>
+    </span>
+  </td>
+  <td style="text-align: center">
+    <input type="radio" value="approve" name="myname"
+           tal:attributes="name view/widget_name"/></td>
+  <td style="text-align: center">
+    <input type="radio" value="reject" name="myname"
+           tal:attributes="name view/widget_name"/></td>
+  <td style="text-align: center">
+    <input type="radio" value="discard" name="myname"
+           tal:attributes="name view/widget_name"/></td>
+  <td style="text-align: center">
+    <input type="radio" value="hold" name="myname" checked="checked"
+           tal:attributes="name view/widget_name"/></td>
+</tr>

@@ -1,0 +1,32 @@
+= Warning about imported suggestions =
+
+When a suggestion is coming from an import, a warning is shown about the
+likely licensing incompatibility.
+
+Our sampledata contains imported Spanish translations for message
+'have ' in an upstream project, and no translation in corresponding
+Hoary distroseries template.
+
+On a Hoary Evolution sourcepackage, we can see a suggestion coming
+from the upstream project.
+
+    >>> from zope.component import getUtility
+    >>> from lp.translations.interfaces.potemplate import IPOTemplateSet
+
+    >>> login(ANONYMOUS)
+    >>> utility = getUtility(IPOTemplateSet)
+    >>> dummy = utility.populateSuggestivePOTemplatesCache()
+    >>> logout()
+
+    >>> browser = setupBrowser(auth='Basic carlos@canonical.com:test')
+    >>> browser.open('http://translations.launchpad.dev/ubuntu/hoary/+source/evolution/+pots/evolution-2.2/es/3/+translate')
+    >>> print extract_text(find_tag_by_id(
+    ...     browser.contents, 'msgset_132_es_suggestion_3_0'))
+    tiene
+
+A warning icon about the legal situation is shown alongside the suggestion
+itself.
+
+    >>> warning_link = find_tags_by_class(browser.contents, 'legal-warning')[0]
+    >>> extract_link_from_tag(warning_link)
+    u'https://help.launchpad.net/Translations/ReusingPackagedTranslations'

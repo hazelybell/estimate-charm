@@ -1,0 +1,121 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<head>
+    <metal:block fill-slot="head_epilogue">
+    <script tal:content="structure string:
+            LPJS.use('base', 'node', 'event',
+                    'lp.registry.sharing.pillarsharingview',
+                function(Y) {
+            Y.on('domready', function() {
+                var config = ${view/json_sharing_picker_config}
+                var view_widget = new Y.lp.registry.sharing.pillarsharingview.PillarSharingView(config);
+                view_widget.render();
+            });
+          });
+    "/>
+    </metal:block>
+</head>
+<body>
+  <div metal:fill-slot="main">
+    <h2>What's shared</h2>
+    <tal:what-shared condition="exists:context/licenses">
+    <p id='commercial-project-text'
+       tal:condition="context/has_current_commercial_subscription|nothing">
+      You can choose whether new bugs and branches are public or
+      proprietary by default, and what you can change them to
+      afterwards. Changing the default here won't automatically change
+      existing bugs or branches.
+    </p>
+    <p id='non-commercial-project-text'
+       tal:condition="not: context/has_current_commercial_subscription|nothing">
+      Open source projects have limited access to sharing features. You can
+      <a href="https://help.launchpad.net/CommercialHosting">purchase a
+      commercial subscription</a> to enable more privacy options, such as
+      setting bugs and branches to be proprietary by default.
+    </p>
+    </tal:what-shared>
+      <table>
+        <tr id="branch-sharing-policy-row"
+           tal:condition="view/branch_sharing_policies">
+           <td id="branch-sharing-policy">
+             Branches sharing policy:&nbsp;
+             <strong><span class="value"
+                 tal:content="context/branch_sharing_policy/title|string:Legacy policy"
+                 ></span></strong>
+             <a class="editicon sprite edit action-icon hidden" href="#"
+                 style="padding-bottom: 0;">Edit</a>
+             <div id="branch-sharing-policy-description" class="formHelp"
+                 tal:content="context/branch_sharing_policy/description|
+                 string:Legacy project sharing policy will continue to be used until
+                 a new policy is configured."
+                 ></div>
+           </td>
+        </tr>
+        <tr id="bug-sharing-policy-row"
+           tal:condition="view/bug_sharing_policies">
+           <td id="bug-sharing-policy">
+             Bugs sharing policy:&nbsp;
+             <strong><span class="value"
+                 tal:content="context/bug_sharing_policy/title|string:Legacy policy"
+                 ></span></strong>
+             <a class="editicon sprite edit action-icon hidden" href="#"
+                 style="padding-bottom: 0;">Edit</a>
+             <div id="bug-sharing-policy-description" class="formHelp"
+                 tal:content="context/bug_sharing_policy/description|
+                 string:Legacy project sharing policy will continue to be used until
+                 a new policy is configured."
+                 ></div>
+           </td>
+        </tr>
+
+
+        <tr id="specification-sharing-policy-row"
+           tal:condition="view/specification_sharing_policies">
+           <td id="specification-sharing-policy">
+             Blueprint sharing policy:&nbsp;
+             <strong><span class="value"
+                 tal:content="context/specification_sharing_policy/title|string:Legacy policy"
+                 ></span></strong>
+             <a class="editicon sprite edit action-icon hidden" href="#"
+                 style="padding-bottom: 0;">Edit</a>
+             <div id="specification-sharing-policy-description" class="formHelp"
+                 tal:content="context/specification_sharing_policy/description|
+                 string:Legacy project sharing policy will continue to be used until
+                 a new policy is configured."
+                 ></div>
+           </td>
+        </tr>
+
+      </table>
+    <h2>Who it's shared with</h2>
+    <div id="sharing-header"
+         tal:define="info_type
+             python: 'Public' if context.pillar_category != 'Project' else
+                 context.information_type.title">
+      <p tal:condition="python: info_type == 'Public'"
+         tal:content="string:
+        Everyone can see ${context/displayname}'s public information. You can
+        choose who can see the private bugs, branches and blueprints.">
+     </p>
+     <p tal:condition="python: info_type != 'Public'"
+       tal:content="string: This project has no public information.">
+     </p>
+    </div>
+    <ul class="horizontal">
+      <li><a id='add-grantee-link' class='sprite add js-action hidden' href="#">Share
+        with someone</a></li>
+    </ul>
+
+    <div tal:define="batch_navigator view/grantees">
+      <tal:granteelisting content="structure batch_navigator/@@+grantee-table-view" />
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,322 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_side"
+>
+  <body>
+    <metal:block fill-slot="head_epilogue">
+      <script type='text/javascript' id='available-official-tags-js'
+              tal:content="view/available_official_tags_js" />
+      <script type="text/javascript">
+        LPJS.use('base', 'node', 'oop', 'event', 'lp.bugs.bugtask_index',
+                  'lp.bugs.subscribers', 'lp.code.branchmergeproposal.diff',
+                  'lp.app.comment', function(Y) {
+            Y.on('domready', function() {
+                Y.lp.code.branchmergeproposal.diff.connect_diff_links();
+                Y.lp.bugs.bugtask_index.setup_bugtask_index();
+                Y.lp.bugs.bugtask_index.setup_bugtask_table();
+                LP.cache.comment_context = LP.cache.bug;
+                var cl = new Y.lp.app.comment.CommentList();
+                cl.render();
+                var sl = new Y.lp.bugs.subscribers.createBugSubscribersLoader({
+                    container_box: '#other-bug-subscribers',
+                    subscribers_details_view:
+                        '/+bug-portlet-subscribers-details',
+                    subscribe_someone_else_link: '.menu-link-addsubscriber'
+                }, window);
+            });
+         });
+      </script>
+      <style type="text/css">
+        /* Align the 'add comment' link to the right of the comment box. */
+        #add-comment-form textarea { width: 100%; }
+        #add-comment-form { max-width: 60em; padding-bottom: 4em; }
+        #add-comment-form .actions {float: right;}
+        .bug-branch-summary dd { font-size: 10px; }
+        a#privacy-link:link:hover, a#privacy-link:visited:hover {text-decoration:none;}
+      </style>
+      <style type="text/css">
+        .yui3-overlay .value label  {
+          /* It normally makes sense for form labels to be bold, but since
+          this form consists only of radio buttons, there's nothing but labels
+          so we just get wall-to-wall bold. */
+          font-weight: normal !important;
+        }
+      </style>
+    </metal:block>
+
+    <metal:side fill-slot="side" tal:define="context_menu context/menu:context">
+      <div id="involvement" class="portlet">
+        <ul class="involvement">
+          <li class="single">
+            <a tal:attributes="href string:${context/target/fmt:url}/+filebug"
+               class="sprite bugs">
+              Report a bug
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div tal:replace="structure context/bug/@@+portlet-privacy" />
+      <div tal:replace="structure context/bug/@@+portlet-actions" />
+      <div tal:replace="structure context/bug/@@+portlet-duplicates" />
+      <div tal:replace="structure context/bug/@@+portlet-subscription" />
+      <div tal:replace="structure context/bug/@@+portlet-subscribers" />
+      <div tal:replace="structure context/bug/@@+portlet-questions" />
+      <div tal:replace="structure context/bug/@@+portlet-specs" />
+      <div tal:replace="structure context/bug/@@+portlet-attachments" />
+      <div tal:replace="structure context/bug/@@+portlet-watch" />
+    </metal:side>
+
+    <tal:registering metal:fill-slot="registering">
+      Reported by
+      <tal:reporter replace="structure context/bug/owner/fmt:link" />
+      <span
+        tal:attributes="title context/bug/datecreated/fmt:datetime"
+        tal:content="context/bug/datecreated/fmt:displaydate" />
+    </tal:registering>
+
+    <metal:heading fill-slot="heading" tal:define="context_menu context/menu:context">
+      <h1 tal:replace="structure view/bug_title_edit_widget">
+        Bug title
+      </h1>
+    </metal:heading>
+
+    <div metal:fill-slot="main" tal:define="context_menu context/menu:context">
+      <p class="informational message"
+         tal:condition="view/notices"
+         tal:repeat="notice view/notices"
+         tal:content="notice">
+        Reported this bug as also occurring in upstream firefox
+      </p>
+
+      <p id="can-expire"
+         tal:condition="python: context.bug.isExpirable(days_old=0)">
+        <tal:expiration_message replace="view/expiration_message" />
+        (<a href="https://help.launchpad.net/BugExpiry">find out why</a>)
+      </p>
+
+      <div id="bug-is-duplicate">
+          <tal:dupe-info
+             condition="duplicateof|nothing"
+             define="duplicateof context/bug/duplicateof;
+                     dupe_active view/is_duplicate_active">
+
+          <tal:active condition="dupe_active">
+          <span class="bug-duplicate-details ellipsis single-line wide">
+            <span class="sprite info"></span>
+            This bug report is a duplicate of:&nbsp;
+                <a
+                  tal:condition="duplicateof/required:launchpad.View"
+                  tal:attributes="href duplicateof/fmt:url; title
+                     duplicateof/title;
+                     id string:duplicate-of-warning-link-bugtasks;"
+                  tal:content="string:Bug #${duplicateof/id}: ${duplicateof/title}."
+                >bug #42</a>
+          </span>
+          </tal:active>
+          <tal:inactive condition="not: dupe_active">
+          <span class="bug-duplicate-details ellipsis single-line wide">
+            <span class="sprite info"></span>
+            This bug report is a duplicate of a bug on an inactive project.
+          </span>
+          </tal:inactive>
+
+          <a id="change-duplicate-bug-bugtasks"
+            href="+duplicate"
+            title="Edit or remove linked duplicate bug"
+            class="sprite edit action-icon standalone change-duplicate-bug">Edit</a>
+          <a id="remove-duplicate-bug-bugtasks"
+            href="+duplicate"
+            title="Remove linked duplicate bug"
+            class="sprite remove action-icon standalone remove-duplicate-bug">Remove</a>
+          </tal:dupe-info>
+      </div>
+      <p id="bug-is-question"
+         tal:condition="context/bug/getQuestionCreatedFromBug"
+         tal:define="question context/bug/getQuestionCreatedFromBug">
+        <span class="sprite info"></span>
+        This bug report was converted into a question:
+        question #<tal:question-id replace="question/id" />:
+        <a href=""
+           tal:attributes="href question/fmt:url"
+           tal:content="question/title">%s</a>.
+      </p>
+
+      <div style="float: right;">
+        <tal:heat replace="structure view/bug_heat_html" />
+      </div>
+
+      <div tal:replace="structure context/bug/@@+bugtasks-and-nominations-portal" />
+
+      <div id="maincontentsub">
+        <div class="top-portlet">
+
+      <div itemprop="mainContentOfPage" class="report">
+        <tal:description
+            define="global description context/bug/description/fmt:obfuscate-email/fmt:text-to-html" />
+
+        <tal:widget tal:replace="structure view/bug_description_html"/>
+
+        <div style="margin:-10px 0 20px 5px" class="clearfix">
+          <span tal:condition="view/wasDescriptionModified"
+          >See <a href="comments/0">original description</a></span>
+        </div>
+
+        <div id="bug-tags">
+          <span id="tags-heading">
+            <tal:heading condition="context/bug/tags">Tags:</tal:heading>
+          </span>
+          <span id="tag-list">
+            <a tal:repeat="tag view/official_tags"
+               tal:content="python: tag[0]"
+               class="official-tag"
+               tal:attributes="href python: tag[1]">tag</a>
+            <a tal:repeat="tag view/unofficial_tags"
+               tal:content="python: tag[0]"
+               class="unofficial-tag"
+               tal:attributes="href python: tag[1]">tag</a>
+          </span>
+          <a href="+edit" title="Add tags" id="tags-trigger"
+            class="sprite add"
+            tal:condition="not: context/bug/tags">Add tags</a>
+          <a href="+edit" title="Edit tags" id="tags-trigger"
+            class="sprite edit action-icon"
+            tal:condition="context/bug/tags">Edit</a>
+          <a href="/+help-bugs/tag-help.html" target="help"
+            class="sprite maybe action-icon">Tag help</a>
+        </div>
+
+        <script type="text/javascript">
+          LPJS.use('event', 'node', 'lp.bugs.tags_entry', function(Y) {
+              Y.on('domready',
+                   function(e) {
+                       Y.lp.bugs.tags_entry.setup_tag_entry(
+                           available_official_tags);
+                   },
+                   window);
+          });
+        </script>
+
+        <div class="clearfix"></div>
+      </div>
+
+      <div id="branches-and-cves">
+        <div id="bug-branches-container"
+            style="float: left">
+          <tal:branches
+              define="linked_branches view/linked_branches"
+              condition="linked_branches">
+
+            <div id="bug-branches">
+              <h2>Related branches</h2>
+
+              <tal:bug-branches repeat="linked_branch linked_branches">
+                <tal:bug-branch replace="structure linked_branch/@@+bug-branch" />
+              </tal:bug-branches>
+            </div>
+          </tal:branches>
+        </div><!-- bug-branch-container -->
+
+        <div tal:condition="context/bug/has_cves" class="cves">
+          <h2>CVE References</h2>
+          <ul>
+            <li class="sprite cve" tal:repeat="cve context/bug/cves">
+              <a tal:attributes="href cve/fmt:url;
+                                 title cve/description/fmt:shorten/40"
+                 tal:content="cve/sequence"
+                 >2002-1342</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="clearfix"></div>
+      </div> <!-- branches and CVEs -->
+
+      </div>
+
+      <div>
+      <tal:comments>
+        <tal:comment repeat="comment_or_activity view/activity_and_comments">
+          <tal:is-comment
+              define="comment comment_or_activity/comment|nothing"
+              condition="comment">
+            <tal:comment-box replace="structure comment/@@+box" />
+          </tal:is-comment>
+
+          <tal:is-activity
+              define="activity_list comment_or_activity/activity|nothing;
+                      activity_date comment_or_activity/date|nothing;
+                      activity_person comment_or_activity/person|nothing"
+              condition="activity_list">
+              <metal:comment-box
+                  metal:use-macro="context/@@bugcomment-macros/activity-box" />
+          </tal:is-activity>
+
+          <tal:is-break
+             define="num_hidden comment_or_activity/num_hidden|nothing"
+             condition="num_hidden">
+              <metal:comment-box
+                  metal:use-macro="context/@@bugcomment-macros/break" />
+          </tal:is-break>
+
+        </tal:comment>
+        <div style="float: right;">
+          <tal:activity_log
+              define="context_menu context/menu:context"
+              content="structure context_menu/activitylog/render" />
+        </div>
+        <div class="clearfix"></div>
+
+        <tal:comment-list-complete
+            tal:condition="not:view/visible_comments_truncated_for_display">
+          <tal:logged-in condition="view/user">
+            <metal:comment-form
+                metal:use-macro="context/@@bugcomment-macros/comment-form" />
+          </tal:logged-in>
+
+          <tal:not-logged-in condition="not: view/user">
+            <div align="center" id="add-comment-login-first">
+              To post a comment you must <a
+              href="+login?comments=all">log in</a>.
+            </div>
+          </tal:not-logged-in>
+        </tal:comment-list-complete>
+        <tal:comment-list-truncated
+            tal:condition="view/visible_comments_truncated_for_display">
+          <div class="informational message comments-hidden-message" >
+            Displaying first <span
+            tal:replace="view/visible_initial_comments">23</span>
+            and last <span
+            tal:replace="view/visible_recent_comments">32</span>
+            comments.
+            <tal:what-next
+                define="view_all_href
+                        string:${context/fmt:url}?comments=all">
+              <a class="show-comments-link"
+                  href="#" tal:attributes="href view_all_href">
+                View all <span
+                tal:replace="view/total_comments" />
+                comments</a> or <a href="#" tal:attributes="href
+                view_all_href">add a comment</a>.
+            </tal:what-next>
+          </div>
+            <tal:logged-in condition="view/user">
+              <div id="add-comment-form-container" class="hidden">
+                <metal:comment-form
+                    metal:use-macro="context/@@bugcomment-macros/comment-form" />
+              </div>
+            </tal:logged-in>
+        </tal:comment-list-truncated>
+      </tal:comments>
+
+      </div><!-- class="top-portlet" -->
+      </div><!--- id="maincontentsub"-->
+      <div>
+        <div id="duplicate-form-container"></div>
+        <div id="privacy-form-container"></div>
+      </div>
+    </div>
+  </body>
+</html>

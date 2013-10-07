@@ -1,0 +1,209 @@
+ProductRelease File Download
+============================
+
+A ProductRelease can have files associated with it for one of two
+reasons.  First, a code tarball can be associated to a ProductRelease
+and it is used to create an associated branch.
+
+In another use, a product owner can associate files with a
+ProductRelease for direct download by Launchpad users.  These files
+can be installers, executables, documentation, or README files.
+
+A ProductSeries can have multiple releases.  Firefox 1.5 (a ProductSeries)
+has ProductReleases 1.5.0.1 and 1.5.0.2
+
+    >>> from zope.component import getUtility
+    >>> from lp.registry.interfaces.product import IProductSet
+
+First, get a product that has some ProductSeries in the sample data.
+
+    >>> productset = getUtility(IProductSet)
+    >>> firefox = productset['firefox']
+
+A ProductSeries can be retrieved using the associated product and the
+series name.
+
+    >>> trunk = firefox.getSeries('trunk')
+
+Get the product releases for trunk.
+
+    >>> releases = trunk.releases
+    >>> releases.count()
+    3
+
+Find all product release files for trunk.
+
+    >>> files = trunk.release_files
+    >>> len(files)
+    1
+
+Pick the first release from the set.
+
+    >>> rel = list(releases)[0]
+    >>> files = rel.files
+    >>> print files.count()
+    1
+
+Add a file alias to the productrelease.
+
+    >>> from lp.services.webapp.interfaces import ILaunchBag
+
+    >>> login("foo.bar@canonical.com")
+    >>> from zope.security.proxy import removeSecurityProxy
+    >>> from StringIO import StringIO
+    >>> from datetime import datetime
+    >>> from pytz import UTC
+    >>> def add_release_file(release, file_content, name, description,
+    ...                      date_uploaded=None):
+    ...     user = getUtility(ILaunchBag).user
+    ...     result = release.addReleaseFile(
+    ...         filename=name,
+    ...         file_content=StringIO(file_content),
+    ...         content_type='test/plain',
+    ...         uploader=user,
+    ...         description=description)
+    ...     if date_uploaded is not None:
+    ...         removeSecurityProxy(result).date_uploaded = date_uploaded
+    ...     return result
+    >>> product_release_file = add_release_file(
+    ...    rel, 'Some useful information.',
+    ...    'foo.txt', 'Foo file')
+    >>> print product_release_file.description
+    Foo file
+
+The number of files in the ProductRelease has increased.
+
+    >>> print rel.files.count()
+    2
+
+The number of files on the series has increased
+
+    >>> print len(trunk.release_files)
+    2
+
+The alias can be retrieved by name.
+
+    >>> file_alias = rel.getFileAliasByName('foo.txt')
+    >>> print file_alias.filename
+    foo.txt
+
+Attempting to retrieve an alias that does not exist is an error.
+
+    >>> file_alias = rel.getFileAliasByName('bar.txt')
+    Traceback (most recent call last):
+    ...
+    NotFoundError: 'bar.txt'
+
+The ProductReleaseFile can also be retrieved by name.
+
+    >>> prf = rel.getProductReleaseFileByName('foo.txt')
+    >>> print prf.libraryfile.filename
+    foo.txt
+
+Attempting to retrieve a ProductReleaseFile  that does not exist is an
+error.
+
+    >>> prf = rel.getProductReleaseFileByName('bar.txt')
+    Traceback (most recent call last):
+    ...
+    NotFoundError: 'bar.txt'
+
+Deleting the release file results in the file count being reduced.
+Only the product owner, product series owner, admins, or experts can
+delete a product file.
+
+    >>> login(ANONYMOUS)
+    >>> rel.files[0].destroySelf()
+    Traceback (most recent call last):
+    ...
+    Unauthorized: (<ProductReleaseFile...>, 'destroySelf', 'launchpad.Edit')
+    >>> login('foo.bar@canonical.com')
+    >>> for release_file in rel.files:
+    ...     if release_file.libraryfile.id == file_alias.id:
+    ...         release_file.destroySelf()
+    ...         break
+    >>> print rel.files.count()
+    1
+
+The deleted release file will no longer appear in ProductRelease.files.
+
+    >>> release_file in rel.files
+    False
+
+Deleting files via a GET method is not allowed.
+
+    >>> from zope.component import getMultiAdapter
+    >>> from lp.services.webapp.servers import LaunchpadTestRequest
+    >>> request = LaunchpadTestRequest(
+    ...     environ={'REQUEST_METHOD': 'GET'},
+    ...     form={'delete_files': 'Delete Files'})
+    >>> firefox = getUtility(IProductSet).getByName('firefox')
+    >>> view = getMultiAdapter((firefox,request), name='+download')
+    >>> view.initialize()
+    Traceback (most recent call last):
+     ...
+    UnsafeFormGetSubmissionError: Delete Files
+
+There a convenience method for getting all of the releases for a list
+of series.  The releases are returned sorted by release date in
+reverse order.
+
+    >>> from lp.registry.interfaces.productrelease import (
+    ...     IProductReleaseSet)
+    >>> series = firefox.series
+    >>> release_set = getUtility(IProductReleaseSet)
+    >>> releases = release_set.getReleasesForSeries(series)
+    >>> for release in releases:
+    ...     date = release.datereleased.strftime('%Y-%m-%d %H:%M:%S')
+    ...     print release.version, date
+    0.9.2 2004-10-15 18:32:35
+    0.9.1 2004-10-15 18:31:19
+    0.9 2004-10-15 18:27:09
+    1.0.0 2004-06-28 00:00:00
+
+There is also a convenience method for getting all of the files
+associated with a list of releases.  The files are returned sorted by
+the date each was uploaded in reverse order.
+
+Let's add some release files to the releases for firefox.
+
+    >>> from datetime import timedelta
+    >>> now = datetime.now(UTC)
+    >>> for i, release in enumerate(releases):
+    ...     content = "Content %d" % i
+    ...     name = "name%d" % i
+    ...     description = "description%d" % i
+    ...     upload_date = now + timedelta(days=i)
+    ...     pr_file = add_release_file(
+    ...         release, content, name,
+    ...         description, date_uploaded=upload_date)
+
+    >>> files = release_set.getFilesForReleases(releases)
+    >>> for file in files:
+    ...     print file.libraryfile.filename
+    name3
+    name2
+    name1
+    name0
+    firefox_0.9.2.orig.tar.gz
+
+Only the product owner can create a new release.
+
+    >>> owner_email = firefox.owner.preferredemail.email
+    >>> login(ANONYMOUS)
+    >>> trunk.milestones[0].createProductRelease(firefox.owner, now)
+    Traceback (most recent call last):
+    ...
+    Unauthorized: (<Milestone ...>, 'createProductRelease', 'launchpad.Edit')
+    >>> login(owner_email)
+    >>> milestone = trunk.newMilestone('8.0', code_name='ralph')
+    >>> milestone.createProductRelease(firefox.owner, now,
+    ...                                changelog='New in v2')
+    <ProductRelease at ...>
+    >>> for release in release_set.getReleasesForSeries(series):
+    ...     print release.version
+    8.0
+    0.9.2
+    0.9.1
+    0.9
+    1.0.0

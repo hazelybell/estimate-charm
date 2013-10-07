@@ -1,0 +1,15 @@
+<!-- Copyright 2009 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure xmlns="http://namespaces.zope.org/zope" >
+    <!-- Override the standard IWidgetInputErrorView implementation
+    with our more intelligent version -->
+    <view
+        type="zope.publisher.interfaces.browser.IBrowserRequest"
+        for="zope.formlib.interfaces.IWidgetInputError"
+        provides="zope.formlib.interfaces.IWidgetInputErrorView"
+        factory="lp.app.validators.WidgetInputErrorView"
+        permission="zope.Public"
+        />
+</configure>

@@ -1,0 +1,141 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+<body>
+
+  <tal:heading metal:fill-slot="heading">
+    <h1 tal:content="context/title">Mozilla</h1>
+  </tal:heading>
+
+  <div metal:fill-slot="main">
+
+    <tal:open-poll condition="context/isOpen">
+
+    <tal:can-vote condition="view/userCanVote">
+    <p
+      tal:condition="view/feedback"
+      tal:content="view/feedback"
+      class="informational message"
+    />
+
+      <div
+        class="highlighted"
+        tal:content="structure context/proposition/fmt:text-to-html"
+      />
+
+    <form action="" method="POST">
+
+    <tal:block condition="view/userVoted">
+      <tal:block condition="view/isSecret">
+        <h2>You must enter your vote key</h2>
+
+        <p>This is a secret poll &mdash;
+        your vote is identified only by the key you
+        were given when you voted. To view or change your vote you must enter
+        your key:</p>
+
+        <input type="text" name="token" 
+               tal:attributes="value view/token|nothing" />
+        <br />
+        <br />
+      </tal:block>
+    </tal:block>
+
+    <table cols="2" id="your-vote">
+      <tr>
+        <td>
+          <h2>Your current vote</h2>
+          <tal:block condition="not: view/userVoted">
+            <p>You have not yet voted in this poll.</p>
+          </tal:block>
+
+          <tal:block condition="view/userVoted">
+            <tal:block condition="view/gotTokenAndVotes">
+              <p>Your current vote is for
+                <b tal:condition="not: view/currentVote/option">
+                  none of the options.
+                </b>
+                <b tal:condition="view/currentVote/option" 
+                   tal:content="view/currentVote/option/name" />
+              </p>
+            </tal:block>
+
+            <tal:block condition="not: view/gotTokenAndVotes">
+              <p>You have voted in this poll. Launchpad can display your vote
+              once you have entered your vote key.</p>
+
+              <input type="submit" value="Show My Vote" name="showvote" />
+            </tal:block>
+          </tal:block>
+        </td>
+        <td>
+          <tal:block condition="not: view/userVoted">
+            <h2>Vote now</h2>
+            <p>Choose one option</p>
+
+            <label>
+              <input type="radio" name="newoption" value="donotvote"
+                checked="checked" />
+              I'm not voting yet
+            </label>
+            <br />
+          </tal:block>
+
+          <tal:block condition="view/userVoted">
+            <h2>Change your vote</h2>
+            <p>Choose one option</p>
+
+            <label>
+              <input type="radio" name="newoption" value="donotchange"
+              checked="checked" />
+              Don't change my vote
+            </label>
+            <br />
+          </tal:block>
+
+          <tal:block repeat="option context/getActiveOptions">
+            <label>
+              <input type="radio" name="newoption" 
+                     tal:attributes="value option/id" />
+              <span tal:replace="option/name" />
+            </label>
+            <br />
+          </tal:block>
+
+          <tal:block condition="context/allowspoilt">
+            <label>
+              <input type="radio" name="newoption" value="none" />
+              None of these options
+            </label>
+            <br />
+          </tal:block>
+          <br />
+
+          <input type="submit" value="Continue" name="continue" />
+          or <a tal:attributes="href context/team/fmt:url/+polls">Cancel</a>
+        </td>
+      </tr>
+    </table>
+    </form>
+    </tal:can-vote>
+
+    <p tal:condition="not: view/userCanVote" class="informational message">
+      You can&#8217;t vote in this poll because you&#8217;re not
+      a member of <span tal:replace="context/team/displayname" />.
+    </p>
+
+    </tal:open-poll> 
+
+    <p tal:condition="not: context/isOpen" class="informational message">
+      This poll is already closed.
+    </p>
+
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+>
+<body>
+  <div metal:fill-slot="main">
+    <div class="top-portlet" style="max-width: 800px">
+      <p>
+        <tal:person replace="structure context/fmt:link">R. Viewer</tal:person>
+        has contributed to the following translations.
+      </p>
+
+      <div class="lesser" id="top-navigation">
+        <tal:navigation content="structure view/batchnav/@@+navigation-links-upper" />
+      </div>
+
+      <table class="listing" id="activity-table">
+        <tr tal:repeat="record view/batchnav/currentBatch">
+          <td tal:attributes="title record/date_last_touched/fmt:datetime"
+              tal:content="record/date_last_touched/fmt:approximatedate">
+            2009-10-28
+          </td>
+          <td>
+            <a tal:attributes="href python:view.composeURL(record.pofile)"
+               tal:content="record/pofile/title">
+              Greek (el) translations of alsa-utils in alsa-utils trunk
+            </a>
+          </td>
+        </tr>
+      </table>
+
+      <div class="lesser">
+        <tal:navigation content="structure view/batchnav/@@+navigation-links-lower" />
+      </div>
+    </div>
+  </div>
+</body>
+</html>

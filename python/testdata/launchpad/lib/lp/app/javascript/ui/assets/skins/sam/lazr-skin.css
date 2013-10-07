@@ -1,0 +1,50 @@
+/* Copyright (c) 2008, Canonical Ltd. All rights reserved. */
+
+.yui3-skin-sam button.lazr-btn {
+  background: transparent no-repeat scroll center center;
+  overflow: hidden;
+  cursor: pointer;
+  border: none;
+  margin: 0;
+  margin-right: 4px;
+  padding: 0;
+  text-indent: 3em;
+  width: 16px;
+  /* Prevent icons from being cut off at the top and bottom in Safari 4. */
+  min-height: 16px;
+}
+
+.yui3-skin-sam button.lazr-pos {
+  background-image: url('positive.png');
+}
+
+.yui3-skin-sam button.lazr-neg {
+  background-image: url('negative.png');
+}
+
+.yui3-skin-sam button.lazr-search {
+  background-image: url('search.png');
+}
+
+.yui3-skin-sam button.lazr-prev {
+  background-image: url('arrowLeft.png');
+}
+
+.yui3-skin-sam button.lazr-next {
+  background-image: url('arrowRight.png');
+}
+
+.yui3-skin-sam button.lazr-prev:disabled {
+  background-image: url('arrowLeft-inactive.png');
+}
+
+.yui3-skin-sam button.lazr-next:disabled {
+  background-image: url('arrowRight-inactive.png');
+}
+
+.yui3-lazr-even {
+}
+
+.yui3-lazr-odd {
+  background-color: #f2f2f2;
+}

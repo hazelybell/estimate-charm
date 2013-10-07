@@ -1,0 +1,22 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  metal:use-macro="view/macro:page/main_only">
+
+<body>
+
+  <div metal:fill-slot="main">
+
+    <div tal:content="structure context/fmt:link" />
+
+    <div metal:use-macro="context/@@launchpad_form/form">
+
+      <div metal:fill-slot="extra_info" class="documentDescription"
+           tal:content="view/extra_info|nothing" />
+    </div>
+
+  </div>
+
+</body>
+</html>

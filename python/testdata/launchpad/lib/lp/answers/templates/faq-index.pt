@@ -1,0 +1,51 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+>
+  <body>
+    <metal:registering fill-slot="registering">
+      Created by <a tal:replace="structure context/owner/fmt:link" />
+      on
+      <span
+        tal:attributes="title context/date_created/fmt:datetime"
+        tal:content="context/date_created/fmt:displaydate">2005-10-05</span>
+    </metal:registering>
+
+    <metal:portlets fill-slot="side">
+      <tal:menu replace="structure context/@@+global-actions" />
+      <tal:related replace="structure context/@@+portlet-related-questions" />
+    </metal:portlets>
+
+    <div metal:fill-slot="main">
+      <div class="top-portlet">
+        <dl id="faq-keywords">
+          <dt>Keywords:</dt>
+          <dd tal:content="context/keywords">keywords</dd>
+        </dl>
+
+        <tal:last_updated_by condition="context/last_updated_by">
+          <dl id="faq-updated" style="clear: both">
+            <dt>Last updated by:</dt>
+            <dd>
+              <a tal:replace="structure context/last_updated_by/fmt:link" />
+              on
+             <span tal:attributes="title context/date_last_updated/fmt:datetime"
+                tal:content="context/date_last_updated/fmt:displaydate"
+                >2005-10-05</span>
+            </dd>
+          </dl>
+        </tal:last_updated_by>
+      </div>
+
+
+    <div id="faq-content" class="portlet"
+         tal:condition="context/content"
+         tal:content="structure context/content/fmt:text-to-html">Content</div>
+    </div>
+  </body>
+</html>
+

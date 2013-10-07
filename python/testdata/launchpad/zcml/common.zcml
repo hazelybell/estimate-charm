@@ -1,0 +1,17 @@
+<!-- Copyright 2009 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure xmlns="http://namespaces.zope.org/zope">
+
+    <include file="zopeapp.zcml" />
+
+    <include package="storm.zope" file="meta.zcml"/>
+    <include package="storm.zope" />
+    <store name="session" uri="launchpad-session:" />
+
+    <include package="lp" />
+
+    <include file="securitypolicy.zcml" />
+
+</configure>

@@ -1,0 +1,44 @@
+#! /bin/bash
+#
+# Copyright 2009 Canonical Ltd.  This software is licensed under the
+# GNU Affero General Public License version 3 (see the file LICENSE).
+#
+# Create a new branch of LP called "foo" in $LP_PROJECT_PATH/foo, with all the
+# source dependencies properly linked in.
+
+source "$HOME/.rocketfuel-env.sh"
+if [ "$?" != 0 ]; then
+    echo "Please run rocketfuel-setup first."
+    exit 1
+fi
+
+LP_DOWNLOAD_CACHE_PATH=$LP_PROJECT_ROOT/$LP_SOURCEDEPS_DIR/download-cache
+LP_EGGS_PATH=$LP_PROJECT_ROOT/$LP_SOURCEDEPS_DIR/eggs
+LP_DOWNLOAD_CACHE_PATH=$(eval echo ${LP_DOWNLOAD_CACHE_PATH})
+LP_EGGS_PATH=$(eval echo ${LP_EGGS_PATH})
+
+if [ "x$1" == "x" ]; then
+    echo "Usage: $0 new-branch-name"
+    echo "Example: '$0 fixes-bug-54356'"
+    exit 2
+fi
+
+if [ -e "${LP_PROJECT_PATH}/$1" ]; then
+    echo "Error: '$1' already exists"
+    exit 1
+fi
+
+if [ ! -d "${LP_PROJECT_PATH}" ]; then
+  echo "Error: no rocketfuel found, please run rocketfuel-setup"
+  exit 1
+fi
+cd ${LP_PROJECT_PATH}
+if [ ! -d $LP_TRUNK_NAME ]; then
+  echo "Error: no trunk found, please run rocketfuel-setup"
+  exit 1
+fi
+
+bzr branch $LP_TRUNK_NAME $1
+cd $1
+utilities/link-external-sourcecode
+make

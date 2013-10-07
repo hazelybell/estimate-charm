@@ -1,0 +1,56 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Origin: Ubuntu/breezy
+Format: 1.7
+Date: Mon,  17 Oct 2005 13:05:33 +0100
+Source: drdsl
+Binary: drdsl
+Architecture: source
+Version: 1.2.0-0ubuntu1
+Distribution: breezy-autotest
+Urgency: low
+Maintainer: Matthias Klose <doko@debian.org>
+Changed-By: Ubuntu Archive Auto-Sync <katie@rockhopper.ubuntu.com>
+Description: 
+ drdsl      - DSL Assistant for AVM DSL/ISDN-Controllers
+Changes: 
+ drdsl (1.2.0-0ubuntu1) breezy; urgency=low
+ .
+   * New upstream version.
+     - Includes amd64 support.
+   * The binaries now dlopen libcapi20.so, so depend on libcapi20-dev.
+ .
+ drdsl (1.0.3-2ubuntu1) hoary; urgency=low
+ .
+   * Depend on capiutils, not isdnactivecards.
+   * Update license text.
+ .
+ drdsl (1.0.3-2) unstable; urgency=low
+ .
+   * Reflect updated licence.
+ .
+ drdsl (1.0.3-1) unstable; urgency=low
+ .
+   * Initial Release.
+Files: 
+ 34e42a58bf18c026ca715f66f63d1eae 572 non-free/comm extra drdsl_1.2.0-0ubuntu1.dsc
+ 9c219e305a099dd69adf552289d1fd73 2584 non-free/comm extra drdsl_1.2.0-0ubuntu1.diff.gz
+ 6febe6d245fcf9bf52d4d2b41e15ce98 50591 non-free/comm extra drdsl_1.2.0.orig.tar.gz
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.2.5 (GNU/Linux)
+
+iQIVAwUBQ1OTjUFaEsrC8wI0AQILug/+LeVTbo54acUMJVASr8SbbrE7wGSfNcm9
+JU78SIxrfw5988wkEDMEAE2I3lnIbpPlhoRFY29S4YBW5/wjAmtUBUD7ZbUq8XiW
+NURptOT8Z0eNG/gyl9fVZYh5AAu2IOpBNPH4klCJ8IKlahVWRC2Ch50CRPj/dsqS
+vJrgyQkS90yJ4KlCGQmRJG4XmareotGb9gAiCTB+5c9OsZTGd2vmEksVuTzrnzSA
+ZDQssVGIkFqqNT9c+lW6sn/V3K7SWKQ9ZQbWr9o1iIAOyTiqdXg+HeB1t3ddn8uW
+qd04BHyvysR9KZ3OkSFOda7tuDN5FTedegsRElUeAUqEC/dSs67jF028t4z0uZKF
+LY90hg+6go8oioUbIb2SyRSeCn5//KSCBHy06n7jGvSnNKTcvktDGXAxyXRnyKJb
+BGgB3TDupiQlr6FWyCzpzQI54J7b8W1W7M/t1zcV/xFCyY70w/m1EjS0FyqbA0TZ
+hYvBGroFunrH8pfnBHPZtAwJtSOPvkfvVtU5Fcc7dAj3A+d3kvV0JM/93a9aa7WZ
+Zv6eBPDd/OhB1uZuz+0Kvz3L0S4GlL0YEIrnv02yADdUo/ShnnuDvF7y7IjphE4C
+6NPbRVX7PqaEM09yDnMNQSx3qaiHWdJO3/U06wBB+KqFevHwhZpPVFqDgnAlZxs3
+ZBm7ZaFK02g=
+=tyZC
+-----END PGP SIGNATURE-----

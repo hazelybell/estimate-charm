@@ -1,0 +1,71 @@
+<!-- Copyright 2011 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <securedutility
+      name="Component"
+      component="lp.soyuz.vocabularies.ComponentVocabulary"
+      provides="zope.schema.interfaces.IVocabularyFactory"
+    >
+    <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+  </securedutility>
+
+  <class class="lp.soyuz.vocabularies.ComponentVocabulary">
+    <allow interface="lp.services.webapp.vocabulary.IHugeVocabulary"/>
+  </class>
+
+
+   <securedutility
+    name="FilteredDistroArchSeries"
+    component="lp.soyuz.vocabularies.FilteredDistroArchSeriesVocabulary"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    >
+     <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+   </securedutility>
+
+   <class class="lp.soyuz.vocabularies.FilteredDistroArchSeriesVocabulary">
+     <allow interface="lp.services.webapp.vocabulary.IHugeVocabulary"/>
+   </class>
+
+
+  <securedutility
+    name="PackageRelease"
+    component="lp.soyuz.vocabularies.PackageReleaseVocabulary"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    >
+    <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+  </securedutility>
+
+  <class class="lp.soyuz.vocabularies.PackageReleaseVocabulary">
+    <allow interface="lp.services.webapp.vocabulary.IHugeVocabulary"/>
+  </class>
+
+
+  <securedutility
+    name="PPA"
+    component="lp.soyuz.vocabularies.PPAVocabulary"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    >
+    <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+  </securedutility>
+
+  <class class="lp.soyuz.vocabularies.PPAVocabulary">
+    <allow interface="lp.services.webapp.vocabulary.IHugeVocabulary"/>
+  </class>
+
+
+  <securedutility
+    name="Processor"
+    component="lp.soyuz.vocabularies.ProcessorVocabulary"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    >
+    <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+  </securedutility>
+
+  <class class="lp.soyuz.vocabularies.ProcessorVocabulary">
+    <allow interface="lp.services.webapp.vocabulary.IHugeVocabulary"/>
+  </class>
+
+</configure>

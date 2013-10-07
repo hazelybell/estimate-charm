@@ -1,0 +1,69 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+  <body>
+  <div metal:fill-slot="main">
+    <p>
+      You need to register an SSH key with Launchpad to be able to publish
+      your Bazaar code branches in Launchpad. For more information, read about
+      <a href="https://help.launchpad.net/Code/UploadingABranch"
+        >Uploading a branch</a> and
+      <a href="https://help.launchpad.net/YourAccount/CreatingAnSSHKeyPair"
+        >Importing your SSH key</a>.
+    </p>
+
+    <p tal:condition="view/error_message" tal:content="structure view/error_message/escapedtext"
+      class="error message">Error message.</p>
+
+    <p tal:condition="view/info_message" tal:content="structure view/info_message/escapedtext"
+      class="informational message">Informational message.</p>
+
+    <div tal:repeat="sshkey context/sshkeys">
+    <form name="remove" action="" method="POST">
+    <input type="hidden" name="action" value="remove_ssh" />
+    <input type="hidden" name="key" tal:attributes="value sshkey/id" />
+    <dl>
+    <dt>Key type</dt>
+        <dd tal:content="sshkey/keytype/title">DSA</dd>
+    <dt>Key text</dt>
+        <dd style="overflow: auto;" tal:content="sshkey/keytext">aaaaAAAA...</dd>
+    <dt>Comment</dt>
+        <dd tal:content="sshkey/comment">foo@bar</dd>
+    </dl>
+    <input type="submit" value="Remove" />
+    </form>
+    </div>
+
+    <div>
+    <form name="add" action="" method="POST">
+    <input type="hidden" name="action" value="add_ssh" />
+    <h2>Add an SSH key</h2>
+      <div>
+        <label>Public key line</label>
+        <div class="formHelp">
+          Insert the contents of your public key (usually
+          <code>~/.ssh/id_dsa.pub</code> or <code>~/.ssh/id_rsa.pub</code>).
+          Only SSH v2 keys are supported.
+          <a href="https://help.launchpad.net/YourAccount/CreatingAnSSHKeyPair">
+            How do I create a public key?
+          </a>
+        </div>
+        <div>
+          <textarea name="sshkey" cols="30" rows="12"></textarea>
+        </div>
+        <div style="margin-top: 0.5em;">
+          <input type="submit" value="Import Public Key" />
+          or&nbsp;<a tal:attributes="href view/cancel_url">Cancel</a>
+        </div>
+      </div>
+    </form>
+    </div>
+
+  </div>
+</body>
+</html>

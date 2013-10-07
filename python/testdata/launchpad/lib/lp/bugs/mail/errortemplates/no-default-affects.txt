@@ -1,0 +1,7 @@
+You tried to edit bug %(bug_id)s via email, but it couldn't be determined in which context you wanted the changes to occur. The bug is reported in %(nr_of_bugtasks)s different contexts, and you have to specify which one by using the affects command.
+
+For example:
+
+    affects /distros/ubuntu
+
+This is only a general example, and might not be what you want. Please see https://help.launchpad.net/BugTrackerEmailInterface for more information.

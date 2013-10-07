@@ -1,0 +1,60 @@
+Bug task edit forms
+===================
+
+Aside from the options to edit the status of a bugtask vie Ajax
+and via inline forms of the main bug page (which are by default
+hidden via CSS), the details of a bug task status can be edited
+on dedicated pages.
+
+If a user visits a bug page with a browser that does not have
+Javascript, the links shown in the columns "Status" and "Importance"
+of the bug task table lead him to the bug task edit forms of the
+respective bug task.
+
+    >>> admin_browser.open('http://bugs.launchpad.dev/firefox/+bug/1')
+    >>> print extract_text(
+    ...     find_tag_by_id(admin_browser.contents, 'affected-software'))
+    Affects                     Status    Importance   Assigned to...
+    Mozilla Firefox...          New       Low          Mark Shuttleworth...
+    mozilla-firefox (Debian)... Confirmed Low          debbugs #304014...
+    mozilla-firefox (Ubuntu)... New       Medium       Unassigned
+    ...
+
+    >>> print admin_browser.getLink('New', index=0).url
+    http://bugs.launchpad.dev/firefox/+bug/1/+editstatus
+    >>> print admin_browser.getLink('Low', index=0).url
+    http://bugs.launchpad.dev/firefox/+bug/1/+editstatus
+
+    >>> print admin_browser.getLink('Confirmed').url
+    Traceback (most recent call last):
+    ...
+    LinkNotFoundError
+
+    >>> print admin_browser.getLink('Low', index=1).url
+    http://bugs.launchpad.dev/debian/+source/mozilla-firefox/+bug/1/+editstatus
+    >>> print admin_browser.getLink('New', index=1).url
+    http://bugs...dev/ubuntu/+source/mozilla-firefox/+bug/1/+editstatus
+    >>> print admin_browser.getLink('Medium').url
+    http://bugs...dev/ubuntu/+source/mozilla-firefox/+bug/1/+editstatus
+
+    >>> admin_browser.getLink('New').click()
+    >>> print extract_text(admin_browser.contents)
+    Edit status...
+    ...
+    Affecting: Mozilla Firefox
+    Filed here by: Sample Person
+    When: 2004-01-02
+    Assigned: 2005-01-02
+    Target
+    Distribution
+    ...
+    Project (Find&hellip;)
+    Status  Importance  Milestone
+    New...  Low...      (nothing selected)...
+    Assigned to... Mark Shuttleworth (mark)
+    ...
+    Comment on this change (optional)
+    ...
+
+For more details of the +editstatus page, see xx-bug-privileged-statuses.txt,
+xx-view-editable-bug-task.txt.

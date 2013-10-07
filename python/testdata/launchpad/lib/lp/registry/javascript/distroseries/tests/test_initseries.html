@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <title>Launchpad DistroSeries Initialiazation</title>
+
+  <!-- YUI and test setup -->
+  <!-- YUI and test setup -->
+  <script type="text/javascript"
+          src="../../../../../../build/js/yui/yui/yui.js">
+  </script>
+  <link rel="stylesheet"
+      href="../../../../../../build/js/yui/console/assets/console-core.css" />
+  <link rel="stylesheet"
+      href="../../../../../../build/js/yui/test-console/assets/skins/sam/test-console.css" />
+  <link rel="stylesheet"
+      href="../../../../../../build/js/yui/test/assets/skins/sam/test.css" />
+
+  <script type="text/javascript"
+          src="../../../../../../build/js/lp/app/testing/testrunner.js"></script>
+  <script type="text/javascript"
+          src="../../../../../../build/js/lp/app/testing/helpers.js"></script>
+
+  <!-- Required modules -->
+  <script type="text/javascript"
+          src="../../../../../../build/js/lp/app/client.js"></script>
+  <script type="text/javascript"
+          src="../../../../../../build/js/lp/app/activator/activator.js"></script>
+  <script type="text/javascript"
+          src="../../../../../../build/js/lp/app/anim/anim.js"></script>
+  <script type="text/javascript"
+          src="../../../../../../build/js/lp/app/ui/ui.js"></script>
+  <script type="text/javascript"
+          src="../../../../../../build/js/lp/app/overlay/overlay.js"></script>
+  <script type="text/javascript"
+          src="../../../../../../build/js/lp/app/picker/picker.js"></script>
+  <script type="text/javascript"
+          src="../../../../../../build/js/lp/app/picker/person_picker.js"></script>
+  <script type="text/javascript"
+          src="../../../../../../build/js/lp/app/picker/picker_patcher.js"></script>
+  <script type="text/javascript"
+          src="../../../../../../build/js/lp/app/formwidgets/formwidgets.js"></script>
+  <script type="text/javascript"
+          src="../../../../../../build/js/lp/app/extras/extras.js"></script>
+  <script type="text/javascript"
+          src="../../../../../../build/js/lp/app/effects/effects.js"></script>
+  <script type="text/javascript"
+          src="../../../../../../build/js/lp/app/expander.js"></script>
+  <script type="text/javascript"
+          src="../../../../../../build/js/lp/registry/distroseries/widgets.js"></script>
+
+  <!-- The module under test -->
+  <script type="text/javascript"
+          src="../initseries.js"></script>
+
+  <!-- Required test modules -->
+  <script type="text/javascript"
+          src="../../../../app/javascript/formwidgets/tests/test_formwidgets.js"></script>
+
+  <!-- The test suite -->
+  <script type="text/javascript"
+          src="test_initseries.js"></script>
+
+  </head>
+  <body class="yui3-skin-sam">
+    <ul id="suites">
+      <li>lp.registry.distroseries.initseries.test</li>
+    </ul>
+
+    <script type="text/x-template" id="init-form">
+      <div style="display:none" class="hidden"
+           id="initseries-form-container">
+        <div>
+          <form action="">
+            <table class="form" id="launchpad-form-widgets">
+            </table>
+            <div class="actions" id="launchpad-form-actions">
+              <input type="submit" id="field.actions.initialize"
+                     name="field.actions.initialize"
+                     value="Initialize Series" class="button" />
+            </div>
+          </form>
+        </div>
+      </div>
+    </script>
+
+  </body>
+</html>

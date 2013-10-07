@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <meta content="The Launchpad API and Python library (launchpadlib) give you direct access to your data in Launchpad." name="description"/>
+    <meta content="canonical, launchpad, tour" name="keywords"/>
+    <meta content="en-US" name="language"/>
+    <title>Launchpad tour</title>
+    <style media="all" type="text/css">
+        @import "launchpad-tour.css";
+    </style>
+    <script type="text/javascript" src="jquery-1.2.6.pack.js"></script>
+    <script type="text/javascript" src="launchpad-tour.js"></script>
+    <script type="text/javascript" src="selector.js"></script>
+</head>
+<body>
+    <div id="container">
+        <p class="page-number">8 of 11</p>
+        <ul id="navigation-drop-down">
+            <li class="button-next"><a id="btnNext" href="feature-tracking" tabindex="1" accesskey="1" title="Read about spec tracking in Launchpad">Next</a></li>
+            <li class="home"><a href="index" accesskey="2">Launchpad tour home</a></li>
+            <li><a href="bugs" accesskey="3">Cross-project bug tracking</a></li>
+            <li><a href="branch-hosting-tracking" accesskey="4">Code hosting and review</a></li>
+            <li><a href="translation" accesskey="5">Web-based translation</a></li>
+            <li><a href="community" accesskey="6">Mailing lists and teams</a></li>
+            <li><a href="ppa" accesskey="7">Software distribution</a></li>
+            <li><a href="community-support" accesskey="8">Community support</a></li>
+            <li class="current"><a href="api" accesskey="9">Beta: web services API</a></li>
+            <li><a href="feature-tracking" accesskey="a">Lightweight specifications</a></li>
+            <li><a href="release-management" accesskey="b">Release management</a></li>
+            <li><a href="join-launchpad" accesskey="c">Join Launchpad!</a></li>
+        </ul>
+        <div id="page-intro-top"></div>
+        <div id="page-intro">
+            <h1>API and Python library</h1>
+            <p>
+                <img src="images/api/main-image.jpg" alt="A mock-up of Python code using launchpadlib" />
+            </p>
+            <p class="intro-text">
+                <strong>Create your own applications that work directly with Launchpad.</strong> Join the beta of our RESTful web services API.
+
+<br /><br />
+We've even done the hard work for you: use our LGPL Python library &mdash; <a href="https://help.launchpad.net/API/launchpadlib/">launchpadlib</a> &mdash; to manipulate data in Launchpad just like any other Python object.
+            </p>
+            <div id="link-holder"><a href="https://help.launchpad.net/API">Get started with the Launchpad API &gt;</a></div>
+        </div>
+        <div id="page-intro-bottom"></div>
+        <ul id="secondary-navigation">
+            <li class="button-prev">
+                <a href="community-support" title="Back to the user support tracking page" accesskey="d" tabindex="2">Back</a>
+            </li>
+            <li class="button-next">
+                <a href="feature-tracking" accesskey="e" tabindex="3" title="Read about spec tracking in Launchpad">Next</a>
+            </li>
+        </ul>
+        <div id="further-information">
+            <div class="furthur-information-block">
+                <div class="furthur-information-block-top"></div>
+                <div class="furthur-information-block-mid">
+                    <div class="block">
+                        <h3>What's available</h3>
+                        <h4>The Launchpad API frees your data and makes it easy to mould Launchpad to your workflow. </h4>
+                        <p class="screen-holder">
+                            <img src="images/api/1.png" alt="News about what's new in the API" />                        </p>
+                        <p>
+                            During the beta, we're exposing more and more of Launchpad through the API. Right now the API gives you access to:
+
+                        </p>
+                        <p>
+                          <ul>
+                            <li><strong>bugs:</strong> report, access and manage</li>
+                            <li><strong>people, teams and projects:</strong> create, search and edit</li>
+                            <li><strong>code</strong>: access branch information.</li>
+                          </ul>
+                        </p>
+
+                        <p>We're adding more every month. See the Launchpad <a href="http://news.launchpad.net/category/api">blog's API category</a> for regular updates.</p>
+
+
+
+                        </ul>
+                    </div>
+                    <div class="block odd">
+                    <h3>Python library </h3>
+                        <h4>Using launchpadlib you can treat Launchpad data like any other Python object.</h4>
+                        <p class="screen-holder">
+                            <img src="images/api/3.png" alt="Using launchpadlib"  />                        </p>
+                        <p>
+                           If you're a Python developer, you can access and manipulate data in Launchpad as though it were any other Python object.<p>
+
+                        <p><br />
+                                <code>
+                                people = launchpad.people<br />
+                                salgado = people['salgado']<br />
+                                print salgado.display_name<br />
+                                # Guilherme Salgado<br />
+                                </code>
+                                <br />
+                        </p>
+
+                        <p>You can be up and running in minutes, without having to make any API calls directly. <a href="https://help.launchpad.net/API/launchpadlib">Read more about launchpadlib &gt;</a>.
+                        </p>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="furthur-information-block-bot"></div>
+            </div>
+            <div class="furthur-information-block singular">
+                <div class="furthur-information-block-top"></div>
+                <div class="furthur-information-block-mid">
+                    <div class="block">
+                      <h3>Simple account authentication</h3>
+                        <h4>
+                        Your application's users log into their own Launchpad account.</h4>
+                        <p class="screen-holder">
+                            <img src="images/api/2.png" alt="The API's authentication page" />
+                        </p>
+                        <p>
+                          Before the API will give your software access to Launchpad data, your user needs to log into their Launchpad account. Launchpad handles that for you, using <a href="http://oauth.net/">OAuth</a>, by opening an authentication page in your user's web browser. They can then choose what access to grant your software, from reading only public data through to full read-write access.</p>
+                    </div>
+                    <div class="clear"></div>
+                <div class="furthur-information-block-bot"></div>
+            </div>
+        </div>
+        </div>
+        <ul id="footer-navigation">
+            <li class="button-prev">
+                <a href="community-support" title="Back to the user support tracking page" accesskey="f" tabindex="4">Back</a>
+            </li>
+            <li class="button-next" title="Read about spec tracking in Launchpad">
+                <a href="feature-tracking" accesskey="g" tabindex="5">Next</a>
+            </li>
+             <li class="copyright">
+                &copy; 2004-2013 Canonical Ltd. <a href="https://help.launchpad.net/Legal" accesskey="h" tabindex="6">Terms of Use</a> &#58; <a href="https://help.launchpad.net/Feedback" accesskey="i" tabindex="7">Feedback</a> &#58; <a href="https://answers.launchpad.net/launchpad-project/+faqs" accesskey="j" tabindex="8">FAQ</a>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

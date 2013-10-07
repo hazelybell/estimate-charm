@@ -1,0 +1,39 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+  <script>
+  <!--
+      function updateSeries(select) {
+          var deb = document.getElementById('series-deb');
+          deb.innerHTML = select.value;
+          var deb_src = document.getElementById('series-deb-src');
+          deb_src.innerHTML = select.value;
+      }
+  //-->
+  </script>
+
+  <div tal:condition="view/sources_in_more_than_one_series" id="series-widget-div">
+    <form style="display: inline">
+    Display sources.list entries for: <span tal:replace="structure view/plain_series_widget" />
+    </form>
+  </div>
+
+  <tal:comment condition="nothing">
+   No extra spacing is important in the 'pre' content to allow users
+   to copy'n paste it.
+  </tal:comment>
+
+  <pre id="sources-list-entries" class="wrap">
+deb <a tal:attributes="href context/archive_url"
+       tal:content="context/archive_url"
+    /> <span id="series-deb" tal:content="view/default_series_name"
+    >gutsy</span> main <tal:apt-comment condition="view/comment" content="string:#${view/comment}" />
+deb-src <a tal:attributes="href context/archive_url"
+           tal:content="context/archive_url"
+    /> <span id="series-deb-src" tal:content="view/default_series_name"
+    >gutsy</span> main <tal:apt-comment condition="view/comment" content="string:#${view/comment}" /></pre>
+
+</tal:root>

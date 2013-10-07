@@ -1,0 +1,482 @@
+Incoming Mail
+=============
+
+When an email is sent to Launchpad we need to handle it somehow. This
+is done by handleEmails:
+
+    >>> from lp.services.mail.incoming import handleMail
+
+Basically what it does is to open the Launchpad mail box, and for each
+message it:
+
+    * Authenticates the sender
+    * Finds the correct mail handler
+    * Lets the handler process the message
+    * Deletes the message from the mail box
+
+
+-------------
+Mail Handlers
+-------------
+
+A mail handler is a utility which knows how to handle mail sent to a
+specific domain. It is registered as a named utility providing
+IMailHandler. The name of the utility is the domain that's handled.
+
+Let's create some utilities which keep track of which mails they
+handle, and register them for some domains:
+
+    >>> from zope.interface import implements
+    >>> from lp.services.mail.interfaces import IMailHandler
+    >>> class MockHandler:
+    ...     implements(IMailHandler)
+    ...     def __init__(self, allow_unknown_users=False):
+    ...         self.allow_unknown_users = allow_unknown_users
+    ...         self.handledMails = []
+    ...     def process(self, mail, to_addr, filealias):
+    ...         self.handledMails.append(mail['Message-Id'])
+    ...         return True
+
+    >>> from lp.services.mail.handlers import mail_handlers
+    >>> foo_handler = MockHandler()
+    >>> bar_handler = MockHandler(allow_unknown_users=True)
+    >>> mail_handlers.add('foo.com', foo_handler)
+    >>> mail_handlers.add('bar.com', bar_handler)
+
+Now we send a few test mails to foo.com, bar.com, and baz.com:
+
+    >>> from lp.services.mail.tests.helpers import read_test_message
+    >>> from lp.services.mail.sendmail import sendmail as original_sendmail
+    >>> from lp.testing.dbuser import switch_dbuser
+
+For these examples, we don't want the Precedence header added. Domains
+are treated without regard to case: for incoming mail, foo.com and
+FOO.COM are treated equivalently.
+
+    >>> def sendmail(msg, to_addrs=None):
+    ...     return original_sendmail(msg, to_addrs=to_addrs, bulk=False)
+
+    >>> switch_dbuser('launchpad')
+    >>> msgids = {'foo.com': [], 'bar.com': [], 'baz.com': []}
+    >>> for domain in ('foo.com', 'bar.com', 'FOO.COM', 'baz.com'):
+    ...     msg = read_test_message('signed_detached.txt')
+    ...     msg.replace_header('To', '123@%s' % domain)
+    ...     msgids[domain.lower()].append("<%s>" % sendmail(msg))
+
+handleMail will check the timestamp on signed messages, but the signatures
+on our testdata are old, and in these tests we don't care to be told.
+
+    >>> def accept_any_timestamp(timestamp, context_message):
+    ...     pass
+
+Since the User gets authenticated using OpenPGP signatures we have to
+import the keys before handleMail is called.
+
+    >>> from lp.services.config import config
+    >>> from lp.testing.gpgkeys import import_public_test_keys
+    >>> from lp.testing.layers import LaunchpadZopelessLayer
+
+    >>> import_public_test_keys()
+    >>> switch_dbuser(config.processmail.dbuser)
+    >>> zopeless_transaction = LaunchpadZopelessLayer.txn
+
+    >>> handleMailForTest = lambda: handleMail(
+    ...     zopeless_transaction,
+    ...     signature_timestamp_checker=accept_any_timestamp)
+
+
+We temporarily override the error mails' From address, so that they will
+pass through the authentication stage:
+
+    >>> bugmail_error_from_address = """
+    ...     [malone]
+    ...     bugmail_error_from_address: foo.bar@canonical.com
+    ...     """
+    >>> config.push('bugmail_error_from_address', bugmail_error_from_address)
+
+The test mails are now in Launchpad's mail box, so now we can call
+handleMail, so that every mail gets handled by the correct handler.  (We
+see warnings about missing `X-Launchpad-Original-To`_ headers, which are
+discussed below; this output merely shows that we emit warnings when the
+header is missing.)
+
+    >>> handleMailForTest()
+    WARNING:process-mail:No X-Launchpad-Original-To header was present ...
+    WARNING:process-mail:No X-Launchpad-Original-To header was present ...
+    WARNING:process-mail:No X-Launchpad-Original-To header was present ...
+    WARNING:process-mail:No X-Launchpad-Original-To header was present ...
+
+Now we can see that each handler handled the emails sent to its domain:
+
+    >>> set(foo_handler.handledMails) ^ set(msgids['foo.com'])
+    set([])
+    >>> set(bar_handler.handledMails) ^ set(msgids['bar.com'])
+    set([])
+
+--------------
+Unhandled Mail
+--------------
+
+So, what happened to the message that got sent to baz.com? Since there
+wasn't a handler registered for that domain, an OOPS was recorded with
+a link to the original message.
+
+    >>> from lp.services.mail import stub
+    >>> print stub.test_emails[-1][2]
+    Content-Type: multipart/mixed...
+    ...
+    To: Sample Person <test@canonical.com>
+    ...
+    Sorry, something went wrong when Launchpad tried processing your mail.
+    We've recorded what happened, and we'll fix it as soon as possible.
+    Apologies for the inconvenience.
+    <BLANKLINE>
+    If this is blocking your work, please file a question at
+    https://answers.launchpad.net/launchpad/+addquestion
+    and include the error ID OOPS-... in the descr...
+    ...
+    From: Sample Person <test@canonical.com>
+    To: 123@baz.com
+    Subject: Signed Email
+    ...
+
+    >>> stub.test_emails = []
+
+---------------------------------------------
+Mail from Persons not registered in Launchpad
+---------------------------------------------
+
+If a Person who isn't registered in Launchpad sends an email, we'll
+most of the time reject the email:
+
+    >>> moin_change = read_test_message('moin-change.txt')
+    >>> moin_change['X-Launchpad-Original-To'] = '123@foo.com'
+    >>> msgid = "<%s>" % sendmail(moin_change)
+    >>> handleMailForTest()
+    >>> msgid not in foo_handler.handledMails
+    True
+
+    >>> stub.test_emails = []
+
+However, bar_handler specifies that it can handle such emails:
+
+    >>> bar_handler.allow_unknown_users
+    True
+
+So if we send the mail to bar.com, bar_handler will handle the mail:
+
+    >>> moin_change.replace_header('X-Launchpad-Original-To', '123@bar.com')
+    >>> msgid = "<%s>" % sendmail(moin_change)
+    >>> handleMailForTest()
+    >>> msgid in bar_handler.handledMails
+    True
+
+    >>> stub.test_emails = []
+
+---------------------------------------------------------
+Mail from Persons with with an inactive Launchpad account
+---------------------------------------------------------
+
+If a Person who's account is inactive sends an email, it will be
+silently rejected.
+
+    >>> from zope.component import getUtility
+    >>> from lp.registry.interfaces.person import IPersonSet
+    >>> person_set = getUtility(IPersonSet)
+    >>> bigjools = person_set.getByEmail('launchpad@julian-edwards.com',
+    ...                                  filter_status=False)
+    >>> print bigjools.account_status.name
+    NOACCOUNT
+
+    >>> msg = read_test_message('unsigned_inactive.txt')
+    >>> msgid = sendmail(msg, ['edit@malone-domain'])
+    >>> handleMailForTest()
+    >>> msgid not in foo_handler.handledMails
+    True
+
+    >>> msg = read_test_message('invalid_signed_inactive.txt')
+    >>> msgid = sendmail(msg, ['edit@malone-domain'])
+    >>> handleMailForTest()
+    >>> msgid not in foo_handler.handledMails
+    True
+
+-----------------------
+X-Launchpad-Original-To
+-----------------------
+
+If available, the X-Launchpad-Original-To header is used to determine to
+which address the email was sent to:
+
+    >>> msg = read_test_message('signed_detached.txt')
+    >>> msg.replace_header('To', '123@foo.com')
+    >>> msg['CC'] = '123@foo.com'
+    >>> msg['X-Launchpad-Original-To'] = '123@bar.com'
+    >>> msgid = '<%s>' % sendmail (msg, ['123@bar.com'])
+    >>> handleMailForTest()
+    >>> msgid in bar_handler.handledMails
+    True
+
+Only the address in X-Launchpad-Original-To header will be used. The
+addresses in the To and CC headers will be ignored:
+
+    >>> msgid in foo_handler.handledMails
+    False
+
+-------------------------------
+OOPSes processing incoming mail
+-------------------------------
+
+If an unhandled exception occurs when we try to process an email from
+a user, we record an OOPS with the exception and send it to the user.
+
+We create a handler that is guaranteed to raise an exception when
+attempting to process incoming mail.
+
+    >>> class TestOopsException(Exception):
+    ...     pass
+    >>> class OopsHandler:
+    ...     implements(IMailHandler)
+    ...     def process(self, mail, to_addr, filealias):
+    ...         raise TestOopsException()
+    >>> mail_handlers.add('oops.com', OopsHandler())
+
+And submit an email to the handler.
+
+    >>> import email
+    >>> msg = email.message_from_string(
+    ... """From: Foo Bar <foo.bar@canonical.com>
+    ... To: launchpad@oops.com
+    ... X-Launchpad-Original-To: launchpad@oops.com
+    ... Subject: doesn't matter
+    ...
+    ... doesn't matter
+    ... """)
+    >>> msgid = sendmail(msg, ['edit@malone-domain'])
+    >>> handleMailForTest()
+    ERROR:process-mail:An exception was raised inside the handler:
+    ...
+    TestOopsException
+
+An exception is raised, an OOPS is recorded, and an email is sent back
+to the user, citing the OOPS ID, with the original message attached.
+
+    >>> print stub.test_emails[-1][2]
+    Content-Type: multipart/mixed...
+    ...
+    To: Foo Bar <foo.bar@canonical.com>
+    ...
+    Sorry, something went wrong when Launchpad tried processing your mail.
+    We've recorded what happened, and we'll fix it as soon as possible.
+    Apologies for the inconvenience.
+    <BLANKLINE>
+    If this is blocking your work, please file a question at
+    https://answers.launchpad.net/launchpad/+addquestion
+    and include the error ID OOPS-...... in the descr...
+    ...
+    From: Foo Bar <foo.bar@canonical.com>
+    To: launchpad@oops.com
+    X-Launchpad-Original-To: launchpad@oops.com
+    Subject: doesn't matter
+    ...
+
+    >>> stub.test_emails = []
+
+Unauthorized exceptions, which are ignored for the purpose of OOPS
+reporting in the web interface, are not ignored in the email interface.
+
+    >>> from twisted.cred.error import Unauthorized
+    >>> class UnauthorizedOopsHandler:
+    ...     implements(IMailHandler)
+    ...     def process(self, mail, to_addr, filealias):
+    ...         raise Unauthorized()
+    >>> mail_handlers.add('unauthorized.com', UnauthorizedOopsHandler())
+
+    >>> msg = email.message_from_string(
+    ... """From: Foo Bar <foo.bar@canonical.com>
+    ... To: launchpad@unauthorized.com
+    ... X-Launchpad-Original-To: launchpad@unauthorized.com
+    ... Subject: doesn't matter
+    ...
+    ... doesn't matter
+    ... """)
+    >>> msgid = sendmail(msg, ['edit@malone-domain'])
+    >>> handleMailForTest()
+    ERROR:process-mail:An exception was raised inside the handler:
+    ...
+    Unauthorized
+
+    >>> print stub.test_emails[-1][2]
+    Content-Type: multipart/mixed...
+    ...
+    To: Foo Bar <foo.bar@canonical.com>
+    ...
+    Sorry, something went wrong when Launchpad tried processing your mail.
+    We've recorded what happened, and we'll fix it as soon as possible.
+    Apologies for the inconvenience.
+    <BLANKLINE>
+    If this is blocking your work, please file a question at
+    https://answers.launchpad.net/launchpad/+addquestion
+    and include the error ID OOPS-...... in the descr...
+    ...
+    From: Foo Bar <foo.bar@canonical.com>
+    To: launchpad@unauthorized.com
+    X-Launchpad-Original-To: launchpad@unauthorized.com
+    Subject: doesn't matter
+    ...
+
+    >>> stub.test_emails = []
+
+-------------
+DB exceptions
+-------------
+
+If something goes wrongs in the handler, a DB exception can be raised,
+leaving the database in a bad state. If that happens a traceback should
+be printed, and the mail should be deleted from the queue.
+
+Let's create and register a handler which raises a SQL error:
+
+    >>> from lp.services.database.sqlbase import cursor
+    >>> class DBExceptionRaiser:
+    ...     implements(IMailHandler)
+    ...     def process(self, mail, to_addr, filealias):
+    ...         cur = cursor()
+    ...         cur.execute('SELECT 1/0')
+    >>> mail_handlers.add('except.com', DBExceptionRaiser())
+
+Now we send a mail to the handler, which will cause an exception:
+
+    >>> exception_raiser = email.message_from_string(
+    ... """From: Foo Bar <foo.bar@canonical.com>
+    ... To: something@except.com
+    ... X-Launchpad-Original-To: something@except.com
+    ... Subject: Raise an exception
+    ...
+    ... This part is not important.
+    ... """)
+    >>> msgid = sendmail(exception_raiser, ['something@exception.com'])
+
+We send another mail as well, in order to make sure that it gets
+processed as well:
+
+    >>> msg = read_test_message('signed_detached.txt')
+    >>> msg.replace_header('To', '123@foo.com')
+    >>> msgid = '<%s>' % sendmail(msg)
+
+If we call handleMail(), we'll see some useful error messages printed
+out:
+
+    >>> handleMailForTest()
+    ERROR:...:An exception was raised inside the handler: http://...
+    Traceback (most recent call last):
+    ...
+    DataError: division by zero
+    <BLANKLINE>
+    WARNING...
+
+The second mail we sent got handled despite the exception:
+
+    >>> msgid in foo_handler.handledMails
+    True
+
+There is only one mail left in the mail box - the one sent back to
+the user reporting the error:
+
+    >>> len(stub.test_emails)
+    1
+
+---------------------
+Librarian not running
+---------------------
+
+If for some reason the Librarian isn't up and running, we shouldn't
+lose any emails. All that should happen is that an error should get
+logged.
+
+
+    >>> from lp.testing.layers import LibrarianLayer
+    >>> LibrarianLayer.hide()
+
+    >>> msg = read_test_message('signed_detached.txt')
+    >>> msg.replace_header('To', '123@foo.com')
+    >>> msgid = '<%s>' % sendmail(msg)
+    >>> len(stub.test_emails)
+    2
+
+    >>> handleMailForTest()
+    ERROR:...:Upload to Librarian failed...
+    ...
+    UploadFailed: ...Connection refused...
+
+    >>> len(stub.test_emails)
+    2
+
+    >>> LibrarianLayer.reveal()
+    >>> stub.test_emails = []
+
+----------------
+Handling bounces
+----------------
+
+Some broken mailers might not respect the Errors-To and Return-Path
+headers, send error messages back to the address, from which the email
+was sent. To prevent mail loops, we try to detect such errors, and
+simply drop the emails.
+
+Emails with an empty Return-Path header should be dropped:
+
+    >>> stub.test_emails = []
+    >>> msg = read_test_message('signed_detached.txt')
+    >>> msg.replace_header('To', '123@foo.com')
+    >>> msg['Return-Path'] = '<>'
+    >>> msgid = '<%s>' % sendmail(msg)
+    >>> handleMailForTest()
+    >>> msgid in foo_handler.handledMails
+    False
+
+Since this happens way too often, as we seem to get more spam than
+legitimate email, an email is not sent about it to the errors-list.
+
+    >>> len(stub.test_emails)
+    0
+
+If the content type is multipart/report, it's most likely a DSN
+(RFC 3464), so those get dropped as well. Normally a DSN should have an
+empty Return-Path, but there are some broken mailers out there.
+
+    >>> msg = read_test_message('signed_inline.txt')
+    >>> msg.replace_header('To', '123@foo.com')
+    >>> msg['Return-Path'] = '<not@empty.com>'
+    >>> msg['Content-Type'] = (
+    ...     'multipart/report; report-type=delivery-status;'
+    ...     ' boundary="boundary"')
+    >>> msgid = '<%s>' % sendmail(msg)
+    >>> handleMailForTest()
+    >>> msgid in foo_handler.handledMails
+    False
+
+    >>> len(stub.test_emails)
+    0
+
+Email with the Precedence header are probably from an auto-responder or
+another robot. We also drop those.
+
+    >>> msg = read_test_message('signed_inline.txt')
+    >>> msg.replace_header('To', '123@foo.com')
+    >>> msg['Return-Path'] = '<not@empty.com>'
+    >>> msg['Precedence'] = 'bulk'
+    >>> msgid = '<%s>' % sendmail(msg)
+    >>> handleMailForTest()
+    >>> msgid in foo_handler.handledMails
+    False
+
+    >>> len(stub.test_emails)
+    0
+
+
+.. Doctest cleanup
+
+    >>> config_data = config.pop('bugmail_error_from_address')
+    >>> mail_handlers.add('foo.com', None)
+    >>> mail_handlers.add('bar.com', None)
+    >>> mail_handlers.add('except.com', None)

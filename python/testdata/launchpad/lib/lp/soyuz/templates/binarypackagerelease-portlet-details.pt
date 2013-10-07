@@ -1,0 +1,25 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  class="portlet" id="portlet-details">
+  <h2><span tal:replace="context/name" /> details</h2>
+
+    <b>Package version:</b>
+    <span tal:replace="context/version" /><br />
+
+    <b>Source:</b>
+    <a tal:content="context/build/sourcepackagerelease/version"
+       tal:attributes="href context/distributionsourcepackagerelease/fmt:url"
+       >apache2 2.1-3</a><br />
+
+    <b>Original Component:</b>
+    <span tal:replace="context/component/name" /><br />
+
+    <b>Original Section:</b>
+    <span tal:replace="context/section/name" /><br />
+
+    <b>Priority:</b>
+    <span tal:replace="context/priority/title" /><br />
+
+</div>

@@ -1,0 +1,14 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  tal:define="relationships view/breaks"
+  tal:condition="relationships/has_items"
+  class="first yui-u" id="portlet-breaks">
+
+  <dl id="breaks">
+    <dt>Breaks:</dt>
+    <tal:block replace="structure relationships/@@+render-list" />
+  </dl>
+
+</div>

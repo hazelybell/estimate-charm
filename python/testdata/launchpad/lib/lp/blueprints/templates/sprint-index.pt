@@ -1,0 +1,127 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+>
+
+<body>
+
+<tal:registering metal:fill-slot="registering">
+  Registered by <a tal:replace="structure context/owner/fmt:link" />
+    on <span tal:content="context/datecreated/fmt:displaydate"
+             tal:attributes="title context/datecreated/fmt:datetime"
+         >on 2005-01-01</span>
+</tal:registering>
+
+<div metal:fill-slot="main"
+     tal:define="specs view/specs;
+                 has_any_specs view/has_any_specifications">
+
+  <div class="top-portlet">
+    <p>
+      <span tal:replace="context/summary">
+        Sprint Summary Goes Here
+      </span>
+      <tal:has_homepage condition="context/home_page">
+        <img src="/@@/meeting" />
+        <a tal:attributes="href context/home_page">
+          View the Meeting Home Page
+        </a>
+      </tal:has_homepage>
+    </p>
+
+    <dl id="start-end">
+      <dt>Starts:</dt>
+      <dd><tal:start replace="view/local_start" /></dd>
+      <dt>Ends:</dt>
+      <dd><tal:start replace="view/local_end" /></dd>
+    </dl>
+
+    <dl id="sprint-address" tal:condition="context/address">
+      <dt>Address:</dt>
+      <dd><span tal:replace="context/address" /></dd>
+    </dl>
+  </div>
+  <div class="portlet">
+    <h2>Meeting drivers</h2>
+
+    <p>
+      Each meeting has a person, or team, responsible for deciding which
+      items are accepted for the agenda. This team is called the "meeting
+      driver" and for <tal:meeting replace="context/title" /> they are:
+    </p>
+
+    <ul id="meeting-drivers">
+      <li tal:repeat="driver context/drivers" style="margin-bottom:0.2em">
+        <span tal:replace="structure driver/fmt:link" />
+      </li>
+    </ul>
+
+    <p>
+      You should contact the meeting driver if you have any additional
+      questions about the structure or agenda of the meeting.
+    </p>
+  </div>
+
+  <div class="portlet">
+    <h2>Blueprints</h2>
+    <tal:no_specifications_at_all condition="not: has_any_specs">
+      <p>
+        Nobody has yet proposed any blueprints for discussion at this sprint.
+        If you will be attending the sprint you should make sure that the
+        blueprints you are interested in discussing get nominated for the
+        agenda. You can do this using the "Propose for meeting agenda" action
+        link on the blueprint page.
+      </p>
+
+    </tal:no_specifications_at_all>
+
+    <tal:some_specs_nominated condition="has_any_specs">
+
+      <p tal:condition="not:specs">
+        No blueprints are yet approved for discussion at
+        <span tal:replace="context/title">Ubuntu Below Zero</span>.
+        If you are one of the meeting drivers you should review the proposed
+        blueprint list and accept those topics you wish to show up on the
+        agenda for the meeting.
+      </p>
+
+      <tal:approved_specs condition="specs">
+
+        <h2>Latest <span tal:replace="view/latest_specs_limit">5</span>
+            additions to the meeting agenda</h2>
+
+        <table>
+          <div tal:repeat="spec view/latest_approved"
+               tal:replace="structure spec/@@+listing-simple"
+               />
+        </table>
+
+        <p>
+          There are a total of <span tal:replace="view/count">5</span>
+          specifications on the meeting agenda.
+          <tal:proposed define="proposed view/proposed_count"
+                        condition="proposed">
+            There are <span tal:replace="proposed">7</span>
+            specifications
+            <a tal:omit-tag="not: context/required:launchpad.Driver" href="+settopics">
+              proposed
+            </a> which the organisers will review.
+          </tal:proposed>
+          You can view the <a href="+specs">full current agenda here</a>.
+        </p>
+      </tal:approved_specs>
+    </tal:some_specs_nominated>
+  </div> <!-- class="portlet" -->
+</div>
+
+<tal:side metal:fill-slot="side">
+  <tal:menu replace="structure context/@@+global-actions" />
+  <div tal:replace="structure context/@@+portlet-attendees" />
+</tal:side>
+
+</body>
+</html>

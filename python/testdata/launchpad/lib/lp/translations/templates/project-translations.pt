@@ -1,0 +1,99 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  metal:use-macro="view/macro:page/main_only"
+>
+
+<head>
+  <tal:head_epilogue metal:fill-slot="head_epilogue">
+    <meta tal:condition="not:context/has_translatable"
+          name="robots" content="noindex,nofollow" />
+  </tal:head_epilogue>
+</head>
+
+<body>
+  <div metal:fill-slot="main">
+
+    <div class="top-portlet">
+      <p tal:condition="context/has_translatable">
+        Select a project you want to translate into your own language.
+      </p>
+      <p tal:condition="not:context/has_translatable">
+        <strong>
+        There are no translatable projects in
+        <span tal:content="context/displayname">Project Group</span>.
+        </strong>
+      </p>
+      <p tal:condition="not:view/required:launchpad.Edit">
+        If a project for <span tal:content="context/displayname">Project Group
+        </span> is not listed here, get in touch with
+        <a tal:replace="structure context/owner/fmt:link">owner</a> who is
+        the administrator for the project group.
+      </p>
+
+      <p>
+        <tal:permissions
+           replace="structure
+                    context/@@+portlet-translation-groups-and-permission"
+           />
+      </p>
+      <p tal:condition="view/required:launchpad.TranslationsAdmin">
+        <a tal:replace="
+           structure context/menu:translations/settings/fmt:link"/>
+      </p>
+    </div>
+
+    <div class="yui-g">
+      <div class="yui-u first">
+        <div class="portlet" id="translatable-projects">
+          <h3>Translatable projects</h3>
+          <dl tal:condition="context/has_translatable">
+            <tal:project repeat="product context/translatables">
+              <dt>
+                <a tal:replace="structure product/fmt:link/+translations">
+                  Evolution
+                </a>
+              </dt>
+              <dd>
+                <span tal:replace="product/title">
+                  The Evolution Groupware Application
+                </span>
+              </dd>
+            </tal:project>
+          </dl>
+        </div>
+      </div>
+      <div class="yui-u">
+        <div class="portlet" id="untranslatable-projects">
+          <h3>Other projects in
+            <tal:group replace="context/displayname">GNOME</tal:group>
+          </h3>
+          <p>
+            These projects are not yet set up for translation in Launchpad.
+          </p>
+          <dl tal:condition="view/untranslatables">
+            <tal:project repeat="product view/untranslatables">
+              <dt>
+                <a tal:replace="structure product/fmt:link/+translations">
+                  Evolution
+                </a>
+              </dt>
+              <dd>
+                <span tal:replace="product/title">
+                  The Evolution Groupware Application
+                </span>
+              </dd>
+            </tal:project>
+          </dl>
+        </div>
+      </div>
+    </div>
+    <div class="yui-b">
+      <p tal:condition="view/required:launchpad.Edit">
+        <a class="add sprite" href="+newproduct">Add another project</a>
+      </p>
+    </div>
+  </div><!--main-->
+</body>
+</html>

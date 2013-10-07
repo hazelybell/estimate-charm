@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <meta content="Free software thrives on people helping each other when the unexpected happens. Launchpad Answers helps your project&rsquo;s community track support requests in multiple languages and create a searchable knowledge-base of answers." name="description"/>
+    <meta content="canonical, launchpad, tour" name="keywords"/>
+    <meta content="en-US" name="language"/>
+    <title>Launchpad tour</title>
+    <style media="all" type="text/css">
+        @import "launchpad-tour.css";
+    </style>
+    <script type="text/javascript" src="jquery-1.2.6.pack.js"></script>
+    <script type="text/javascript" src="launchpad-tour.js"></script>
+    <script type="text/javascript" src="selector.js"></script>
+</head>
+<body>
+    <div id="container">
+        <p class="page-number">7 of 11</p>
+        <ul id="navigation-drop-down">
+            <li class="button-next"><a id="btnNext" href="api" tabindex="1" accesskey="1" title="Read about Launchpad's web services API">Next</a></li>
+            <li class="home"><a href="index" accesskey="2">Launchpad tour home</a></li>
+            <li><a href="bugs" accesskey="3">Cross-project bug tracking</a></li>
+            <li><a href="branch-hosting-tracking" accesskey="4">Code hosting and review</a></li>
+            <li><a href="translation" accesskey="5">Web-based translation</a></li>
+            <li><a href="community" accesskey="6">Mailing lists and teams</a></li>
+            <li><a href="ppa" accesskey="7">Software distribution</a></li>
+            <li class="current"><a href="community-support" accesskey="8">Community support</a></li>
+            <li><a href="api" accesskey="9">Beta: web services API</a></li>
+            <li><a href="feature-tracking" accesskey="a">Lightweight specifications</a></li>
+            <li><a href="release-management" accesskey="b">Release management</a></li>
+            <li><a href="join-launchpad" accesskey="c">Join Launchpad!</a></li>
+        </ul>
+        <div id="page-intro-top"></div>
+        <div id="page-intro">
+            <h1>Community support in your language
+
+</h1>
+            <p>
+                <img src="images/answers/main-image.jpg" alt="Collaborate with free software communities." />
+            </p>
+            <p class="intro-text">
+                <strong>Free software thrives on people helping each other when the unexpected happens.</strong> Launchpad Answers helps your project&rsquo;s community track support requests in multiple languages and create a searchable knowledge-base of answers.
+            </p>
+            <div id="link-holder"><a href="https://answers.launchpad.net/"><img src="images/see-it-action-button.png" alt="See it in action" title="Visit Launchpad Answers" /></a><br /><a href="https://launchpad.net/projects/+new">Add your project to Launchpad &gt;</a></div>
+        </div>
+        <div id="page-intro-bottom"></div>
+        <ul id="secondary-navigation">
+            <li class="button-prev">
+                <a href="ppa" title="Back to the user support tracking page" tabindex="2" accesskey="d">Back</a>
+            </li>
+            <li class="button-next" title="Read about Launchpad's web services API">
+                <a href="api" tabindex="3" accesskey="e">Next</a>
+            </li>
+        </ul>
+        <div id="further-information">
+            <div class="furthur-information-block">
+                <div class="furthur-information-block-top"></div>
+                <div class="furthur-information-block-mid">
+                    <div class="block">
+                        <h3>Support in your language</h3>
+                        <h4>Although most development and planning happens in English, people use free software in hundreds of languages.</h4>
+                        <p class="screen-holder"><img src="images/answers/1.png" alt="Support in your language" /></p>
+                        <p>
+                            Rather than ask people to describe their problem in an unfamiliar language, Launchpad lets them ask for help and get a reply in their own language.
+                        </p>
+                    </div>
+                    <div class="block odd">
+                        <h3>Track questions like bugs</h3>
+                        <h4>Launchpad tracks help requests just like bugs: each question has a status, comment history and list of subscribers.</h4>
+                        <p class="screen-holder">
+                            <img src="images/answers/2.png" alt="Track questions like bugs" />                        </p>
+                        <p>
+                            Members of your community can volunteer to be support contacts &mdash; in effect your help triage team &mdash; and receive notification of all new questions in their chosen languages.  Throughout a question&rsquo;s life, the person looking for help and the people offering advice can set its status from unanswered through to solved.
+                        </p>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="furthur-information-block-bot"></div>
+            </div>
+            <div class="furthur-information-block singular">
+                <div class="furthur-information-block-top"></div>
+                <div class="furthur-information-block-mid">
+                    <div class="block">
+                        <h3>Knowledge-base and FAQs</h3>
+                        <h4>All projects have their frequently asked questions.</h4>
+                        <p class="screen-holder">
+                            <img src="images/answers/3.png" alt="Knowledge-base and FAQs"  />
+                        </p>
+                        <p>
+                            Launchpad provides a repository for your community&rsquo;s knowledge, which builds organically as people ask and answer questions.
+                        </p>
+                        <p>
+                            When someone asks for help Launchpad searches solved questions to find a likely answer. Similarly, when support contacts come across a frequently asked question they can select the best answer and make it available as a template for future use.
+                        </p>
+                    </div>
+                    <div class="clear"></div>
+                <div class="furthur-information-block-bot"></div>
+            </div>
+        </div>
+        </div>
+        <ul id="footer-navigation">
+          <li class="button-prev">
+                <a href="ppa" title="Back to the user support tracking page" tabindex="4" accesskey="f">Back</a>
+            </li>
+            <li class="button-next" title="Read about Launchpad's web services API">
+                <a href="api" tabindex="5" accesskey="g">Next</a>
+            </li>
+            <li class="copyright">
+                &copy; 2004-2013 Canonical Ltd. <a href="https://help.launchpad.net/Legal" accesskey="h" tabindex="6">Terms of Use</a> &#58; <a href="https://help.launchpad.net/Feedback" accesskey="i" tabindex="7">Feedback</a> &#58; <a href="https://answers.launchpad.net/launchpad-project/+faqs" accesskey="j" tabindex="8">FAQ</a>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

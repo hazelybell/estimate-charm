@@ -1,0 +1,182 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+>
+
+<body>
+
+<metal:side fill-slot="side">
+  <div tal:content="structure context/@@+ask-a-question-button" />
+  <div tal:replace="structure context/@@+global-actions" />
+  <div tal:replace="structure context/@@+portlet-answercontacts|nothing" />
+  <div tal:condition="context/distribution|nothing"
+       tal:replace="structure context/distribution/@@+portlet-answercontacts" />
+</metal:side>
+
+<metal:css fill-slot="head_epilogue">
+  <style type="text/css">
+    div.inlined-widget {
+      display: inline;
+    }
+
+    div.inlined-widget div {
+      display: inline;
+    }
+  </style>
+</metal:css>
+
+<div metal:fill-slot="main"
+     tal:define="questions view/searchResults">
+  <p tal:define="unspoken_languages view/unspoken_languages"
+    tal:condition="unspoken_languages">
+    <span tal:replace="context/displayname">Mozilla Firefox</span> has 
+    unanswered questions in the following languages:
+    <span tal:replace="structure unspoken_languages">
+     <a href="ubuntu/+unspoken?language=es">1 in Spanish</a>
+    </span>. Can you help?
+  </p>
+
+  <div>
+    <form method="get" id="question-search-form" action=""
+          tal:attributes="action request/URL">
+      <tal:searchbox replace="structure view/widgets/search_text" />
+
+      <tal:sort replace="structure view/widgets/sort" />
+
+      <input tal:replace="structure view/search_action/render" />
+
+      <tal:language_control condition="view/show_language_control">
+        <input type="hidden" name="field.language" value="es" 
+               tal:attributes="value view/language/code"
+               tal:condition="not:view/widgets/language/visible"/>
+
+        <div class="field"
+             tal:condition="view/widgets/language/visible"
+             tal:define="widget nocall:view/widgets/language|nothing">
+          <label tal:content="widget/label">Label</label>
+          (<a href="/+editmylanguages">Change your preferred languages</a>)
+          <tal:languages replace="structure widget" />
+        </div>
+      </tal:language_control>
+
+      <div class="field"
+           tal:define="widget nocall:view/widgets/status|nothing"
+           tal:condition="nocall: widget">
+        <div tal:define="error python:view.widget_errors.get('status')"
+             tal:attributes="class python:error and 'error' or None">
+          <label tal:content="widget/label">Label</label>
+          <tal:status tal:replace="structure widget">
+            <input type="text" style="width:100%"/>
+          </tal:status>
+
+          <div class="message"
+               tal:condition="error"
+               tal:content="structure error">
+            An error message.
+          </div>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+  <tal:no-results condition="not: questions/batch">
+    <p i18n:translate=""
+       tal:content="view/empty_listing_message">
+      No questions.
+    </p>
+  </tal:no-results>
+
+  <p id="found-matching-faqs"
+     tal:condition="view/matching_faqs_count">
+    You can also consult the list of
+    <a href="#" tal:attributes="href view/matching_faqs_url"
+       ><tal:count replace="view/matching_faqs_count" /> FAQ(s)</a>
+    matching
+    &ldquo;<tal:keywords replace="view/search_text"
+                         >Keywords</tal:keywords>&rdquo;.
+  </p>
+
+  <tal:block condition="questions/batch">
+    <table class="listing" id="question-listing">
+      <thead>
+        <tr>
+          <th colspan="3">Summary</th>
+          <th>Created</th>
+          <th>Submitter</th>
+          <th tal:condition="view/display_target_column">In</th>
+          <th tal:condition="view/display_sourcepackage_column"
+              >Source Package</th>
+          <th>Assignee</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tal:question repeat="question questions/batch">
+          <tal:description
+            define="global description question/description/fmt:obfuscate-email/fmt:shorten/300" />
+
+        <tr xml:lang="en" lang="en" dir="ltr"
+            tal:attributes="title description;
+                            xml:lang question/language/dashedcode;
+                            lang question/language/dashedcode;
+                            dir question/language/abbreviated_text_dir">
+          <td class="icon right">
+            <img alt="Open" title="Open" src="/@@/question"
+                 tal:attributes="alt question/status/title;
+                                 title question/status/title;" />
+          </td>
+          <td class="amount"
+              tal:content="question/id"
+              >42</td>
+          <td class="questionTITLE">
+            <a href="#"
+               tal:content="question/title"
+               tal:attributes="href question/fmt:url">
+              Firefox is too slow for my laptop
+            </a>
+          </td>
+          <td>
+            <span class="sortkey"
+              tal:content="question/datecreated/fmt:datetime" />
+            <span
+              tal:attributes="title question/datecreated/fmt:datetime"
+              tal:content="question/datecreated/fmt:approximatedate">
+              2006-07-17
+            </span>
+          </td>
+          <td><a tal:replace="structure question/owner/fmt:link">Foo Bar</a></td>
+          <td class="question-target"
+              tal:condition="view/display_target_column"
+              ><a href="#"
+                  tal:define="target question/target"
+                  tal:attributes="href string:${target/fmt:url}/+questions"
+                  tal:content="target/displayname">Firefox</a></td>
+          <td tal:condition="view/display_sourcepackage_column"
+              tal:content="structure python:view.formatSourcePackageName(question)"
+              >mozilla-firefox</td>
+          <td>
+            <a tal:condition="question/assignee"
+              tal:replace="structure question/assignee/fmt:link">Sample Person</a>
+            <tal:unassigned
+              condition="not: question/assignee">&mdash;</tal:unassigned></td>
+          <td class="questionstatus"
+              tal:content="question/status/title"
+              tal:attributes="class string:questionstatus${question/status/name}"
+              >Open</td>
+        </tr>
+        </tal:question>
+      </tbody>
+    </table>
+    <div class="results"
+         tal:content="structure questions/@@+navigation-links-lower"
+       />
+  </tal:block>
+</div>
+
+</body>
+</html>

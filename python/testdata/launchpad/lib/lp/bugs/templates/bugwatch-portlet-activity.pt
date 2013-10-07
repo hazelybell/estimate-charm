@@ -1,0 +1,47 @@
+<div
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    class="portlet" id="portlet-watches">
+  <h2>Recent activity</h2>
+  <div id="recent-watch-activity">
+    <div>
+      <form
+          tal:attributes="action view/action_url;"
+          tal:condition="view/userCanReschedule"
+          name="launchpadform"
+          id="reschedule-form"
+          method="post"
+          enctype="multipart/form-data"
+          accept-charset="UTF-8">
+        <div>
+          This watch has failed to update at
+          <tal:fail-count
+              replace="context/failed_activity/count" />
+          out of the last
+          <tal:fail-count
+              replace="context/activity/count" />
+          attempts.
+        </div>
+        <div>
+          The next update will occur
+          <tal:next-check
+              replace="view/context/next_check/fmt:approximatedate" />
+          <tal:reschedule-button
+              replace="structure view/reschedule_action/render" />
+        </div>
+      </form>
+    </div>
+    <tal:activity repeat="activity view/recent_watch_activity">
+      <div>
+        <img tal:attributes="src activity/icon; title activity/result_text" />
+        Update
+        <tal:message replace="activity/completion_message" />
+        <tal:oopsid condition="activity/oops_id">
+          (<tal:oops_link replace="structure activity/oops_id/fmt:oops-id" />)
+        </tal:oopsid>
+        <tal:time replace="activity/date/fmt:displaydate" />
+      </div>
+    </tal:activity>
+  </div>
+</div>

@@ -1,0 +1,30 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Format: 1.7
+Date: Thu, 16 Mar 2006 11:08:04 +0000
+Source: foo
+Binary: foo
+Architecture: source
+Version: 1.0-1.5
+Distribution: breezy-backports
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Daniel Silverstone <daniel.silverstone@canonical.com>
+Description: 
+ foo        - Stuff for testing
+Changes: 
+ foo (1.0-1.5) breezy-backports; urgency=low
+ .
+   * Version to be rejected from backports for being too young.
+Files: 
+ 1896452ab238e34afbe51fa29ba688c3 516 devel optional foo_1.0-1.5.dsc
+ a19a26e1a4157d1e66cd8b04f181cbcf 625 devel optional foo_1.0-1.5.diff.gz
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.3 (GNU/Linux)
+
+iD8DBQFFt78+jn63CGxkqMURAliiAJ4+y64HbsKzZ3O3txWHFTl2zMN8OACfXn/K
+VHFuPZkxO7OKFZv1C3uJSy4=
+=vPwZ
+-----END PGP SIGNATURE-----

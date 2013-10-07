@@ -1,0 +1,427 @@
+= Filebug Data Parser =
+
+An application like Apport can upload data to Launchpad, and have the
+information added to the bug report that the user will file. The
+information is uploaded as a MIME multipart message, where the different
+headers tells Launchpad what kind of information it is.
+
+
+== FileBugDataParser Internals ==
+
+FileBugDataParser is used to parse the MIME message with the information
+to be added to the bug report. The information is passed as a file
+object to the constructor.
+
+    >>> from StringIO import StringIO
+    >>> from lp.bugs.utilities.filebugdataparser import FileBugDataParser
+    >>> parser = FileBugDataParser(StringIO('123456789'))
+
+To make parsing easier and more efficient, it has a buffer where it
+stores the next few bytes of the file. To begin with, it's empty.
+
+    >>> parser._buffer
+    ''
+
+Whenever it needs to read some bytes of the file, it will read a fixed
+number of bytes into the buffer. The number of bytes is specified by the
+BUFFER_SIZE variable.
+
+    >>> parser.BUFFER_SIZE = 3
+
+There is helper method, _consumeBytes(), which will read from the file
+until a certain delimiter string is encountered.
+
+    >>> parser._consumeBytes('4')
+    '1234'
+
+In order to find the delimiter string, it had to read '123456' into
+the buffer. Up to the delimiter string is read, but the rest of the
+string is kept in the buffer.
+
+    >>> parser._buffer
+    '56'
+
+The delimiter string isn't limited to one character.
+
+    >>> parser._consumeBytes('67')
+    '567'
+
+    >>> parser._buffer
+    '89'
+
+If the delimiter isn't found in the file, the rest of the file is
+returned.
+
+    >>> parser._consumeBytes('0')
+    '89'
+    >>> parser._buffer
+    ''
+
+Subsequent reads will result in the empty string.
+
+    >>> parser._consumeBytes('0')
+    ''
+    >>> parser._consumeBytes('0')
+    ''
+
+
+=== readLine() ===
+
+readLine() is a helper method to read a single line of the file.
+
+    >>> parser = FileBugDataParser(StringIO('123\n456\n789'))
+    >>> parser.readLine()
+    '123\n'
+    >>> parser.readLine()
+    '456\n'
+    >>> parser.readLine()
+    '789'
+
+If we try to read past the end of the file an AssertionError will be
+raised. This is to ensure that invalid messages won't cause an infinite
+loop, or something like that.
+
+    >>> parser.readLine()
+    Traceback (most recent call last):
+    ...
+    AssertionError: End of file reached.
+
+
+=== readHeaders() ====
+
+readHeaders() reads the headers of a MIME message. It reads all the
+headers, untils it sees a blank line.
+
+    >>> msg = """Header: value
+    ... Space-Folded-Header: this header
+    ...  is folded with a space.
+    ... Tab-Folded-Header: this header
+    ... \tis folded with a tab.
+    ... Another-header: another-value
+    ...
+    ... Not-A-Header: not-a-value
+    ... """
+    >>> parser = FileBugDataParser(StringIO(msg))
+    >>> headers = parser.readHeaders()
+    >>> headers['Header']
+    'value'
+    >>> headers['Space-Folded-Header']
+    'this header\n is folded with a space.'
+    >>> headers['Tab-Folded-Header']
+    'this header\n\tis folded with a tab.'
+    >>> headers['Another-Header']
+    'another-value'
+    >>> 'Not-A-Header' in headers
+    False
+
+
+== Parsing the data ==
+
+The parse() method returns a FileBugData object, with the information
+from the message as attributes.
+
+
+=== Headers ===
+
+The headers are processed by the _setDataFromHeaders() method. It
+accepts a FileBugData object and a dictionary of the headers.
+
+
+==== Subject ====
+
+The Subject header is available in the initial_summary attribute.
+
+    >>> from lp.bugs.browser.bugtarget import FileBugData
+    >>> data = FileBugData()
+    >>> parser = FileBugDataParser(None)
+    >>> parser._setDataFromHeaders(data, {'Subject': 'Bug Subject'})
+    >>> data.initial_summary
+    u'Bug Subject'
+
+
+==== Tags ====
+
+The Tags headers is translated into a list of strings as the
+initial_tags attributes. The tags are translated to lower case
+automatically.
+
+    >>> data = FileBugData()
+    >>> parser._setDataFromHeaders(data, {'Tags': 'Tag-One Tag-Two'})
+    >>> sorted(data.initial_tags)
+    [u'tag-one', u'tag-two']
+
+
+==== Private ====
+
+The Private header gets translated into a boolean, as the private
+attribute. The values "yes" and "no" are accepted, which get translated
+into True and False.
+
+    >>> data = FileBugData()
+    >>> parser._setDataFromHeaders(data, {'Private': 'yes'})
+    >>> data.private
+    True
+    >>> data = FileBugData()
+    >>> parser._setDataFromHeaders(data, {'Private': 'no'})
+    >>> data.private
+    False
+
+We're in no position of presenting a good error message to the user at
+this point, so invalid values get ignored.
+
+    >>> data = FileBugData()
+    >>> parser._setDataFromHeaders(data, {'Private': 'not-valid'})
+    >>> print data.private
+    None
+
+
+==== Subscribers ====
+
+The Subscribers header is turned into a list of strings, available
+through the subscribers attribute. The strings get lowercased
+automatically.
+
+    >>> data = FileBugData()
+    >>> parser._setDataFromHeaders(data, {'Subscribers': 'sub-one SUB-TWO'})
+    >>> sorted(data.subscribers)
+    [u'sub-one', u'sub-two']
+
+
+==== HWDB submission keys ====
+
+The HWDB-Submission key is turned into a list of strings, available
+through the hwdb_submission_keys attribute.
+
+    >>> data = FileBugData()
+    >>> parser._setDataFromHeaders(
+    ...     data, {'HWDB-Submission': 'submission-one'})
+    >>> list(data.hwdb_submission_keys)
+    [u'submission-one']
+
+Two or more submission keys may be specified, separated by a comma,
+optionally followed by space characters.
+
+    >>> data = FileBugData()
+    >>> parser._setDataFromHeaders(
+    ...     data,
+    ...     {'HWDB-Submission': ' submission-one, two\t,three ,  \nfour  '})
+    >>> data.hwdb_submission_keys
+    [u'four', u'submission-one', u'three', u'two']
+
+
+=== Message Parts ===
+
+Different parts of the message gets treated differently. In short, we
+look at the Content-Disposition header. If it's inline, it's a comment,
+if it's attachment, it's an attachment.
+
+
+==== Inline parts ====
+
+The first inline part is special. Instead of being treated as a comment,
+it gets appended to the bug description. It's available through the
+extra_description attribute.
+
+    >>> used_parsers = []
+    >>> def parse_message(message):
+    ...     parser = FileBugDataParser(StringIO(message))
+    ...     used_parsers.append(parser)
+    ...     return parser.parse()
+
+    >>> debug_data = """MIME-Version: 1.0
+    ... Content-type: multipart/mixed; boundary=boundary
+    ...
+    ... --boundary
+    ... Content-disposition: inline
+    ... Content-type: text/plain; charset=utf-8
+    ...
+    ... This should be added to the description.
+    ...
+    ... Another line.
+    ...
+    ... --boundary--
+    ... """
+    >>> data = parse_message(debug_data)
+    >>> data.extra_description
+    u'This should be added to the description.\n\nAnother line.'
+
+
+The text can also be base64 decoded.
+
+    >>> encoded_text = """VGhpcyBzaG91bGQgYmUgYWRkZWQgdG8g
+    ... dGhlIGRlc2NyaXB0aW9uLgoKQW5vdGhl
+    ... ciBsaW5lLg=="""
+    >>> encoded_text.decode('base64')
+    'This should be added to the description.\n\nAnother line.'
+
+    >>> debug_data = """MIME-Version: 1.0
+    ... Content-type: multipart/mixed; boundary=boundary
+    ...
+    ... --boundary
+    ... Content-disposition: inline
+    ... Content-type: text/plain; charset=utf-8
+    ... Content-transfer-encoding: base64
+    ...
+    ... %s
+    ...
+    ... --boundary--
+    ... """ % encoded_text
+    >>> data = parse_message(debug_data)
+    >>> data.extra_description
+    u'This should be added to the description.\n\nAnother line.'
+
+
+==== Other inline parts ====
+
+If there are more than one inline part, those will be added as comments
+to the bug. The comments are simple ext strings, accessible through the
+comments attribute.
+
+    >>> debug_data = """MIME-Version: 1.0
+    ... Content-type: multipart/mixed; boundary=boundary
+    ...
+    ... --boundary
+    ... Content-disposition: inline
+    ... Content-type: text/plain; charset=utf-8
+    ...
+    ... This should be added to the description.
+    ...
+    ... --boundary
+    ... Content-disposition: inline
+    ... Content-type: text/plain; charset=utf-8
+    ...
+    ... This should be added as a comment.
+    ...
+    ... --boundary
+    ... Content-disposition: inline
+    ... Content-type: text/plain; charset=utf-8
+    ...
+    ... This should be added as another comment.
+    ...
+    ... Line 2.
+    ...
+    ... --boundary--
+    ... """
+    >>> data = parse_message(debug_data)
+    >>> len(data.comments)
+    2
+    >>> data.comments[0]
+    u'This should be added as a comment.'
+    >>> data.comments[1]
+    u'This should be added as another comment.\n\nLine 2.'
+
+
+=== Attachment parts ===
+
+All the parts that have a 'Content-disposition: attachment' header
+will get added as attachments to the bug. The attachment description can
+be specified using a Content-description header, but it's not required.
+
+    >>> debug_data = """MIME-Version: 1.0
+    ... Content-type: multipart/mixed; boundary=boundary
+    ...
+    ... --boundary
+    ... Content-disposition: attachment; filename='attachment1'
+    ... Content-type: text/plain; charset=utf-8
+    ...
+    ... This is an attachment.
+    ...
+    ... Another line.
+    ...
+    ... --boundary
+    ... Content-disposition: attachment; filename='attachment2'
+    ... Content-description: Attachment description.
+    ... Content-type: text/plain; charset=ISO-8859-1
+    ...
+    ... This is another attachment, with a description.
+    ... --boundary--
+    ... """
+    >>> data = parse_message(debug_data)
+    >>> len(data.attachments)
+    2
+    >>> first_attachment, second_attachment = data.attachments
+
+The filename is copied into the 'filename' item.
+
+    >>> first_attachment['filename']
+    u'attachment1'
+    >>> second_attachment['filename']
+    u'attachment2'
+
+The Content-Type header is copied as is.
+
+    >>> first_attachment['content_type']
+    u'text/plain; charset=utf-8'
+    >>> second_attachment['content_type']
+    u'text/plain; charset=ISO-8859-1'
+
+If there is a Content-Description header, it's accessible as
+'description'.
+
+    >>> second_attachment['description']
+    u'Attachment description.'
+
+If there isn't any Content-Description header, the file name is used
+instead.
+
+    >>> first_attachment['description']
+    u'attachment1'
+
+The contents of the attachments are stored in a file.
+
+    >>> first_file = first_attachment['content']
+    >>> first_file.read()
+    'This is an attachment.\n\nAnother line.\n\n'
+    >>> first_file.close()
+
+    >>> second_file = second_attachment['content']
+    >>> second_file.read()
+    'This is another attachment, with a description.\n'
+    >>> second_file.close()
+
+Binary files are base64 encoded. They are decoded automatically.
+
+    >>> binary_data = '\n'.join(['\x00'*5, '\x01'*5])
+    >>> debug_data = """MIME-Version: 1.0
+    ... Content-type: multipart/mixed; boundary=boundary
+    ...
+    ... --boundary
+    ... Content-disposition: attachment; filename='attachment1'
+    ... Content-type: application/octet-stream
+    ... Content-transfer-encoding: base64
+    ...
+    ... %s
+    ... --boundary--
+    ... """ % binary_data.encode('base64')
+    >>> data = parse_message(debug_data)
+    >>> len(data.attachments)
+    1
+
+    >>> contents = data.attachments[0]['content']
+    >>> contents.read()
+    '\x00\x00\x00\x00\x00\n\x01\x01\x01\x01\x01'
+    >>> contents.close()
+
+
+== Invalid messages ==
+
+If someone gives an invalid message, for example one that doesn't have
+an end boundary, and AssertionError will be raised. This is mainly to
+assert that nothing bad will happen if we can't parse the message. We
+don't care about giving the user a good error message, since the format
+is well-known.
+
+    >>> debug_data = """MIME-Version: 1.0
+    ... Content-type: multipart/mixed; boundary=boundary
+    ...
+    ... --boundary
+    ... Content-disposition: attachment; filename='attachment1'
+    ... Content-type: text/plain; charset=utf-8
+    ...
+    ... This is an attachment.
+    ...
+    ... Another line."""
+    >>> data = parse_message(debug_data)
+    Traceback (most recent call last):
+    ...
+    AssertionError: End of file reached.

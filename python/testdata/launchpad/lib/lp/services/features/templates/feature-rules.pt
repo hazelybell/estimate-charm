@@ -1,0 +1,41 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+  tal:define="page_title string:features;">
+
+<body>
+
+<div metal:fill-slot="main">
+  <div metal:use-macro="context/@@launchpad_form/form">
+    <div metal:fill-slot="extra_top">
+      <div tal:condition="view/diff">
+        <p>Your changes have been applied (and before and after values of the
+          rules logged by the <tal:logger replace="view/logger_name"/> logger):
+        </p>
+        <tal:diff replace="structure view/diff"/>
+      </div>
+
+      <p>
+      For more information about the available feature flags and scopes see
+      the <a href="+feature-info">feature flag info</a>. For other
+      documentation on feature flags, see the
+      <a href="https://dev.launchpad.net/FeatureFlags">development wiki</a>.
+      You can review the
+      <a class="sprite info" href="+feature-changelog">changelog</a> to see
+        previous rule changes.
+      </p>
+
+      <div id="feature-rules"
+        tal:condition="not: view/change_action/available">
+        <h3>Feature rules</h3>
+        <pre tal:content="view/initial_values/feature_rules" />
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

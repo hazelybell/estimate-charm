@@ -1,0 +1,20 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+  <tal:description
+    define="global description context/description/fmt:obfuscate-email/fmt:shorten/320" />
+<li tal:attributes="title description">
+      <a tal:replace="structure context/fmt:link" />
+      (<span tal:replace="context/status/title">Approved</span>)
+    <br />
+    <span class="registered">posted
+      <span
+        tal:attributes="title context/datecreated/fmt:datetime"
+        tal:replace="context/datecreated/fmt:displaydate">2005-10-05</span>
+      in
+      <span tal:replace="context/target/title">SmegConf</span>
+    </span>
+</li>
+</tal:root>
+

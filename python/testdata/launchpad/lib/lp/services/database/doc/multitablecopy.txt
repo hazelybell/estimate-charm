@@ -1,0 +1,651 @@
+= Multi-Table Copy =
+
+Here we test the facility for coherently copying data inside the database that
+may be interlinked through foreign keys.
+
+    >>> import transaction
+    >>> from lp.services.database import postgresql
+    >>> from lp.services.database.multitablecopy import MultiTableCopy
+    >>> from lp.services.database.sqlbase import cursor
+
+    >>> # Keep track of tables we'll want to clean up later
+    >>> tables_to_clean_up = []
+
+
+== Plain Copy ==
+
+The simplest use case is to copy data from a bunch of unrelated tables.
+
+Set up some unrelated tables that follow the documented expectations:
+
+    >>> cur = cursor()
+    >>> tables_to_clean_up.append('numeric')
+    >>> cur.execute(
+    ...     "CREATE TABLE numeric (id SERIAL PRIMARY KEY, n integer)")
+    >>> tables_to_clean_up.append('textual')
+    >>> cur.execute(
+    ...     "CREATE TABLE textual (id SERIAL PRIMARY KEY, t varchar)")
+    >>> numeric_values = range(1,4)
+    >>> textual_values = ['one', 'two', 'three']
+    >>> for number in numeric_values:
+    ...     cur.execute("INSERT INTO numeric (n) VALUES (%d)" % number)
+    >>> for word in textual_values:
+    ...     cur.execute("INSERT INTO textual (t) VALUES ('%s')" % word)
+
+And set up a prospective MultiTableCopy on them.  The copier will be called
+"test" (a name that will be used in the holding tables it creates) and copy
+the tables "numeric" and "textual," in that order.
+
+    >>> copier = MultiTableCopy('test', ['numeric', 'textual'],
+    ...     seconds_per_batch=0.1, minimum_batch_size=1)
+
+Note that the copier will not let us create tables with mixed case names.
+
+    >>> copier.getRawHoldingTableName('Foo')
+    Traceback (most recent call last):
+    ...
+    AssertionError: Unsupported characters in table name per Bug #179821
+
+    >>> copier.getRawHoldingTableName('foo', '-bar')
+    Traceback (most recent call last):
+    ...
+    AssertionError: Unsupported characters in table name per Bug #179821
+
+
+=== Ordering ===
+
+We're about to start extracting data from these tables.  But we can't do that
+in any old order.  We must follow the list of tables we gave, in that order:
+
+    >>> copier.extract('nonsensetable')
+    Traceback (most recent call last):
+    ...
+    AssertionError: Can't extract 'nonsensetable': not in list of tables
+
+    >>> copier.extract('textual')
+    Traceback (most recent call last):
+    ...
+    AssertionError: Can't extract: skipped first table 'numeric'
+
+    >>> numeric_holding_table = copier.getHoldingTableName('numeric')
+    >>> copier.extract('numeric', where_clause="n <= 2")
+    >>> cur.execute("SELECT count(*) FROM %s" % numeric_holding_table)
+    >>> print cur.fetchall()[0][0]
+    2
+
+Since we haven't extracted all tables yet, we're not allowed to move to the
+pouring stage yet:
+
+    >>> copier.pour(transaction)
+    Traceback (most recent call last):
+    ...
+    AssertionError: Not safe to pour: last table 'textual' was not extracted
+
+
+=== Extraction Phase ===
+
+We must extract the rest of our tables before we can do that.  We copy all of
+the data in the textual table, without restrictions.
+
+    >>> copier.extract('textual')
+
+We now have two holding tables, one with some of the values from numeric, the
+other with all values from textual:
+
+    >>> cur.execute("SELECT count(*) FROM %s" % numeric_holding_table)
+    >>> print cur.fetchall()[0][0]
+    2
+
+    >>> textual_holding_table = copier.getHoldingTableName('textual')
+    >>> cur.execute("SELECT count(*) FROM %s" % textual_holding_table)
+    >>> print cur.fetchall()[0][0]
+    3
+    >>> print len(textual_values)
+    3
+
+Meanwhile we're still free to play with our original table, and manipulate the
+data in the holding tables.
+
+    >>> cur.execute("INSERT INTO textual (t) VALUES ('many')")
+    >>> cur.execute("UPDATE %s SET n=n+3" % numeric_holding_table)
+
+We have the data we're copying in holding tables now.
+
+    >>> postgresql.have_table(cur, copier.getRawHoldingTableName('numeric'))
+    True
+    >>> postgresql.have_table(cur, copier.getRawHoldingTableName('textual'))
+    True
+
+
+=== Pouring Phase ===
+
+Now we pour or data in the holding tables back into the source tables.  Each
+row from the holding tables gets a new id, so no errors about duplicates here.
+
+    >>> copier.pour(transaction)
+
+Since pour() may commit transactions, our cursor is now invalid.  We get a new
+one before we go on.
+
+    >>> cur = cursor()
+
+We now see the extra data in the original tables:
+
+    >>> cur.execute("SELECT n FROM numeric ORDER BY n")
+    >>> for row in cur.fetchall():
+    ...     print row[0]
+    1
+    2
+    3
+    4
+    5
+    >>> cur.execute("SELECT count(*) FROM textual")
+    >>> print cur.fetchall()[0][0]
+    7
+
+And the holding tables are gone.
+
+    >>> postgresql.have_table(cur, copier.getRawHoldingTableName('numeric'))
+    False
+    >>> postgresql.have_table(cur, copier.getRawHoldingTableName('textual'))
+    False
+
+
+== Foreign Keys ==
+
+Things get more interesting when there is a foreign-key relationship between
+tables that are being copied.
+
+    >>> cur.execute("""
+    ...     ALTER TABLE numeric
+    ...     ADD COLUMN textual integer REFERENCES textual(id)""")
+    >>> for pair in [(1,'one'), (2,'two'), (3,'three')]:
+    ...     cur.execute("""
+    ...         UPDATE numeric
+    ...         SET textual = textual.id
+    ...         FROM textual
+    ...         WHERE n=%d AND t='%s'""" % pair)
+    >>> cur.execute("""
+    ...         UPDATE numeric
+    ...         SET textual = textual.id
+    ...         FROM textual
+    ...         WHERE
+    ...             numeric.textual is null AND
+    ...             t = 'many' AND
+    ...             n > 4""")
+    >>> cur.execute("""
+    ...     SELECT n, t
+    ...     FROM numeric, textual
+    ...     WHERE textual = textual.id
+    ...     ORDER BY n""")
+    >>> for numeric, textual in cur.fetchall():
+    ...     print numeric, textual
+    1   one
+    2   two
+    3   three
+    5   many
+
+We insert a few more rows to play with:
+
+    >>> cur.execute("SELECT id FROM textual WHERE t='many'")
+    >>> many_id = cur.fetchall()[0][0]
+    >>> for number in [6,7]:
+    ...     cur.execute("INSERT INTO numeric (n, textual) VALUES (%d, %d)"
+    ...                 % (number, many_id))
+
+Now we add the doubles of the 'many' numbers to numeric using a MultiTableCopy,
+linking the numeric entries to a new copy of "many" in the textual table.  In
+order to make redirection of the foreign key work properly, we must start with
+the table that the foreign key will refer to.
+
+    >>> copier = MultiTableCopy('test', ['textual', 'numeric'], 1, 1)
+    >>> copier.extract('textual', where_clause="t='many'")
+    >>> copier.extract('numeric', joins=['textual'])
+
+That copied just the "many" row into a holding table for textual, and all rows
+from numeric that referred to it into a holding table for numeric.
+
+    >>> cur.execute("SELECT t FROM %s" % textual_holding_table)
+    >>> for row in cur.fetchall():
+    ...     print row[0]
+    many
+    >>> cur.execute("SELECT n FROM %s" % numeric_holding_table)
+    >>> for row in cur.fetchall():
+    ...     print row[0]
+    5
+    6
+    7
+
+    >>> cur.execute("UPDATE %s SET t='lots'" % textual_holding_table)
+    >>> cur.execute("UPDATE %s SET n=2*n" % numeric_holding_table)
+    >>> copier.pour(transaction)
+
+    >>> cur = cursor()
+    >>> cur.execute("""
+    ...     SELECT n, t
+    ...     FROM numeric,textual
+    ...     WHERE numeric.textual=textual.id""")
+    >>> for numeric, textual in cur.fetchall():
+    ...     print numeric, textual
+    1   one
+    2   two
+    3   three
+    5   many
+    6   many
+    7   many
+    10  lots
+    12  lots
+    14  lots
+
+
+== Trivial Extraction ==
+
+We saw earlier that you must extract tables in the same order in which you
+announce them when you create the MultiTableCopy object, and not skip any.
+
+If it should ever prove necessary to skip extracting a table, just perform the
+extraction but in such a way that no actual rows are extracted.  To do that,
+pass a where_clause argument of "false":
+
+    >>> copier = MultiTableCopy('test', ['textual', 'numeric'])
+    >>> copier.extract('textual', where_clause='false')
+    >>> cur = cursor()
+    >>> cur.execute(
+    ...     "SELECT count(*) FROM %s" % copier.getHoldingTableName('textual'))
+    >>> print cur.fetchone()[0]
+    0
+
+After that, the table has been extracted and you can merrily proceed.  Of
+course, if any of the other tables contain foreign keys referring to the
+skipped table, they will not have any rows extracted either.
+
+    >>> copier.extract('numeric', joins=['textual'])
+
+    >>> cur.execute(
+    ...     "SELECT count(*) FROM %s" % copier.getHoldingTableName('numeric'))
+    >>> print cur.fetchone()[0]
+    0
+
+    >>> copier.dropHoldingTables()
+
+== Recovery ==
+
+We may get interrupted while going through the multi-table copy.  In that case,
+data will be left behind.  If we never get to start the pouring stage, we end
+up with incomplete data that should be deleted:
+
+    >>> copier = MultiTableCopy('test', ['textual', 'numeric'], 0.01, 2)
+    >>> copier.extract('textual', where_clause="t='many'")
+    >>> copier.extract('numeric', joins=['textual'])
+    >>> copier.needsRecovery()
+    False
+
+    >>> postgresql.have_table(cur, copier.getRawHoldingTableName('textual'))
+    True
+    >>> postgresql.have_table(cur, copier.getRawHoldingTableName('numeric'))
+    True
+
+    >>> copier.dropHoldingTables()
+    >>> postgresql.have_table(cur, copier.getRawHoldingTableName('textual'))
+    False
+    >>> postgresql.have_table(cur, copier.getRawHoldingTableName('numeric'))
+    False
+
+    >>> cur.execute("SELECT t, count(*) FROM textual GROUP BY t ORDER BY t")
+    >>> for textual, count in cur.fetchall():
+    ...     print textual, count
+    lots     1
+    many     1
+    one      2
+    three    2
+    two      2
+
+If something goes wrong while pouring, however, some of the data will probably
+already have been poured back and the only way to recovery is forward.  In that
+case, we skip the extraction and pour again.
+
+To produce the effect of an abortive run, we do a new copy (inserting even
+higher numbers) but sabotage the data so that the pouring will fail half-way
+through.  The particular sabot we slip into the machine is a row whose new id
+(when it is poured back in the source table) is identical to its original id,
+which means that the attempt to insert it will violate a unique constraint.
+
+    >>> copier = MultiTableCopy('test', ['textual', 'numeric'], 0.01, 2)
+    >>> copier.extract('textual')
+    >>> copier.extract('numeric', joins=['textual'])
+    >>> cur.execute("UPDATE %s SET n=n+100" % numeric_holding_table)
+    >>> cur.execute("UPDATE %s SET new_id=id WHERE n=101"
+    ...             % numeric_holding_table)
+
+    >>> copier.pour(transaction)
+    Traceback (most recent call last):
+    ...
+    IntegrityError: duplicate ... violates unique constraint ...
+    <BLANKLINE>
+
+Now we have a fun situation!  Some data has been copied back into our source
+tables, and we don't know how much.  And some data remains in our holding
+tables.
+
+    >>> transaction.abort()
+    >>> transaction.begin()
+    <transaction...
+    >>> cur = cursor()
+    >>> postgresql.have_table(cur, copier.getRawHoldingTableName('textual'))
+    False
+    >>> postgresql.have_table(cur, copier.getRawHoldingTableName('numeric'))
+    True
+
+Our textual data has been copied, so the textual table now lists each of its
+original words twice.
+
+    >>> cur.execute("SELECT t, count(*) FROM textual GROUP BY t ORDER BY t")
+    >>> for textual, count in cur.fetchall():
+    ...     print textual, count
+    lots   2
+    many   2
+    one    4
+    three  4
+    two    4
+
+There is no saying what numeric entries have or have not been copied.  We're
+caught in the middle somewhere, and need recovery.
+
+    >>> copier.needsRecovery()
+    True
+
+There's no going back: the only sane thing to do is to complete the operation.
+We undo our sabotage and try again.  The remaining data will be copied.
+
+When this happens, it'll usually be because one process died and the next one
+does the recovery.  We set up a new copier to simulate this chain of events.
+
+    >>> copier = MultiTableCopy('test', ['textual', 'numeric'], 0.1, 3)
+    >>> copier.needsRecovery()
+    True
+
+    >>> cur.execute("DELETE FROM %s WHERE n=101" % numeric_holding_table)
+    >>> copier.pour(transaction)
+
+This time we run to completion without problems.
+
+    >>> cur = cursor()
+    >>> postgresql.have_table(cur, copier.getRawHoldingTableName('textual'))
+    False
+    >>> postgresql.have_table(cur, copier.getRawHoldingTableName('numeric'))
+    False
+
+    >>> cur.execute("""
+    ...     SELECT n, t
+    ...     FROM numeric nt
+    ...     LEFT JOIN textual tt on nt.textual = tt.id
+    ...     ORDER BY n""")
+    >>> for numeric, textual in cur.fetchall():
+    ...     print numeric, (textual or "null")
+    1    one
+    2    two
+    3    three
+    4    null
+    5    many
+    6    many
+    7    many
+    10   lots
+    12   lots
+    14   lots
+    102  two
+    103  three
+    105  many
+    106  many
+    107  many
+    110  lots
+    112  lots
+    114  lots
+
+    >>> # To keep things simple, we erase the high values again:
+    >>> cur.execute("DELETE FROM numeric WHERE n > 100")
+    >>> cur.execute("""
+    ...     DELETE FROM textual WHERE NOT EXISTS (
+    ...         SELECT * FROM numeric WHERE numeric.textual = textual.id)
+    ...     """)
+    >>> cur.execute("""
+    ...     SELECT n, t
+    ...     FROM numeric nt
+    ...     LEFT JOIN textual tt on nt.textual = tt.id
+    ...     ORDER BY n""")
+    >>> for numeric, textual in cur.fetchall():
+    ...     print numeric, (textual or "null")
+    1    one
+    2    two
+    3    three
+    4    null
+    5    many
+    6    many
+    7    many
+    10   lots
+    12   lots
+    14   lots
+
+
+== External Joins ==
+
+When extracting from a table, the "where" clause may also refer to tables that
+are not otherwise included in the query.  You can specify that a set of tables
+should be joined in (so that your "where" clause can refer to it) by passing
+them as a list to the external_joins parameter.
+
+For example, we might extract only those numbers from the numeric table whose
+value also occurs in another table.
+
+    >>> tables_to_clean_up.append('double')
+    >>> cur.execute(
+    ...     "CREATE TABLE double AS SELECT n, 2*n AS double FROM numeric")
+    >>> copier = MultiTableCopy('test', ['numeric'])
+    >>> copier.extract(
+    ...     'numeric', where_clause="source.n=double.double",
+    ...     external_joins=['double'])
+    >>> holding_table = copier.getHoldingTableName('numeric')
+    >>> cur.execute("SELECT n FROM %s ORDER BY n" % holding_table)
+    >>> for number, in cur.fetchall():
+    ...     print number
+    2
+    4
+    6
+    10
+    12
+    14
+    >>> copier.dropHoldingTables()
+
+Entries in external_joins may be plain table names, or table names with
+aliases.  This can be useful when joining to the same table twice, or when
+table names get uncomfortably long.
+
+    >>> copier = MultiTableCopy('test', ['numeric'])
+    >>> copier.extract(
+    ...     'numeric',
+    ...     where_clause="source.n = quad.double AND quad.n = dub.double",
+    ...     external_joins=['double dub', 'double quad'])
+    >>> cur.execute("SELECT n FROM %s ORDER BY n" % holding_table)
+    >>> for number, in cur.fetchall():
+    ...     print number
+    4
+    12
+
+    >>> copier.dropHoldingTables()
+
+
+== Inert Rows ==
+
+Sometimes it's convenient to have certain rows extracted into their holding
+table, but never poured back into their source table.  We call these "inert"
+rows.  Their "new id" fields will be left at null.  Inert rows are indicated
+through an SQL condition.
+
+    >>> copier = MultiTableCopy('test', ['textual', 'numeric'])
+    >>> copier.extract(
+    ...     'textual', where_clause="length(t) = 3", inert_where="t <> 'one'")
+
+Inert rows can be useful in a table (here "textual") if you want to copy rows
+in a later table (here "numeric") that contains a foreign key referring to 
+the first.  You can use inert rows in this situation so that regular,
+non-inert in "numeric" will be attached to newly copied rows in "textual" as
+usual, but others are copied while remaining attached to their original
+corresponding rows in "textual."
+
+The trick works as follows: inert rows are extracted to textual's holding
+table, along with the regular extracted rows, but where the regular non-inert
+rows in the holding table receive a "new_id" identifier, the inert rows have
+their "new_id" field set to null.  Such rows will never be poured back into
+textual.
+
+    >>> textual_holding_table = copier.getHoldingTableName('textual')
+    >>> numeric_holding_table = copier.getHoldingTableName('numeric')
+    >>> cur.execute("SELECT t, new_id FROM %s ORDER BY t"
+    ...             % textual_holding_table)
+    >>> for textual, new_id in cur.fetchall():
+    ...     if new_id is not None:
+    ...         has_id = "Yes"
+    ...     else:
+    ...         has_id = "No"
+    ...     print (textual or "null"), has_id
+    one   Yes
+    two   No
+
+Now manipulate the holding table directly: where new_id is null, set it to
+equal the id field.  This means that the holding table's new_id column maps
+each row in the holding table to a row in textual.  The ones that will be
+copied will have new_id values that won't exist in textual until the pouring
+stage; the inert rows will have new_id values that do exist in textual.
+
+    >>> cur.execute(
+    ...     "UPDATE %s SET new_id = id WHERE new_id IS NULL"
+    ...     % textual_holding_table)
+
+Next extract your rows from numeric, which refer to textual, into numeric's
+holding table.  It doesn't matter which rows in textual's holding table were
+inert: each of the new numeric rows will have a foreign key that refers to a
+valid new_id in the textual holding table.
+
+    >>> copier.extract('numeric', ['textual'])
+    >>> cur.execute("""
+    ...     SELECT num.n, text.t
+    ...     FROM %s num JOIN %s AS text ON num.textual = text.new_id
+    ...     """ % (numeric_holding_table, textual_holding_table))
+    >>> for n, t in cur.fetchall():
+    ...     print n, t
+    1   one
+    2   two
+
+Don't forget to reset the new_id values in textual's holding table before
+pouring, or the pouring stage will try to pour rows whose new_ids are already
+present in textual.  Alternatively, you can delete those rows altogether.  The
+holding tables do not have any referential constraints.
+
+    >>> cur.execute("""
+    ...     DELETE FROM %s AS holding
+    ...     USING textual
+    ...     WHERE holding.new_id = textual.id
+    ...     """ % textual_holding_table)
+    >>> copier.pour(transaction)
+
+Only the non-inert extracted rows will be copied.
+
+    >>> cur = cursor()
+    >>> cur.execute("""
+    ...     SELECT t, count(*)
+    ...     FROM textual
+    ...     GROUP BY t
+    ...     HAVING count(*) > 1
+    ...     ORDER BY t
+    ...     """)
+    >>> for t, count in cur.fetchall():
+    ...     print t, count
+    one  2
+
+However, all extracted rows of the referring table are copied, regardless of
+whether they point to an inert or a non-inert row in the first table.
+
+    >>> cur.execute("""
+    ...     SELECT n, count(*)
+    ...     FROM numeric
+    ...     GROUP BY n
+    ...     HAVING count(*) > 1
+    ...     ORDER BY n
+    ...     """)
+    >>> for n, count in cur.fetchall():
+    ...     print n, count
+    1   2
+    2   2
+
+
+== Pouring Callbacks ==
+
+All of the real work in a MultiTableCopy happens during the pour() call.  That
+is not always convenient: sometimes you'll want to be able to run some code of
+your own while the pouring is being done.  One reason might be debugging; or
+another good reason is to ensure referential integrity if the tables you're
+pouring to have been changed while the multi-table-copy was in progress.
+
+MultiTableCopy's extract() method lets you specify callbacks to do all this:
+
+"Pre-pouring" callbacks are invoked just before pouring each table.  This can
+be useful to make last-moment changes to your holding table based on things
+that may have happened while pouring previous tables.
+
+A pre-pouring callback receives as arguments the name of the holding table
+being poured from and the name of the source table that data is being poured
+back into.
+
+    >>> def textual_prepour(holding_table, source_table):
+    ...     print "Pouring textual"
+
+    >>> def numeric_prepour(holding_table, source_table):
+    ...     print "Pouring numeric"
+
+"Batch preparation" callbacks will be called at the beginning of every batch
+of data that is poured.  Each invocation runs in the same transaction as the
+pouring of that batch, and its run time counts towards the batch's time
+budget.  It receives parameters describing the source and holding tables, as
+well as size, lowest id, and exclusive upper-bound id of the batch being
+poured.
+
+    >>> def textual_batch(
+    ...     holding_table, source_table, batch_size, lowest_id, highest_id):
+    ...     """Print information about each batch of textual being poured."""
+    ...     print "Pouring text from %s to %s" % (
+    ...         holding_table, source_table)
+
+    >>> copier = MultiTableCopy(
+    ...     'test', ['textual', 'numeric'], minimum_batch_size=1)
+    >>> copier.extract(
+    ...     'textual', pre_pouring_callback=textual_prepour,
+    ...     batch_pouring_callback=textual_batch)
+
+It follows that the callback is tied to a specific table.  We can register
+other callbacks on other tables.
+
+    >>> def numeric_batch(
+    ...     holding_table, source_table, batch_size, lowest_id, highest_id):
+    ...     """Print information about each batch of numeric being poured."""
+    ...     print "Pouring numbers from %s to %s" % (
+    ...         holding_table, source_table)
+
+    >>> copier.extract(
+    ...     'numeric', joins=['textual'],
+    ...     pre_pouring_callback=numeric_prepour,
+    ...     batch_pouring_callback=numeric_batch)
+
+The callbacks are called only while pouring, once per batch.
+
+    >>> copier.pour(transaction)
+    Pouring textual
+    Pouring text from "temp_textual_holding_test" to textual
+    ...
+    Pouring numeric
+    Pouring numbers from "temp_numeric_holding_test" to numeric
+    ...
+
+
+== Cleanup ==
+
+    >>> #postgresql.drop_tables(cursor(), tables_to_clean_up)
+

@@ -1,0 +1,47 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<div class="portlet" id="portlet-stats">
+
+    <h2>Statistics</h2>
+
+            <b>Messages:</b>
+            <span tal:replace="context/messageCount">N</span>
+            <br/>
+            <b>Translated:</b>
+            <span tal:replace="context/translatedCount">N</span>
+            (<span tal:replace="context/translatedPercentage">N</span>%)
+            <br/>
+            <b>Untranslated:</b>
+            <span tal:replace="context/untranslatedCount">N</span>
+            (<span tal:replace="context/untranslatedPercentage">N</span>%)
+            <br/>
+            <b>Shared between Ubuntu and upstream:</b>
+            <span tal:replace="context/currentCount">N</span>
+            (<span tal:replace="context/currentPercentage">N</span>%)
+            <br />
+            <b>Translated differently between Ubuntu and upstream:</b>
+            <span tal:replace="context/updatesCount">N</span>
+            (<span tal:replace="context/updatesPercentage">N</span>%)
+            <br/>
+            <b>Only translated on this side:</b>
+            <span tal:replace="context/newCount">N</span>
+            (<span tal:replace="context/newPercentage">N</span>%)
+            <br/>
+            <tal:block condition="context/lasttranslator">
+                <b>Latest contributor:</b>
+                <br />
+                <a tal:replace="structure context/lasttranslator/fmt:link">
+                    Foo Bar
+                </a><br />
+                <br />
+            </tal:block>
+            <span style="white-space: nowrap"
+                  tal:content="structure context/@@+barchart">--</span>
+            <br />
+
+</div>
+</tal:root>

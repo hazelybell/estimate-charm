@@ -1,0 +1,11 @@
+MIME-Version: 1.0
+Date: Wed, 13 Apr 2005 19:20:48 -0400
+Message-ID: <bbe079320907030136g23826072s7a653e75f8ecdd58@mail.example.com>
+Subject: Unknown Encoding
+From: test@canonical.com
+To: someone@example.com
+X-Original-To: someone@example.com
+Content-Type: TEXT/PLAIN; charset=X-UNKNOWN; format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+
+Mysterious, intriguing, the encoding is unknown.

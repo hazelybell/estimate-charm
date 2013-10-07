@@ -1,0 +1,3 @@
+Launchpad no longer accepts merge directives. See bug 989831 for details.  We apologise for the inconvenience.
+
+The closest alternative to "bzr send" for Launchpad is "bzr lp-propose-merge".  This command is from the launchpad plugin which usually ships with Bazaar.  Of course, you can also use the Launchpad web site to create merge proposals.

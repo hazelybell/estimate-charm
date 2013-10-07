@@ -1,0 +1,24 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<body>
+
+<div metal:fill-slot="main">
+  <p>
+    Launchpad provides <abbr title="Resource Description Framework">RDF</abbr>
+    descriptions of project groups, projects, series, releases, users, and
+    teams using <a href="/rdf-spec/launchpad.owl">an ontology defined in
+    <abbr title="Web Ontology Language">OWL</abbr></a>. Links to download
+    the RDF metadata are located on each resource's main page, except
+    for users and teams. All resources that have an RDF description provide
+    a meta link to the data in the page's head content.
+  </p>
+</div>
+
+</body>
+</html>

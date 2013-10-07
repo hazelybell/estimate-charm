@@ -1,0 +1,54 @@
+<!-- Copyright 2009-2011 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="launchpad">
+
+    <securedutility
+        class="lp.systemhomes.FeedsApplication"
+        provides="lp.services.feeds.interfaces.application.IFeedsApplication">
+        <allow
+            interface="lp.services.feeds.interfaces.application.IFeedsApplication" />
+    </securedutility>
+
+    <adapter
+        provides="lp.services.webapp.interfaces.ICanonicalUrlData"
+        for="lp.services.feeds.interfaces.application.IFeedsApplication"
+        factory="lp.services.feeds.browser.FeedsRootUrlData"
+        />
+
+    <browser:defaultView
+        for="lp.services.feeds.interfaces.application.IFeedsApplication"
+        name="+index"
+        />
+
+    <browser:navigation
+        module="lp.services.feeds.browser"
+        classes="FeedsNavigation"
+        />
+
+    <!-- Macros -->
+    <browser:page
+        for="lp.services.feeds.interfaces.feed.IFeedEntry"
+        name="feed-entry-atom"
+        permission="zope.Public"
+        template="templates/feed-entry-atom.pt"
+        />
+
+
+    <!-- Unauthorized -->
+    <browser:page
+        for="zope.exceptions.IUnauthorized"
+        name="index.html"
+        permission="zope.Public"
+        class="lp.services.webapp.login.FeedsUnauthorizedView"
+        template="../../app/templates/launchpad-forbidden.pt"
+        attribute="__call__"
+        layer="lp.layers.FeedsLayer"
+        />
+
+</configure>

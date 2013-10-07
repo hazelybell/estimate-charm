@@ -1,0 +1,93 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  id="series-derivation" class="portlet"
+  tal:define="overview_menu context/menu:overview">
+  <tal:is_derived condition="context/isDerivedSeries">
+    <tal:is_initialized condition="not: context/isInitializing">
+    <tal:one_parent condition="view/has_unique_parent">
+      <h2>Derived from <tal:name replace="view/unique_parent/displayname"/></h2>
+    </tal:one_parent>
+    <tal:multiple_parents condition="not: view/has_unique_parent">
+      <h2>Derived from <tal:name replace="view/number_of_parents"/> parents</h2>
+    </tal:multiple_parents>
+
+    <div class="beta">
+      <img src="/@@/beta" alt="[BETA]" />
+    </div>
+
+      <tal:diffs define="nb_diffs view/num_version_differences;
+                         nb_diffs_in_parent view/num_differences_in_parent;
+                         nb_diffs_in_child view/num_differences_in_child;">
+        <ul id="derivation_stats">
+          <li class="sprite info" tal:condition="nb_diffs">
+            <tal:differences_count replace="view/wordVersionDifferences">
+              123 packages
+            </tal:differences_count>
+            <a tal:attributes="href view/link_to_all_version_diffs">
+              with differences</a>
+            <tal:needing_attention
+                condition="view/num_version_differences_needing_attention">
+              (<tal:differences_count
+                  replace="view/num_version_differences_needing_attention">9
+               </tal:differences_count>
+               <a tal:attributes="href view/link_to_version_diffs_needing_attention">
+                 needing attention</a>)
+            </tal:needing_attention>
+          </li>
+         <li class="sprite info" tal:condition="nb_diffs_in_parent">
+            <tal:differences_count replace="view/wordDifferencesInParent">
+              234 packages
+            </tal:differences_count>
+            <a tal:attributes="href view/link_to_differences_in_parent">
+              only in
+              <tal:parent replace="view/alludeToParent">
+                a parent series
+              </tal:parent>
+            </a>
+          </li>
+          <li class="sprite info" tal:condition="nb_diffs_in_child">
+            <tal:differences_count replace="view/wordDifferencesInChild">
+              345 packages
+            </tal:differences_count>
+            <a tal:attributes="href view/link_to_differences_in_child">
+              only in
+              <tal:child replace="context/displayname">
+                Natty
+              </tal:child>
+            </a>
+          </li>
+         </ul>
+        <tal:no_diffs
+          condition="python:not(nb_diffs or nb_diffs_in_parent or nb_diffs_in_child)">
+          No differences.
+        </tal:no_diffs>
+      </tal:diffs>
+  </tal:is_initialized>
+  </tal:is_derived>
+  <tal:is_initializing condition="context/isInitializing">
+    <h2>Series initialization in progress</h2>
+      This series is initializing.
+  </tal:is_initializing>
+  <tal:failed_initialization
+      define="job context/getInitializationJob"
+      condition="job/status/enumvalue:FAILED|nothing">
+    <h2>Series initialization has failed</h2>
+    <p tal:content="job/error_description" />
+    <tal:retry
+        define="can_retry context/@@+initseries/required:launchpad.Edit ">
+      <tal:can_retry condition="can_retry">
+        You can <a tal:attributes="href context/fmt:url/+initseries">
+        attempt initialization again</a>.
+      </tal:can_retry>
+      <tal:cannot_retry
+          define="owner context/owner"
+          condition="not:can_retry">
+        You cannot attempt initialization again, but <tal:team
+        condition="owner/is_team"> a member of </tal:team> <tal:owner
+        replace="structure owner/fmt:link" /> may be able to help.
+      </tal:cannot_retry>
+    </tal:retry>
+  </tal:failed_initialization>
+</div>

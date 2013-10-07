@@ -1,0 +1,30 @@
+<!-- Copyright 2009-2011 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+  xmlns="http://namespaces.zope.org/zope"
+  xmlns:browser="http://namespaces.zope.org/browser"
+  xmlns:xmlrpc="http://namespaces.zope.org/xmlrpc"
+  i18n_domain="launchpad">
+  <facet facet="overview">
+    <browser:page
+        for="lp.services.webapp.interfaces.ILaunchpadApplication"
+        name="+request-token"
+        class="lp.services.oauth.browser.OAuthRequestTokenView"
+        permission="zope.Public" />
+
+    <browser:page
+        for="lp.services.webapp.interfaces.ILaunchpadApplication"
+        name="+authorize-token"
+        class="lp.services.oauth.browser.OAuthAuthorizeTokenView"
+        template="../templates/oauth-authorize.pt"
+        permission="launchpad.AnyPerson" />
+
+    <browser:page
+        for="lp.services.webapp.interfaces.ILaunchpadApplication"
+        name="+access-token"
+        class="lp.services.oauth.browser.OAuthAccessTokenView"
+        permission="zope.Public" />
+  </facet>
+</configure>

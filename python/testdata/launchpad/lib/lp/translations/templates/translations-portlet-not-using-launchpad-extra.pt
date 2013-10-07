@@ -1,0 +1,16 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+  <div id="ubuntu-translations"
+    tal:define="packages context/translatable_packages | nothing"
+    tal:condition="packages">
+    <tal:project replace="context/displayname" /> messages are
+    translated in: <tal:packages repeat="package packages">
+    <tal:package replace="structure package/fmt:link" />
+      <tal:comma condition="not:repeat/package/end">, </tal:comma>
+    </tal:packages>.
+  </div>
+</tal:root>

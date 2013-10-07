@@ -1,0 +1,138 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  i18n:domain="launchpad">
+
+  <metal:macros tal:replace="nothing">
+    <metal:macro-derived metal:define-macro="base-to-derived">
+      <span tal:replace="context/base_version">1.1.1</span> to
+      <span tal:replace="context/derived_series/displayname">
+        Derilucid</span> version:
+      <span tal:replace="context/source_version">1.2.3</span>
+    </metal:macro-derived>
+
+    <metal:macro-parent metal:define-macro="base-to-parent">
+      <span tal:replace="context/base_version">1.1.1</span> to
+      <span tal:replace="context/parent_series/displayname">
+        Lucid</span> version:
+      <span tal:replace="context/parent_source_version">1.2.4</span>
+    </metal:macro-parent>
+  </metal:macros>
+
+  <div style="float: left;">
+  <dl>
+    <dt tal:condition="view/binary_summaries">Binary descriptions:</dt>
+      <dd><ul>
+        <li tal:repeat="summary view/binary_summaries">
+          <tal:description replace="summary" /></li>
+      </ul></dd>
+    <tal:package-diffs tal:condition="view/can_have_packages_diffs">
+    <dt>Last common version:</dt>
+    <dd tal:condition="context/base_version">
+        <a id="last_common_version"
+           tal:attributes="href context/base_distro_source_package_release/fmt:url"
+           tal:content="context/base_version"/></dd>
+    <dd tal:condition="not: context/base_version">
+      Unknown, so no diffs are available
+    </dd>
+    <tal:package-diffs-info condition="view/display_package_diffs_info">
+    <dt
+      tal:condition="view/show_package_diffs_request_link"
+      class="package-diff-placeholder">
+        <span class="package-diff-compute-request">
+          <a class="js-action sprite add" href="">
+            Compute differences from last common version</a>:
+        </span>
+    </dt>
+    <dt
+      tal:condition="not:view/show_package_diffs_request_link">
+      Differences from last common version:
+    </dt>
+    <dd tal:condition="view/display_diffs">
+      <ul class="package-diff-status">
+        <tal:source-diff-option condition="view/display_child_diff">
+          <li tal:condition="context/package_diff">
+            <span tal:condition="context/package_diff/status/enumvalue:PENDING"
+              class="sprite PENDING">
+              <span metal:use-macro="template/macros/base-to-derived" />
+              <span class="greyed-out note">(Pending)</span>
+            </span>
+
+            <span tal:condition="context/package_diff/status/enumvalue:FAILED"
+              class="sprite FAILED">
+              <span metal:use-macro="template/macros/base-to-derived" />
+              <span class="greyed-out note">(Failed)</span>
+            </span>
+
+            <span tal:condition="context/package_diff/status/enumvalue:COMPLETED"
+              class="sprite COMPLETED">
+              <a tal:attributes="href context/package_diff_url">
+                <span metal:use-macro="template/macros/base-to-derived" />
+              </a>
+            </span>
+          </li>
+          <li tal:condition="not: context/package_diff">
+            <span class="sprite request-derived-diff derived">
+              <span metal:use-macro="template/macros/base-to-derived" />
+            </span>
+          </li>
+        </tal:source-diff-option>
+        <tal:parent-diff-option condition="view/display_parent_diff">
+          <li tal:condition="context/parent_package_diff">
+            <span tal:condition="context/parent_package_diff/status/enumvalue:PENDING"
+              class="sprite PENDING parent">
+              <span metal:use-macro="template/macros/base-to-parent" />
+              <span class="greyed-out note">(Pending)</span>
+            </span>
+
+            <span tal:condition="context/parent_package_diff/status/enumvalue:FAILED"
+              class="sprite FAILED">
+              <span metal:use-macro="template/macros/base-to-parent" />
+              <span class="greyed-out note">(Failed)</span>
+            </span>
+
+            <span tal:condition="context/parent_package_diff/status/enumvalue:COMPLETED"
+              class="sprite COMPLETED">
+              <a tal:attributes="href context/parent_package_diff_url">
+                <span metal:use-macro="template/macros/base-to-parent" />
+              </a>
+            </span>
+          </li>
+          <li tal:condition="not: context/parent_package_diff">
+            <span class="sprite request-derived-diff parent">
+              <span metal:use-macro="template/macros/base-to-parent" />
+            </span>
+          </li>
+        </tal:parent-diff-option>
+      </ul>
+    </dd>
+    </tal:package-diffs-info>
+
+    </tal:package-diffs>
+  </dl>
+  </div>
+  <div
+    tal:attributes="class view/blacklist_options_css_class"
+    style="float:left">
+    <dl>
+      <dt>Ignored:</dt>
+      <dd>
+        <form>
+          <tal:replace
+            replace="structure view/widgets/blacklist_options" />
+        </form>
+      </dd>
+    </dl>
+  </div>
+
+  <div class="clear">&nbsp;</div>
+
+  <strong>Comments:</strong>
+  <tal:conversation replace="structure view/@@+render"/>
+  <tal:show_options condition="view/show_add_comment"
+                    define="src_name context/source_package_name/name">
+    <div tal:attributes="class string:add-comment-placeholder ${src_name}"></div>
+  </tal:show_options>
+
+</tal:root>

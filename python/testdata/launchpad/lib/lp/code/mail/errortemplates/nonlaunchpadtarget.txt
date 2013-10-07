@@ -1,0 +1,4 @@
+The target branch at %(target_branch)s is not known to Launchpad.  It's
+possible that your submit branch is not set correctly, or that your submit
+branch has not yet been pushed to Launchpad.
+

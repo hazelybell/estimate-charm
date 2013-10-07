@@ -1,0 +1,43 @@
+Launchpad Scripts
+=================
+
+Launchpad scripts are built using the LaunchpadScript class in
+lp.services.scripts.base. This, along with the LaunchpadCronScript
+specialization, implement common behavior for all Launchpad command
+line scripts.
+
+    >>> from lp.services.scripts.base import (
+    ...     LaunchpadScript, LaunchpadCronScript)
+
+
+Scripts report their executution using the standard Python logging
+module, with command line arguments and logging setup provided by
+LaunchpadScript. Unhandled exceptions from scripts are automatically
+sent to the Python logging system. Cronscripts (scripts using
+LaunchpadCronScript) also log warnings and and errors as OOPS reports.
+
+    >>> import os.path, subprocess, sys
+    >>> from lp.services.config import config
+    >>> cronscript_crash_path = os.path.join(
+    ...     config.root, 'lib', 'lp', 'services', 'scripts', 'tests',
+    ...     'cronscript-crash.py')
+    >>> p = subprocess.Popen(
+    ...     [sys.executable, cronscript_crash_path, '-vq'],
+    ...     stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+    ...     stdin=subprocess.PIPE)
+    >>> print p.communicate()[0]
+    INFO    Creating lockfile: ...
+    WARNING This is a warning
+    INFO    None
+    INFO    New OOPS detected
+    CRITICAL This is critical
+    INFO    None
+    INFO    New OOPS detected
+    ERROR   Unhandled exception
+    ...
+    NotImplementedError: Whoops
+    INFO    None
+    <BLANKLINE>
+    >>> p.returncode
+    1
+

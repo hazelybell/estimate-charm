@@ -1,0 +1,27 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Origin: Ubuntu/warty
+Format: 1.7
+Date: Thu, 01 Aug 2006 14:20:25 +0300
+Architecture: all
+Version: 20060728
+Distribution: breezy-autotest
+Source: ddtp-tarball
+Binary: ddtp-tarball
+Urgency: low
+Maintainer: Foo Bar <foo.bar@canonical.com>
+Changed-By: Foo Bar <foo.bar@canonical.com>
+Changes:
+ .
+ * Duhh
+ .
+Files:
+ d96380d3188fdf5c78a166f563aa8aa6 285 raw-ddtp-tarball - translations_main_20060728.tar.gz
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+
+iEYEARECAAYFAk3WaqYACgkQjn63CGxkqMXqjgCfV3HD2uc3zntumNvU6JKepitg
+ixgAnRhQ3/bJU1rzDeJPQdOWq2n53JJv
+=+xEt
+-----END PGP SIGNATURE-----

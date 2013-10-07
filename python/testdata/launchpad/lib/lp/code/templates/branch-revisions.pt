@@ -1,0 +1,28 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  tal:define="context_menu view/context/menu:context">
+
+  <p tal:condition="not:context/revision_count"
+     tal:define="branch context">
+    <metal:no-revision-message use-macro="context/@@+macros/no-revision-message" />
+  </p>
+
+  <tal:history-available condition="context/revision_count"
+                         define="branch view/context;
+                                 revision_info view/revision_info">
+    <metal:landing-target use-macro="branch/@@+macros/branch-revisions"/>
+
+    <div tal:define="link context_menu/browse_revisions"
+         tal:condition="link/enabled">
+      &raquo;
+      <span class="actions"
+          tal:content="structure link/render">
+        All revisions
+      </span>
+    </div>
+
+  </tal:history-available>
+
+</div>

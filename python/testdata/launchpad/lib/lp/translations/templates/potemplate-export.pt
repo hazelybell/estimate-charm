@@ -1,0 +1,86 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+<body>
+
+<div metal:fill-slot="main">
+  <div class="main-portlet">
+
+    <h2>Select files to download</h2>
+
+    <form action="" method="post" class="translations">
+
+      <div class="fields">
+        <div class="alignment">
+          <div>
+            <label>
+              <input name="what" type="radio" value="all"
+                     checked="checked" />
+              Everything
+            </label>
+          </div>
+
+          <label class="selector">
+            <input name="what" type="radio" value="some" />
+            Selected files:
+          </label>
+          <div class="listbox content secondary">
+            <div>
+              <label>
+                <input type="checkbox" name="potemplate" />
+                The PO template
+              </label>
+            </div>
+            <tal:thing repeat="pofile view/pofiles">
+              <div>
+                <label>
+                  <input type="checkbox"
+                         tal:attributes="name pofile/value" />
+                  <span tal:content="pofile/browsername">Spanish</span>
+                </label>
+              </div>
+            </tal:thing>
+          </div>
+        </div>
+        <div style="clear:both;">&nbsp;</div>
+      </div>
+      <h2>Choose file format for the export</h2>
+      <div class="fields">
+        <div>
+          <label>
+            Format:
+            <select name="format">
+              <option
+                 tal:repeat="format view/formats"
+                 tal:content="format/title"
+                 tal:attributes="value format/value">PO format</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <p>
+        When the files you have selected are ready,
+        a message will be sent to
+        <code tal:content="view/user/preferredemail/email">user@domain</code>
+        containing a link to download them.
+      </p>
+
+      <div class="actions">
+        <p>
+          <input type="submit" value="Request Download" />
+          or <a tal:attributes="href view/cancel_url">Cancel</a>
+        </p>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+</body>
+</html>

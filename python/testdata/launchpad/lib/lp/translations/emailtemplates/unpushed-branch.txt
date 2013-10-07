@@ -1,0 +1,38 @@
+Hello,
+
+There was a problem with translations branch synchronization for
+%(productseries)s.
+
+Branch synchronization for this release series has been set up to commit
+translations snapshots to the bzr branch at %(branch_url)s.
+
+That branch does not appear to have been pushed to Launchpad yet.
+Please create a branch on your own system that matches your needs, and
+then push it to Launchpad using "bzr push %(branch_url)s".
+
+You'll need the bzr tool.  If all you want is an empty branch for the
+translations to go into, you can create one using the following command
+lines:
+
+    bzr launchpad-login USERNAME
+
+Instead of USERNAME, type your Launchpad login name.  Then:
+
+    bzr init translations-export
+    cd translations-export
+    bzr commit --unchanged -m "Translations branch."
+    bzr push %(branch_url)s
+
+This will create an empty branch on Launchpad.  It should be updated
+with translations within the day.  You can update the branch on your
+system with the latest changes on Launchpad by going back into the
+translations-export directory and typing this command:
+
+    bzr pull --remember %(branch_url)s
+
+More extensive help can be found at
+
+    https://help.launchpad.net/Code
+
+--
+Automatic message from Launchpad.net.

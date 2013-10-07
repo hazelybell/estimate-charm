@@ -1,0 +1,350 @@
+Bug tags
+========
+
+In order to arbitrary group bugs together a bug can be associated with
+one or more tags. A tag is a simple text string, not contain a space
+character. The tags are available as a list of strings on the bug:
+
+    >>> from lp.bugs.interfaces.bug import IBugSet
+    >>> bug_one = getUtility(IBugSet).get(1)
+
+There are no tags currently, so let's add some. It doesn't matter which
+order the tags are in, the result will be ordered alphabetically:
+
+    >>> bug_one.tags
+    []
+
+    >>> login('test@canonical.com')
+    >>> bug_one.tags = [u'svg', u'sco']
+    >>> bug_one.tags
+    [u'sco', u'svg']
+
+Under the hood the tags are stored in a different table. If we take a
+look at it we can see that the added tags are there.
+
+    >>> from lp.bugs.model.bug import BugTag
+    >>> bugtags = BugTag.selectBy(bugID=bug_one.id, orderBy='tag')
+    >>> for bugtag in bugtags:
+    ...     print bugtag.tag
+    sco
+    svg
+
+So if we add another tag by setting the 'tags' attribute to a new list.
+The tag will be added in the table.
+
+    >>> bug_one.tags = [u'svg', u'sco', u'installl']
+    >>> bug_one.tags
+    [u'installl', u'sco', u'svg']
+
+    >>> bugtags = BugTag.selectBy(bugID=bug_one.id, orderBy='tag')
+    >>> for bugtag in bugtags:
+    ...     print bugtag.tag
+    installl
+    sco
+    svg
+
+We allow adding the same tag twice, but it won't be stored twice in the
+db:
+
+    >>> bug_one.tags = [u'svg', u'svg', u'sco', u'installl']
+    >>> bug_one.tags
+    [u'installl', u'sco', u'svg']
+
+Let's correct the spelling mistake we did and delete one of the tags:
+
+    >>> bug_one.tags = [u'sco', u'install']
+    >>> bug_one.tags
+    [u'install', u'sco']
+
+    >>> bugtags = BugTag.selectBy(bugID=bug_one.id, orderBy='tag')
+    >>> for bugtag in bugtags:
+    ...     print bugtag.tag
+    install
+    sco
+
+
+Widgets
+-------
+
+To make it easy editing the tags as a space separated text string, we
+use BugTagsWidget.
+
+    >>> from lp.services.webapp.servers import LaunchpadTestRequest
+    >>> from lp.bugs.browser.widgets.bug import BugTagsWidget
+    >>> from lp.bugs.interfaces.bug import IBug
+    >>> bug_tags_field = IBug['tags'].bind(bug_one)
+    >>> tag_field = bug_tags_field.value_type
+    >>> request = LaunchpadTestRequest()
+    >>> tags_widget = BugTagsWidget(bug_tags_field, tag_field, request)
+
+Since we didn't provided a value in the request, the form value will be
+empty:
+
+    >>> tags_widget._getFormValue()
+    u''
+
+If we set the value to bug one's tags, it will be a space separated
+string:
+
+    >>> tags_widget.setRenderedValue(bug_one.tags)
+    >>> tags_widget._getFormValue()
+    u'install sco'
+
+If we pass in a value via the request, we'll be able to get the tags as
+a sorted list from getInputValue():
+
+    >>> request = LaunchpadTestRequest(form={'field.tags': u'svg sco'})
+    >>> tags_widget = BugTagsWidget(bug_tags_field, tag_field, request)
+    >>> tags_widget._getFormValue()
+    u'sco svg'
+    >>> tags_widget.getInputValue()
+    [u'sco', u'svg']
+
+When we have an input value, the widget can edit the bug tags.
+
+    >>> bug_one.tags
+    [u'install', u'sco']
+    >>> tags_widget.applyChanges(bug_one)
+    True
+    >>> bug_one.tags
+    [u'sco', u'svg']
+
+If a user enters an invalid tag, we get an error explaining what's
+wrong.
+
+    >>> request = LaunchpadTestRequest(form={'field.tags': u'!!!! foo $$$$'})
+    >>> tags_widget = BugTagsWidget(bug_tags_field, tag_field, request)
+    >>> tags_widget.getInputValue()
+    Traceback (most recent call last):
+    ...
+    WidgetInputError...
+
+    >>> print tags_widget._error.doc()
+    &#x27;!!!!&#x27; isn&#x27;t a valid tag name. Tags must start with a
+    letter or number and be lowercase. The characters &quot;+&quot;,
+    &quot;-&quot; and &quot;.&quot; are also allowed after the first
+    character.
+
+Let's take a closer look at _toFormValue() to ensure that it works
+properly:
+
+    >>> tags_widget._toFormValue([])
+    u''
+    >>> tags_widget._toFormValue(['foo'])
+    u'foo'
+    >>> tags_widget._toFormValue(['foo', 'bar'])
+    u'foo bar'
+
+And _toFieldValue():
+
+    >>> tags_widget._toFieldValue(u'')
+    []
+    >>> tags_widget._toFieldValue(u'foo')
+    [u'foo']
+    >>> tags_widget._toFieldValue(u'FOO bar')
+    [u'bar', u'foo']
+    >>> tags_widget._toFieldValue(u'foo   \t          bar')
+    [u'bar', u'foo']
+
+A comma isn't valid in a tag name and sometimes users use commas to
+separate the tags, so we accept that as well.
+
+    >>> tags_widget._toFieldValue(u'foo, bar')
+    [u'bar', u'foo']
+
+    >>> tags_widget._toFieldValue(u'foo,bar')
+    [u'bar', u'foo']
+
+Duplicate tags are converted to a single instance.
+
+    >>> tags_widget._toFieldValue(u'FOO, , , , bar bar, bar, bar foo')
+    [u'bar', u'foo']
+
+
+Bug Tags Widget for Frozen Sets
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A variant of `BugTagsWidget` exists for when tags are stored in a
+`FrozenSet` field.
+
+    >>> from lp.bugs.browser.widgets.bug import BugTagsFrozenSetWidget
+
+Field-manipulation is not going to be examined here, and the widget
+does not care what type the field is otherwise, so the field from
+earlier can be used again.
+
+    >>> tags_frozen_set_widget = BugTagsFrozenSetWidget(
+    ...     bug_tags_field, tag_field, request)
+
+_tagsFromFieldValue() converts tags from the field value to tags for
+display. The absense of tags causes it to return None:
+
+    >>> print tags_frozen_set_widget._tagsFromFieldValue(None)
+    None
+    >>> print tags_frozen_set_widget._tagsFromFieldValue(frozenset())
+    None
+
+Tags are ordered before returning:
+
+    >>> tags_frozen_set_widget._tagsFromFieldValue(
+    ...     frozenset([5, 4, 1, 12]))
+    [1, 4, 5, 12]
+
+_tagsToFieldValue() converts the tags entered in the form into a value
+suitable for the field. In the absense of tags it returns an empty
+frozenset():
+
+    >>> tags_frozen_set_widget._tagsToFieldValue(None)
+    frozenset([])
+    >>> tags_frozen_set_widget._tagsToFieldValue([])
+    frozenset([])
+
+Otherwise it returns a `frozenset` of the tags given:
+
+    >>> tags_frozen_set_widget._tagsToFieldValue([u"foo", u"bar"])
+    frozenset([u'foo', u'bar'])
+
+
+Large and Small Bug Tags Widget
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A regular BugTagsWidget is rendered as an <input> tag,
+
+    >>> print tags_widget()
+    <input...type="text"...
+
+A LargeBugTagsWidget is rendered as a <textarea>,
+
+    >>> from lp.bugs.browser.widgets.bug import LargeBugTagsWidget
+    >>> large_text_widget = LargeBugTagsWidget(
+    ...     bug_tags_field, tag_field, request)
+    >>> print large_text_widget()
+    <textarea...
+
+
+Searching
+---------
+
+We can search for bugs with some specific tag.
+
+    >>> from lp.services.searchbuilder import all
+    >>> from lp.bugs.interfaces.bugtasksearch import BugTaskSearchParams
+    >>> from lp.registry.interfaces.distribution import IDistributionSet
+    >>> ubuntu = getUtility(IDistributionSet).getByName('ubuntu')
+    >>> svg_tasks = ubuntu.searchTasks(
+    ...     BugTaskSearchParams(tag=all(u'svg'), user=None))
+    >>> for bugtask in svg_tasks:
+    ...     print bugtask.bug.id, bugtask.bug.tags
+    1 [u'sco', u'svg']
+
+We can also search for bugs with any of the tags in a supplied list.
+
+    >>> from lp.services.searchbuilder import any
+    >>> crash_dataloss_tasks = ubuntu.searchTasks(BugTaskSearchParams(
+    ...     tag=any(u'crash', u'dataloss'), orderby='id', user=None))
+    >>> for bugtask in crash_dataloss_tasks:
+    ...     print bugtask.bug.id, bugtask.bug.tags
+    2 [u'dataloss', u'pebcak']
+    9 [u'crash']
+    10 [u'crash']
+
+And for bugs with all of the tags in a supplied list.
+
+    >>> from lp.services.searchbuilder import all
+    >>> getUtility(IBugSet).get(10).tags = [u'crash', u'burn']
+    >>> crash_burn_tasks = ubuntu.searchTasks(BugTaskSearchParams(
+    ...     tag=all(u'crash', u'burn'), orderby='id', user=None))
+    >>> for bugtask in crash_burn_tasks:
+    ...     print bugtask.bug.id, bugtask.bug.tags
+    10 [u'burn', u'crash']
+    >>> getUtility(IBugSet).get(10).tags = [u'crash']
+
+Tags are also searched when searching for some text in general. For
+example, if we search for 'some-tag', we find nothing at the moment:
+
+    >>> some_tag_tasks = ubuntu.searchTasks(
+    ...     BugTaskSearchParams(searchtext=u'some-tag', user=None))
+    >>> some_tag_tasks.count()
+    0
+
+# XXX: Bjorn Tillenius 2006-07-14
+#      The tests below don't pass yet. It's desirable functionality, but
+#      it's better to get this branch landed and spend time on it later.
+
+If we now set bug one's tag to 'some-tag', it will be found.
+
+    XXX from lp.services.database.sqlbase import flush_database_updates
+    XXX bug_one.tags = [u'some-tag']
+    XXX flush_database_updates()
+
+    XXX some_tag_tasks = ubuntu.searchTasks(
+    ...     BugTaskSearchParams(searchtext=u'some-tag', user=None))
+    XXX for bugtask in some_tag_tasks:
+    ...     print bugtask.id, bugtask.bug.id, bugtask.bug.tags
+    1 [u'some-tag']
+
+
+Tags for a context
+------------------
+
+    >>> from lp.registry.interfaces.product import IProductSet
+    >>> firefox = getUtility(IProductSet).getByName('firefox')
+    >>> from lp.registry.interfaces.projectgroup import IProjectGroupSet
+    >>> mozilla = getUtility(IProjectGroupSet).getByName('mozilla')
+    >>> ubuntu_thunderbird = ubuntu.getSourcePackage('thunderbird')
+    >>> debian = getUtility(IDistributionSet).getByName('debian')
+    >>> debian_woody = debian.getSeries('woody')
+    >>> debian_woody_firefox = (
+    ...     debian_woody.getSourcePackage('mozilla-firefox'))
+
+When viewing a bug listing for a context we want to display all the tags
+that are used in that context. We can also get all the used tags, together
+with the number of open bugs each tag has. Only tags having open bugs are
+returned.
+
+    >>> sorted(firefox.getUsedBugTagsWithOpenCounts(None).items())
+    [(u'doc', 1L), (u'layout-test', 1L), (u'sco', 1L), (u'svg', 1L)]
+
+    >>> sorted(mozilla.getUsedBugTagsWithOpenCounts(None).items())
+    [(u'doc', 1L), (u'layout-test', 1L), (u'sco', 1L), (u'svg', 1L)]
+
+    >>> sorted(ubuntu.getUsedBugTagsWithOpenCounts(None).items())
+    [(u'crash', 2L), (u'dataloss', 1L), (u'pebcak', 1L),
+     (u'sco', 1L), (u'svg', 1L)]
+
+We can require that some tags be included in the output even when limiting the
+results.
+
+    >>> sorted(ubuntu.getUsedBugTagsWithOpenCounts(None,
+    ...     tag_limit=1, include_tags=[u'pebcak', u'svg', u'fake']).items())
+    [(u'crash', 2L), (u'fake', 0), (u'pebcak', 1L), (u'svg', 1L)]
+
+Source packages are a bit special, they return all the tags that are
+used in the whole distribution, while the bug count includes only bugs
+in the specific package.
+
+    >>> ubuntu_thunderbird.getUsedBugTagsWithOpenCounts(None)
+    {u'crash': 1L}
+
+    >>> sorted(debian_woody.getUsedBugTagsWithOpenCounts(None).items())
+    [(u'dataloss', 1L), (u'layout-test', 1L), (u'pebcak', 1L)]
+
+    >>> sorted(
+    ...     debian_woody_firefox.getUsedBugTagsWithOpenCounts(None).items())
+    [(u'dataloss', 1L), (u'layout-test', 1L), (u'pebcak', 1L)]
+
+Only bugs that the supplied user has access to will be counted:
+
+    >>> bug_nine = getUtility(IBugSet).get(9)
+    >>> bug_nine.setPrivate(True, getUtility(ILaunchBag).user)
+    True
+    >>> flush_database_updates()
+
+    >>> ubuntu_thunderbird.getUsedBugTagsWithOpenCounts(None)
+    {}
+
+    >>> sample_person = getUtility(ILaunchBag).user
+    >>> bug_nine.isSubscribed(sample_person)
+    True
+    >>> ubuntu_thunderbird.getUsedBugTagsWithOpenCounts(sample_person)
+    {u'crash': 1L}

@@ -1,0 +1,68 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag=""
+>
+  <p id="translation-managers">
+    <tal:translationgroups condition="view/has_translationgroup">
+      This translation is managed by <!-- (nospace)
+      --><tal:loop repeat="manager view/managers"><!-- (nospace)
+        --><tal:comma condition="repeat/manager/index">,
+          <tal:and condition="repeat/manager/end"> and </tal:and>
+        </tal:comma>
+        <tal:team condition="manager/team">
+          <a tal:replace="structure manager/team/fmt:link" />,
+          assigned by
+          <a tal:attributes="href manager/group/fmt:url"
+             tal:content="manager/group/title">
+            Ubuntu translators<!-- (nospace)
+          --></a><!-- (nospace)
+        --></tal:team><!-- (nospace)
+        --><tal:noteam condition="not: manager/team">
+          translation group
+          <a tal:attributes="href manager/group/fmt:url"
+             tal:content="manager/group/name">
+	    Ubuntu translators<!-- (nospace)
+          --></a><!-- (nospace)
+        --></tal:noteam><!-- (nospace)
+      --></tal:loop>.
+    </tal:translationgroups>
+    <tal:nogroups condition="not: view/has_translationgroup">
+      No translation group has been assigned.
+    </tal:nogroups>
+  </p>
+
+  <p id="translation-access">
+    <tal:permission condition="view/user_can_edit">
+      You have full access to this translation.
+    </tal:permission>
+
+    <tal:noedit condition="not: view/user_can_edit">
+      <tal:permission condition="view/user_can_suggest">
+        Your suggestions will be held for review by the managers of this
+        translation.
+      </tal:permission>
+      <tal:nosuggestions condition="not: view/user_can_suggest">
+        <tal:permission condition="not: request/lp:person">
+          You are not logged in.  Please log in to work on translations.
+        </tal:permission>
+        <tal:loggedin condition="request/lp:person">
+          <tal:permission condition="not: view/has_translationgroup">
+            This translation is not open for changes.
+          </tal:permission>
+          <tal:translationgroups condition="view/has_translationgroup">
+            <tal:permission condition="view/is_managed">
+              This template can be translated only by its managers.
+            </tal:permission>
+            <tal:permission condition="not: view/is_managed">
+              There is nobody to manage translation into this particular
+              language.  If you are interested in working on it, please
+              contact the translation group.
+            </tal:permission>
+          </tal:translationgroups>
+        </tal:loggedin>
+      </tal:nosuggestions>
+    </tal:noedit>
+  </p>
+</tal:root>

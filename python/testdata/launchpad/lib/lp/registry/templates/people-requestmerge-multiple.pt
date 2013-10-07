@@ -1,0 +1,115 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+<tal:do-this-first tal:content="view/processForm" />
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+  <body>
+    <div metal:fill-slot="main">
+      <p tal:condition="not: view/dupe">No account found to merge</p>
+      <tal:duplicate condition="view/dupe">
+        <tal:block tal:condition="not: view/form_processed">
+
+          <div style="margin-top: 1em;">
+
+            <tal:email_visible condition="not: view/email_hidden">
+              <p id="explanation">
+              The account <code tal:content="view/dupe/name">foo</code>
+              has more than one registered e-mail address.
+              You need to prove that you have access to
+              all e-mail addresses registered for this account.
+              Unselect any you cannot access.
+              If you don&#8217;t have access to one or more of these addresses,
+              Launchpad will not be able to merge the account but all confirmed
+              addresses will be transferred to your account.
+              </p>
+
+              <form name="mergerequest" action="" method="POST">
+                <input type="hidden" name="dupe" tal:attributes="value request/dupe" />
+                <table>
+                  <tr tal:repeat="email view/dupeemails">
+                    <td>
+                      <input type="checkbox" name="selected" checked="checked"
+                             tal:attributes="value email/email" />
+                      <span tal:content="email/email" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <input type="submit" value="Merge Accounts" />
+                      or <a href tal:attributes="href view/cancel_url">Cancel</a>
+                    </td>
+                  </tr>
+                </table>
+              </form>
+            </tal:email_visible>
+
+            <tal:email_hidden condition="view/email_hidden">
+              <p id="explanation">
+                The account <code tal:content="view/dupe/name">foo</code>
+                has <span tal:replace="view/dupeemails/count" /> registered
+                e-mail addresses but they are hidden.
+                You need to prove that you have access to
+                all e-mail addresses registered for this account.
+              </p>
+              <p>
+                To do so, click the button.  An email will be sent to each
+                address on file for the duplicate account.  Follow the
+                instructions for each email.
+                If you don&#8217;t have access to some of these addresses,
+                Launchpad will not be able to merge the account.
+                The addresses you verify will be transferred to your account.
+              </p>
+
+              <form name="mergerequest" action="" method="POST">
+                <input type="hidden" name="dupe" tal:attributes="value request/dupe" />
+                <input type="submit" value="Merge Accounts" />
+                or <a href tal:attributes="href view/cancel_url">Cancel</a>
+              </form>
+            </tal:email_hidden>
+          </div>
+        </tal:block>
+
+        <tal:block tal:condition="view/form_processed">
+
+          <tal:email_visible condition="not: view/email_hidden">
+            <p id="confirmation">
+              Confirmation email messages were sent to:
+            </p>
+            <tal:block repeat="email view/notified_addresses">
+              <p><strong tal:content="email"/></p>
+            </tal:block>
+          </tal:email_visible>
+
+          <tal:email_hidden condition="view/email_hidden">
+            <p id="confirmation">
+              Confirmation email messages were sent to the
+              <span tal:content="view/dupeemails/count" /> registered
+              e-mail addresses for
+              <code tal:content="view/dupe/name">foo</code>.
+            </p>
+          </tal:email_hidden>
+
+          <p>
+            Please follow the instructions on each of those messages to complete
+            the merge.
+          </p>
+          <p>
+            <a href tal:attributes="href view/cancel_url">Back to my account</a>
+          </p>
+
+        </tal:block>
+
+      </tal:duplicate>
+    </div>
+  </body>
+</html>
+</tal:root>

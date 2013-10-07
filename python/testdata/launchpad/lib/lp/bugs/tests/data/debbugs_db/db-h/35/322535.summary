@@ -1,0 +1,10 @@
+Format-Version: 2
+Done: "Adam D. Barratt" <debian-bts@adam-barratt.org.uk>
+Subject: evolution: Multiple format string vulnerabilities in Evolution
+Date: 1123752792
+Submitter: Moritz Muehlenhoff <jmm@inutil.org>
+Fixed-In: 2.2.3-3
+Package: evolution
+Tags: security
+Message-Id: <E1E39Jq-0001kV-AR@localhost.localdomain>
+Severity: grave

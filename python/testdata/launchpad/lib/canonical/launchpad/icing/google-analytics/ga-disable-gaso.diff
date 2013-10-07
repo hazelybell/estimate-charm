@@ -1,0 +1,23 @@
+Diff that was applied to a copy of http://www.google-analytics.com/ga.js
+passed through http://http://jsbeautifier.org/ to disable
+the additional JS loading from Google Analytics when the Site Overlay
+feature is used.
+
+--- ga.js.orig	2011-12-08 15:37:38.000000000 -0500
++++ ga.js	2011-12-08 15:44:43.000000000 -0500
+@@ -1180,6 +1180,7 @@
+             return i
+         };
+     var zd, Ad = function (a) {
++        /* Disabled for security.
+             var f;
+             var e;
+             if (!zd) {
+@@ -1190,6 +1191,7 @@
+                 if (f = (e = (b = b && b[ma](d) || c && c[ma](d)) ? b[1] : I(W("GASO")), b = e) && b[ma](/^(?:\|([-0-9a-z.]{1,40})\|)?([-.\w]{10,1200})$/i), c = f) if (cd(a, "GASO", "" + b), K._gasoDomain = a.get(Ma), K._gasoCPath = a.get(N), b = "https://" + ((c[1] || "www") + ".google.com") + "/analytics/reporting/overlay_js?gaso=" + c[2] + "&" + va()) a = J.createElement("script"), a.type = "text/javascript", a.async = h, a.src = b, a.id = "_gasojs", fa(a, g), b = J.getElementsByTagName("script")[0], b.parentNode.insertBefore(a, b);
+                 zd = h
+             }
++        */
+         };
+     var sd = function (a, b, c) {
+             c && (b = H(b));

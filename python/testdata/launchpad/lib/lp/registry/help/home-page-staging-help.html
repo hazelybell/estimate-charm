@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <title>Staging &mdash; Launchpad's sandbox</title>
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssreset/reset.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssfonts/fonts.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssbase/base.css" />
+  </head>
+  <body>
+    <h1>Staging &mdash; Launchpad's sandbox</h1>
+
+    <p>
+      If you want to try Launchpad out, you can use the staging environment (at  <a href="https://staging.launchpad.net/" target="parent">https://staging.launchpad.net/</a>) to experiment with real data and functionality, but without affecting the day-to-day work of other Launchpad users.
+    </p>
+
+    <p>However, there are a few things to note about staging:</p>
+
+    <ul>
+      <li>Every week, staging's database is replaced with a fresh snapshot of Launchpad's production database: you will lose anything you do on staging.</li>
+      <li>Staging runs the latest code with changed database models from the Launchpad developers &mdash; if things go wrong, <a target="_blank" href="https://bugs.launchpad.net/launchpad/+filebug">please let us know</a>.</li>
+      <li>You can't create a new account on staging &mdash; instead, create one in <a href="https://launchpad.net/">Launchpad's production environment</a> and then wait up to 24 hours for your account to be available on staging.</li>
+      <li>Staging does not send email.</li>
+      <li>You can upload translations and templates but not export them &mdash; uploaded translations/templates will disappear after 24 hours.</li>
+      <li>To push code branches to staging you need use <code>bzr push lp://staging/~your-id/branch-name</code>.</li>
+    </ul>
+
+  </body>
+</html>

@@ -1,0 +1,7 @@
+Hello %(recipient_name)s,
+
+%(member_name)s renewed their own membership in the %(team_name)s team until %(dateexpires)s.
+<%(team_url)s>
+
+Regards,
+The Launchpad team

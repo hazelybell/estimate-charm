@@ -1,0 +1,5 @@
+Egg and bacon
+Egg, sausage and bacon
+Egg, bacon and bug #%(launchpad_bug)s
+Egg, bacon, sausage and %(comment_author)s
+%(comment_body)s

@@ -1,0 +1,14 @@
+<div xmlns:tal="http://xml.zope.org/namespaces/tal"
+     xmlns:metal="http://xml.zope.org/namespaces/metal"
+     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+     metal:use-macro="context/@@+portlet-subscribers/custom">
+  <div metal:fill-slot="heading">
+    <ul style="margin-top: 0">
+      <li>
+         <span class="sprite info">
+           The following people will be notified of changes:
+         </span>
+      </li>
+    </ul>
+  </div>
+</div>

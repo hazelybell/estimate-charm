@@ -1,0 +1,63 @@
+Distribution Source Packages
+----------------------------
+
+Source packages can be obtained from the context of a distribution.
+
+    >>> debian = webservice.get('/debian').jsonBody()
+
+    >>> mozilla_firefox = webservice.named_get(
+    ...     debian['self_link'], 'getSourcePackage',
+    ...     name='mozilla-firefox').jsonBody()
+
+    >>> print pretty(mozilla_firefox)
+    {u'bug_reported_acknowledgement': None,
+     u'bug_reporting_guidelines': None,
+     u'display_name': u'mozilla-firefox in Debian',
+     u'distribution_link': u'http://.../debian',
+     u'http_etag': u'...',
+     u'name': u'mozilla-firefox',
+     u'official_bug_tags': [],
+     u'resource_type_link': u'http://.../#distribution_source_package',
+     u'self_link': u'http://.../debian/+source/mozilla-firefox',
+     u'title': u'\u201cmozilla-firefox\u201d package in Debian',
+     u'upstream_product_link': None,
+     u'web_link': u'http://launchpad.../debian/+source/mozilla-firefox'}
+
+It's also possible to search for tasks with the "searchTasks" method:
+
+    >>> bug_task_collection = webservice.named_get(
+    ...     mozilla_firefox['self_link'],
+    ...     'searchTasks', status='New').jsonBody()
+
+    >>> for bug_task in bug_task_collection['entries']:
+    ...     print bug_task['title']
+    ...     print '%s, %s, <%s>' % (
+    ...         bug_task['status'], bug_task['importance'],
+    ...         bug_task['bug_link'])
+    ...     print '<%s>' % bug_task['self_link']
+    Bug #3 in mozilla-firefox (Debian): "Bug Title Test"
+    New, Unknown, <http://api.launchpad.dev/beta/bugs/3>
+    <http://api.launchpad.dev/beta/debian/+source/mozilla-firefox/+bug/3>
+
+If the package is linked to an upstream product in Launchpad you can
+retrieve that product using the upstream_product_link of the source
+package.
+
+    >>> ubuntu = webservice.get('/ubuntu').jsonBody()
+    >>> ubuntu_firefox = webservice.named_get(
+    ...     ubuntu['self_link'], 'getSourcePackage',
+    ...     name='mozilla-firefox').jsonBody()
+
+    >>> upstream_product = webservice.get(
+    ...     ubuntu_firefox['upstream_product_link']).jsonBody()
+
+    >>> print pretty(upstream_product)
+    {...
+     u'display_name': u'Mozilla Firefox'...
+     u'self_link': u'http://.../firefox'...}
+
+If the package isn't linked to an upstream product its
+upstream_product_link will be None.
+
+    >>> print mozilla_firefox['upstream_product_link']
+    None

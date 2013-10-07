@@ -1,0 +1,20 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+
+  <body>
+    <div class="top-portlet" metal:fill-slot="main">
+
+      <h1>This account has been suspended</h1>
+      <p class="error">
+        Contact a <a href="mailto:feedback@launchpad.net?subject=SUSPENDED%20account"
+          >Launchpad admin</a> about this issue.
+      </p>
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,23 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+  <body>
+    <div metal:fill-slot="main">
+      <div class="top-portlet">
+        <div metal:use-macro="context/@@launchpad_form/form">
+          <p metal:fill-slot="extra_info" class="documentDescription">
+            This will permanently erase this announcement. You might want to
+            consider just <a href="+retract">retracting the announcement</a>
+            instead.
+          </p>
+        </div>
+      </div>
+
+      <tal:menu replace="structure context/@@+related-pages" />
+    </div>
+  </body>
+</html>

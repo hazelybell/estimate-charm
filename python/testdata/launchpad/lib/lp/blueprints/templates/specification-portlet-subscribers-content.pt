@@ -1,0 +1,21 @@
+<div
+  tal:omit-tag=""
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  tal:define="
+	blueprint context;
+	subscriptions view/sorted_subscriptions">
+
+  <div id="subscribers">
+    <h2>Subscribers</h2>
+    <div id="subscribers-links">
+      <div tal:repeat="subscription subscriptions"
+           tal:replace="structure subscription/@@+blueprint-subscriber-row"/>
+    </div>
+    <div id="none-subscribers"
+        tal:condition="not:subscriptions">
+        No subscribers.
+    </div>
+  </div>
+</div>

@@ -1,0 +1,36 @@
+<specification-goal-decide
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+
+  <div metal:fill-slot="main">
+    <div class="top-portlet">
+      <h2>Blueprint summary</h2>
+      <div metal:use-macro="context/@@launchpad_form/form">
+        <div metal:fill-slot="extra_info">
+          <p tal:content="context/summary">
+            Spec summary here
+          </p>
+          <p>
+            This goal was proposed by
+            <a tal:replace="structure context/goal_proposer/fmt:link">Foo Bar</a>
+            <span tal:attributes="title context/date_goal_proposed/fmt:datetime"
+                  tal:content="context/date_goal_proposed/fmt:displaydate" />.
+            <tal:already_decided condition="context/goal_decider">
+              It was previously marked
+              "<span tal:replace="context/goalstatus/title">Approved</span>"
+              as a goal by
+              <a tal:replace="structure context/goal_decider/fmt:link">Foo Bar</a>
+              <span tal:attributes="title context/date_goal_decided/fmt:datetime"
+                    tal:content="context/date_goal_decided/fmt:displaydate" />.
+            </tal:already_decided>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</specification-goal-decide>

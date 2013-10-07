@@ -1,0 +1,41 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Format: 1.7
+Date: Sun, 29 Aug 2004 03:47:46 +0200
+Source: abiword
+Binary: abiword-plugins-gnome abiword-gnome abiword-doc xfonts-abi abiword-help abiword abiword-plugins abiword-common
+Architecture: mips
+Version: 2.0.10-1.2
+Distribution: unstable
+Urgency: high
+Maintainer: buildd mips user account <buildd@pepe.buildd.net>
+Changed-By: Jordi Mallach <jordi@debian.org>
+Description: 
+ abiword    - WYSIWYG word processor based on GTK2
+ abiword-common - WYSIWYG word processor based on GTK2
+ abiword-gnome - WYSIWYG word processor based on GTK2/GNOME2
+ abiword-plugins - Plugins for AbiWord
+ abiword-plugins-gnome - Plugins for AbiWord (with GNOME dependency)
+Closes: 267199
+Changes: 
+ abiword (2.0.10-1.2) unstable; urgency=high
+ .
+   * Non-Maintainer Upload.
+   * debian/patches/01_relibtoolise.dpatch: damn, I missed the *other*
+     configure script. Abiword's source tarball sucks in many ways...
+     (really closes: #267199).
+Files: 
+ 2a0175f42ebcf4c42312ba5837108fc2 1504956 editors optional abiword-common_2.0.10-1.2_mips.deb
+ dc5fe0eeb1b233cf656f46665f150488 2014536 editors optional abiword_2.0.10-1.2_mips.deb
+ b418b9cc47f3d891a6fecb40cd5524db 2012956 gnome optional abiword-gnome_2.0.10-1.2_mips.deb
+ 965cc5212d45154a2bf517f0b081282f 352262 editors optional abiword-plugins_2.0.10-1.2_mips.deb
+ 1c1e1380e3b3848745ce9b51f1a29493 33312 gnome optional abiword-plugins-gnome_2.0.10-1.2_mips.deb
+
+-----BEGIN GPG SIGNATURE-----
+Version: GnuPG v1.2.4 (GNU/Linux)
+
+iD8DBQFBYnONOtPfPvLSwCgRAq4aAKCXhvAENBbvt4mAlXGPJoIPik5c9QCeIvbs
+EYumagv6d7dl8FfcKRuuQWg=
+=2IzM
+-----END PGP SIGNATURE-----

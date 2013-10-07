@@ -1,0 +1,57 @@
+Package: ekg
+Priority: optional
+Section: universe/net
+Installed-Size: 748
+Maintainer: Marcin Owsiany <porridge@debian.org>
+Architecture: i386
+Version: 1:1.5-4ubuntu1.2
+Depends: libaspell15 (>= 0.50.5), libc6 (>= 2.3.2.ds1-4), libgadu3 (>= 1:1.5), libgsm1 (>= 1.0.10), libjpeg62, libncurses5 (>= 5.4-1), libssl0.9.7, python2.4 (>= 2.3.90), zlib1g (>= 1:1.2.1)
+Recommends: perl, libc6 (>= 2.3.2.ds1-4), libglib1.2 (>= 1.2.0)
+Suggests: aspell-pl | aspell-dictionary
+Filename: pool/universe/e/ekg/ekg_1.5-4ubuntu1.2_i386.deb
+Size: 257060
+MD5sum: b4e34e91748683784dd4afd82d1e4f3a
+Description: Console Gadu Gadu client for UNIX systems
+ EKG ("Eksperymentalny Klient Gadu-Gadu") is an open source
+ gadu-gadu client for UNIX systems. Gadu-Gadu is an instant
+ messaging program, very popular in Poland.
+ .
+ EKG features include:
+   - irssi-like ncurses interface
+   - sending and receiving files
+   - voice conversations
+   - launching shell commands on certain events
+   - reading input from pipe
+   - python scripting support
+   - speech synthesis (using an external program)
+   - encryption support
+ .
+ Please note that the program is not internationalized and all messages are in
+ Polish (although the commands are in English).
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+
+Package: bdftopcf
+Priority: optional
+Section: x11
+Installed-Size: 56
+Maintainer: Fabio M. Di Nitto <fabbione@ubuntu.com>
+Architecture: i386
+Version: 0.99.0-1
+Replaces: xbase-clients (<< 6.8.2-38)
+Depends: libc6 (>= 2.3.4-1), libfreetype6 (>= 2.1.5-1), libxfont1, zlib1g (>= 1:1.2.1)
+Filename: pool/universe/b/bdftopcf/bdftopcf_0.99.0-1_i386.deb
+Size: 6640
+MD5sum: f75ee3147b91796558d919bc18c762eb
+Description: X client - bdftopcf
+ bdftopcf is a small tool that was part of xbase-clients.
+ .
+ More information about X.Org can be found at:
+ <URL:http://xorg.freedesktop.org>
+ <URL:http://lists.freedesktop.org/mailman/listinfo/xorg>
+ .
+ This module can be found as the module 'app/xset' at
+ :pserver:anoncvs@cvs.freedesktop.org:/cvs/xorg
+Bugs: mailto:ubuntu-users@lists.ubuntu.com
+Origin: Ubuntu
+

@@ -1,0 +1,10 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+  Working on
+  <tal:jobtype replace="context/__class__/__name__" />
+  for branch <tal:branch replace="structure context/branch/fmt:link" />.
+</tal:root>

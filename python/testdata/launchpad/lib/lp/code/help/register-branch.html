@@ -1,0 +1,38 @@
+<html>
+  <head>
+    <title>Uploading a branch without registering</title>
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssreset/reset.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssfonts/fonts.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssbase/base.css" />
+  </head>
+  <body>
+    <h1>Uploading a branch without registering</h1>
+
+    <p>If you want to host a Bazaar branch on Launchpad, you can push it straight to Launchpad without first registering.</p>
+
+    <p>Simply open up your terminal, change to the directory that contains your Bazaar branch and type:</p>
+
+    <p>
+      <code>
+       bzr launchpad-login userid<br />
+       bzr push lp:~userid/project-name/branch-name
+      </code>
+    </p>
+
+    <p>Replace <em>userid</em> with your Launchpad id, <em>project-name</em> with the project's Launchpad id and then chose whichever branch name you want.</p>
+
+    <p><a href="https://help.launchpad.net/Code/UploadingABranch" target="_blank">Read more about pushing Bazaar branches to Launchpad &gt;</a></p>
+
+    <h2>If you register the branch in Launchpad before pushing to it</h2>
+
+    <p>If you register the branch in Launchpad's web interface, before pushing anything to it, you'll need to use a slightly different Bazaar command the first time you push anything to the branch:</p>
+
+    <p>
+      <code>bzr push lp:~userid/project-name/branch-name --use-existing-dir</code>
+    </p>
+
+  </body>
+</html>

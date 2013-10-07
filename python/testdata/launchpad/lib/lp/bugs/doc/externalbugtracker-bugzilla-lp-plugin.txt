@@ -1,0 +1,613 @@
+Bugzilla bugtrackers with the Launchpad plugin
+==============================================
+
+These tests cover the BugzillaLPPlugin ExternalBugTracker, which handles
+Bugzilla instances that have the Launchpad plugin installed.
+
+For testing purposes, a custom XML-RPC transport can be passed to it,
+so that we can avoid network traffic in tests.
+
+    >>> from lp.bugs.externalbugtracker import (
+    ...     BugzillaLPPlugin)
+    >>> from lp.bugs.tests.externalbugtracker import (
+    ...     TestBugzillaXMLRPCTransport)
+    >>> test_transport = TestBugzillaXMLRPCTransport('http://example.com/')
+    >>> bugzilla = BugzillaLPPlugin(
+    ...     'http://example.com/', xmlrpc_transport=test_transport)
+    >>> bugzilla.xmlrpc_transport == test_transport
+    True
+
+BugzillaLPPlugin inherits from the BugzillaAPI ExternalBugTracker, with
+which it shares some functionality.
+
+    >>> from lp.bugs.externalbugtracker.bugzilla import (
+    ...     BugzillaAPI)
+    >>> issubclass(BugzillaLPPlugin, BugzillaAPI)
+    True
+
+
+Getting the tracker to use
+--------------------------
+
+Instances of BugzillaLPPlugin always assume that they are the
+appropriate bug tracker to use. They do not sniff the remote system to
+check for support; they assume that has been done elsewhere.
+
+    >>> bugzilla.getExternalBugTrackerToUse() is bugzilla
+    True
+
+
+Authentication
+--------------
+
+XML-RPC methods that modify data on the remote server require
+authentication. To authenticate, we create a LoginToken of type
+BUGTRACKER and pass it to the remote service's Launchpad.login() method.
+The remote service then checks that this token is valid and returns an
+appropriate response.
+
+We use the internal XML-RPC service to generate the token, which allows
+us to sidestep the issue of committing the new token to the database in
+order to make it visible to the remote Bugzilla.
+
+BugzillaLPPlugin has an _authenticate() method, which is responsible for
+doing the authentication work with the remote server. We'll override the
+_handleLoginToken() method of TestBugzillaXMLRPCTransport so that it can
+work with the right database user.
+
+    >>> from lp.bugs.tests.externalbugtracker import (
+    ...     TestInternalXMLRPCTransport)
+    >>> from lp.testing.dbuser import lp_dbuser
+
+    >>> class ZopelessBugzillaXMLRPCTransport(TestBugzillaXMLRPCTransport):
+    ...     def _handleLoginToken(self, token_text):
+    ...         with lp_dbuser():
+    ...             self._consumeLoginToken(token_text)
+
+    >>> test_transport = ZopelessBugzillaXMLRPCTransport(
+    ...     'http://example.com/')
+    >>> test_transport.print_method_calls = True
+    >>> bugzilla = BugzillaLPPlugin(
+    ...     'http://example.com/', xmlrpc_transport=test_transport,
+    ...     internal_xmlrpc_transport=TestInternalXMLRPCTransport())
+
+    >>> bugzilla._authenticate()
+    Using XML-RPC to generate token.
+    CALLED Launchpad.login({'token': '...'})
+    Successfully validated the token.
+
+The authorisation cookie will be stored in the auth_cookie property of
+the XML-RPC transport.
+
+    >>> test_transport.cookie_processor.cookiejar
+    <cookielib.CookieJar[Cookie(version=0, name='Bugzilla_login'...),
+                         Cookie(version=0, name='Bugzilla_logincookie'...)]>
+
+The externalbugtracker.bugzilla module contains a decorator,
+needs_authentication, which can be used to ensure that a
+BugzillaLPPlugin instance will attempt to authenticate with the remote
+server if it encounters a method which requires it to be logged in.
+
+We can demonstrate this by subclassing BugzillaLPPlugin and adding a
+method which requires authentication.
+
+    >>> from lp.bugs.externalbugtracker.bugzilla import (
+    ...     needs_authentication)
+    >>> class AuthenticatingBugzillaLPPlugin(BugzillaLPPlugin):
+    ...
+    ...     @needs_authentication
+    ...     def testAuthentication(self):
+    ...         return self.xmlrpc_proxy.Test.login_required()
+
+    >>> test_bugzilla = AuthenticatingBugzillaLPPlugin(
+    ...     'http://example.com/', xmlrpc_transport=test_transport,
+    ...     internal_xmlrpc_transport=TestInternalXMLRPCTransport())
+
+The Test.login_required() method on the server requires the user to be
+authenticated. We'll expire the current auth_cookie so that
+login_required() raises a fault.
+
+    >>> test_transport.expireCookie(test_transport.auth_cookie)
+    >>> test_bugzilla.xmlrpc_proxy.Test.login_required()
+    Traceback (most recent call last):
+      ...
+    Fault: <Fault 410: 'Login Required'>
+
+Because the testAuthentication() method of
+AuthenticatingBugzillaLPPlugin is decorated with needs_authentication,
+it will automatically try authenticating when it receives the Fault from
+login_required() and will retry the method call.
+
+    >>> return_value = test_bugzilla.testAuthentication()
+    Using XML-RPC to generate token.
+    CALLED Launchpad.login({'token': '...'})
+    Successfully validated the token.
+    CALLED Test.login_required()
+
+    >>> print return_value
+    Wonderful, you've logged in! Aren't you a clever biped?
+
+    >>> test_transport.print_method_calls = False
+
+If authentication fails, a BugTrackerAuthenticationError will be raised.
+
+    >>> from xmlrpclib import Fault, ProtocolError
+    >>> class TestAuthFailingBugzillaXMLRPCTransport(
+    ...         ZopelessBugzillaXMLRPCTransport):
+    ...     error = Fault(100, "Sorry, you can't log in.")
+    ...
+    ...     def login(self, arguments):
+    ...         raise self.error
+
+    >>> fail_transport = TestAuthFailingBugzillaXMLRPCTransport(
+    ...     'http://example.com/')
+    >>> test_bugzilla = BugzillaLPPlugin(
+    ...     'http://example.com/',
+    ...     xmlrpc_transport=fail_transport,
+    ...     internal_xmlrpc_transport=TestInternalXMLRPCTransport(quiet=True)
+    ...     )
+
+    >>> test_bugzilla._authenticate()
+    Traceback (most recent call last):
+      ...
+    BugTrackerAuthenticationError: http://example.com:
+    XML-RPC Fault: 100 "Sorry, you can't log in."
+
+This is also true if an error occurs at the protocol level:
+
+    >>> fail_transport.error = ProtocolError(
+    ...     'http://example.com', 500, 'Internal server error', {})
+    >>> test_bugzilla._authenticate()
+    Traceback (most recent call last):
+       ...
+    BugTrackerAuthenticationError: http://example.com:
+    Protocol error: 500 "Internal server error"
+
+
+Getting the current time
+------------------------
+
+The BugzillaLPPlugin ExternalBugTracker, like all other
+ExternalBugTrackers, has a getCurrentDBTime() method, which returns the
+current time on the remote server.
+
+    >>> from datetime import datetime
+    >>> # It seems there's no way to create a UTC timestamp without
+    >>> # monkey-patching the TZ environment variable. Rather than do
+    >>> # that, we create our own datetime and work with that.
+    >>> remote_time = datetime(2008, 5, 16, 16, 53, 20)
+
+    >>> test_transport.utc_offset = 60**2
+    >>> test_transport.timezone = 'CET'
+    >>> test_transport.local_datetime = remote_time
+    >>> bugzilla.getCurrentDBTime()
+    datetime.datetime(2008, 5, 16, 15, 53, 20, tzinfo=<UTC>)
+
+
+Initializing the remote bug database
+------------------------------------
+
+The BugzillaLPPlugin implements the standard initializeRemoteBugDB()
+method, taking a list of the bug ids that need to be updated. It uses
+the Bugzilla Launchpad.get_bugs() API to retrieve bugs from the remote
+system.
+
+    >>> bugzilla.xmlrpc_transport.print_method_calls = True
+    >>> bugzilla.initializeRemoteBugDB([1, 2])
+    CALLED Launchpad.get_bugs({'ids': [1, 2], 'permissive': True})
+
+The bug data is stored as a list of dicts:
+
+    >>> def print_bugs(bugs):
+    ...     for bug in sorted(bugs):
+    ...         print "Bug %s:" % bug
+    ...         for key in sorted(bugs[bug]):
+    ...             print "    %s: %s" % (key, bugs[bug][key])
+    ...         print "\n"
+
+    >>> print_bugs(bugzilla._bugs)
+    Bug 1:
+        alias:
+        assigned_to: test@canonical.com
+        component: GPPSystems
+        creation_time: 2008-06-10 16:19:53
+        id: 1
+        internals:...
+        is_open: True
+        last_change_time: 2008-06-10 16:19:53
+        priority: P1
+        product: Marvin
+        resolution: FIXED
+        see_also:...
+        severity: normal
+        status: RESOLVED
+        summary: That bloody robot still exists.
+    <BLANKLINE>
+    Bug 2:
+        alias: bug-two
+        assigned_to: marvin@heartofgold.ship
+        component: Crew
+        creation_time: 2008-06-11 09:23:12
+        id: 2
+        internals:...
+        is_open: True
+        last_change_time: 2008-06-11 09:24:29
+        priority: P1
+        product: HeartOfGold
+        resolution:
+        see_also:...
+        severity: high
+        status: NEW
+        summary: Collect unknown persons in docking bay 2.
+    <BLANKLINE>
+    <BLANKLINE>
+
+BugzillaLPPlugin.initializeRemoteBugDB() uses its _storeBugs() method to
+store bugs. See externalbugtracker-bugzilla-api.txt for details of
+_storeBugs().
+
+
+Getting a list of changed bugs
+------------------------------
+
+IExternalBugTracker defines a method, getModifiedRemoteBugs(), which
+accepts a list of bug IDs and a datetime as a parameter and returns the
+list of all the bug IDs in the passed set that have been changed since
+that datetime.
+
+This is acheived by calling the Launchpad.get_bugs() method on the
+remote server and passing it a 'changed_since' parameter.
+
+    >>> bugzilla.xmlrpc_transport.print_method_calls = True
+    >>> changed_since = datetime(2008, 6, 11, 9, 0, 0, 0)
+    >>> bug_ids = bugzilla.getModifiedRemoteBugs([1, 2], changed_since)
+    CALLED Launchpad.get_bugs({'changed_since':
+        <DateTime ...'20080611T09:00:00' at...>,
+        'ids': [1, 2],
+        'permissive': True})
+
+    >>> print bug_ids
+    [2]
+
+If we alter the changed_since date to move it back by a day, we'll get
+both bugs 1 and 2 back from getModifiedRemoteBugs()
+
+    >>> changed_since = datetime(2008, 6, 10, 9, 0, 0, 0)
+    >>> bug_ids = bugzilla.getModifiedRemoteBugs([1, 2], changed_since)
+    CALLED Launchpad.get_bugs({'changed_since':
+        <DateTime ...'20080610T09:00:00' at...>,
+        'ids': [1, 2],
+        'permissive': True})
+
+    >>> print bug_ids
+    [1, 2]
+
+Bugzilla's Launchpad.get_bugs() method returns all the data for each
+bug it returns. getModifiedRemoteBugs() saves this information into the
+BugzillaLPPlugin instance's bugs dict.
+
+    >>> for bug in sorted(bugzilla._bugs):
+    ...     print "Bug %s:" % bug
+    ...     for key in sorted(bugzilla._bugs[bug]):
+    ...         print "    %s: %s" % (key, bugzilla._bugs[bug][key])
+    ...     print "\n"
+    Bug 1:
+        alias:
+        assigned_to: test@canonical.com...
+    Bug 2:
+        alias: bug-two
+        assigned_to: marvin@heartofgold.ship...
+
+Once getModifiedRemoteBugs() has stored this data there's no need for
+initializeRemoteBugDB() to try to retrieve it again. If we pass bug IDs
+that getModifiedRemoteBugs() has already retrieved to
+initializeRemoteBugDB() it will not attempt to retrieve them from the
+remote system.
+
+    >>> bugzilla.initializeRemoteBugDB([1, 2, 3])
+    CALLED Launchpad.get_bugs({'ids': [3], 'permissive': True})
+
+
+Getting remote statuses
+-----------------------
+
+BugzillaLPPlugin doesn't have any special functionality for getting
+remote statuses. See the "Getting remote statuses" section of
+externalbugtracker-bugzilla-api.txt for details of getting remote
+statuses from Bugzilla APIs.
+
+
+Getting the remote product
+--------------------------
+
+See externalbugtracker-bugzilla-api.txt for details of getting remote
+products from Bugzilla APIs.
+
+
+Retrieving remote comments
+--------------------------
+
+BugzillaLPPlugin implments the ISupportsCommentImport interface, which
+means that we can use it to import comments from the remote Bugzilla
+instance.
+
+    >>> from lp.testing import verifyObject
+    >>> from lp.bugs.interfaces.externalbugtracker import ISupportsCommentImport
+    >>> verifyObject(ISupportsCommentImport, bugzilla)
+    True
+
+To test the comment importing methods we need to add an example bug,
+bugtracker and a couple of bugwatches.
+
+    >>> from lp.bugs.interfaces.bug import CreateBugParams
+    >>> from lp.bugs.interfaces.bugtracker import BugTrackerType
+    >>> from lp.registry.interfaces.person import IPersonSet
+    >>> from lp.registry.interfaces.product import IProductSet
+    >>> from lp.bugs.tests.externalbugtracker import (
+    ...     new_bugtracker)
+
+    >>> bug_tracker = new_bugtracker(BugTrackerType.BUGZILLA)
+
+    >>> with lp_dbuser():
+    ...     sample_person = getUtility(IPersonSet).getByEmail(
+    ...         'test@canonical.com')
+    ...     firefox = getUtility(IProductSet).getByName('firefox')
+    ...     bug = firefox.createBug(
+    ...         CreateBugParams(sample_person, "Yet another test bug",
+    ...             "Yet another test description.",
+    ...             subscribe_owner=False))
+    ...     bug_watch = bug.addWatch(bug_tracker, '1', sample_person)
+    ...     bug_watch_two = bug.addWatch(bug_tracker, '2', sample_person)
+    ...     bug_watch_broken = bug.addWatch(bug_tracker, '42', sample_person)
+
+
+getCommentIds()
+---------------
+
+ISupportsCommentImport.getCommentIds() is the method used to get all the
+comment IDs for a given bug on a remote bugtracker.
+
+    >>> remote_bug = bug_watch.remotebug
+    >>> transaction.commit()
+
+    >>> bugzilla.xmlrpc_transport.print_method_calls = True
+    >>> bug_comment_ids = bugzilla.getCommentIds(remote_bug)
+    CALLED Launchpad.comments({'bug_ids': [1], 'include_fields': ['id']})
+
+    >>> print sorted(bug_comment_ids)
+    ['1', '3']
+
+getCommentIds() can only be called if initializeRemoteBugDB() has been
+called and the bug exists locally.
+
+    >>> remote_bug = bug_watch_broken.remotebug
+    >>> transaction.commit()
+
+    >>> bugzilla.getCommentIds(remote_bug)
+    Traceback (most recent call last):
+      ...
+    BugNotFound: 42
+
+
+fetchComments()
+---------------
+
+ISupportsCommentImport.fetchComments() is the method used to fetch a
+given set of comments from the remote bugtracker. It takes a remote
+bug ID and a list of the comment IDs to retrieve for that bug watch.
+
+    >>> remote_bug = bug_watch.remotebug
+    >>> transaction.commit()
+
+    >>> bugzilla.xmlrpc_transport.print_method_calls = False
+    >>> bugzilla.fetchComments(remote_bug, ['1', '3'])
+
+The comments will be stored in the bugs dict as a dict of comment id =>
+comment dict mappings under the key 'comments'.
+
+    >>> comments = bugzilla._bugs[1]['comments']
+    >>> for comment_id in sorted(comments):
+    ...     print "Comment %s:" % comment_id
+    ...     comment = comments[comment_id]
+    ...     for key in sorted(comment):
+    ...         print "    %s: %s" % (key, comment[key])
+    Comment 1:
+        author: trillian
+        id: 1
+        number: 1
+        text: I'd really appreciate it if Marvin would enjoy life a bit.
+        time: 2008-06-16 12:44:29
+    Comment 3:
+        author: marvin
+        id: 3
+        number: 2
+        text: Life? Don't talk to me about life.
+        time: 2008-06-16 13:22:29
+
+
+Pushing comments to remote systems
+----------------------------------
+
+BugzillaLPPlugin implements the ISupportsCommentPushing interface, which
+defines the necessary methods for pushing comments to remote servers.
+
+    >>> from lp.bugs.interfaces.externalbugtracker import (
+    ...     ISupportsCommentPushing)
+    >>> verifyObject(ISupportsCommentPushing, bugzilla)
+    True
+
+ISupportsCommentPushing defines a method, addRemoteComment(), which can
+be used to push a comment to the remote system. It takes three
+parameters: the remote bug ID, the body of the comment to push and the
+rfc822msgid of the comment being pushed. For the BugzillaLPPlugin
+bugtracker we can pass None as the rfc822msgid, since Bugzilla won't use
+it. addRemoteComment() returns the ID of the new comment on the remote
+server.
+
+addRemoteComment() calls Launchpad.add_comment() on the remote server,
+which requires authentication. To demonstrate this, we'll expire the
+authorization cookie so that it gets regenerated.
+
+    >>> bugzilla.xmlrpc_transport.print_method_calls = True
+    >>> bugzilla.xmlrpc_transport.expireCookie(
+    ...     bugzilla.xmlrpc_transport.auth_cookie)
+
+    >>> comment_id  = bugzilla.addRemoteComment(
+    ...     1, "This is a new remote comment.", None)
+    Using XML-RPC to generate token.
+    CALLED Launchpad.login({'token': '...'})
+    Successfully validated the token.
+    CALLED Launchpad.add_comment({'comment': 'This is a new remote comment.',
+        'id': 1})
+
+    >>> comment_id
+    '5'
+
+The comment will be stored on the remote server with the other comments.
+
+    >>> remote_bug = bug_watch.remotebug
+    >>> transaction.commit()
+
+    >>> bugzilla.xmlrpc_transport.print_method_calls = False
+    >>> print sorted(bugzilla.getCommentIds(remote_bug))
+    ['1', '3', '5']
+
+    >>> transaction.commit()
+
+    >>> bugzilla.fetchComments(remote_bug, ['5'])
+    >>> message = bugzilla.getMessageForComment(
+    ...     remote_bug, '5', sample_person)
+    >>> print message.text_contents
+    This is a new remote comment.
+    <BLANKLINE>
+
+
+Linking remote bugs to Launchpad bugs
+-------------------------------------
+
+BugzillaLPPlugin implements the ISupportsBackLinking interface, which
+provides methods to set and retrieve the Launchpad bug that links to a
+given remote bug from the remote server.
+
+    >>> from lp.bugs.interfaces.externalbugtracker import (
+    ...     ISupportsBackLinking)
+    >>> verifyObject(ISupportsBackLinking, bugzilla)
+    True
+
+The getLaunchpadBugId() method is used to retrive the current Launchpad
+bug ID for a given remote bug.
+
+    >>> launchpad_bug_id = bugzilla.getLaunchpadBugId(1)
+
+If there is no bug currently linked to the remote bug,
+getLaunchpadBugId() will return None.
+
+    >>> print launchpad_bug_id
+    None
+
+We'll set the launchpad_id for the remote bug so that we can retrieve
+it.
+
+    >>> bugzilla._bugs[1]['internals']['launchpad_id'] = 42
+
+getLaunchpadBugId() will return the current Launchpad bug ID if one is
+set.
+
+    >>> launchpad_bug_id = bugzilla.getLaunchpadBugId(1)
+    >>> print launchpad_bug_id
+    42
+
+setLaunchpadBugId() is used to set the Launchpad bug ID for a given
+remote bug.
+
+    >>> transaction.commit()
+
+setLaunchpadBugId() requires authentication.
+
+    >>> bugzilla.xmlrpc_transport.print_method_calls = True
+    >>> bugzilla.xmlrpc_transport.expireCookie(
+    ...     bugzilla.xmlrpc_transport.auth_cookie)
+
+    >>> bugzilla.setLaunchpadBugId(
+    ...     1, 10, 'http://bugs.launchpad.dev/bugs/xxx')
+    Using XML-RPC to generate token.
+    CALLED Launchpad.login({'token': '...'})
+    Successfully validated the token.
+    CALLED Launchpad.set_link({'id': 1, 'launchpad_id': 10})
+
+If we re-request the bug data from the remote server, we can see that
+the Launchpad bug ID has been updated for remote bug 1.
+
+    >>> del bugzilla._bugs[1]
+    >>> bugzilla.initializeRemoteBugDB([1])
+    CALLED Launchpad.get_bugs({'ids': [1], 'permissive': True})
+
+    >>> launchpad_bug_id = bugzilla.getLaunchpadBugId(1)
+    >>> print launchpad_bug_id
+    10
+
+
+Working with a specified set of Bugzilla products
+-------------------------------------------------
+
+BugzillaLPPlugin can be instructed to only get the data for a set of
+bug IDs if those bugs belong to one of a given set of products.
+
+    >>> ids_to_update = [1, 2]
+    >>> products_to_update = ['HeartOfGold']
+    >>> bugzilla = BugzillaLPPlugin(
+    ...     'http://example.com/', xmlrpc_transport=test_transport,
+    ...     internal_xmlrpc_transport=TestInternalXMLRPCTransport())
+    >>> bugzilla.xmlrpc_transport.print_method_calls = True
+
+    >>> bugzilla.initializeRemoteBugDB(ids_to_update, products_to_update)
+    CALLED Launchpad.get_bugs({'ids': [1, 2], 'permissive': True,
+    'products': ['HeartOfGold']})
+
+    >>> print_bugs(bugzilla._bugs)
+    Bug 2:
+        alias: bug-two
+        assigned_to: marvin@heartofgold.ship
+        component: Crew
+        creation_time: 2008-06-11 09:23:12
+        id: 2
+        internals:...
+        is_open: True
+        last_change_time: 2008-06-11 09:24:29
+        priority: P1
+        product: HeartOfGold
+        resolution:
+        see_also: []
+        severity: high
+        status: NEW
+        summary: Collect unknown persons in docking bay 2.
+    <BLANKLINE>
+    <BLANKLINE>
+
+Specifying a set of IDs that don't belong to any of the products will
+result in no bugs being returned.
+
+    >>> del bugzilla._bugs[2]
+    >>> bugzilla.initializeRemoteBugDB([1], products_to_update)
+    CALLED Launchpad.get_bugs({'ids': [1], 'permissive': True,
+    'products': ['HeartOfGold']})
+
+    >>> len(bugzilla._bugs)
+    0
+
+
+Getting the products for a set of remote bugs
+---------------------------------------------
+
+BugzillaLPPlugin provides a helper method, getProductsForRemoteBugs(),
+which takes a list of bug IDs or aliases and returns the products to
+which those bugs belong as a dict of (bug_id_or_alias, product)
+mappings.
+
+    >>> product_mappings = bugzilla.getProductsForRemoteBugs([1, 2])
+    CALLED Launchpad.get_bugs({'ids': [1, 2], 'permissive': True})
+
+    >>> for bug_id in sorted(product_mappings):
+    ...     print "%s: %s" % (bug_id, product_mappings[bug_id])
+    1: Marvin
+    2: HeartOfGold

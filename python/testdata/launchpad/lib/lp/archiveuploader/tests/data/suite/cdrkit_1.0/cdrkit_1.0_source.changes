@@ -1,0 +1,19 @@
+Format: 1.7
+Date: Wed, 25 Apr 2007 14:14:09 -0300
+Source: cdrkit
+Binary: cdrkit
+Architecture: source
+Version: 1.0
+Distribution: breezy
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Celso Providelo <cprov@canonical.com>
+Description: 
+ cdrkit     - Stuff for testing
+Changes: 
+ cdrkit (1.0) breezy; urgency=low
+ .
+   * Initial version
+Files: 
+ 795df9dd8c117799a81eb8a59a52af14 221 devel optional cdrkit_1.0.dsc
+ 5e89423ed5782c328158306946e1c56c 713 devel optional cdrkit_1.0.tar.gz

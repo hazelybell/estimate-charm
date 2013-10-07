@@ -1,0 +1,83 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+<body>
+<metal:block fill-slot="head_epilogue">
+  <metal:yui-dependencies
+    use-macro="context/@@launchpad_widget_macros/yui2calendar-dependencies" />
+
+  <tal:script
+    replace="structure
+    string:&lt;script id='milestone-script' type='text/javascript'&gt;" />
+    LPJS.use('node', 'lp.registry.milestoneoverlay', function (Y) {
+
+        // This is a value for the SELECT OPTION which is passed with
+        // the SELECT's "change" event. It includes some symbols that are not
+        // allowed for milestone names, so you can never add a milestone
+        // which will confuse the event handler.
+        var CREATE_MILESTONE_TARGET = '-CREATE-MILESTONE-TARGET-!@#$';
+
+        // The milestone_form will be set, if the form overlay is created.
+        var milestone_form_uri = '<tal:x replace="view/milestone_form_uri"/>';
+        var series_uri = '<tal:x replace="view/series_api_uri"/>';
+    <!--// No tal expressions after this point, but "<" also doesn't need
+        // to be escaped.
+
+        var get_by_id = function(id) {
+            return Y.one(Y.DOM.byId(id));
+        };
+
+        var add_milestone_to_menu = function(parameters) {
+            var select_menu = get_by_id('field.milestone_for_release');
+            var new_milestone_option = Y.one(
+                new Option(parameters.name + '*', parameters.name));
+            select_menu.appendChild(new_milestone_option);
+            var children = select_menu.get('children');
+            var last_index = children.size() - 1;
+            children.item(last_index).set('selected', true);
+            var div = select_menu.ancestor();
+            Y.lp.anim.green_flash({node: div}).run();
+        };
+
+        Y.on('domready', function () {
+            var select_menu = get_by_id('field.milestone_for_release');
+            var create_milestone_link = Y.Node.create(
+                '<a href="+addmilestone" id="create-milestone-link" ' +
+                'class="add js-action sprite">Create milestone</a>');
+            select_menu.ancestor().appendChild(create_milestone_link);
+            var config = {
+                milestone_form_uri: milestone_form_uri,
+                series_uri: series_uri,
+                next_step: add_milestone_to_menu,
+                activate_node: create_milestone_link
+                };
+            Y.lp.registry.milestoneoverlay.attach_widget(config);
+        });
+    });
+  -->
+  <tal:script replace="structure string:&lt;/script&gt;" />
+</metal:block>
+
+<div metal:fill-slot="main">
+  <div metal:use-macro="context/@@launchpad_form/form">
+    <div metal:fill-slot="extra_info" tal:condition="context/releases"
+         style="border-bottom: solid 1px black">
+      The following releases have been made for the
+      <tal:series replace="context/displayname" /> series:
+      <ul>
+        <li tal:repeat="release context/releases">
+          <tal:released replace="release/datereleased/fmt:date" />
+          <tal:link replace="structure release/fmt:link"/>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

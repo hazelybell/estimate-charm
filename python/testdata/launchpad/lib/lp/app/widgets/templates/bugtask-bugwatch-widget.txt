@@ -1,0 +1,10 @@
+<tr>
+
+  <td style="padding: 0px" valign="top">%(input_tag)s</td>
+  <td style="padding: 0px">
+    <label style="font-weight: normal" for="%(input_id)s">
+      %(input_label)s
+    </label>
+  </td>
+
+</tr>

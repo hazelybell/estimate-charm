@@ -1,0 +1,15 @@
+Just make sure this page contains the right links:
+
+    >>> user_browser.open("http://launchpad.dev/projects/")
+
+This link was removed.
+
+    >>> user_browser.getLink("Show all teams").url
+    Traceback (most recent call last):
+    ...
+    LinkNotFoundError
+
+The "Show all projects" link is still there.
+
+    >>> user_browser.getLink("Show all projects").url
+    'http://launchpad.dev/projects/+all'

@@ -1,0 +1,24 @@
+RT/3.4.5 200 Ok
+
+id: ticket/1588
+Queue: OpenSSL-Bugs
+Owner: Nobody
+Creator: dan@obluda.cz
+Subject: Bug report with PATCH
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: dan@obluda.cz
+Cc:
+AdminCc:
+Created: Mon Oct 15 09:42:07 2007
+Starts: Not set
+Started: Not set
+Due: Not set
+Resolved: Not set
+Told: Not set
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+

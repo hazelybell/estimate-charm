@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:doaml="http://ns.balbinus.net/doaml#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:lp="https://launchpad.net/rdf/launchpad#"
+    xmlns:wot="http://xmlns.com/wot/0.1/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal">
+    <lp:Project>
+        <lp:specifiedAt
+            tal:attributes="rdf:resource
+                            string:${context/fmt:url}/+rdf" />
+        <lp:name tal:content="context/name">name</lp:name>
+        <lp:displayName tal:content="context/displayname">
+            Display Name
+        </lp:displayName>
+        <lp:title tal:content="context/title">Title</lp:title>
+        <lp:shortDescription tal:content="context/summary">
+            Short Description
+        </lp:shortDescription>
+        <lp:description tal:content="context/description">
+            Description
+        </lp:description>
+        <lp:creationDate tal:content="context/datecreated/fmt:datetime">
+            1970-01-01 00:00:00
+        </lp:creationDate>
+        <lp:homepage tal:attributes="rdf:resource context/homepageurl" />
+        <lp:wiki tal:condition="context/wikiurl"
+                 tal:attributes="rdf:resource context/wikiurl" />
+        <lp:freshmeatProject tal:condition="context/freshmeatproject"
+                             tal:content="context/freshmeatproject">
+            freshmeatproject
+        </lp:freshmeatProject>
+        <lp:sourceforgeProject tal:condition="context/sourceforgeproject"
+                             tal:content="context/sourceforgeproject">
+            sourceforgeproject
+        </lp:sourceforgeProject>
+        <lp:product tal:repeat="product context/products">
+            <lp:Product>
+                <lp:specifiedAt tal:attributes="rdf:resource
+                                                string:${product/fmt:url}/+rdf" />
+            </lp:Product>
+        </lp:product>
+        <lp:owner>
+            <foaf:Agent>
+                <foaf:Account
+                    tal:attributes="rdf:resource string:${context/owner/fmt:url}/+rdf"/>
+            </foaf:Agent>
+        </lp:owner>
+        <lp:status tal:condition="context/active">Active</lp:status>
+        <lp:status tal:condition="not:context/active">Inactive</lp:status>
+    </lp:Project>
+</rdf:RDF>

@@ -1,0 +1,1448 @@
+= The HWDB API =
+
+The HWDB API allows access to the HWDB tables.
+
+
+== The HWDB application root ==
+
+The HWDB application root provides the core methods to access HWDB
+tables. It also provides the set of known package names appearing
+in the table HWDriver.
+
+    >>> from lazr.restful.testing.webservice import (
+    ...     pprint_collection, pprint_entry)
+    >>> hwdb_root = webservice.get('/+hwdb').jsonBody()
+    >>> pprint_entry(hwdb_root)
+    driver_names_collection_link:
+        u'http://api.launchpad.dev/beta/+hwdb/driver_names'
+    package_names_collection_link:
+        u'http://api.launchpad.dev/beta/+hwdb/package_names'
+    resource_type_link: u'http://api.launchpad.dev/beta/#hwdb'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb'
+
+
+=== Device Queries and Devices ===
+
+The method HWDBApplication.devices returns known devices matching
+the given parameters bus and vendor ID. (See
+doc/hwdb-device-tables.txt for details about the underlying table
+HWDevice.)
+
+    >>> devices = webservice.get(
+    ...     '/+hwdb?ws.op=devices&bus=System&vendor_id=MSI').jsonBody()
+
+A device entry provides the attributes bus_product_id, name and variant.
+
+    >>> for entry in devices['entries']:
+    ...     pprint_entry(entry)
+    bus: u'System'
+    bus_product_id: u'MS-7369'
+    classes_collection_link: u'.../+hwdb/+device/1/classes'
+    drivers_collection_link: u'.../+hwdb/+device/1/drivers'
+    id: 1
+    name: u'MS-7369'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_device'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+device/1'
+    variant: None
+    vendor_id: u'MSI'
+    vendor_name: u'MSI'
+
+The query parameter `bus` must be a bus name as enumerated by HWBus.
+
+    >>> print webservice.get(
+    ...     '/+hwdb?ws.op=devices&bus=NoSuchBus&vendor_id=MSI')
+    HTTP/1.1 400 Bad Request
+    ...
+    bus: Invalid value "NoSuchBus". Acceptable values are: System, PCI,
+    USB, IEEE1394, SCSI, Parallel Port, Serial port, IDE, ATA, Floppy, ...
+
+Omitting the query parameters `bus` or `vendor_id` leads to an error.
+
+    >>> print webservice.get(
+    ...     '/+hwdb?ws.op=devices&bus=System')
+    HTTP/1.1 400 Bad Request
+    ...
+    vendor_id: Required input is missing.
+
+    >>> print webservice.get(
+    ...     '/+hwdb?ws.op=devices&vendor_id=MSI')
+    HTTP/1.1 400 Bad Request
+    ...
+    bus: Required input is missing.
+
+HWDBApplication.devices() allows the optional parameters product_id. Only
+devices matching the given value are returned.
+
+    >>> devices = webservice.get(
+    ...     '/+hwdb?ws.op=devices&bus=System&vendor_id=MSI&product_id=MS-7369')
+    >>> for entry in devices.jsonBody()['entries']:
+    ...     pprint_entry(entry)
+    bus: u'System'
+    bus_product_id: u'MS-7369'
+    classes_collection_link: u'.../+hwdb/+device/1/classes'
+    drivers_collection_link: u'.../+hwdb/+device/1/drivers'
+    id: 1
+    name: u'MS-7369'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_device'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+device/1'
+    variant: None
+    vendor_id: u'MSI'
+    vendor_name: u'MSI'
+
+    >>> devices = webservice.get(
+    ...     '/+hwdb?ws.op=devices&bus=System&vendor_id=MSI&product_id=nothing')
+    >>> print devices.jsonBody()['entries']
+    []
+
+Some buses have constraints for the values of vendor and product IDs.
+IDs for PCI devices, for example, must have the form 0x12ab. (For
+an overview of these constraints, see doc/hwdb-device-tables.txt.)
+Queries with invalid parameter values return a 400 error.
+
+    >>> print webservice.get(
+    ...     '/+hwdb?ws.op=devices&bus=PCI&vendor_id=WRONG')
+    HTTP/1.1 400 Bad Request
+    ...
+    u'WRONG' is not a valid vendor ID for PCI
+
+    >>> print webservice.get(
+    ...     '/+hwdb?ws.op=devices&bus=PCI&vendor_id=0x1234&product_id=BAD')
+    HTTP/1.1 400 Bad Request
+    ...
+    u'BAD' is not a valid product ID for PCI
+
+Single device records can be accessed too.
+
+    >>> device = webservice.get('/+hwdb/+device/2').jsonBody()
+    >>> pprint_entry(device)
+    bus: u'PCI'
+    bus_product_id: u'0x0455'
+    classes_collection_link: u'.../+hwdb/+device/2/classes'
+    drivers_collection_link: u'.../+hwdb/+device/2/drivers'
+    id: 2
+    name: u'MCP65 USB Controller'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_device'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+device/2'
+    variant: None
+    vendor_id: u'0x10de'
+    vendor_name: u'nVidia Corporation'
+
+A 404 error is returned, when a non-existent ID is passed in the URL...
+
+    >>> print webservice.get('/+hwdb/+device/1000000')
+    HTTP/1.1 404 Not Found
+    ...
+    Object: <lp.systemhomes.HWDBApplication
+    ... name: u'1000000'
+
+...and when an otherwise invalid ID is passed.
+
+    >>> print webservice.get('/+hwdb/+device/nonsense')
+    HTTP/1.1 404 Not Found
+    ...
+    Object: <lp.systemhomes.HWDBApplication
+    ... name: u'nonsense'
+
+HWDevice.drivers returns the list of drivers associtaed with this device.
+
+    >>> drivers = webservice.get('/+hwdb/+device/2/drivers').jsonBody()
+    >>> for driver in drivers['entries']:
+    ...     pprint_entry(driver)
+    id: 1
+    license: None
+    name: u'ehci_hcd'
+    package_name: u'linux-image-2.6.24-19-generic'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+driver/1'
+    id: 5
+    license: None
+    name: u'hub'
+    package_name: u'linux-image-2.6.24-19-generic'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+driver/5'
+    id: 2
+    license: None
+    name: u'usb'
+    package_name: u'linux-image-2.6.24-19-generic'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+driver/2'
+
+We can add and retrieve class data, i.e., the type of a device (printer,
+scanner, sound device) for a device. Device 2 is a PCI USB controller,
+having the main PCI class 12 and sub-class 3. Let's add a new device
+class record for this device by calling device.getOrCreateDevice(). This
+call returns a reference to a HWDeviceClass record.
+
+    >>> class_info = webservice.named_post(
+    ...     '/+hwdb/+device/2', 'getOrCreateDeviceClass', {}, main_class=12,
+    ...     sub_class=3).jsonBody()
+    >>> pprint_entry(class_info)
+    main_class: 12
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_device_class'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+deviceclass/1'
+    sub_class: 3
+
+A second call of this method returns the same record.
+
+    >>> class_info = webservice.named_post(
+    ...     '/+hwdb/+device/2', 'getOrCreateDeviceClass', {}, main_class=12,
+    ...     sub_class=3).jsonBody()
+    >>> print class_info['self_link']
+    http://api.launchpad.dev/beta/+hwdb/+deviceclass/1
+
+The property device.classes returns the collection of all classes
+assigned to the device.
+
+    >>> class_info = webservice.get('/+hwdb/+device/2/classes').jsonBody()
+    >>> for entry in class_info['entries']:
+    ...     pprint_entry(entry)
+    main_class: 12
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_device_class'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+deviceclass/1'
+    sub_class: 3
+
+We can delete existing class data by calling deviceclass.delete().
+
+    >>> print webservice.delete(class_info['entries'][0]['self_link'])
+    HTTP/1.1 200 Ok
+    ...
+
+    >>> class_info = webservice.get('/+hwdb/+device/2/classes').jsonBody()
+    >>> print class_info['total_size']
+    0
+
+
+=== Drivers and Driver Queries ===
+
+The method HWDBApplication.drivers() returns known drivers matching
+the given optional parameters package_name and name. (See
+doc/hwdb-device-tables.txt for details about the underlying table
+HWDriver.)
+
+All driver records from the sample data have package_name ==
+'linux-image-2.6.24-19-generic'; let's add some driver records
+with different package names, so that we can see how filtering
+by name works.
+
+    >>> from zope.component import getUtility
+    >>> from lp.testing import login, logout, ANONYMOUS
+    >>> from lp.hardwaredb.interfaces.hwdb import IHWDriverSet
+    >>> login(ANONYMOUS)
+    >>> driver_set = getUtility(IHWDriverSet)
+    >>> # A typical graphics card driver
+    >>> driver_set.create('xorg', 'nv', None)
+    <HWDriver at ...>
+    >>> # A driver without an associated package.
+    >>> driver_set.create(None, 'usb', None)
+    <HWDriver at ...>
+    >>> # And another driver without an associated package.
+    >>> driver_set.create('', 'foo', None)
+    <HWDriver at ...>
+    >>> logout()
+
+If no parameters are specified, HWDBApplication.drivers() returns all
+known drivers. A device entry provides the attributes bus_product_id,
+name, package_name, variant and license.
+
+    >>> drivers = webservice.get('/+hwdb?ws.op=drivers&ws.size=15').jsonBody()
+    >>> for entry in drivers['entries']:
+    ...     pprint_entry(entry)
+    id: 1
+    license: None
+    name: u'ehci_hcd'
+    package_name: u'linux-image-2.6.24-19-generic'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+driver/1'
+    id: 2
+    license: None
+    name: u'usb'
+    package_name: u'linux-image-2.6.24-19-generic'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+driver/2'
+    id: 3
+    license: None
+    name: u'usb-storage'
+    package_name: u'linux-image-2.6.24-19-generic'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+driver/3'
+    id: 4
+    license: None
+    name: u'sd'
+    package_name: u'linux-image-2.6.24-19-generic'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+driver/4'
+    id: 5
+    license: None
+    name: u'hub'
+    package_name: u'linux-image-2.6.24-19-generic'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+driver/5'
+    id: 6
+    license: None
+    name: u'ahci'
+    package_name: u'linux-image-2.6.24-19-generic'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+driver/6'
+    id: 7
+    license: None
+    name: u'sr'
+    package_name: u'linux-image-2.6.24-19-generic'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+driver/7'
+    id: 8
+    license: None
+    name: u'nv'
+    package_name: u'xorg'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+driver/8'
+    id: 9
+    license: None
+    name: u'usb'
+    package_name: u''
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+driver/9'
+    id: 10
+    license: None
+    name: u'foo'
+    package_name: u''
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+driver/10'
+
+If we specify a package name, only drivers from this package are
+returned.
+
+    >>> drivers = webservice.get(
+    ...     '/+hwdb?ws.op=drivers&package_name=xorg').jsonBody()
+    >>> [nv_xorg_driver] = drivers['entries']
+    >>> pprint_entry(nv_xorg_driver)
+    id: 8
+    license: None
+    name: u'nv'
+    package_name: u'xorg'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+driver/8'
+
+If we specify an empty package name, those drivers are returned where
+a package_name is not recorded.
+
+    >>> drivers = webservice.get(
+    ...     '/+hwdb?ws.op=drivers&package_name=').jsonBody()
+    >>> for entry in drivers['entries']:
+    ...     pprint_entry(entry)
+    id: 9
+    license: None
+    name: u'usb'
+    package_name: u''
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+driver/9'
+    id: 10
+    license: None
+    name: u'foo'
+    package_name: u''
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+driver/10'
+
+If the parameter name is specified but no package_name, all drivers with
+the given name are returned.
+
+    >>> drivers = webservice.get(
+    ...     '/+hwdb?ws.op=drivers&name=usb').jsonBody()
+    >>> for entry in drivers['entries']:
+    ...     pprint_entry(entry)
+    id: 2
+    license: None
+    name: u'usb'
+    package_name: u'linux-image-2.6.24-19-generic'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+driver/2'
+    id: 9
+    license: None
+    name: u'usb'
+    package_name: u''
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+driver/9'
+
+If package_name and name are specified, those records are returned that
+match both values.
+
+    >>> drivers = webservice.get(
+    ...     '/+hwdb?ws.op=drivers&name=usb'
+    ...     '&package_name=linux-image-2.6.24-19-generic').jsonBody()
+    >>> [usb_driver] = drivers['entries']
+    >>> pprint_entry(usb_driver)
+    id: 2
+    license: None
+    name: u'usb'
+    package_name: u'linux-image-2.6.24-19-generic'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+driver/2'
+
+Single drivers can be retrieved too.
+
+    >>> pprint_entry(webservice.get('/+hwdb/+driver/1').jsonBody())
+    id: 1
+    license: None
+    name: u'ehci_hcd'
+    package_name: u'linux-image-2.6.24-19-generic'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+driver/1'
+
+A 404 error is returned, when a non-existent ID is passed in the URL...
+
+    >>> print webservice.get('/+hwdb/+driver/1000000')
+    HTTP/1.1 404 Not Found
+    ...
+    Object: <lp.systemhomes.HWDBApplication
+    ... name: u'1000000'
+
+...and when an otherwise invalid ID is passed.
+
+    >>> print webservice.get('/+hwdb/+driver/nonsense')
+    HTTP/1.1 404 Not Found
+    ...
+    Object: <lp.systemhomes.HWDBApplication
+    ... name: u'nonsense'
+
+Once we've got a driver, we can search for submissions associated with it.
+
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb/+driver/1', 'getSubmissions').jsonBody()
+    >>> for submission in submissions['entries']:
+    ...     print submission['submission_key']
+    sample-submission
+
+We can filter the list of drivers by distribution.
+
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb/+driver/1', 'getSubmissions',
+    ...     distribution=webservice.getAbsoluteUrl('/ubuntu')).jsonBody()
+    >>> for submission in submissions['entries']:
+    ...     print submission['submission_key']
+    sample-submission
+
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb/+driver/1', 'getSubmissions',
+    ...     distribution=webservice.getAbsoluteUrl('/debian')).jsonBody()
+    >>> print submissions['total_size']
+    0
+
+We can filter the list of drivers by distribution series.
+
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb/+driver/1', 'getSubmissions',
+    ...     distroseries=webservice.getAbsoluteUrl('/ubuntu/hoary')).jsonBody()
+    >>> for submission in submissions['entries']:
+    ...     print submission['submission_key']
+    sample-submission
+
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb/+driver/1', 'getSubmissions',
+    ...     distroseries=webservice.getAbsoluteUrl('/ubuntu/warty')).jsonBody()
+    >>> print submissions['total_size']
+    0
+
+We can filter the list of drivers by processor architecture.
+
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb/+driver/1', 'getSubmissions',
+    ...     architecture='i386').jsonBody()
+    >>> for submission in submissions['entries']:
+    ...     print submission['submission_key']
+    sample-submission
+
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb/+driver/1', 'getSubmissions',
+    ...     architecture='powerpc').jsonBody()
+    >>> print submissions['total_size']
+    0
+
+We can filter by distribution series and processor architecture.
+
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb/+driver/1', 'getSubmissions',
+    ...     distroseries=webservice.getAbsoluteUrl('/ubuntu/hoary'),
+    ...     architecture='i386').jsonBody()
+    >>> for submission in submissions['entries']:
+    ...     print submission['submission_key']
+    sample-submission
+
+
+=== Driver names and package names ===
+
+The HWDB application object provides a list of known driver names...
+
+    >>> driver_names = webservice.get(
+    ...     hwdb_root['driver_names_collection_link']).jsonBody()
+    >>> for driver_name in driver_names['entries']:
+    ...     pprint_entry(driver_name)
+    name: u'ahci'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver_name'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+drivername/ahci'
+    name: u'ehci_hcd'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver_name'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+drivername/ehci_hcd'
+    name: u'foo'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver_name'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+drivername/foo'
+    name: u'hub'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver_name'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+drivername/hub'
+    name: u'nv'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_driver_name'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+drivername/nv'
+
+...and of package names.
+
+    >>> package_names = webservice.get(
+    ...     hwdb_root['package_names_collection_link']).jsonBody()
+    >>> for package_name in package_names['entries']:
+    ...     pprint_entry(package_name)
+    package_name: u''
+    resource_type_link:
+        u'http://api.launchpad.dev/beta/#h_w_driver_package_name'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+driverpackagename/'
+    package_name: u'linux-image-2.6.24-19-generic'
+    resource_type_link:
+        u'http://api.launchpad.dev/beta/#h_w_driver_package_name'
+    self_link:
+        u'http://api.launchpad.dev/beta/+hwdb/+driverpackagename/linux-...
+    package_name: u'xorg'
+    resource_type_link:
+        u'http://api.launchpad.dev/beta/#h_w_driver_package_name'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+driverpackagename/xorg'
+
+
+=== HWDB submissions and submission queries ===
+
+A single submission can be accessed via its submission key. (See below
+for the contents of devices_collection_link.)
+
+    >>> submission = webservice.get(
+    ...     '/+hwdb/+submission/sample-submission').jsonBody()
+    >>> pprint_entry(submission)
+    contactable: False
+    date_created: u'2008-09-26T17:19:18+00:00'
+    date_submitted: u'2008-09-30T08:19:00.222131+00:00'
+    devices_collection_link: u'.../+hwdb/+submission/sample-submission/devices'
+    format: u'Version 1'
+    owner_link: u'http://api.launchpad.dev/beta/~name12'
+    private: False
+    raw_submission_link:
+        u'.../+hwdb/+submission/sample-submission/raw_submission'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_submission'
+    self_link: u'.../+hwdb/+submission/sample-submission'
+    status: u'Processed'
+    submission_key: u'sample-submission'
+
+Accessing the raw submission data yields a redirect to a Librarian URL.
+
+    >>> print webservice.get(submission['raw_submission_link'])
+    HTTP/1.1 303 See Other...
+    Content-Length: 0
+    Content-Type: text/plain
+    Location: http://.../92/sample-submission-2.xml
+    ...
+
+A 404 error is returned when a client tries to access a non-existent
+submission.
+
+    >>> print webservice.get('/+hwdb/+submission/nonsense')
+    HTTP/1.1 404 Not Found
+    ...
+    Object: <...systemhomes.HWDBApplication object at ...>, name: u'nonsense'
+
+Submissions which mention a specific device can be retrieved by
+using the getSubmissions operation.
+
+    >>> submissions = webservice.get(
+    ...     '/+hwdb/+device/2?ws.op=getSubmissions').jsonBody()
+    >>> for submission in submissions['entries']:
+    ...     print submission['submission_key']
+    sample-submission
+
+We can limit the result set to submissions where the device is accessed
+by a specific driver. Device 2 is a USB controller, so will get the sample
+submission when we set the parameter driver to the usb driver...
+
+    >>> from urllib import urlencode
+    >>> parameters = {
+    ...     'ws.op': 'getSubmissions',
+    ...     'driver': usb_driver['self_link'],
+    ...     }
+    >>> submissions = webservice.get(
+    ...     '/+hwdb/+device/2?' + urlencode(parameters)).jsonBody()
+    >>> for submission in submissions['entries']:
+    ...     print submission['submission_key']
+    sample-submission
+
+...but when we set it to nv_xorg_driver, we get an empty result set.
+
+    >>> parameters = {
+    ...     'ws.op': 'getSubmissions',
+    ...     'driver': nv_xorg_driver['self_link'],
+    ...     }
+    >>> submissions = webservice.get(
+    ...     '/+hwdb/+device/2?' + urlencode(parameters)).jsonBody()
+    >>> print submissions['total_size']
+    0
+
+We can also limit the result set to submissions made for a specific
+distribution...
+
+    >>> distros = webservice.get("/distros").jsonBody()
+    >>> ubuntu = distros['entries'][0]
+    >>> ubuntu['name']
+    u'ubuntu'
+    >>> debian = distros['entries'][3]
+    >>> debian['name']
+    u'debian'
+
+    >>> parameters = {
+    ...     'ws.op': 'getSubmissions',
+    ...     'distribution': ubuntu['self_link'],
+    ...     }
+    >>> submissions = webservice.get(
+    ...     '/+hwdb/+device/2?' + urlencode(parameters)).jsonBody()
+    >>> for submission in submissions['entries']:
+    ...     print submission['submission_key']
+    sample-submission
+
+    >>> parameters = {
+    ...     'ws.op': 'getSubmissions',
+    ...     'distribution': debian['self_link'],
+    ...     }
+    >>> submissions = webservice.get(
+    ...     '/+hwdb/+device/2?' + urlencode(parameters)).jsonBody()
+    >>> print submissions['total_size']
+    0
+
+...for a specific processor architecture...
+
+    >>> parameters = {
+    ...     'ws.op': 'getSubmissions',
+    ...     'architecture': 'i386',
+    ...     }
+    >>> submissions = webservice.get(
+    ...     '/+hwdb/+device/2?' + urlencode(parameters)).jsonBody()
+    >>> for submission in submissions['entries']:
+    ...     print submission['submission_key']
+    sample-submission
+
+    >>> parameters = {
+    ...     'ws.op': 'getSubmissions',
+    ...     'architecture': 'amd64',
+    ...     }
+    >>> submissions = webservice.get(
+    ...     '/+hwdb/+device/2?' + urlencode(parameters)).jsonBody()
+    >>> print submissions['total_size']
+    0
+
+...for a specific distro series...
+
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb/+device/2', 'getSubmissions',
+    ...     distroseries=webservice.getAbsoluteUrl('/ubuntu/hoary')).jsonBody()
+    >>> for submission in submissions['entries']:
+    ...     print submission['submission_key']
+    sample-submission
+
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb/+device/2', 'getSubmissions',
+    ...     distroseries=webservice.getAbsoluteUrl('/ubuntu/warty')).jsonBody()
+    >>> print submissions['total_size']
+    0
+
+...and the combination of a distro series and processor architecture.
+
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb/+device/2', 'getSubmissions',
+    ...     distroseries=webservice.getAbsoluteUrl('/ubuntu/hoary'),
+    ...     architecture='i386').jsonBody()
+    >>> for submission in submissions['entries']:
+    ...     print submission['submission_key']
+    sample-submission
+
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb/+device/2', 'getSubmissions',
+    ...     distroseries=webservice.getAbsoluteUrl('/ubuntu/hoary'),
+    ...     architecture='powerpc').jsonBody()
+    >>> print submissions['total_size']
+    0
+
+But we can't supply both distribution and distroseries.
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb/+device/2', 'getSubmissions',
+    ...     distribution=webservice.getAbsoluteUrl('/ubuntu'),
+    ...     distroseries=webservice.getAbsoluteUrl('/ubuntu/hoary'))
+    HTTP/1.1 400 Bad Request
+    ...
+    Only one of `distribution` or `distroseries` can be present.
+
+We can query for submissions from a particular user.
+
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb/+device/2', 'getSubmissions',
+    ...     owner=webservice.getAbsoluteUrl('/~name12')).jsonBody()
+    >>> for submission in submissions['entries']:
+    ...     print submission['submission_key']
+    sample-submission
+
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb/+device/2', 'getSubmissions',
+    ...     owner=webservice.getAbsoluteUrl('/~name20')).jsonBody()
+    >>> print submissions['total_size']
+    0
+
+=== Getting all submissions for a user ===
+
+We can get all of a user's hardware submissions by retrieving their
+`hardware_submissions` collection.
+
+    >>> name12 = webservice.get(webservice.getAbsoluteUrl('/~name12')).jsonBody()
+    >>> pprint_collection(
+    ...     webservice.get(
+    ...         name12['hardware_submissions_collection_link']).jsonBody())
+    resource_type_link: u'http://.../#h_w_submission-page-resource'
+    start: 0
+    total_size: 2
+    ...
+    submission_key: u'sample-submission'
+    ...
+
+
+=== Searching for submissions ===
+
+Alternatively, we can also search for hardware submissions by user:
+
+    >>> owner = webservice.getAbsoluteUrl('/~name12')
+    >>> submissions = webservice.get(
+    ...     '/+hwdb?ws.op=search&owner=%s' % owner).jsonBody()
+    >>> print submissions['total_size']
+    2
+
+    >>> owner = webservice.getAbsoluteUrl('/~name20')
+    >>> submissions = webservice.get(
+    ...     '/+hwdb?ws.op=search&owner=%s' % owner).jsonBody()
+    >>> print submissions['total_size']
+    0
+
+...and by device:
+
+    >>> device = webservice.getAbsoluteUrl('/+hwdb/+device/1')
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb', 'search', device=device).jsonBody()
+    >>> print submissions['total_size']
+    1
+
+...and by driver:
+
+    >>> driver = webservice.getAbsoluteUrl('/+hwdb/+driver/1')
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb', 'search', driver=driver).jsonBody()
+    >>> print submissions['total_size']
+    1
+
+...and by distribution:
+
+    >>> ubuntu_url = webservice.getAbsoluteUrl('/ubuntu')
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb', 'search', distribution=ubuntu_url).jsonBody()
+    >>> print submissions['total_size']
+    1
+    >>> debian_url = webservice.getAbsoluteUrl('/debian')
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb', 'search', distribution=debian_url).jsonBody()
+    >>> print submissions['total_size']
+    0
+
+...and by distroseries:
+
+    >>> hoary_url = webservice.getAbsoluteUrl('/ubuntu/hoary')
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb', 'search', distroseries=hoary_url).jsonBody()
+    >>> print submissions['total_size']
+    1
+    >>> warty_url = webservice.getAbsoluteUrl('/ubuntu/warty')
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb', 'search', distroseries=warty_url).jsonBody()
+    >>> print submissions['total_size']
+    0
+
+...and by architecture:
+
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb', 'search', architecture='i386').jsonBody()
+    >>> print submissions['total_size']
+    1
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb', 'search', architecture='powerpc').jsonBody()
+    >>> print submissions['total_size']
+    0
+
+...and by date created:
+
+    >>> date_created = u'2007-09-11T00:00:00+00:00'
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb', 'search', created_before=date_created).jsonBody()
+    >>> print submissions['total_size']
+    1
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb', 'search', created_after=date_created).jsonBody()
+    >>> print submissions['total_size']
+    1
+
+...and by date submitted:
+
+    >>> date_submitted = u'2007-09-11T15:23:45.653316+00:00'
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb', 'search', submitted_before=date_submitted).jsonBody()
+    >>> print submissions['total_size']
+    1
+    >>> submissions = webservice.named_get(
+    ...     '/+hwdb', 'search', submitted_after=date_submitted).jsonBody()
+    >>> print submissions['total_size']
+    1
+
+
+=== Submission Devices ===
+
+The table HWSubmissionDevice associates devices with submissions.
+(See hwdb-device-tables.txt for details.)
+
+A single HWSubmissionDevice record can be accessed via its database ID.
+
+    >>> submission_device = webservice.get(
+    ...     '/+hwdb/+submissiondevice/3').jsonBody()
+    >>> pprint_entry(submission_device)
+    device_link: u'http://api.launchpad.dev/beta/+hwdb/+device/2'
+    driver_link: u'http://api.launchpad.dev/beta/+hwdb/+driver/1'
+    hal_device_id: 121
+    id: 3
+    parent_link: u'http://api.launchpad.dev/beta/+hwdb/+submissiondevice/2'
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_submission_device'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+submissiondevice/3'
+
+The HWSubmissionDevice records belonging to a given submission can
+are stored in HWSubmission.devices.
+
+    >>> url = '/+hwdb/+submission/sample-submission/devices?ws.size=3'
+    >>> submission_devices = webservice.get(url).jsonBody()
+    >>> for submission_device in submission_devices['entries']:
+    ...     pprint_entry(submission_device)
+    device_link: u'http://api.launchpad.dev/beta/+hwdb/+device/2'
+    driver_link: None
+    hal_device_id: 121
+    id: 2
+    parent_link: u'.../+hwdb/+submissiondevice/1'
+    resource_type_link: u'.../#h_w_submission_device'
+    self_link: u'.../+hwdb/+submissiondevice/2'
+    device_link: u'.../+hwdb/+device/5'
+    driver_link: None
+    hal_device_id: 65
+    id: 16
+    parent_link: u'.../+hwdb/+submissiondevice/1'
+    resource_type_link: u'.../#h_w_submission_device'
+    self_link: u'.../+hwdb/+submissiondevice/16'
+    device_link: u'.../+hwdb/+device/2'
+    driver_link: u'.../+hwdb/+driver/1'
+    hal_device_id: 121
+    id: 3
+    parent_link: u'.../+hwdb/+submissiondevice/2'
+    resource_type_link: u'.../#h_w_submission_device'
+    self_link: u'.../+hwdb/+submissiondevice/3'
+
+
+== Vendor ID queries ==
+
+A vendor ID can be accessed by via its database ID.
+
+    >>> vendor_id = webservice.get('/+hwdb/+hwvendorid/1').jsonBody()
+    >>> pprint_entry(vendor_id)
+    bus: u'System'
+    id: 1
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_vendor_i_d'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+hwvendorid/1'
+    vendor_id: u'MSI'
+
+A 404 error is returned, when a non-existent ID is passed in the URL...
+
+    >>> print webservice.get('/+hwdb/+hwvendorid/1000000')
+    HTTP/1.1 404 Not Found
+    ...
+    Object: <lp.systemhomes.HWDBApplication
+    ... name: u'1000000'
+
+...and when an otherwise invalid ID is passed.
+
+    >>> print webservice.get('/+hwdb/+hwvendorid/nonsense')
+    HTTP/1.1 404 Not Found
+    ...
+    Object: <lp.systemhomes.HWDBApplication
+    ... name: u'nonsense'
+
+Known vendor IDs for a given bus can be queried with
+HWDBApplication.vendorIDs().
+
+    >>> vendor_ids = webservice.get(
+    ...     '/+hwdb?ws.op=vendorIDs&bus=USB').jsonBody()
+    >>> for vendor_id in vendor_ids['entries']:
+    ...     pprint_entry(vendor_id)
+    bus: u'USB'
+    id: 3
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_vendor_i_d'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+hwvendorid/3'
+    vendor_id: u'0x04b4'
+    bus: u'USB'
+    id: 4
+    resource_type_link: u'http://api.launchpad.dev/beta/#h_w_vendor_i_d'
+    self_link: u'http://api.launchpad.dev/beta/+hwdb/+hwvendorid/4'
+    vendor_id: u'0x0dda'
+
+
+== Statistical methods ==
+
+We can query how often a given device or a given driver appears in
+HWDB submissions.
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numDevicesInSubmissions',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     '
+    ...     ).jsonBody()
+    1
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numDevicesInSubmissions', driver_name='sd').jsonBody()
+    5
+
+We can ask how many given devices controlled by a given driver appear
+in HWDB submissions.
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numDevicesInSubmissions',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='sd').jsonBody()
+    1
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numDevicesInSubmissions',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='nonsense').jsonBody()
+    0
+
+This count can be limited to a package_name.
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numDevicesInSubmissions',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     package_name='linux-image-2.6.24-19-generic').jsonBody()
+    1
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numDevicesInSubmissions',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     package_name='nonsense').jsonBody()
+    0
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numDevicesInSubmissions', driver_name='sd',
+    ...     package_name='linux-image-2.6.24-19-generic').jsonBody()
+    5
+
+While the parameters for a device and for a driver are optional,
+specifying neither leads to an error.
+
+    >>> print webservice.named_get('/+hwdb', 'numDevicesInSubmissions')
+    HTTP/1.1 400 Bad Request
+    ...
+    Specify (bus, vendor_id, product_id) or driver_name.
+
+We can additionally pass a reference to a distribution...
+
+    >>> ubuntu_url = webservice.getAbsoluteUrl('/ubuntu')
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numDevicesInSubmissions',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distribution=ubuntu_url).jsonBody()
+    1
+    >>> debian_url = webservice.getAbsoluteUrl('/debian')
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numDevicesInSubmissions',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distribution=debian_url).jsonBody()
+    0
+
+...a reference to a distroseries...
+
+    >>> hoary_url = webservice.getAbsoluteUrl('/ubuntu/hoary')
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numDevicesInSubmissions',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distroseries=hoary_url).jsonBody()
+    1
+    >>> warty_url = webservice.getAbsoluteUrl('/ubuntu/warty')
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numDevicesInSubmissions',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distroseries=warty_url).jsonBody()
+    0
+
+...or a reference to a distroarchseries.
+
+    >>> hoary_i386_url = webservice.getAbsoluteUrl('/ubuntu/hoary/i386')
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numDevicesInSubmissions',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distroarchseries=hoary_i386_url).jsonBody()
+    1
+    >>> hoary_hppa_url = webservice.getAbsoluteUrl('/ubuntu/hoary/hppa')
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numDevicesInSubmissions',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distroarchseries=hoary_hppa_url).jsonBody()
+    0
+
+But at most one of the parameters distribution, distroseries,
+distroarchseries may be specified.
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numDevicesInSubmissions',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distribution=ubuntu_url, distroseries=hoary_url)
+    ...
+    HTTP/1.1 400 Bad Request
+    ...
+    Only one of `distribution`, `distroseries` or `distroarchseries` can
+    be present.
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numDevicesInSubmissions',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distribution=ubuntu_url,
+    ...     distroarchseries=hoary_i386_url)
+    ...
+    HTTP/1.1 400 Bad Request
+    ...
+    Only one of `distribution`, `distroseries` or `distroarchseries` can
+    be present.
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numDevicesInSubmissions',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distroseries=hoary_url, distroarchseries=hoary_i386_url
+    ...     )
+    HTTP/1.1 400 Bad Request
+    ...
+    Only one of `distribution`, `distroseries` or `distroarchseries` can
+    be present.
+
+numSubmissionsWithDevice() returns a dicitionary containing the
+number of submissions mentioning a given device or driver, and the
+number of all processed submissions, limited to the given distribution,
+distroseries or distroarchseries, if one of these parameters is
+specified.
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numSubmissionsWithDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     '
+    ...     ).jsonBody()
+    {u'submissions_with_device': 1, u'all_submissions': 1}
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numSubmissionsWithDevice', driver_name='sd').jsonBody()
+    {u'submissions_with_device': 1, u'all_submissions': 1}
+
+The parameters for a device and a driver can be combined.
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numSubmissionsWithDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='sd').jsonBody()
+    {u'submissions_with_device': 1, u'all_submissions': 1}
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numSubmissionsWithDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='nonsense').jsonBody()
+    {u'submissions_with_device': 0, u'all_submissions': 1}
+
+Additionally, a package_name can be passed.
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numSubmissionsWithDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     package_name='linux-image-2.6.24-19-generic').jsonBody()
+    {u'submissions_with_device': 1, u'all_submissions': 1}
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numSubmissionsWithDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     package_name='nonsense').jsonBody()
+    {u'submissions_with_device': 0, u'all_submissions': 1}
+
+If neither a device nor a driver is specified, an error is returned.
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numSubmissionsWithDevice')
+    HTTP/1.1 400 Bad Request
+    ...
+    Specify (bus, vendor_id, product_id) or driver_name.
+
+The count can be limited to a distribution...
+
+    >>> ubuntu_url = webservice.getAbsoluteUrl('/ubuntu')
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numSubmissionsWithDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distribution=ubuntu_url).jsonBody()
+    {u'submissions_with_device': 1, u'all_submissions': 1}
+    >>> debian_url = webservice.getAbsoluteUrl('/debian')
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numSubmissionsWithDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distribution=debian_url).jsonBody()
+    {u'submissions_with_device': 0, u'all_submissions': 0}
+
+...or a distroseries...
+
+    >>> hoary_url = webservice.getAbsoluteUrl('/ubuntu/hoary')
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numSubmissionsWithDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distroseries=hoary_url).jsonBody()
+    {u'submissions_with_device': 1, u'all_submissions': 1}
+    >>> warty_url = webservice.getAbsoluteUrl('/ubuntu/warty')
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numSubmissionsWithDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distroseries=warty_url).jsonBody()
+    {u'submissions_with_device': 0, u'all_submissions': 0}
+
+...or a distroarchseries.
+
+    >>> hoary_i386_url = webservice.getAbsoluteUrl('/ubuntu/hoary/i386')
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numSubmissionsWithDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distroarchseries=hoary_i386_url).jsonBody()
+    {u'submissions_with_device': 1, u'all_submissions': 1}
+    >>> hoary_hppa_url = webservice.getAbsoluteUrl('/ubuntu/hoary/hppa')
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numSubmissionsWithDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distroarchseries=hoary_hppa_url).jsonBody()
+    {u'submissions_with_device': 0, u'all_submissions': 0}
+
+But at most one of the parameters distribution, distroseries,
+distroarchseries may be specified.
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numSubmissionsWithDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distribution=ubuntu_url, distroseries=hoary_url)
+    ...
+    HTTP/1.1 400 Bad Request
+    ...
+    Only one of `distribution`, `distroseries` or `distroarchseries` can
+    be present.
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numSubmissionsWithDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distribution=ubuntu_url,
+    ...     distroarchseries=hoary_i386_url)
+    ...
+    HTTP/1.1 400 Bad Request
+    ...
+    Only one of `distribution`, `distroseries` or `distroarchseries` can
+    be present.
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numSubmissionsWithDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distroseries=hoary_url, distroarchseries=hoary_i386_url
+    ...     )
+    HTTP/1.1 400 Bad Request
+    ...
+    Only one of `distribution`, `distroseries` or `distroarchseries` can
+    be present.
+
+numOwnersOfDevice() returns a dictionary containing the number of
+people which submitted at least one hardware report mentioning the
+given device or driver, and the number of all people who submitted
+a hardware report. The result can be limited to hardware reports for
+the given distribution, distroseries or distroarchseries, if one
+of these parameters is specified.
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numOwnersOfDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     '
+    ...     ).jsonBody()
+    {u'owners': 1, u'all_submitters': 1}
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numOwnersOfDevice', driver_name='sd').jsonBody()
+    {u'owners': 1, u'all_submitters': 1}
+
+A device and a driver can be specified simultaneously.
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numOwnersOfDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='sd').jsonBody()
+    {u'owners': 1, u'all_submitters': 1}
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numOwnersOfDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='nonsense').jsonBody()
+    {u'owners': 0, u'all_submitters': 1}
+
+Specifying neiher a device nor a driver leads to an error.
+
+    >>> print webservice.named_get('/+hwdb', 'numOwnersOfDevice')
+    HTTP/1.1 400 Bad Request
+    ...
+    Specify (bus, vendor_id, product_id) or driver_name.
+
+Additionally, a package_name can be passed...
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numOwnersOfDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     package_name='linux-image-2.6.24-19-generic').jsonBody()
+    {u'owners': 1, u'all_submitters': 1}
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numOwnersOfDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     package_name='nonsense').jsonBody()
+    {u'owners': 0, u'all_submitters': 1}
+
+...a reference to a distribution...
+
+    >>> ubuntu_url = webservice.getAbsoluteUrl('/ubuntu')
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numOwnersOfDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distribution=ubuntu_url).jsonBody()
+    {u'owners': 1, u'all_submitters': 1}
+    >>> debian_url = webservice.getAbsoluteUrl('/debian')
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numOwnersOfDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distribution=debian_url).jsonBody()
+    {u'owners': 0, u'all_submitters': 0}
+
+...a reference to a distroseries...
+
+    >>> hoary_url = webservice.getAbsoluteUrl('/ubuntu/hoary')
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numOwnersOfDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distroseries=hoary_url).jsonBody()
+    {u'owners': 1, u'all_submitters': 1}
+    >>> warty_url = webservice.getAbsoluteUrl('/ubuntu/warty')
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numOwnersOfDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distroseries=warty_url).jsonBody()
+    {u'owners': 0, u'all_submitters': 0}
+
+...or a reference to a distroarchseries.
+
+    >>> hoary_i386_url = webservice.getAbsoluteUrl('/ubuntu/hoary/i386')
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numOwnersOfDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distroarchseries=hoary_i386_url).jsonBody()
+    {u'owners': 1, u'all_submitters': 1}
+    >>> hoary_hppa_url = webservice.getAbsoluteUrl('/ubuntu/hoary/hppa')
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numOwnersOfDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distroarchseries=hoary_hppa_url).jsonBody()
+    {u'owners': 0, u'all_submitters': 0}
+
+But at most one of the parameters distribution, distroseries,
+distroarchseries may be specified.
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numOwnersOfDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distribution=ubuntu_url, distroseries=hoary_url)
+    ...
+    HTTP/1.1 400 Bad Request
+    ...
+    Only one of `distribution`, `distroseries` or `distroarchseries` can
+    be present.
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numOwnersOfDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distribution=ubuntu_url,
+    ...     distroarchseries=hoary_i386_url)
+    ...
+    HTTP/1.1 400 Bad Request
+    ...
+    Only one of `distribution`, `distroseries` or `distroarchseries` can
+    be present.
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'numOwnersOfDevice',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distroseries=hoary_url, distroarchseries=hoary_i386_url
+    ...     )
+    HTTP/1.1 400 Bad Request
+    ...
+    Only one of `distribution`, `distroseries` or `distroarchseries` can
+    be present.
+
+
+== Relations between bugs and HWDB submissions ==
+
+We can query which owners of a device are related to a set of bugs. We
+must specify a device's bus, vendor ID and product ID and one or more
+bugs.
+
+By default, only bug reporters are looked up.
+
+    >>> for person in webservice.named_get(
+    ...     '/+hwdb', 'deviceDriverOwnersAffectedByBugs',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     bug_ids=[1]).jsonBody()['entries']:
+    ...     print person['display_name']
+    Sample Person
+
+We can additionally ask for bugsubscribers...
+
+    >>> for person in webservice.named_get(
+    ...     '/+hwdb', 'deviceDriverOwnersAffectedByBugs',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     bug_ids=[9], subscribed_to_bug=True).jsonBody()['entries']:
+    ...     print person['display_name']
+    Sample Person
+
+or users affected by a bug.
+
+    >>> from lp.testing.pages import webservice_for_person
+    >>> from lp.services.webapp.interfaces import OAuthPermission
+    >>> from lp.registry.interfaces.person import IPersonSet
+    >>> login('test@canonical.com')
+    >>> sample_person = getUtility(IPersonSet).getByEmail('test@canonical.com')
+    >>> logout()
+    >>> sample_person_webservice = webservice_for_person(
+    ...     sample_person, permission=OAuthPermission.WRITE_PUBLIC)
+    >>> bug_15 = webservice.get('/bugs/15').jsonBody()
+    >>> sample_person_webservice.named_post(
+    ...     bug_15['self_link'], 'markUserAffected',
+    ...     affected=True).jsonBody()
+    >>> for person in webservice.named_get(
+    ...     '/+hwdb', 'deviceDriverOwnersAffectedByBugs',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     bug_ids=[15], affected_by_bug=True).jsonBody()['entries']:
+    ...     print person['display_name']
+    Sample Person
+
+We can limit the search to a driver...
+
+    >>> for person in webservice.named_get(
+    ...     '/+hwdb', 'deviceDriverOwnersAffectedByBugs',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     bug_ids=[1], driver_name='sd').jsonBody()['entries']:
+    ...     print person['display_name']
+    Sample Person
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'deviceDriverOwnersAffectedByBugs',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     bug_ids=[9], driver_name='nonsense', subscribed_to_bug=True
+    ...     ).jsonBody()['total_size']
+    0
+
+...or a package name.
+
+    >>> for person in webservice.named_get(
+    ...     '/+hwdb', 'deviceDriverOwnersAffectedByBugs',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     bug_ids=[1], package_name='linux-image-2.6.24-19-generic'
+    ...     ).jsonBody()['entries']:
+    ...     print person['display_name']
+    Sample Person
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'deviceDriverOwnersAffectedByBugs',
+    ...     bus='IDE', vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     bug_ids=[9], package_name='nonsense', subscribed_to_bug=True
+    ...     ).jsonBody()['total_size']
+    0
+
+And we can search for people using a given driver and being affected by
+a bug.
+
+    >>> for person in webservice.named_get(
+    ...     '/+hwdb', 'deviceDriverOwnersAffectedByBugs',
+    ...     driver_name='sd', bug_ids=[1]).jsonBody()['entries']:
+    ...     print person['display_name']
+    Sample Person
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'deviceDriverOwnersAffectedByBugs',
+    ...     driver_name='nonsense', bug_ids=[1]).jsonBody()['total_size']
+    0
+
+A 400 error is returned, if neither a device nor a driver name is specified.
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'deviceDriverOwnersAffectedByBugs', bug_ids=[1])
+    HTTP/1.1 400 Bad Request
+    ...
+    Specify (bus, vendor_id, product_id) or driver_name.
+
+If one of the parameters bus, vendor_id, product_id is specified, all of
+them have to be specified.
+
+    >>> print webservice.named_get(
+    ...     '/+hwdb', 'deviceDriverOwnersAffectedByBugs',
+    ...     bus='IDE', bug_ids=[1])
+    HTTP/1.1 400 Bad Request
+    ...
+    Either specify bus, vendor_id and product_id or none of them.
+
+For a given bug, we can get a list of devices by device owner.
+The result is a tuple of (owner_name, bus_name, vendor_id, product_id).
+
+    >>> for entry in webservice.named_get(
+    ...     '/+hwdb', 'hwInfoByBugRelatedUsers',
+    ...     bug_ids=[1]).jsonBody():
+    ...     print entry
+    [u'name12', u'IDE', u'Optiarc', u'DVD RW AD-7170S ']
+    [u'name12', u'IDE', u'SEAGATE', u'ST3250820NS     ']
+    [u'name12', u'PCI', u'0x10de', u'0x0455']
+    [u'name12', u'PCI', u'0x10de', u'0x045d']
+    [u'name12', u'System', u'MSI', u'MS-7369']
+    [u'name12', u'USB', u'0x04b4', u'0x6560']
+    [u'name12', u'USB', u'0x0dda', u'0x2026']
+
+We can also get a list of devices and owners where the owner
+is subscribed to the bug.
+
+    >>> for entry in webservice.named_get(
+    ...     '/+hwdb', 'hwInfoByBugRelatedUsers',
+    ...     bug_ids=[9], subscribed_to_bug=True).jsonBody():
+    ...     print entry
+    [u'name12', u'IDE', u'Optiarc', u'DVD RW AD-7170S ']
+    [u'name12', u'IDE', u'SEAGATE', u'ST3250820NS     ']
+    [u'name12', u'PCI', u'0x10de', u'0x0455']
+    [u'name12', u'PCI', u'0x10de', u'0x045d']
+    [u'name12', u'System', u'MSI', u'MS-7369']
+    [u'name12', u'USB', u'0x04b4', u'0x6560']
+    [u'name12', u'USB', u'0x0dda', u'0x2026']
+
+And the same with affected users...
+
+    >>> for entry in webservice.named_get(
+    ...     '/+hwdb', 'hwInfoByBugRelatedUsers',
+    ...     bug_ids=[15], affected_by_bug=True).jsonBody():
+    ...     print entry
+    [u'name12', u'IDE', u'Optiarc', u'DVD RW AD-7170S ']
+    [u'name12', u'IDE', u'SEAGATE', u'ST3250820NS     ']
+    [u'name12', u'PCI', u'0x10de', u'0x0455']
+    [u'name12', u'PCI', u'0x10de', u'0x045d']
+    [u'name12', u'System', u'MSI', u'MS-7369']
+    [u'name12', u'USB', u'0x04b4', u'0x6560']
+    [u'name12', u'USB', u'0x0dda', u'0x2026']

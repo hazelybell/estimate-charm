@@ -1,0 +1,46 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+  <h2>Projects using this group</h2>
+
+  <p>
+    Projects listed here are using
+    <tal:group content="context/title">this group</tal:group>
+    to manage their translations through the respective
+    <a href="#teams">translation teams</a>.
+  </p>
+
+  <div id="related-projects"
+       tal:define="
+        distributions context/fetchDistrosForDisplay;
+        projectgroups context/fetchProjectGroupsForDisplay;
+        projects context/fetchProjectsForDisplay">
+    <div tal:condition="distributions" style="margin-top:1em;">
+      <h3 style="display: inline;">Distributions:</h3>
+      <tal:distribution repeat="distribution distributions">
+        <a href="#" tal:replace="structure distribution/fmt:link">Ubuntu
+        </a><tal:comma condition="not:repeat/distribution/end">, </tal:comma>
+      </tal:distribution>
+    </div>
+
+    <div tal:condition="projectgroups" style="margin-top:1em;">
+      <h3 style="display: inline;">Project groups:</h3>
+      <tal:projectgroup repeat="projectgroup projectgroups">
+        <a href="#" tal:replace="structure projectgroup/fmt:link">GNOME
+        </a><tal:comma condition="not:repeat/projectgroup/end">, </tal:comma>
+      </tal:projectgroup>
+    </div>
+
+    <div tal:condition="projects" style="margin-top:1em;">
+      <h3 style="display: inline;">Projects:</h3>
+      <tal:project repeat="project projects">
+        <a href="#" tal:replace="structure project/fmt:link">Firefox
+        </a><tal:comma condition="not:repeat/project/end">, </tal:comma>
+      </tal:project>
+    </div>
+
+  </div>
+</tal:root>

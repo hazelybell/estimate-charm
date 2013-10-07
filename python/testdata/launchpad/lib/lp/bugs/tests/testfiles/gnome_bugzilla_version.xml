@@ -1,0 +1,48 @@
+<?xml version="1.0" standalone="yes"?>
+<!DOCTYPE bugzilla SYSTEM "http://bugzilla.gnome.org/bugzilla.dtd">
+
+<bugzilla version="2.20+"
+          urlbase="http://bugzilla.gnome.org/"
+          maintainer="bugmaster@gnome.org"
+>
+
+    <bug>
+          <bug_id>1</bug_id>
+
+          <creation_ts>2002-07-19 01:01</creation_ts>
+          <short_desc>Warning messages appeared while loading zemacs</short_desc>
+          <delta_ts>2004-11-08 10:10:08</delta_ts>
+          <reporter_accessible>1</reporter_accessible>
+          <cclist_accessible>1</cclist_accessible>
+          <classification_id>1</classification_id>
+          <classification>Unclassified</classification>
+          <product>zemacs</product>
+          <component>program</component>
+          <version>21.4</version>
+          <rep_platform>i586</rep_platform>
+          <op_sys>All</op_sys>
+          <bug_status>RESOLVED</bug_status>
+          <resolution>FIXED</resolution>
+          <priority>normal</priority>
+          <bug_severity>normal</bug_severity>
+          <target_milestone>---</target_milestone>
+          <reporter>marna@pokie.com</reporter>
+          <assigned_to></assigned_to>
+
+          <long_desc>
+            <who>qa@foobie.com</who>
+            <bug_when>2003-01-22 00:15</bug_when>
+            <thetext>This bug has been automatically updated to last version of
+product available..  Please check if it is still valid.
+</thetext>
+          </long_desc>
+
+          <long_desc>
+            <who>carma@free.fr</who>
+            <bug_when>2003-09-08 10:19</bug_when>
+            <thetext>%(non_ascii_latin1)s</thetext>
+          </long_desc>
+
+    </bug>
+
+</bugzilla>

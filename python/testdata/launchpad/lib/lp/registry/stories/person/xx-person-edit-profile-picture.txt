@@ -1,0 +1,39 @@
+Changing a person's profile picture
+===================================
+
+Users can change their profile picture on their Edit page.
+
+Note that we have chosen not to expose the ability to customise a user's icon
+or logo.
+
+    >>> browser = setupBrowser(auth='Basic mark@example.com:test')
+    >>> browser.open('http://launchpad.dev/~mark')
+    >>> browser.url
+    'http://launchpad.dev/~mark'
+    >>> browser.getLink('Change details').click()
+    >>> browser.url
+    'http://launchpad.dev/~mark/+edit'
+
+    >>> find_tag_by_id(
+    ...     browser.contents, 'field.mugshot_current_img').get('src')
+    u'/@@/person-mugshot'
+
+    >>> from lp.testing.branding import set_branding
+    >>> set_branding(browser, icon=False, logo=False)
+
+    >>> browser.getControl('Save Changes').click()
+
+Here we see the updated values.
+
+    >>> browser.url
+    'http://launchpad.dev/~mark'
+    >>> browser.getLink('Change details').click()
+    >>> browser.url
+    'http://launchpad.dev/~mark/+edit'
+
+    >>> browser.getControl(name='field.mugshot.action').value
+    ['keep']
+    >>> find_tag_by_id(
+    ...     browser.contents, 'field.mugshot_current_img').get('src')
+    u'.../mugshot.png'
+

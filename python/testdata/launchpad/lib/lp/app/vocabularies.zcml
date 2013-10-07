@@ -1,0 +1,12 @@
+<!-- Copyright 2009-2012 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure xmlns="http://namespaces.zope.org/zope">
+    <class
+        class="lp.app.vocabularies.InformationTypeVocabulary">
+        <require
+            permission="zope.Public"
+            attributes="name title description"/>
+    </class>
+</configure>

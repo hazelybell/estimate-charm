@@ -1,0 +1,34 @@
+ <tal:root
+   xmlns:tal="http://xml.zope.org/namespaces/tal"
+   xmlns:metal="http://xml.zope.org/namespaces/metal"
+   omit-tag="">
+
+<div metal:define-macro="show_result">
+  <tal:comment condition="nothing">
+    Expects a parameter called 'result'.
+  </tal:comment>
+
+  <img tal:attributes="src python:view.iconForCodeImportResultStatus(result.status);
+                       title result/status/title"/>
+  Import started
+  <tal:when replace="result/date_job_started/fmt:displaydate">
+    4 hours ago
+  </tal:when>
+  on <tal:machine replace="structure result/machine/fmt:link" />
+  and finished
+  <tal:when replace="result/date_job_finished/fmt:displaydate">
+    3 hours ago
+  </tal:when>
+  taking
+  <tal:duration replace="result/job_duration/fmt:approximateduration">
+    five minutes
+  </tal:duration>
+  <tal:log-file condition="result/log_file">
+    &mdash;
+    <a tal:attributes="href result/log_file/http_url">
+      see the log
+    </a>
+  </tal:log-file>
+</div>
+
+</tal:root>

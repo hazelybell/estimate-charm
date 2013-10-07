@@ -1,0 +1,24 @@
+RT/3.4.5 200 Ok
+
+id: ticket/1587
+Queue: OpenSSL-Bugs
+Owner: appro
+Creator: alexlam06@gmail.com
+Subject: DTLS: ChangeCipherSpec is causing handshake message sequence number to increment
+Status: stalled
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: alexlam06@gmail.com
+Cc:
+AdminCc:
+Created: Thu Oct 11 14:47:42 2007
+Starts: Not set
+Started: Sun Oct 21 15:47:14 2007
+Due: Not set
+Resolved: Sun Oct 21 15:47:14 2007
+Told: Not set
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+

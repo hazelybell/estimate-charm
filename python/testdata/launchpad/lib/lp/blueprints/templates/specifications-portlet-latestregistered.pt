@@ -1,0 +1,14 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<h2>Recently registered</h2>
+<table tal:define="speclist view/latest_specifications">
+  <tbody>
+    <tr tal:repeat="spec speclist"
+        tal:replace="structure spec/@@+listing-compact" />
+  </tbody>
+</table>
+</tal:root>

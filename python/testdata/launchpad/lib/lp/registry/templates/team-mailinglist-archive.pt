@@ -1,0 +1,69 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<head>
+  <tal:block metal:fill-slot="head_epilogue">
+    <tal:script condition="view/messages">
+        <script type="text/javascript">
+            YUI().use('lp.registry.team.mailinglists', function(Y) {
+              Y.on('domready', function() {
+                var config = {
+                  messages: LP.cache['mail'],
+                  container: Y.one('#messagelist'),
+                  forwards_navigation: Y.all('.last,.next'),
+                  backwards_navigation: Y.all('.first,.previous')
+                };
+                var mailinglist_module = Y.lp.registry.team.mailinglists;
+                var message_list = new mailinglist_module.MessageList(config);
+                message_list.display_messages();
+              });
+            });
+        </script>
+    </tal:script>
+  </tal:block>
+</head>
+
+<body>
+  <div metal:fill-slot="main">
+
+    <table style="width: 100%;" class="upper-batch-nav">
+      <tbody>
+        <tr>
+          <td style="white-space: nowrap" class="batch-navigation-index">
+            <strong>1</strong>&rarr;<strong>2</strong> of 2 results</td>
+
+          <td style="text-align: right; white-space: nowrap"
+            class="batch-navigation-links">
+            <a href="#" class="first js-action inactive">First</a>
+            &bull;
+            <a href="#" class="previous js-action inactive">Previous</a>
+            &bull;
+            <a href="#" class="next js-action inactive">
+              <strong>Next</strong>
+            </a>
+            &bull;
+            <a href="#" class="last js-action inactive">Last</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div id="messagelist">
+      <tal:comment replace="nothing">
+        The json loaded and manipulated messages go here.
+      </tal:comment>
+      <tal:no-messages condition="not: view/messages">
+        There are no messages in <tal:teamname
+          replace="view/context/displayname"/>'s mail archive.
+      </tal:no-messages>
+    </div>
+
+  </div>
+</body>
+</html>

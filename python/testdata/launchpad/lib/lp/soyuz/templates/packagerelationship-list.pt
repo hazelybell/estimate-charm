@@ -1,0 +1,30 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+  <ul>
+    <li tal:repeat="pkgrelationship context">
+       <tal:linked condition="pkgrelationship/url">
+         <a tal:attributes="href pkgrelationship/url">
+            <tal:name replace="pkgrelationship/name">
+              foobar
+            </tal:name>
+            <tal:has_operator condition="pkgrelationship/operator">
+              (<span tal:replace="pkgrelationship/operator" />
+               <span tal:replace="pkgrelationship/version" />)
+            </tal:has_operator>
+         </a>
+       </tal:linked>
+       <tal:unlinked condition="not: pkgrelationship/url">
+            <tal:name replace="pkgrelationship/name">
+              foobar
+            </tal:name>
+            <tal:has_operator condition="pkgrelationship/operator">
+              (<span tal:replace="pkgrelationship/operator" />
+               <span tal:replace="pkgrelationship/version" />)
+            </tal:has_operator>
+       </tal:unlinked>
+    </li>
+  </ul>
+</tal:root>

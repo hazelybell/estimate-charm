@@ -1,0 +1,38 @@
+<div
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  >
+  <strong><a tal:attributes="href context/fmt:url"
+             tal:content="context/name" >
+      1.0
+    </a> series
+  </strong>
+  <em tal:condition="context/is_development_focus">Focus of Development</em>
+  <em tal:condition="not: context/is_development_focus"
+      tal:content="context/status/title">
+    This series' status
+  </em>
+  <div>
+    <tal:milestones condition="view/latest_milestones">
+      Latest milestones:
+      <tal:milestone repeat="milestone view/latest_milestones">
+        <a tal:attributes="href milestone/fmt:url" tal:content="milestone/name"
+          >name</a><tal:comma condition="not:repeat/milestone/end">,</tal:comma>
+      </tal:milestone>
+    </tal:milestones>
+    <tal:release repeat="release view/latest_releases">
+      <tal:release-start condition="repeat/release/start">
+        <tal:comment condition="nothing">
+          Releases may be a list or an resultset. We cannot easily know if there
+          releases until the first one is returned.
+        </tal:comment>
+        <tal:space condition="view/latest_milestones"> &nbsp &nbsp </tal:space>
+        Latest releases:
+      </tal:release-start>
+      <a tal:attributes="href release/fmt:url" tal:content="release/version"
+        >version</a><tal:comma condition="not:repeat/release/end">,</tal:comma>
+    </tal:release>
+  </div>
+</div>

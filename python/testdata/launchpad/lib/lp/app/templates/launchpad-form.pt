@@ -1,0 +1,251 @@
+<div
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  i18n:domain="launchpad">
+
+  <div metal:define-macro="form">
+
+    <form action="."
+          tal:attributes="action view/action_url;
+                          id launchpad_form_id|nothing;"
+          name="launchpadform"
+          method="post"
+          enctype="multipart/form-data"
+          accept-charset="UTF-8">
+
+      <div metal:define-macro="formbody">
+        <tal:comment condition="nothing">
+          The _return_url, _return_attribute_name and _return_attribute_value
+          fields are used by the ReturnToReferrerMixin.
+        </tal:comment>
+        <input type="hidden"
+               name="_return_url"
+               tal:condition="view/_return_url | nothing"
+               tal:attributes="value view/_return_url" />
+        <input type="hidden"
+               name="_return_attribute_name"
+               tal:condition="view/_return_attribute_name | nothing"
+               tal:attributes="value view/_return_attribute_name" />
+        <input type="hidden"
+               name="_return_attribute_value"
+               tal:condition="view/_return_attribute_value | nothing"
+               tal:attributes="value view/_return_attribute_value" />
+
+        <p metal:define-slot="extra_info" tal:replace="nothing">
+          This is the description of the form.
+          This text will be in bold, beneath the title of the form,
+          and should give any introductory information required.
+          Don't use it to state the bleeding obvious!
+        </p>
+
+        <p metal:define-slot="error_count" class="error message"
+           tal:condition="view/errors"
+           tal:content="view/error_count" />
+
+        <p metal:define-slot="error_messages" class="error message"
+          tal:repeat="form_wide_error view/form_wide_errors"
+          tal:content="structure form_wide_error">
+          Schema validation errors.
+        </p>
+
+        <div class="row"
+             metal:define-slot="extra_top"
+             tal:replace="nothing">
+            <div>Extra top</div>
+            <div><input type="text"/></div>
+        </div>
+
+        <metal:widgets metal:define-slot="widgets">
+          <div metal:use-macro="context/@@launchpad_form/widget_rows" />
+        </metal:widgets>
+
+        <script type="text/javascript"
+                tal:define="script view/focusedElementScript"
+                tal:condition="script"
+                tal:content="structure script" />
+
+        <div class="row"
+             metal:define-slot="extra_bottom"
+             tal:replace="nothing">
+          <div>Extra bottom</div>
+          <div class="field"><input type="text" /></div>
+        </div>
+
+      </div>
+      <div class="actions" id="launchpad-form-actions"
+           metal:define-slot="buttons">
+        <tal:actions repeat="action view/actions">
+          <input tal:replace="structure action/render"
+                 tal:condition="action/available"/>
+        </tal:actions>
+        <tal:has-cancel-link condition="view/cancel_url">
+          <tal:or condition="view/has_available_actions">or&nbsp;</tal:or>
+          <a tal:attributes="href view/cancel_url">Cancel</a>
+        </tal:has-cancel-link>
+      </div>
+
+      <div class="row"
+           metal:define-slot="extra_buttons"
+           tal:replace="nothing">
+      </div>
+
+    </form>
+  </div>
+
+  <metal:macro define-macro="widget_single_line">
+    <div tal:attributes="class widget_class">
+      <tal:label condition="display_label|widget/display_label|python:True">
+        <label tal:attributes="for widget/name"
+               tal:content="string:${widget/label}:">Label</label>
+        <span tal:condition="show_optional"
+              class="fieldRequired">(Optional)</span>
+      </tal:label>
+      <div>
+        <input tal:replace="structure widget" />
+        <tal:help-link condition="widget_help_link">
+          <a tal:attributes="href widget_help_link"
+             target="help"
+             class="sprite maybe action-icon">(?)</a>
+        </tal:help-link>
+      </div>
+      <div class="message" tal:condition="error"
+           tal:content="structure error">Error message</div>
+      <metal:help-hint use-macro="widget/@@launchpad_form/help_hint" />
+    </div>
+  </metal:macro>
+
+  <metal:macro define-macro="widget_multi_line">
+    <div tal:attributes="class widget_class">
+      <tal:label condition="display_label|widget/display_label|python:True">
+        <label
+            tal:attributes="for widget/name"
+            tal:content="string:${widget/label}:">Label:</label>
+        <span tal:condition="show_optional"
+              class="fieldRequired">(Optional)</span>
+      </tal:label>
+      <tal:help-link condition="widget_help_link">
+        <a tal:attributes="href widget_help_link"
+           target="help"
+           class="sprite maybe action-icon">(?)</a>
+      </tal:help-link>
+      <div tal:condition="error" tal:content="structure error"
+           class="message">Error message</div>
+      <div tal:content="structure widget">
+        <input type="text" />
+      </div>
+      <metal:help-hint use-macro="widget/@@launchpad_form/help_hint" />
+    </div>
+  </metal:macro>
+
+  <metal:macro define-macro="widget_checkbox">
+    <div tal:attributes="class widget_class">
+      <input type="checkbox" tal:replace="structure widget" />
+      <label tal:attributes="for widget/name"
+             tal:content="widget/label">Label</label>
+      <tal:help-link condition="widget_help_link">
+        <a tal:attributes="href widget_help_link"
+           target="help"
+           class="sprite maybe action-icon">(?)</a>
+      </tal:help-link>
+      <div tal:condition="error" tal:content="structure error"
+           class="message">Error message</div>
+      <metal:help-hint use-macro="widget/@@launchpad_form/help_hint" />
+    </div>
+  </metal:macro>
+
+  <metal:macro define-macro="widget_hidden">
+    <div tal:replace="structure widget/hidden" />
+  </metal:macro>
+
+  <metal:macro define-macro="widget_rows">
+    <table class="form" id="launchpad-form-widgets">
+      <tal:block define="widgets widgets|view/widgets" repeat="widget widgets">
+        <metal:macro
+            define-macro="widget_row"
+            tal:define="field_name widget/context/__name__;
+                        error python:view.getFieldError(field_name);
+                        error_class python:'error' if error else None;
+                        show_optional python:view.showOptionalMarker(field_name);
+                        widget_class widget/widget_class|nothing;
+                        widget_help_link widget_help_link|widget/help_link|nothing">
+          <tal:is-visible condition="widget/visible">
+            <tr tal:condition="python: view.isSingleLineLayout(field_name)"
+                tal:attributes="class error_class">
+              <td colspan="2">
+                <metal:widget
+                    use-macro="widget/@@launchpad_form/widget_single_line" />
+              </td>
+            </tr>
+            <tal:block condition="python: view.isMultiLineLayout(field_name)">
+              <tr tal:attributes="class error_class">
+                <td colspan="2" style="text-align: left">
+                  <metal:widget
+                      use-macro="widget/@@launchpad_form/widget_multi_line" />
+                </td>
+              </tr>
+            </tal:block>
+            <tr tal:condition="python: view.isCheckBoxLayout(field_name)">
+              <td tal:attributes="class error_class" colspan="2">
+                <metal:widget
+                    use-macro="widget/@@launchpad_form/widget_checkbox" />
+              </td>
+            </tr>
+          </tal:is-visible>
+          <tal:not-visible condition="not: widget/visible">
+            <tr>
+              <td>
+                  <metal:widget
+                      use-macro="widget/@@launchpad_form/widget_hidden" />
+              </td>
+            </tr>
+          </tal:not-visible>
+        </metal:macro>
+      </tal:block>
+    </table>
+  </metal:macro>
+
+  <metal:help-hint metal:define-macro="help_hint">
+    <tal:widget-help
+        define="use_structure widget/query:has-structured-doc"
+        condition="widget/hint">
+     <p class="formHelp" tal:content="widget/hint"
+         tal:condition="not: use_structure">
+        Some Help Text
+      </p>
+      <p class="formHelp" tal:content="structure widget/hint"
+         tal:condition="use_structure">
+        Some Structured Help Text
+      </p>
+    </tal:widget-help>
+  </metal:help-hint>
+
+  <metal:macro
+      define-macro="widget_div"
+      tal:define="field_name widget/context/__name__;
+                  error python:view.getFieldError(field_name);
+                  error_class python:'error' if error else None;
+                  show_optional python:view.showOptionalMarker(field_name);
+                  widget_class widget/widget_class|nothing;
+                  widget_help_link widget_help_link|widget/help_link|nothing">
+    <tal:is-visible condition="widget/visible">
+      <div tal:condition="python: view.isSingleLineLayout(field_name)"
+           tal:attributes="class error_class">
+        <metal:widget use-macro="widget/@@launchpad_form/widget_single_line" />
+      </div>
+      <div tal:condition="python: view.isMultiLineLayout(field_name)"
+           tal:attributes="class error_class">
+        <metal:widget use-macro="widget/@@launchpad_form/widget_multi_line" />
+      </div>
+      <div tal:condition="python: view.isCheckBoxLayout(field_name)"
+           tal:attributes="class error_class">
+        <metal:widget use-macro="widget/@@launchpad_form/widget_checkbox" />
+      </div>
+    </tal:is-visible>
+    <tal:not-visible condition="not: widget/visible">
+      <metal:widget use-macro="widget/@@launchpad_form/widget_hidden" />
+    </tal:not-visible>
+  </metal:macro>
+
+</div>

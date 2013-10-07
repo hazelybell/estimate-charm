@@ -1,0 +1,8 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:mail="http://namespaces.zope.org/mail">
+
+  <mail:directoryMailBox
+      directory="/var/tmp/launchpad_script_mailbox" />
+
+</configure>

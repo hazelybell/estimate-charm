@@ -1,0 +1,194 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<div class="portlet" id="contact-details"
+     tal:define="overview_menu context/menu:overview">
+
+  <h2>User information</h2>
+
+  <div class="first yui-u">
+    <dl id="launchpad-id">
+        <dt>Launchpad Id:</dt>
+        <dd tal:content="context/name"/>
+    </dl>
+    <dl id="email-addresses">
+      <dt>Email:
+        <a tal:replace="structure overview_menu/editemailaddresses/fmt:icon" />
+      </dt>
+      <dd
+        tal:attributes="title view/visible_email_address_description">
+        <tal:not_logged_in
+          condition="view/email_address_visibility/is_login_required">
+          <a href="+login">Log in</a> for email information.
+        </tal:not_logged_in>
+
+        <tal:no_preferredemail
+          condition="view/email_address_visibility/are_none_available">
+          <tal:comment replace="nothing">
+          The user is not valid; this portlet is not used.
+          </tal:comment>
+        </tal:no_preferredemail>
+
+        <tal:cant-view-hidden-emails
+          condition="view/email_address_visibility/are_hidden">
+          No public address provided.
+        </tal:cant-view-hidden-emails>
+
+        <tal:emails
+          repeat="email view/visible_email_addresses">
+          <span style="white-space: nowrap">
+            <img src="/@@/private" alt=""
+              tal:condition="view/email_address_visibility/are_allowed"/>
+            <img src="/@@/mail" alt=""
+              tal:condition="view/email_address_visibility/are_public"/>
+            <tal:email replace="email">foo2@bar.com</tal:email>
+            <br tal:omit-tag="repeat/email/end" />
+          </span>
+        </tal:emails>
+      </dd>
+    </dl>
+
+
+    <dl tal:condition="view/should_show_jabberids_section" id="jabber-ids">
+      <dt>Jabber:
+        <a tal:replace="structure overview_menu/editjabberids/fmt:icon" />
+      </dt>
+      <dd>
+        <tal:block repeat="jabberid context/jabberids">
+          <span tal:replace="jabberid/jabberid/fmt:obfuscate-email"
+            /><span tal:condition="not: repeat/jabberid/end">,</span>
+        </tal:block>
+        <div tal:condition="not: context/jabberids">
+          No Jabber IDs registered.
+        </div>
+      </dd>
+    </dl>
+
+    <dl tal:condition="view/viewing_own_page" id="openid-info">
+      <dt>OpenID login:</dt>
+      <dd>
+        <img src="/@@/private" alt="" />
+        <tal:openid-login content="view/openid_identity_url" />
+        <a target="help" href="/+help-registry/openid.html"
+           class="sprite maybe action-icon">OpenID help</a>
+      </dd>
+    </dl>
+
+    <dl>
+      <dt>Member since:</dt>
+      <dd id="member-since"
+          tal:content="context/datecreated/fmt:date" />
+    </dl>
+
+    <div id="teams_with_icons"
+         tal:condition="context/@@+restricted-membership/teams_with_icons">
+      <a tal:repeat="team context/@@+restricted-membership/teams_with_icons"
+         tal:attributes="href team/fmt:url"
+        ><img tal:attributes="src team/icon/getURL;
+                              title string:Member of ${team/displayname};
+                              alt string:Icon of ${team/displayname}"
+      /></a>
+    </div>
+
+    <dl tal:condition="view/should_show_ubuntu_coc_section" id="ubuntu-coc">
+      <dt>Signed Ubuntu Code of Conduct:</dt>
+      <dd tal:condition="context/is_ubuntu_coc_signer">
+        <a
+          id="ubuntu_coc_signer"
+          tal:condition="context/required:launchpad.Edit"
+          tal:attributes="href overview_menu/codesofconduct/url"
+          >Yes</a>
+         <span
+           id="ubuntu_coc_signer"
+           tal:condition="not: context/required:launchpad.Edit">Yes</span>
+      </dd>
+      <dd tal:condition="not: context/is_ubuntu_coc_signer">
+          <span id="ubuntu_coc_signer">No</span>
+          <a href="/codeofconduct"
+            ><img src="/@@/edit" alt="Sign the Ubuntu Code of Conduct" /></a>
+      </dd>
+    </dl>
+  </div>
+
+  <div class="yui-u two-column-list">
+    <dl tal:condition="view/should_show_ircnicknames_section">
+      <dt>IRC:
+        <a tal:replace="structure overview_menu/editircnicknames/fmt:icon" />
+      </dt>
+      <dd tal:repeat="ircnick context/ircnicknames">
+        <span tal:replace="structure ircnick/fmt:formatted_displayname"/>
+      </dd>
+      <dd tal:condition="not: context/ircnicknames">
+        No IRC nicknames registered.
+      </dd>
+    </dl>
+
+    <dl tal:condition="view/should_show_gpgkeys_section" id="pgp-keys">
+      <dt>OpenPGP keys:
+        <a tal:replace="structure overview_menu/editpgpkeys/fmt:icon" />
+      </dt>
+      <dd>
+        <tal:keys repeat="key context/gpg_keys">
+          <a tal:attributes="href key/keyserverURL"
+             tal:omit-tag="not: request/lp:person">
+            <tal:keyid replace="key/keyid"
+              /></a><span tal:condition="not: repeat/key/end">,</span>
+        </tal:keys>
+        <div tal:condition="not: context/gpg_keys">
+          No OpenPGP keys registered.
+        </div>
+      </dd>
+    </dl>
+
+    <dl id="sshkeys" tal:condition="view/should_show_sshkeys_section">
+      <dt>SSH keys:
+        <a tal:replace="structure overview_menu/editsshkeys/fmt:icon" />
+      </dt>
+      <dd tal:define="sshkeys context/sshkeys">
+        <tal:keys repeat="sshkey sshkeys">
+          <a href="+sshkeys" tal:content="sshkey/comment">foo@bar</a>
+          <br />
+        </tal:keys>
+        <div tal:condition="not: context/sshkeys">
+          No SSH keys registered.
+        </div>
+      </dd>
+    </dl>
+
+    <dl id="languages">
+      <dt>Languages:
+        <a tal:replace="structure overview_menu/editlanguages/fmt:icon" />
+      </dt>
+      <dd>
+        <tal:languages content="view/languages">
+          English
+        </tal:languages>
+      </dd>
+    </dl>
+
+    <dl id="timezone" tal:condition="context/time_zone">
+      <dt>Time zone:
+        <a tal:replace="structure overview_menu/editlocation/fmt:icon" />
+      </dt>
+      <dd><tal:timezone content="context/time_zone">UTC</tal:timezone>
+      (UTC<tal:offset content="view/time_zone_offset">+0000</tal:offset>)
+      </dd>
+    </dl>
+
+    <dl id="karma">
+      <dt>Karma:</dt>
+      <dd><a id="karma-total"
+             tal:attributes="href overview_menu/karma/url"
+             tal:content="context/karma">342</a>
+          <a target="help" href="/+help-registry/karma.html"
+             class="sprite maybe action-icon">Karma help</a>
+      </dd>
+    </dl>
+  </div>
+
+</div>
+
+</tal:root>

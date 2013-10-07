@@ -1,0 +1,81 @@
+Person Vouchers
+===============
+
+Users who own commercial projects with a proprietary licence can
+purchase vouchers from the Canonical Shop. The voucher is subsequently
+applied to one of their projects to initiate or renew their
+commerical-use subscription.
+
+    >>> from zope.component import getUtility
+    >>> from lp.registry.interfaces.person import IPersonSet
+    >>> person_set = getUtility(IPersonSet)
+    >>> cprov = person_set.getByName('cprov')
+
+    >>> from lp.services.salesforce.tests.proxy import (
+    ...     SalesforceXMLRPCTestTransport, TestSalesforceVoucherProxy)
+    >>> test_transport = SalesforceXMLRPCTestTransport()
+    >>> voucher_proxy = TestSalesforceVoucherProxy()
+
+A method 'getAllCommercialSubscriptionVouchers' returns a dictionary
+indexed by the valid voucher statuses with a list of the person's
+vouchers in the given state.
+
+    >>> def print_vouchers(voucher_dict):
+    ...     """Pretty print a dictionary of vouchers."""
+    ...     for voucher_type in sorted(voucher_dict):
+    ...         print voucher_type
+    ...         vouchers = voucher_dict[voucher_type]
+    ...         if len(vouchers) == 0:
+    ...             print "  ", None
+    ...         else:
+    ...             for voucher in voucher_dict[voucher_type]:
+    ...                 print "  ", voucher
+
+    >>> vouchers = cprov.getAllCommercialSubscriptionVouchers(
+    ...     voucher_proxy=voucher_proxy)
+    >>> print_vouchers(vouchers)
+    Redeemed
+      None
+    Reserved
+      LPCBS12-f78df324-0cc2-11dd-8b6b-000000000004,Reserved,12,unassigned
+      LPCBS12-f78df324-0cc2-11dd-8b6b-000000000005,Reserved,12,unassigned
+    Unredeemed
+      None
+
+Just the list of redeemable vouchers can be obtained using the
+getRedeemableCommercialSubscriptionVouchers.  All vouchers of status
+Unredeemed or Reserved are returned in a single list.
+
+    >>> vouchers = cprov.getRedeemableCommercialSubscriptionVouchers(
+    ...     voucher_proxy=voucher_proxy)
+    >>> for voucher in vouchers:
+    ...     print voucher
+      LPCBS12-f78df324-0cc2-11dd-8b6b-000000000004,Reserved,12,unassigned
+      LPCBS12-f78df324-0cc2-11dd-8b6b-000000000005,Reserved,12,unassigned
+
+When a voucher is redeemed its status changes.
+
+    >>> voucher = vouchers[0]
+    >>> product = factory.makeProduct(name='ubutini')
+    >>> result = voucher_proxy.redeemVoucher(
+    ...     voucher.voucher_id, cprov, product)
+    >>> print result
+    True
+
+    >>> vouchers = cprov.getAllCommercialSubscriptionVouchers(
+    ...     voucher_proxy=voucher_proxy)
+    >>> print_vouchers(vouchers)
+    Redeemed
+      LPCBS12-f78df324-0cc2-11dd-8b6b-000000000004,Redeemed,12,ubutini
+    Reserved
+      LPCBS12-f78df324-0cc2-11dd-8b6b-000000000005,Reserved,12,unassigned
+    Unredeemed
+      None
+
+The redeemed voucher is no longer listed in the list of redeemable ones.
+
+    >>> vouchers = cprov.getRedeemableCommercialSubscriptionVouchers(
+    ...     voucher_proxy=voucher_proxy)
+    >>> for voucher in vouchers:
+    ...     print voucher
+      LPCBS12-f78df324-0cc2-11dd-8b6b-000000000005,Reserved,12,unassigned

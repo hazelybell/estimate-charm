@@ -1,0 +1,62 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  id="portlet-product-codestatistics">
+
+    <p id="active-review-count"
+       tal:define="count context/menu:branches/active_review_count;
+                   link context/menu:branches/active_reviews"
+       tal:condition="python: count &gt; 0">
+      <tal:project replace="context/displayname"/> has
+      <tal:active-count replace="count"/>
+      <tal:link replace="structure python: link.render().lower()"/>.
+    </p>
+
+    <!--branches-->
+    <p>
+    <tal:comment condition="nothing">
+      The bad breaks in the following block are to force the period to be
+      in the right place.
+    </tal:comment>
+    <span tal:define="count view/branch_count;"
+          id="branch-count-summary">
+      <tal:project replace="context/displayname"/> has
+      <tal:branch-count replace="count"/>
+      <tal:branches replace="python: view.branch_text.lower()">
+        branches
+      </tal:branches
+      ><tal:has-branches condition="view/branch_count">
+        owned by
+        <tal:individuals condition="view/person_owner_count">
+          <tal:owners content="view/person_owner_count">42</tal:owners>
+          <tal:people replace="view/person_text">people</tal:people
+        ></tal:individuals
+        ><tal:teams condition="view/team_owner_count">
+          <tal:individuals condition="view/person_owner_count">
+            and
+          </tal:individuals
+          ><tal:toc content="view/team_owner_count">1</tal:toc>
+          <tal:people replace="view/team_text">team</tal:people
+          ></tal:teams></tal:has-branches>.
+    </span>
+
+    <!--commits-->
+    <tal:commit-info condition="view/branch_count">
+    <span id="commits"
+          tal:define="count view/commit_count">
+      There were
+      <tal:commit-count replace="count"/>
+        <tal:commits replace="python: view.commit_text.lower()">
+          commits
+        </tal:commits>
+        <tal:has-committers condition="view/committer_count">
+          by
+          <tal:cc content="view/committer_count">4</tal:cc>
+          <tal:people replace="view/committer_text">people</tal:people>
+        </tal:has-committers>
+        in the last month.
+    </span>
+    </tal:commit-info>
+    </p>
+</div>

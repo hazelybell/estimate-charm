@@ -1,0 +1,157 @@
+Translation import queue is attached to different targets.
+The possible targets are distributions, distribution series,
+products, productseries and person.
+
+Each target has its own page listing their related entries in the
+import queue.
+
+== Import queue for distributions ==
+
+The import queue is linked from the translations page for distribution.
+
+    >>> user_browser.open('http://translations.launchpad.dev/ubuntu')
+    >>> user_browser.getLink('Ubuntu import queue').click()
+
+There is no content for Ubuntu.
+
+    >>> print find_tag_by_id(
+    ...     user_browser.contents, 'description').renderContents().strip()
+    These translation related entries are imported, blocked, deleted or
+    waiting to be imported in Launchpad for Ubuntu.
+    >>> print find_tag_by_id(
+    ...     user_browser.contents, 'no-entries').renderContents()
+    There are no entries that match this filtering.
+    >>> find_tag_by_id(user_browser.contents, 'import-entries-list') is None
+    True
+
+
+== Import queue for distribution series ==
+
+The import queue is linked from the translations page for distribution series.
+
+    >>> user_browser.open('http://translations.launchpad.dev/ubuntu/hoary')
+    >>> user_browser.getLink('Hoary import queue').click()
+
+And obviously, given that the ubuntu distribution had no content, Hoary, an
+Ubuntu distro series has also no content.
+
+    >>> print find_tag_by_id(
+    ...     user_browser.contents, 'description').renderContents().strip()
+    These translation related entries are imported, blocked, deleted or
+    waiting to be imported in Launchpad for Hoary.
+    >>> print find_tag_by_id(
+    ...     user_browser.contents, 'no-entries').renderContents()
+    There are no entries that match this filtering.
+    >>> find_tag_by_id(user_browser.contents, 'import-entries-list') is None
+    True
+
+
+== Import queue for products ==
+
+The import queue is linked from the translations page for products.
+
+    >>> user_browser.open('http://translations.launchpad.dev/evolution')
+    >>> user_browser.getLink('Evolution import queue').click()
+
+This time, we do have content for this product:
+
+    >>> print find_tag_by_id(
+    ...     user_browser.contents, 'description').renderContents().strip()
+    These translation related entries are imported, blocked, deleted or
+    waiting to be imported in Launchpad for Evolution.
+    >>> find_tag_by_id(user_browser.contents, 'no-entries') is None
+    True
+
+There are two entries in the list.
+
+    >>> import_list = find_tag_by_id(
+    ...     user_browser.contents, 'import-entries-list')
+    >>> first_entry = import_list.findNext('tr')
+    >>> print extract_text(first_entry)
+    po/evolution-2.2-test.pot in
+    Evolution trunk series
+    Imported
+    >>> second_entry = first_entry.findNext(
+    ...     'tr').findNext('tr').findNext('tr')
+    >>> print extract_text(second_entry)
+    po/pt_BR.po in
+    Evolution trunk series
+    Imported
+
+
+== Import queue for product series ==
+
+The import queue is linked from the translations page for product series.
+
+    >>> user_browser.open('http://translations.launchpad.dev/evolution/trunk')
+    >>> user_browser.getLink('import queue').click()
+
+This time, we do have content for this product:
+
+    >>> print find_tag_by_id(
+    ...     user_browser.contents, 'description').renderContents().strip()
+    These translation related entries are imported, blocked, deleted or
+    waiting to be imported in Launchpad for trunk.
+    >>> find_tag_by_id(user_browser.contents, 'no-entries') is None
+    True
+
+There are two entries in the list, as seen previously, the entries in
+Evolution product are for this trunk series.
+
+    >>> import_list = find_tag_by_id(
+    ...     user_browser.contents, 'import-entries-list')
+    >>> first_entry = import_list.findNext('tr')
+    >>> print extract_text(first_entry)
+    po/evolution-2.2-test.pot in
+    Evolution trunk series
+    Imported
+    >>> second_entry = first_entry.findNext(
+    ...     'tr').findNext('tr').findNext('tr')
+    >>> print extract_text(second_entry)
+    po/pt_BR.po in
+    Evolution trunk series
+    Imported
+
+
+== Import queue for person ==
+
+The import queue is linked from the translations page for persons.
+
+    >>> user_browser.open('http://translations.launchpad.dev/~name16')
+    >>> user_browser.getLink('Import queue').click()
+
+This time, we do have content for this product:
+
+    >>> print find_tag_by_id(
+    ...     user_browser.contents, 'description').renderContents().strip()
+    These translation related entries are imported, blocked, deleted or
+    waiting to be imported in Launchpad for Foo Bar.
+    >>> find_tag_by_id(user_browser.contents, 'no-entries') is None
+    True
+
+Both entries seen in evolution where uploaded by Foo Bar and thus, we can see
+it here too.
+
+    >>> import_list = find_tag_by_id(
+    ...     user_browser.contents, 'import-entries-list')
+    >>> first_entry = import_list.findNext('tr')
+    >>> print extract_text(first_entry)
+    po/evolution-2.2-test.pot in
+    Evolution trunk series
+    Imported
+    >>> first_entry_importer = first_entry.findNext('tr')
+    >>> print extract_text(first_entry_importer)
+    Uploaded by
+    Foo Bar
+    on 2006-12-13 22:17:56 CET
+    >>> second_entry = first_entry_importer.findNext(
+    ...     'tr').findNext('tr')
+    >>> print extract_text(second_entry)
+    po/pt_BR.po in
+    Evolution trunk series
+    Imported
+    >>> second_entry_importer = second_entry.findNext('tr')
+    >>> print extract_text(second_entry_importer)
+    Uploaded by
+    Foo Bar
+    on 2006-12-13 22:18:28 CET

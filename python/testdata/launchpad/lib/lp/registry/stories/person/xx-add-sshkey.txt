@@ -1,0 +1,202 @@
+SSH keys
+========
+
+SSH keys are needed for the authentication process used for hosting
+Bazaar branches.
+
+
+Profile page
+------------
+
+User keys are shown on profile pages, and any user can see that.
+
+    >>> anon_browser.open('http://launchpad.dev/~name12')
+    >>> print anon_browser.title
+    Sample Person in Launchpad
+    >>> print extract_text(
+    ...     find_tag_by_id(anon_browser.contents, 'sshkeys'))
+    SSH keys: andrew@trogdor
+
+Salgado does not have a key, so we omit the 'SSH keys' section for anonymous
+users.
+
+    >>> anon_browser.open('http://launchpad.dev/~salgado')
+    >>> print anon_browser.title
+    Guilherme Salgado in Launchpad
+    >>> print find_tag_by_id(anon_browser.contents, 'sshkeys')
+    None
+
+Salgado sees a message explaining that he can register his ssh key.
+
+    >>> from zope.component import getUtility
+    >>> from lp.registry.interfaces.person import IPersonSet
+    >>> from lp.testing.pages import setupBrowserFreshLogin
+    >>> login(ANONYMOUS)
+    >>> salgado = getUtility(IPersonSet).getByEmail(
+    ...     'guilherme.salgado@canonical.com')
+    >>> logout()
+    >>> browser = setupBrowserFreshLogin(salgado)
+    >>> browser.open('http://launchpad.dev/~salgado')
+    >>> print browser.title
+    Guilherme Salgado in Launchpad
+    >>> print extract_text(
+    ...     find_tag_by_id(browser.contents, 'sshkeys'))
+    SSH keys: Add an SSH key
+    No SSH keys registered.
+
+
+Updating SSH keys
+--------------------
+
+The +editsshkeys page can be used to upload a public ssh key or to remove
+an already uploaded one. Salgado sees a link on his profile page to update
+his SSH keys. The page allows him to add a key.
+
+    >>> browser.getLink('Add an SSH key').click()
+    >>> print browser.title
+    Change your SSH keys...
+
+Any key must be of the form "keytype keytext comment", where keytype must be
+either ssh-rsa or ssh-dss.  If the key doesn't match the expected format, an
+error message will be shown.
+
+    >>> sshkey = "ssh-rsa   "
+    >>> browser.getControl(name='sshkey').value = sshkey
+    >>> browser.getControl('Import Public Key').click()
+    >>> for tag in find_main_content(browser.contents)('p', 'error message'):
+    ...     print tag.renderContents()
+    Invalid public key
+
+    >>> sshkey = "ssh-rsa foo"
+    >>> browser.getControl(name='sshkey').value = sshkey
+    >>> browser.getControl('Import Public Key').click()
+    >>> for tag in find_main_content(browser.contents)('p', 'error message'):
+    ...     print tag.renderContents()
+    Invalid public key
+
+    >>> sshkey = "ssh-xsa foo comment"
+    >>> browser.getControl(name='sshkey').value = sshkey
+    >>> browser.getControl('Import Public Key').click()
+    >>> for tag in find_main_content(browser.contents)('p', 'error message'):
+    ...     print tag.renderContents()
+    Invalid public key
+
+
+Now, Salgado will upload one RSA and one DSA keys, matching the expected
+format.
+
+    >>> sshkey = "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA6VVQrIoBhxSB7duD69PRzYfdJz3QNUky5lSOpl6a9hEP9iAU72RK3fr4uaYiEEjr70EDAROCimi/rtkBuWCRmPJbQDpzBoZ7PDW/jF5tWAuC4+5z/fy05HOhHRH8WGzeEuWn5HBflcx1QasMD95oDiiEuQbF/kGxBM5/no/4FeJU3fgc+1XQNH7tMDQIcaqoHarc2kefGC8/sbRwbzajhg9yeqskgs6o6y+7931/bcZSLZ/wU53m5nB7eVkkVihk7KD+sf9jKG91LnaRW1IjBgo8AAbXl+e556XkwIwVoieKNYW2Fvw8ybcW5rCTvJ1e/3Cvo2hw8ZsDMRofSifiKw== salgado@canario"
+    >>> browser.getControl(name='sshkey').value = sshkey
+    >>> browser.getControl('Import Public Key').click()
+    >>> soup = find_main_content(browser.contents)
+    >>> for tag in soup('p', 'informational message'):
+    ...     print tag.renderContents()
+    SSH public key added.
+
+    >>> sshkey = "ssh-dss AAAAB3NzaC1kc3MAAAEBAObOoy3fScSSQPHE/V6tPGoFzo5y1JRjDLcs8CNcvIHh9L27Qdj6h18AXn6MUCvvSCKm49aHpp1Xe14a6fmEIesjz6VopPWGENaOwRmhH6zfqM6imKUXQ0sq9p0znYb0TMjyRC0/AmqYneUF6FA2mVXygkGAkp/vDRPFQhPwnHpVD9TVPxHBQdHgM3bTo2TT+GoL7kw/s32ZiAH4OPvN5fN7bCkQWoUs/ySfoNbISMdvdtq07Rra2Biwzgjjs0ZcKbMicbDyYCe4gXlqK4wqcDfcwgrdqdG6NM0LUdekarWjnv0pMb6ttUl4U7e7Nf+eGkiTVItlppC8DyrnqC9SKCUAAAAVAOlEYNobJottyObVWQcrU8eAP4T5AAABAQDmJmL4DcQ1GVvw1Pjy57V0WUyGrOVBRVz7BwYBIvMA7xJCCvzd47mYWrWJkjV6O3tw2vG5oZx+BXE+ve8O6jL89CrwqncoUS8WHCojRmuUHTmtCCiRBCH+/68HMCusO3Blk//kQSsaqfIn+8Xa56Vr2SweSUlLgjvb51+89JJ13oDlUvdftW2GZu+grbmojqcoJ1LVAI5n0qsDItsFid46f8XfNzPeksasY9JbY5fKq/xf1KcgXL2F9XwmrDjFCuI4/xkJWNfGwaLKC/cbrJ1xmvPLl1/Hm5kNqgrwpNwHVOwyYSCUqXroU5PnpE9uydHUhjhtU2K2Hj0i7fOyxoxyAAABAQCpXKgd6lpTAEKm7ECY3TbJaTXPkNvAwg/2ud+PrtefHrVFFWrXrblSQhnmnc6ut8G3BsDzCljAIV2v+XcdOo+m8EViLf+Bi+gfbAIz4vdVepwQ2XHWUOTKk90i7Xqg4mUUDRIVw9ioNF0GAHbNlJTK3FWC3gstbCJU2hyV3UzgB95b6zqpUHeyn1RK4VAFYGY9fCIdZNy926HEart6uO/N6cO1ETw5B63kI8fTBjU7HLGgGXRjOv1APAqvKgry3tQD2WYkVJGRyYLjDK9d8nStUpwN5swI1xx2IWAbD+UCsRXAixn8s3mvpBD/jbnWjrzEensBc96jtiAsx2P5oXEd salgado@canario"
+    >>> browser.getControl(name='sshkey').value = sshkey
+    >>> browser.getControl('Import Public Key').click()
+    >>> soup = find_main_content(browser.contents)
+    >>> for tag in soup('p', 'informational message'):
+    ...     print tag.renderContents()
+    SSH public key added.
+
+Launchpad administrators are not allowed to poke at other user's ssh keys.
+
+    >>> login(ANONYMOUS)
+    >>> foo_bar = getUtility(IPersonSet).getByEmail('foo.bar@canonical.com')
+    >>> logout()
+    >>> admin_browser = setupBrowserFreshLogin(foo_bar)
+    >>> admin_browser.open('http://launchpad.dev/~salgado/+editsshkeys')
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...
+
+Salgado chooses to remove one of his ssh keys from Launchpad. The link
+to edit his keys is on the page.
+
+    >>> browser.open('http://launchpad.dev/~salgado')
+    >>> print browser.title
+    Guilherme Salgado in Launchpad
+    >>> print extract_text(
+    ...     find_tag_by_id(browser.contents, 'sshkeys'))
+    SSH keys: Update SSH keys
+    salgado@canario
+    salgado@canario
+    >>> browser.getLink('Update SSH keys').click()
+    >>> print browser.title
+    Change your SSH keys...
+
+    >>> browser.getControl('Remove', index=0).click()
+    >>> soup = find_main_content(browser.contents)
+    >>> for tag in soup('p', 'informational message'):
+    ...     print tag.renderContents()
+    Key ... removed
+
+If Salgado tries to remove a key that doesn't exist or one that doesn't
+belong to him, it will fail with an error message.
+
+    >>> browser.getControl(name='key', index=0).value = '99999'
+    >>> browser.getControl('Remove', index=0).click()
+    >>> soup = find_main_content(browser.contents)
+    >>> for tag in soup('p', 'error message'):
+    ...     print tag.renderContents()
+    Cannot remove a key that doesn't exist
+
+    >>> browser.getControl(name='key', index=0).value = '1'
+    >>> browser.getControl('Remove', index=0).click()
+    Traceback (most recent call last):
+    UnexpectedFormData: ...
+
+Similarly, it's not possible to remove an unspecified ssh key, although in
+this case we'll raise an UnexpectedFormData.
+
+    >>> browser.open('http://launchpad.dev/~salgado/+editsshkeys')
+    >>> browser.getControl(name='key', index=0).value = ''
+    >>> browser.getControl('Remove', index=0).click()
+    Traceback (most recent call last):
+    ...
+    UnexpectedFormData: ...
+
+If he removes a key then he will get a security warning email notification
+that the key has been removed.
+
+    >>> import email
+    >>> from lp.services.mail import stub
+    >>> stub.test_emails = []
+    >>> browser.open('http://launchpad.dev/~salgado/+editsshkeys')
+    >>> browser.getControl('Remove', index=0).click()
+    >>> from_addr, to_addr, msg = stub.test_emails.pop()
+    >>> to_addr
+    ['guilherme.salgado@canonical.com']
+    >>> payload = email.message_from_string(msg).get_payload()
+    >>> assert payload.startswith('The SSH Key')
+
+
+== Blacklisted keys ==
+
+For quite some time there has been a bug on Debian-based distros that
+caused ssh keys generated on these systems to be guessable through
+brute-force attacks, so we don't accept any of these keys.
+
+    >>> compromised_key = 'ssh-dss AAAAB3NzaC1kc3MAAACBAMDMAwIgYxgquosN4grBbVJCuyLXODSkY2x4/jYxUPuj0iUwVl/nTdZ2hitv7DE5dshFGUNm4sizXZoX7/u2Y68av2VHwlIkbQ52qM3ltiPXvS7uP4RjKUEZr+6l6BjohEmnlhhnLdbNy4kj4xTQizE9QSS999PBvQ3csxkOSZNXAAAAFQDZpXHMZqsqy8s0JxTQPg256XEjtwAAAIEAszRf/KwyKHGGTdbQUjOxdfyngk2Fol/1fYRtSGpkooAOMTxfWyOZiEigv6Zqt4VAmXuFpSM/DU0tNrbBPvzKVMkIXwoOfnWimf3ozGuoIxYYLao5pgGqS0dNADOOIaXo6YiVkIYi2YL/7ISq3WLdCeqy9mSZr9z8esdNfW5SiWsAAACAdPqgY1eCyEfxWCEH+Nz4bsig1DkgdZX27QMzW27xJdN03GPUABA5HSRHY/QwvpgD+2PlwNf44ceiWEgcPToyWd/7koPoDga8im/B+ui5j2PQr++prQCa849UMk6Ol9kZWjvNMvk1gM9Rw732DK0FSj0qzk83iK4eqfrZIk3u1a4= maddog39@ubuntu'
+    >>> browser.open('http://launchpad.dev/~salgado/+editsshkeys')
+    >>> browser.getControl(name='sshkey').value = compromised_key
+    >>> browser.getControl('Import Public Key').click()
+    >>> print_feedback_messages(browser.contents)
+    This key is known to be compromised due to a security flaw in the
+    software used to generate it, so it will not be accepted by Launchpad. See
+    the full Security Notice for further information and instructions on how
+    to generate another key.
+
+
+== Keys containing non-ASCII comments ==
+
+These keys can be imported just like the others which have ASCII
+comments.
+
+    >>> key = 'ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAzSc+OzlZaURcX8NK9Hy1VoA1SXXuxFAvLw9ljz6xXEFgodmkSgSE/Pc+nR2fO/hl0rnWi//8oOwkHlwLVPQpor2cjQlceVs9rKaQcrcwRm6Jmi8CYKlEIBq82kpaLwXwK/x5ZsDfFtYUq558C5IKZOnDozthC7REPYK0cQ8gZ4bLf+5hmJ6QO4sSRZcXTZuPvgUixhlazFo6w6GqWbynf29Wp+WkLFGxGF2UE/dI8HyQy2j7ddaLnW50mGfB00B/pYtO246s84097BRUE8XoBC3SvzsZx6IbI3hOd2e834lq6kOj6QI0wu6+GINRCZf5UyNlpJv6X809XBvq68SCgw== St\xc3\xa9phane'
+    >>> browser.getControl(name='sshkey').value = key
+    >>> browser.getControl('Import Public Key').click()
+    >>> print_feedback_messages(browser.contents)
+    SSH public key added.

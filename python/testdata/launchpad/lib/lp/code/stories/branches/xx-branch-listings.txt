@@ -1,0 +1,486 @@
+= Branch Listing Pages =
+
+Pages that want to display lists of branches use the branch-listing
+page template, and views derived from BranchListingView.
+
+The branch listing page template and associated view provide batching
+of the branches, filtering of the lifecycle statuses, ordering of
+various kinds and badge decoration.
+
+    >>> from lp.code.tests.branch_helper import (
+    ...     reset_all_branch_last_modified)
+    >>> reset_all_branch_last_modified()
+
+
+== Branch Batching ==
+
+Batching is applied to branch listings where there are many items.
+Luckily for us, many is 5 in the tests.
+
+Sample Person is used as the logged in user in order to show his private
+branches in the listings.
+
+    >>> browser = setupBrowser(auth='Basic test@canonical.com:test')
+    >>> browser.open('http://code.launchpad.dev/~name12')
+    >>> links = find_tag_by_id(browser.contents, 'branch-batch-links')
+    >>> print links.renderContents()
+    <BLANKLINE>
+    ...1...&rarr;...6...of 10 results...
+
+    >>> table = find_tag_by_id(browser.contents, 'branchtable')
+    >>> for row in table.thead.fetch('tr'):
+    ...     print extract_text(row)
+    Name
+    Status
+    Last Modified
+    Last Commit
+
+Unfortunately our sample data is somewhat lacking in the last commit
+fields.  There are a couple of branches that have them, but most don't
+and are really just branch metadata without the revisions behind them.
+
+    >>> for row in table.tbody.fetch('tr'):
+    ...     print extract_text(row)
+    lp://dev/~name12/firefox/main                Development  ...
+    lp://dev/~name12/gnome-terminal/2.6          Mature       ...
+    lp://dev/~name12/gnome-terminal/main         Development  ...
+    lp://dev/~name12/gnome-terminal/mirrored     Development  ...
+    lp://dev/~name12/gnome-terminal/pushed       Development  ...
+    lp://dev/~name12/gnome-terminal/scanned          Development   ...
+
+    >>> browser.getLink('Next').click()
+    >>> links = find_tag_by_id(browser.contents, 'branch-batch-links')
+    >>> print links.renderContents()
+    <BLANKLINE>
+    ...7...&rarr;...10...of 10 results...
+
+    >>> table = find_tag_by_id(browser.contents, 'branchtable')
+    >>> for row in table.tbody.fetch('tr'):
+    ...     print extract_text(row)
+    lp://dev/~name12/gnome-terminal/klingon          Experimental  ...
+    lp://dev/~name12/+junk/junk.contrib              Development   ...
+    lp://dev/~name12/+junk/junk.dev                  Experimental  ...
+
+If the branch listing has few enough entries that batching isn't
+needed, then the table is sortable and no batching navigation links are shown.
+
+    >>> browser.open('http://code.launchpad.dev/~name12')
+    >>> browser.getLink('Subscribed').click()
+    >>> links = find_tag_by_id(browser.contents, 'branch-batch-links')
+    >>> links is None
+    True
+
+
+== Lifecycle Filtering for Person Branches ==
+
+When the branches for a person is first loaded, only the 'Current' branches
+are shown.  Current branches are those that have a lifecycle status of
+Development, Experimental or Mature.  Merged or Abandoned branches are not
+shown.
+
+    >>> browser.open('http://code.launchpad.dev/~name12')
+    >>> table = find_tag_by_id(browser.contents, 'branchtable')
+    >>> for row in table.tbody.fetch('tr'):
+    ...     print extract_text(row)
+    lp://dev/~name12/firefox/main                 Development  ...
+    lp://dev/~name12/gnome-terminal/2.6           Mature       ...
+    lp://dev/~name12/gnome-terminal/main          Development  ...
+    lp://dev/~name12/gnome-terminal/mirrored      Development  ...
+    lp://dev/~name12/gnome-terminal/pushed        Development  ...
+
+There is a select control that is used to define which
+subset of the branches are shown.
+
+    >>> filter_control = browser.getControl(name='field.lifecycle')
+    >>> filter_control
+    <ListControl name='field.lifecycle' type='select'>
+    >>> filter_control.displayValue
+    ['Any active status']
+    >>> filter_control.displayOptions
+    ['Any active status', 'Any status', 'Experimental', 'Development', 'Mature', 'Merged', 'Abandoned']
+
+Changing the value of the select control will (in a javascript
+enabled browser) cause the form to be submitted automatically.
+For browsers with javascript disabled, there is a form submit
+button.
+
+    >>> filter_control.displayValue = ['Any status']
+    >>> browser.getControl('Filter').click()
+
+Now all types of branches should be shown.
+
+    >>> links = find_tag_by_id(browser.contents, 'branch-batch-links')
+    >>> print links.renderContents()
+    <BLANKLINE>
+    ...1...&rarr;...6...of 12 results...
+
+    >>> table = find_tag_by_id(browser.contents, 'branchtable')
+    >>> for row in table.tbody.fetch('tr'):
+    ...     print extract_text(row)
+    lp://dev/~name12/firefox/main                 Development    ...
+    lp://dev/~name12/gnome-terminal/2.4           Abandoned      ...
+    lp://dev/~name12/gnome-terminal/slowness      Merged         ...
+    lp://dev/~name12/gnome-terminal/2.6           Mature         ...
+    lp://dev/~name12/gnome-terminal/main          Development    ...
+    lp://dev/~name12/gnome-terminal/mirrored       Development     ...
+
+    >>> browser.getLink('Next').click()
+    >>> links = find_tag_by_id(browser.contents, 'branch-batch-links')
+    >>> print links.renderContents()
+    <BLANKLINE>
+    ...7...&rarr;...12...of 12 results...
+
+    >>> table = find_tag_by_id(browser.contents, 'branchtable')
+    >>> for row in table.tbody.fetch('tr'):
+    ...     print extract_text(row)
+    lp://dev/~name12/gnome-terminal/pushed         Development     ...
+    lp://dev/~name12/gnome-terminal/scanned        Development     ...
+    lp://dev/~name12/gnome-terminal/klingon        Experimental    ...
+    lp://dev/~name12/+junk/junk.contrib            Development     ...
+    lp://dev/~name12/+junk/junk.dev                Experimental    ...
+
+
+Selecting an individual lifecycle status from the select control
+will cause only branches with that status to be listed.
+
+    >>> browser.getControl(name='field.lifecycle').displayValue = ['Abandoned']
+    >>> browser.getControl('Filter').click()
+    >>> table = find_tag_by_id(browser.contents, 'branchtable')
+    >>> for row in table.tbody.fetch('tr'):
+    ...     print extract_text(row)
+    lp://dev/~name12/gnome-terminal/2.4    Abandoned     ...
+
+If anyone tries to hack the URL, and put in an invalid
+status value, it will default to current branches.
+
+    >>> browser.open(
+    ...  'http://code.launchpad.dev/~name12/+branches?field.lifecycle=Fubar')
+    >>> browser.getControl(name='field.lifecycle').displayValue
+    ['Any active status']
+    >>> table = find_tag_by_id(browser.contents, 'branchtable')
+    >>> for row in table.tbody.fetch('tr'):
+    ...     print extract_text(row)
+    lp://dev/~name12/firefox/main                  Development  ...
+    lp://dev/~name12/gnome-terminal/2.6            Mature       ...
+    lp://dev/~name12/gnome-terminal/main           Development  ...
+    lp://dev/~name12/gnome-terminal/mirrored       Development  ...
+    lp://dev/~name12/gnome-terminal/pushed         Development  ...
+
+If the user does have branches, but they are not visible with
+the current filter, the table is shown, and a (hopefully)
+helpful message supplied.
+
+    >>> browser.open('http://code.launchpad.dev/'
+    ...   '~launchpad/+branches?field.lifecycle=Mature')
+    >>> browser.getControl(name='field.lifecycle').displayValue
+    ['Mature']
+    >>> message = find_tag_by_id(browser.contents, 'no-branch-message')
+    >>> print message.renderContents()
+    There are branches related to Launchpad Developers...
+
+Subscribed branch listings shouldn't show an option for sorting by "most
+interesting" and should default to sort the most recently changed branches
+first.
+
+    >>> browser.open('http://code.launchpad.dev/~name12/+subscribedbranches')
+    >>> table = find_tag_by_id(browser.contents, 'branchtable')
+    >>> for row in table.tbody.fetch('tr'):
+    ...     print extract_text(row)
+    lp://dev/~name12/firefox/main ...
+    lp://dev/~launchpad/gnome-terminal/launchpad ...
+    lp://dev/~name12/+junk/junk.dev ...
+
+    >>> filter_control = browser.getControl(name='field.sort_by')
+    >>> filter_control
+    <ListControl name='field.sort_by' type='select'>
+    >>> filter_control.displayValue
+    ['most recently changed first']
+    >>> filter_control.displayOptions
+    ['by project name', 'by status', 'by branch name',
+    'by owner name', 'most recently changed first',
+    'most neglected first', 'newest first', 'oldest first']
+
+
+
+== Branch Badge Decoration ==
+
+We display badges for associated bugs.
+
+    >>> def branchSummary(browser):
+    ...     table = find_tag_by_id(browser.contents, 'branchtable')
+    ...     for row in table.tbody.fetch('tr'):
+    ...         cells = row.findAll('td')
+    ...         first_cell = cells[0]
+    ...         anchors = first_cell.fetch('a')
+    ...         print anchors[0].get('href')
+    ...         # Badges in the next cell
+    ...         for img in cells[1].findAll('img'):
+    ...             print img['title']
+
+    >>> browser.open('http://code.launchpad.dev/firefox/+branches')
+    >>> branchSummary(browser)
+    /~mark/firefox/release--0.9.1
+    /~mark/firefox/release-0.8
+    /~mark/firefox/release-0.9
+    /~mark/firefox/release-0.9.2
+      Linked to a bug
+    /~name12/firefox/main
+      Linked to a bug
+
+If the bug is not visible to the user that is looking at the page, then the
+badge is not shown.
+
+    >>> browser.open('http://bugs.launchpad.dev/firefox/+bug/4/+secrecy')
+    >>> browser.getControl('Private', index=1).click()
+    >>> browser.getControl('Change').click()
+
+Now the badge is still shown for Sample Person...
+
+    >>> browser.open('http://code.launchpad.dev/firefox/+branches')
+    >>> branchSummary(browser)
+    /~mark/firefox/release--0.9.1
+    /~mark/firefox/release-0.8
+    /~mark/firefox/release-0.9
+    /~mark/firefox/release-0.9.2
+      Linked to a bug
+    /~name12/firefox/main
+      Linked to a bug
+
+... but not for an anonymous user.
+
+    >>> anon_browser.open('http://code.launchpad.dev/firefox/+branches')
+    >>> branchSummary(anon_browser)
+    /~mark/firefox/release--0.9.1
+    /~mark/firefox/release-0.8
+    /~mark/firefox/release-0.9
+    /~mark/firefox/release-0.9.2
+    /~name12/firefox/main
+      Linked to a bug
+
+
+== Sorting Branch Listings ==
+
+Aside from the implicitly sorted listings of recently registered,
+imported and changed branches, all branch listings have a widget that
+allows changing the sort order.
+
+On branch listings for a person, the default ordering is by most recently
+changed first.
+
+    >>> browser.open('http://code.launchpad.dev/~name12')
+    >>> sort_by_control = browser.getControl(name='field.sort_by')
+    >>> sort_by_control.value
+    ['most recently changed first']
+    >>> for option in sort_by_control.options:
+    ...     print option
+    by project name
+    by status
+    by branch name
+    most recently changed first
+    most neglected first
+    newest first
+    oldest first
+
+On a listing that can only have branches from one product, the default
+is to sort by lifecycle status, and product name is not one of the
+options that can be selected.
+
+    >>> browser.open('http://code.launchpad.dev/gnome-terminal/+branches')
+    >>> sort_by_control = browser.getControl(name='field.sort_by')
+    >>> sort_by_control.value
+    ['by status']
+    >>> sort_by_control.value = ['by project name']
+    Traceback (most recent call last):
+      ...
+    ItemNotFoundError: insufficient items with name 'by project name'
+    >>> for option in sort_by_control.options:
+    ...     print option
+    by most interesting
+    by status
+    by branch name
+    by owner name
+    most recently changed first
+    most neglected first
+    newest first
+    oldest first
+
+If you filter by a specific lifecycle status then ordering by
+lifecycle ceases to be relevant, and the default is to sort by registrant.
+
+    >>> browser.open('http://code.launchpad.dev/gnome-terminal/+branches')
+    >>> status_control = browser.getControl(name='field.lifecycle')
+    >>> status_control.value = ['MATURE']
+    >>> browser.getControl('Filter').click()
+    >>> browser.getControl(name='field.sort_by').value
+    ['by most interesting']
+
+The implicitly sorted listings do not have an ordering widget at all.
+
+    >>> browser.open('http://code.launchpad.dev/+recently-registered-branches')
+    >>> browser.getControl(name='field.sort_by').value
+    Traceback (most recent call last):
+    ...
+    LookupError: name 'field.sort_by'
+
+Finally, sorting by a particular criterion has the desired effect.
+
+    >>> browser.open('http://code.launchpad.dev/gnome-terminal/+branches')
+    >>> table = find_tag_by_id(browser.contents, 'branchtable')
+    >>> for row in table.tbody.fetch('tr'):
+    ...     print extract_text(row)
+    lp://dev/~name12/gnome-terminal/2.6            Mature       ...
+    lp://dev/~launchpad/gnome-terminal/launchpad   Development  ...
+    lp://dev/~name12/gnome-terminal/main           Development  ...
+    lp://dev/~name12/gnome-terminal/mirrored       Development  ...
+    lp://dev/~name12/gnome-terminal/pushed         Development  ...
+    lp://dev/~name12/gnome-terminal/scanned        Development  ...
+
+    >>> browser.getControl(name='field.sort_by').value = ['by branch name']
+    >>> browser.getControl('Filter').click()
+    >>> table = find_tag_by_id(browser.contents, 'branchtable')
+    >>> for row in table.tbody.fetch('tr'):
+    ...     print extract_text(row)
+    lp://dev/~name12/gnome-terminal/2.6             Mature          ...
+    lp://dev/~vcs-imports/gnome-terminal/import     Development             ...
+    lp://dev/~name12/gnome-terminal/klingon         Experimental    ...
+    lp://dev/~launchpad/gnome-terminal/launchpad    Development             ...
+    lp://dev/~name12/gnome-terminal/main            Development     ...
+    lp://dev/~name12/gnome-terminal/mirrored        Development             ...
+
+
+== Highlighting the development focus branch ==
+
+The branch associated with the development focus series is highlighted
+on the branch listings using the same CSS style that is used to
+highlight the development focus series on the product overview page.
+
+Firstly we need to make the "main" branch of gnome-terminal the
+development focus branch.
+
+    >>> admin_browser.open('http://launchpad.dev/gnome-terminal/trunk')
+    >>> admin_browser.getLink('Link to branch').click()
+    >>> admin_browser.getControl(name='field.branch_location').value = (
+    ...     '~name12/gnome-terminal/main')
+    >>> admin_browser.getControl('Update').click()
+
+Now when we look at the branches for gnome-terminal, the main branch
+now shows as the "focus of development".  This is indicated by
+both the series link in the first column with the branch unique name.
+
+    >>> browser.open('http://code.launchpad.dev/gnome-terminal')
+    >>> table = find_tag_by_id(browser.contents, 'branchtable')
+    >>> # The development focus is always first.
+    >>> row = table.tbody.fetch('tr')[0]
+    >>> cols = row.fetch('td')
+    >>> print extract_text(cols[0])
+    lp://dev/gnome-terminal     Series: trunk
+
+If a branch is associated with more than one series, then the links
+are comma separated and in alphabetical order.
+
+    >>> admin_browser.open('http://launchpad.dev/gnome-terminal')
+    >>> admin_browser.getLink('Register a series').click()
+    >>> admin_browser.getControl('Name').value = 'pre-1.0'
+    >>> admin_browser.getControl('Summary').value = 'summary'
+    >>> admin_browser.getControl('Branch').value = (
+    ...     '~name12/gnome-terminal/main')
+    >>> admin_browser.getControl('Register Series').click()
+
+    >>> admin_browser.open('http://launchpad.dev/gnome-terminal')
+    >>> admin_browser.getLink('Register a series').click()
+    >>> admin_browser.getControl('Name').value = 'alpha'
+    >>> admin_browser.getControl('Summary').value = 'summary'
+    >>> admin_browser.getControl('Branch').value = (
+    ...     '~name12/gnome-terminal/main')
+    >>> admin_browser.getControl('Register Series').click()
+
+The current development focus is shown first though.
+
+    >>> browser.open('http://code.launchpad.dev/gnome-terminal')
+    >>> table = find_tag_by_id(browser.contents, 'branchtable')
+    >>> print extract_text(table.tbody.fetch('tr')[0])
+    lp://dev/gnome-terminal  Series: trunk, alpha, pre-1.0  ...
+
+
+== Lifecycle Filtering for Product Branches ==
+
+When the branches for a product are first loaded, only the 'Current'
+branches are shown.  Current branches are those that have a
+lifecycle status of Development, Experimental or Mature.
+Merged or Abandoned branches are not shown.
+
+    >>> browser.open('http://code.launchpad.dev/gnome-terminal')
+    >>> table = find_tag_by_id(browser.contents, 'branchtable')
+    >>> for row in table.tbody.fetch('tr'):
+    ...     print extract_text(row)
+    lp://dev/gnome-terminal   Series: trunk...    Development  ...
+    lp://dev/~name12/gnome-terminal/2.6           Mature       ...
+    lp://dev/~launchpad/gnome-terminal/launchpad  Development  ...
+    lp://dev/~name12/gnome-terminal/mirrored      Development  ...
+    lp://dev/~name12/gnome-terminal/pushed        Development  ...
+
+There is a select control that is used to define which
+subset of the branches are shown.
+
+    >>> filter_control = browser.getControl(name='field.lifecycle')
+    >>> filter_control
+    <ListControl name='field.lifecycle' type='select'>
+    >>> filter_control.displayValue
+    ['Any active status']
+    >>> filter_control.displayOptions
+    ['Any active status', 'Any status', 'Experimental', 'Development', 'Mature', 'Merged', 'Abandoned']
+
+Selecting an individual lifecycle status from the select control
+will cause only branches with that status to be listed.
+
+    >>> browser.getControl(name='field.lifecycle').displayValue = ['Experimental']
+    >>> browser.getControl('Filter').click()
+    >>> print browser.url
+    http://code.launchpad.dev/gnome-terminal?field.lifecycle=EXPERIMENTAL
+    >>> table = find_tag_by_id(browser.contents, 'branchtable')
+    >>> for row in table.tbody.fetch('tr'):
+    ...     print extract_text(row)
+    lp://dev/~name12/gnome-terminal/klingon       Experimental ...
+
+If the development focus matches the lifecycle selected, it is still shown
+first.
+
+    >>> browser.getControl(name='field.lifecycle').displayValue = ['Development']
+    >>> browser.getControl('Filter').click()
+    >>> print browser.url
+    http://code.launchpad.dev/gnome-terminal?field.lifecycle=DEVELOPMENT
+    >>> table = find_tag_by_id(browser.contents, 'branchtable')
+    >>> for row in table.tbody.fetch('tr'):
+    ...     print extract_text(row)
+    lp://dev/gnome-terminal   Series: trunk...    Development  ...
+
+
+== The last commit ==
+
+The last commit column shows the revision number, and part of the
+revision log for the last commit that Launchpad knows about.  The
+revision number is linked to codebrowse.  The revision author is
+shown in the column after the last commit to allow the user to sort on
+the revision author column.
+
+    >>> browser.open('http://code.launchpad.dev/firefox/+branches')
+    >>> for commit in find_tags_by_class(browser.contents, 'lastCommit'):
+    ...     print extract_text(commit)
+    1.  Import of Mozilla Firefox 0.9.1
+    1.  Import of Mozilla Firefox 0.9
+    1.  Import of Mozilla Firefox 0.9.2
+
+The entire commit message is shown in a div that gets shown when
+the user moves the mouse over the last commit for a particular branch.
+
+    >>> for commit in find_tags_by_class(browser.contents, 'popupTitle'):
+    ...     print extract_text(commit)
+    Author: mark.shuttleworth
+    Revision Date: 2005-03-09 23:45:00 WST
+    Import of Mozilla Firefox 0.9.1
+    Author: mark.shuttleworth
+    Revision Date: 2005-03-09 23:50:00 WST
+    Import of Mozilla Firefox 0.9
+    Author: mark.shuttleworth
+    Revision Date: 2005-03-09 23:40:00 WST
+    Import of Mozilla Firefox 0.9.2

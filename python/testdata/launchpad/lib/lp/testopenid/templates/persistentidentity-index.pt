@@ -1,0 +1,14 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal">
+  <head>
+    <link rel="openid.server"
+      tal:attributes="href view/openid_server_url" />
+  </head>
+  <body>
+    <h1>
+      OpenID Identity URL for
+      <tal:user content="context/account/displayname">Display Name</tal:user>
+    </h1>
+  </body>
+</html>
+

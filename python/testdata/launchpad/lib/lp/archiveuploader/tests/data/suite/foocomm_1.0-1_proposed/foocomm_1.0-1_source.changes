@@ -1,0 +1,30 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Format: 1.7
+Date: Thu, 16 Feb 2006 15:34:09 +0000
+Source: foocomm
+Binary: foocomm
+Architecture: source
+Version: 1.0-1
+Distribution: breezy-proposed
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Foo Bar <foo.bar@canonical.com>
+Description: 
+ foocomm        - Stuff for testing
+Changes: 
+ foocomm (1.0-1) breezy; urgency=low
+ .
+   * Initial version
+Files: 
+ 7b79ddfee8ee1a25fc9f9767c3c8bced 528 partner/devel optional foocomm_1.0-1.dsc
+ ad436f97a58df5b233209857439f1e7c 171 partner/devel optional foocomm_1.0.orig.tar.gz
+ 39ff032bf860ac3b352fea92391f2597 595 partner/devel optional foocomm_1.0-1.diff.gz
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+
+iD8DBQFG2/Q1jn63CGxkqMURAp7hAJ4g+K7r42iuVaXzhvtRDmjY0YmKugCfcwAa
+sdeZLAljSGXKWhq56l3rUI4=
+=vagQ
+-----END PGP SIGNATURE-----

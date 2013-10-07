@@ -1,0 +1,8 @@
+%(proposal_registrant)s has proposed merging %(source_branch)s into %(target_branch)s%(prerequisite)s.
+
+%(commit_message)s%(reviews)s%(related_bugtasks)s
+For more details, see:
+%(proposal_url)s%(gap)s%(comment)s
+-- 
+%(diff_cutoff_warning)s%(proposal_url)s
+%(reason)s%(edit_subscription)s

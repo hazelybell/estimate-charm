@@ -1,0 +1,32 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad">
+
+  <body>
+    <h1 metal:fill-slot="heading">All project groups</h1>
+
+    <tal:side metal:fill-slot="side">
+      <tal:menu replace="structure view/@@+global-actions" />
+      <tal:menu replace="structure context/@@+related-pages" />
+    </tal:side>
+
+    <div metal:fill-slot="main"
+         class="main-portlet">
+      <p>There are
+      <strong tal:content="context/count_all">5</strong>
+      project groups registered in Launchpad.
+      </p>
+
+      <div tal:repeat="project context"
+           tal:replace="structure project/@@+listing-detailed" />
+
+    </div>
+  </body>
+</html>

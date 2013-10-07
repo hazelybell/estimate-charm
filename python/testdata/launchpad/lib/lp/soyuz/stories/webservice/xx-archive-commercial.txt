@@ -1,0 +1,85 @@
+=============================================
+Using the webservice with commercial archives
+=============================================
+
+(See also soyuz/stories/webservice/xx-archive.txt)
+
+Software Center Agent
+---------------------
+
+Create the P3A where software_center_agent is an owner.
+
+    >>> from zope.component import getUtility
+    >>> from lp.app.interfaces.launchpad import ILaunchpadCelebrities
+    >>> login('admin@canonical.com')
+    >>> celebrity = getUtility(ILaunchpadCelebrities).software_center_agent
+    >>> owner = factory.makePerson()
+    >>> ppa_owner = factory.makeTeam(members=[celebrity, owner])
+    >>> archive = factory.makeArchive(name='commercial', private=True,
+    ...     owner=ppa_owner, suppress_subscription_notifications=True)
+    >>> url = "/~%s/+archive/commercial" % archive.owner.name
+    >>> person = factory.makePerson(name='joe')
+    >>> logout()
+
+And fetch our objects:
+
+    >>> from lp.testing.pages import webservice_for_person
+    >>> from lp.services.webapp.interfaces import OAuthPermission
+    >>> agent = webservice.get('/~software-center-agent').jsonBody()
+    >>> joe = webservice.get('/~joe').jsonBody()
+    >>> cprov = webservice.get('/~cprov').jsonBody()
+    >>> cp3a = webservice.get(url).jsonBody()
+    >>> agent_webservice = webservice_for_person(
+    ...   celebrity, permission=OAuthPermission.WRITE_PRIVATE)
+
+Subscribe our test user to the commercial archive.
+
+    >>> joe_webservice = webservice_for_person(
+    ...   person, permission=OAuthPermission.WRITE_PRIVATE)
+    >>> response = agent_webservice.named_post(cp3a['self_link'],
+    ...   'newSubscription', subscriber=joe['self_link'])
+    >>> print response
+    HTTP/1.1 201 Created
+    ...
+    Location: http://api.launchpad.dev/beta/.../+subscriptions/joe
+    ...
+
+The agent can query the sources.list entry for an archive for any user, which
+will include an AuthToken, and create it if needed:
+
+    >>> response = agent_webservice.named_post(
+    ...   joe['self_link'], 'getArchiveSubscriptionURL', {},
+    ...   archive=cp3a['self_link'])
+    >>> print response
+    HTTP/1.1 200 Ok
+    ...
+    "http://joe:...@private-ppa.launchpad.dev/.../commercial/ubuntu"
+
+The agent can also query all sources.list entries for any user:
+
+    >>> response = agent_webservice.named_get(
+    ...   joe['self_link'], 'getArchiveSubscriptionURLs')
+    >>> print response
+    HTTP/1.1 200 Ok
+    ...
+    ["http://joe:...@private-ppa.launchpad.dev/.../commercial/ubuntu"]
+
+Joe can query his own entry:
+
+    >>> response = joe_webservice.named_post(
+    ...   joe['self_link'], 'getArchiveSubscriptionURL', {},
+    ...   archive=cp3a['self_link'])
+    >>> print response
+    HTTP/1.1 200 Ok
+    ...
+    "http://joe:...@private-ppa.launchpad.dev/.../commercial/ubuntu"
+
+But Joe can not query the entry of cprov:
+
+    >>> response = joe_webservice.named_post(
+    ...   cprov['self_link'], 'getArchiveSubscriptionURL', {},
+    ...   archive=cp3a['self_link'])
+    >>> print response
+    HTTP/1.1 401 Unauthorized
+    ...
+

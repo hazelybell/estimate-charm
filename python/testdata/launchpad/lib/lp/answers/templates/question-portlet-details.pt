@@ -1,0 +1,96 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<div id="portlet-details" xml:lang="en" lang="en" dir="ltr">
+  <div class="two-column-list">
+    <dl id="question-lang">
+      <dt>Language:</dt>
+      <dd>
+        <tal:language content="context/language/englishname" />
+        <a tal:replace="structure context/menu:answers/edit/fmt:icon" />
+      </dd>
+    </dl>
+
+    <dl id="question-status">
+      <dt>Status:</dt>
+      <dd>
+        <span class="questionstatusOPEN"
+          tal:attributes="class string:questionstatus${context/status/name}"
+          tal:content="context/status/title">Open</span>
+        <a tal:replace="structure context/menu:answers/changestatus/fmt:icon" />
+      </dd>
+    </dl>
+
+    <dl>
+      <dt>For:</dt>
+      <dd>
+        <a tal:condition="context/product"
+          tal:replace="structure context/product/fmt:link">UFOs</a>
+        <a tal:condition="context/distribution"
+          tal:replace="structure context/distribution/fmt:link">Illumanati</a>
+        <a tal:condition="context/sourcepackagename"
+          tal:attributes="href
+          string:${context/distribution/fmt:url}/+source/${context/sourcepackagename/name}"
+          tal:content="context/sourcepackagename/name">fnord</a>
+        <a tal:replace="structure context/menu:answers/edit/fmt:icon" />
+      </dd>
+    </dl>
+
+    <dl>
+      <dt>Assignee:</dt>
+      <dd>
+        <tal:block condition="context/assignee">
+          <a tal:replace="structure context/assignee/fmt:link">Foo Bar</a>
+        </tal:block>
+        <tal:block condition="not: context/assignee">
+          No assignee
+        </tal:block>
+        <a tal:replace="structure context/menu:answers/edit/fmt:icon" />
+      </dd>
+    </dl>
+
+    <dl tal:condition="context/answerer">
+      <dt>Solved by:</dt>
+      <dd>
+        <a tal:replace="structure context/answerer/fmt:link">Foo Bar</a>
+      </dd>
+    </dl>
+
+    <dl tal:condition="context/answerer">
+      <dt>Solved:</dt>
+      <dd>
+        <span
+          tal:attributes="title context/date_solved/fmt:datetime"
+          tal:content="context/date_solved/fmt:approximatedate" />
+      </dd>
+    </dl>
+
+    <dl style="clear: both;">
+      <dt>Last query:</dt>
+      <dd>
+        <span
+          tal:attributes="title context/datelastquery/fmt:datetime"
+          tal:content="context/datelastquery/fmt:approximatedate" />
+      </dd>
+    </dl>
+
+    <dl>
+      <dt>Last reply:</dt>
+      <dd>
+        <span
+          tal:attributes="title context/datelastresponse/fmt:datetime"
+          tal:content="context/datelastresponse/fmt:approximatedate" />
+      </dd>
+    </dl>
+  </div>
+
+  <dl id="question-whiteboard"
+    tal:condition="context/whiteboard">
+    <dt>Whiteboard:</dt>
+    <dd tal:content="context/whiteboard">contents</dd>
+  </dl>
+</div>
+</tal:root>

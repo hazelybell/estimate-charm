@@ -1,0 +1,43 @@
+<issue status_code="200" status_message="OK">
+  <issue_id>%(bug_id)s</issue_id>
+  <issue_status>%(status)s</issue_status>
+  <priority>%(priority)s</priority>
+  <resolution>%(resolution)s</resolution>
+  <component>NOT USED</component>
+  <version>NOT USED</version>
+  <rep_platform>NOT USED</rep_platform>
+  <assigned_to>NOT USED</assigned_to>
+  <delta_ts>NOT USED</delta_ts>
+  <subcomponent>NOT USED</subcomponent>
+  <reporter>NOT USED</reporter>
+  <target_milestone>NOT USED</target_milestone>
+  <issue_type>NOT USED</issue_type>
+  <creation_ts>NOT USED</creation_ts>
+  <qa_contact>NOT USED</qa_contact>
+  <status_whiteboard/>
+  <issue_file_loc/>
+  <votes/>
+  <op_sys>NOT USED</op_sys>
+  <short_desc>NOT USED</short_desc>
+  <keywords/>
+  <long_desc>
+   <who>NOT USED</who>
+   <issue_when>NOT USED</issue_when>
+   <thetext>NOT USED
+</thetext>
+  </long_desc>
+  <activity>
+    <user>NOT USED</user>
+    <when>NOT USED</when>
+    <field_name>NOT USED</field_name>
+    <field_desc>NOT USED</field_desc>
+    <oldvalue>NOT USED</oldvalue>
+    <newvalue>NOT USED</newvalue>
+  </activity>
+  <has_duplicates>
+    <issue_id>66342</issue_id>
+    <who>fst</who>
+    <when>2006-06-26 05:58:09</when>
+  </has_duplicates>
+</issue>
+

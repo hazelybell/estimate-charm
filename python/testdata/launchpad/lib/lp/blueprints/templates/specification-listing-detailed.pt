@@ -1,0 +1,63 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<table style="width: 100%;">
+  <tbody>
+    <tr>
+      <td class="icon left">
+        <img src="/@@/blueprint" tal:replace="structure context/image:icon" />
+      </td>
+      <td>
+        <strong><a tal:attributes="href context/fmt:url"
+        tal:content="context/title">Spec Title Here</a></strong>
+        <img src="/@@/info" alt="Informational"
+             title="Informational specification"
+             tal:condition="context/informational" />
+<tal:block condition="context/milestone">
+  <img alt="" src="/@@/milestone" />&nbsp;<a
+     tal:attributes="href context/milestone/fmt:url"
+     tal:content="context/milestone/name">colony3</a>
+</tal:block>
+<tal:block condition="context/assignee">
+  (<a tal:replace="structure context/assignee/fmt:link">Foo Bar</a>)
+</tal:block>
+<div class="lesser" style="margin-left: 25px;">
+  Definition status:
+  <span tal:content="context/definition_status/title"
+        tal:attributes="class string:specstatus${context/definition_status/name}"
+        >Approved</span>,
+  <span tal:condition="context/priority">Priority:
+    <span tal:attributes="class string:specpriority${context/priority/name}" tal:content="context/priority/title">High</span></span><i
+    tal:condition="not: context/priority">Proposed</i>,
+    Delivery: <span tal:attributes="class string:specdelivery${context/implementation_status/name}" tal:content="context/implementation_status/title">High</span>
+  in <span tal:replace="context/target/displayname">Ubuntu</span>.<br />
+  <i tal:condition="not: context/direction_approved">Needs guidance.</i>
+  <i tal:condition="context/is_blocked">Blocked.</i>
+  <br />
+  <span tal:replace="context/summary">
+    summary here
+  </span>
+  <tal:block condition="context/specurl">
+    <img src="/@@/link" />
+    <a tal:attributes="href context/specurl">Web Page</a>.
+  </tal:block>
+  <i tal:condition="context/whiteboard"
+     tal:content="context/whiteboard">white board goes here</i>
+  <tal:sprints condition="context/sprints">
+  <br />
+  <b>Sprints</b>:
+    <tal:sprint_link repeat="sprint_link context/sprint_links">
+       <a tal:condition="sprint_link/is_confirmed"
+          tal:content="sprint_link/sprint/name"
+          tal:attributes="href sprint_link/sprint/fmt:url">ubz</a>
+    </tal:sprint_link>
+  </tal:sprints>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</tal:root>

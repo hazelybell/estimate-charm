@@ -1,0 +1,19 @@
+<!-- Copyright 2009 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure xmlns="http://namespaces.zope.org/zope">
+
+    <class class="lp.app.validators.LaunchpadValidationError">
+        <require permission="zope.Public"
+            interface=".ILaunchpadValidationError" />
+    </class>
+
+    <!-- We define the permissions here, but register the actual view
+    in the zcml overrides, becase we need to replace the standard Z3
+    implementation with our own -->
+    <class class="lp.app.validators.WidgetInputErrorView">
+        <require permission="zope.Public"
+            interface=".ILaunchpadWidgetInputErrorView" />
+    </class>
+</configure>

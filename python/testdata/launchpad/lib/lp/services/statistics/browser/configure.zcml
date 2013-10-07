@@ -1,0 +1,23 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:xmlrpc="http://namespaces.zope.org/xmlrpc"
+    i18n_domain="launchpad">
+    <browser:url
+        for="lp.services.statistics.interfaces.statistic.ILaunchpadStatisticSet"
+        path_expression="string:+statistics"
+        parent_utility="lp.services.webapp.interfaces.ILaunchpadRoot"/>
+    <browser:defaultView
+        for="lp.services.statistics.interfaces.statistic.ILaunchpadStatisticSet"
+        name="+index"/>
+    <browser:pages
+        for="lp.services.statistics.interfaces.statistic.ILaunchpadStatisticSet"
+        facet="overview"
+        class="lp.services.statistics.browser.launchpadstatistic.LaunchpadStatisticSet"
+        permission="launchpad.Admin">
+        <browser:page
+            name="+index"
+            template="../templates/launchpadstatisticset-index.pt"/>
+    </browser:pages>
+</configure>

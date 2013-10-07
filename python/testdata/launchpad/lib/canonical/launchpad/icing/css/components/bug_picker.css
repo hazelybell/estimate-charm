@@ -1,0 +1,16 @@
+/* The bug picker buttons should be left aligned, not centred. */
+.yui3-bugpickerwidget .yui3-picker-footer-slot {
+    margin-left: 0;
+    }
+
+.yui3-bugpickerwidget .search-header {
+    margin-top: 6px;
+    }
+
+.yui3-bugpickerwidget {
+    max-width: 80%;
+    }
+
+.yui3-bugpickerwidget #client-listing p {
+    margin-bottom: 0
+    }

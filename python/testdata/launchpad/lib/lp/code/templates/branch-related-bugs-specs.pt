@@ -1,0 +1,64 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  tal:define="context_menu view/context/menu:context">
+
+  <h3>Related bugs</h3>
+  <div id="buglinks" class="actions">
+    <div id="buglink-list">
+      <tal:bugs tal:define="branch context; show_edit python:True;">
+      <metal:bug-branch-links
+              use-macro="branch/@@+macros/bug-branch-links"/>
+      </tal:bugs>
+    </div>
+
+    <div
+      tal:define="link context_menu/link_bug"
+      tal:condition="link/enabled"
+      >
+      <a id="linkbug"
+         class="sprite add"
+         tal:attributes="href link/url"
+         tal:content="link/text" />
+    </div>
+  </div>
+
+  <h3>Related blueprints</h3>
+  <div class="actions">
+    <tal:blueprints tal:define="branch context;
+                            show_edit python:True;">
+        <metal:spec-branch-links
+                use-macro="branch/@@+macros/spec-branch-links"/>
+    </tal:blueprints>
+    <div
+      tal:define="link context_menu/link_blueprint"
+      tal:condition="link/enabled"
+      tal:content="structure link/render">
+      Link to a blueprint
+    </div>
+  </div>
+  <tal:script
+    replace="structure
+    string:&lt;script id='branchlink-script' type='text/javascript'&gt;" />
+    <!--
+
+    LPJS.use('io-base', 'lp.code.branch.bugspeclinks', function(Y) {
+    Y.on('domready', function() {
+        var logged_in = LP.links['me'] !== undefined;
+
+        if (logged_in) {
+            var config = {
+                picker_activator: '#linkbug'
+            };
+            var linked_bug_picker = new Y.lp.code.branch.bugspeclinks.LinkedBugPicker(config);
+            linked_bug_picker.render();
+            linked_bug_picker.hide();
+        }
+    });
+
+    });
+    -->
+  <tal:script replace="structure string:&lt;/script&gt;" />
+
+</div>

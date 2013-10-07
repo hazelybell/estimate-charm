@@ -1,0 +1,45 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+<body>
+
+<metal:heading fill-slot="heading">
+  <h1 tal:content="view/page_title" />
+</metal:heading>
+
+
+<div metal:fill-slot="main">
+
+  <table class="listing sortable" id="karmas">
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Action</th>
+        <th>Points</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr tal:repeat="action context">
+        <td tal:content="action/category/name">name</td>
+        <td>
+          <a tal:attributes="href string:${action/fmt:url}"
+             tal:content="action/title">Action title here
+          </a>
+        </td>
+        <td class="amount" tal:content="action/points">10</td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+
+</body>
+</html>

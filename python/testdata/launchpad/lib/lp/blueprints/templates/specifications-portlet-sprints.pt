@@ -1,0 +1,16 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<div>
+  <h2>Upcoming meetings</h2>
+
+    <table>
+      <tal:per_sprint repeat="sprint context/coming_sprints"
+                      replace="structure sprint/@@+listing-simple" />
+    </table>
+    <div><a href="/sprints">&raquo; Show all sprints and meetings</a></div>
+</div>
+</tal:root>

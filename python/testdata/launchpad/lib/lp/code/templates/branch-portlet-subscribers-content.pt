@@ -1,0 +1,35 @@
+<div
+  tal:omit-tag=""
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  >
+  <div class="section branch-subscribers">
+    <div
+      tal:condition="view/subscriptions"
+      tal:repeat="subscription view/subscriptions"
+      tal:attributes="id string:subscriber-${subscription/person/name}"
+    >
+        <a
+          tal:condition="subscription/person/name|nothing"
+          tal:attributes="href subscription/person/fmt:url">
+
+          <tal:block replace="structure subscription/person/fmt:icon" />
+          <tal:block replace="subscription/person/fmt:displayname/fmt:shorten/20" />
+        </a>
+
+        <a
+          tal:condition="subscription/required:launchpad.Edit"
+          tal:attributes="
+            href subscription/fmt:url;
+            title string:Edit subscription ${subscription/person/fmt:displayname};
+            id string:editsubscription-${subscription/person/name}">
+          <img class="editsub-icon" src="/@@/edit"
+            tal:attributes="id string:editsubscription-icon-${subscription/person/name}" />
+        </a>
+    </div>
+    <div id="none-subscribers" tal:condition="not:view/subscriptions">
+      No subscribers.
+    </div>
+  </div>
+</div>

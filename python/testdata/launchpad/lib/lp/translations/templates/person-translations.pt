@@ -1,0 +1,147 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+>
+
+<body>
+
+<metal:side fill-slot="side">
+    <div tal:condition="view/user_can_edit" class="portlet">
+      <a href="/+editmylanguages" class="sprite edit">Change your preferred languages</a>
+    </div>
+</metal:side>
+
+<div metal:fill-slot="heading">
+  <h1 tal:content="view/page_title" />
+</div>
+
+<div metal:fill-slot="main">
+  <div class="top-portlet">
+    <tal:navlinks replace="structure context/@@+person-navlinks" />
+  </div>
+
+  <tal:me condition="view/person_includes_me">
+    <div tal:condition="view/requires_preferred_languages"
+         class="portlet"
+         id="no-languages">
+      You have not selected your preferred languages.  Please
+      <a href="/+editmylanguages" id="set-languages">set them now</a>.
+    </div>
+  </tal:me>
+
+  <div class="portlet">
+    <tal:active tal:condition="view/latest_activity">
+      Last translation activity by
+      <tal:name replace="context/displayname">Foo Bar</tal:name>
+      was
+      <tal:date replace="view/latest_activity/date/fmt:displaydate">
+        on 2009-10-12</tal:date>.
+    </tal:active>
+    <tal:inactive tal:condition="not: view/latest_activity">
+      No translation activities recorded for
+      <tal:name replace="context/displayname">Foo Bar</tal:name>.
+    </tal:inactive>
+  </div>
+
+  <tal:me condition="view/person_includes_me">
+    <tal:reviewer condition="view/person_is_reviewer">
+      <div id="translations-to-review-section" class="portlet">
+        <h2>Translations you need to review</h2>
+        <p>
+          By reviewing the following translations, you can help ensure other translators' work is published to software users. (<a href="/+help-translations/reviewing.html" target="help">More about reviewing</a>)
+        </p>
+        <metal:translations-to-review
+          tal:replace="structure view/translations_to_review_table" />
+        <div class="see-all"
+             tal:condition="python: view.num_projects_and_packages_to_review > 1">
+          <a href="+translations-to-review" id="translations-to-review-link">
+            See all
+            <tal:num tal:replace="view/num_projects_and_packages_to_review">
+              16
+            </tal:num> unreviewed translations
+          </a>
+        </div>
+      </div>
+    </tal:reviewer>
+  </tal:me>
+
+  <tal:me condition="view/person_includes_me">
+    <tal:translator condition="view/person_is_translator">
+      <div id="translations-to-complete-section" class="portlet">
+        <h2>Translations you can help complete</h2>
+        <metal:translations-to-complete
+          tal:replace="structure view/translations_to_complete_table" />
+      </div>
+    </tal:translator>
+  </tal:me>
+
+  <tal:block tal:define="activities view/recent_activity">
+    <tal:block condition="activities">
+      <div class="portlet">
+        <h2>Activity</h2>
+        <p>
+          These are the translations that
+          <tal:name replace="context/displayname">Foo Bar</tal:name>
+          last worked on:
+        </p>
+        <table class="summary">
+          <tr tal:repeat="activity activities">
+            <td tal:attributes="title activity/date/fmt:datetime"
+                tal:content="activity/date/fmt:approximatedate">
+              2009-08-15
+            </td>
+            <td>
+              <a tal:content="activity/title"
+                 tal:attributes="href activity/url">foo bar in package bla</a>
+            </td>
+          </tr>
+        </table>
+        <div class="see-all">
+          <a href="+activity">See all</a>
+        </div>
+      </div>
+    </tal:block>
+  </tal:block>
+
+  <div tal:condition="view/translation_groups" class="portlet">
+    <h2>Translation Groups</h2>
+    <span tal:replace="context/displayname">Mark Shuttleworth</span> is
+    a member of the following translation groups:
+
+    <table class="listing" id="translation-group-memberships">
+      <thead>
+        <tr>
+          <th>Translation group</th>
+          <th>Language</th>
+          <th>Translation guidelines</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr tal:repeat="translator view/translators">
+          <td>
+            <a tal:replace="structure translator/translationgroup/fmt:link">
+              Launchpad Translators
+            </a>
+          </td>
+          <td tal:content="translator/language/englishname">Esperanto</td>
+          <td><a tal:condition="translator/style_guide_url"
+                 tal:content="translator/style_guide_url"
+                 tal:attributes="href translator/style_guide_url"
+              >Documentation URL</a>
+            <tal:user-can-edit condition="view/user_can_edit">
+            <a class="edit sprite action-icon"
+               tal:attributes="href string:${translator/translationgroup/fmt:url}/${translator/language/code}/+edit"
+               >Edit</a>
+             </tal:user-can-edit>
+           </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>

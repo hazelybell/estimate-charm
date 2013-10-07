@@ -1,0 +1,50 @@
+#!/usr/bin/python
+
+import commands
+import os
+import sys
+
+from bzrlib import (
+    branch,
+    errors,
+    )
+from launchpadlib.launchpad import Launchpad
+
+
+launchpad = Launchpad.login_with('rocketfuel-mp-status', 'production')
+trunk = commands.getoutput(
+    '. ~/.rocketfuel-env.sh && echo $LP_TRUNK_NAME')
+projpath = commands.getoutput(
+    '. ~/.rocketfuel-env.sh && echo $LP_PROJECT_PATH')
+if len(sys.argv) > 1:
+    branches = sys.argv[1:]
+else:
+    os.chdir(projpath)
+    branches = os.listdir('.')
+lp_branches = launchpad.branches
+
+for lb in branches:
+    if lb == trunk:
+        continue
+    try:
+        _branch = branch.Branch.open(lb)
+    except errors.NotBranchError:
+        continue
+    print ' * %s' % lb
+    rem_branch_url = _branch.get_public_branch()
+    try:
+        rem_branch = branch.Branch.open(rem_branch_url)
+    except errors.NotBranchError:
+        print '   - Remote branch does not exist'
+        continue
+    if _branch.revno() == rem_branch.revno():
+        print '   - Remote branch is up to date'
+    elif _branch.revno() > rem_branch.revno():
+        print '   - Remote branch is missing revisions'
+    elif _branch.revno() < rem_branch.revno():
+        print '   - Local branch is missing revisions'
+    remote = lp_branches.getByUrl(url = rem_branch_url)
+    mps = remote.landing_targets
+    for mp in mps:
+        print '   - MP: %s' % mp.queue_status
+

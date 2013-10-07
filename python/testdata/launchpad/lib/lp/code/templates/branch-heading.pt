@@ -1,0 +1,26 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  id="branch-heading">
+
+  <div style="float:right; text-align: right">
+    Created by
+    <tal:registrant tal:replace="structure context/registrant/fmt:link"/>
+    <span
+       tal:attributes="title context/date_created/fmt:datetime"
+       tal:content="context/date_created/fmt:displaydate">
+      2005-10-18
+    </span>
+    and last modified
+    <span
+       tal:attributes="title context/date_last_modified/fmt:datetime"
+       tal:content="context/date_last_modified/fmt:displaydate">
+      2005-10-18
+    </span>
+  </div>
+  <span class="sprite branch"> Branch</span>
+  <tt tal:content="context/bzr_identity" />
+
+</div>
+

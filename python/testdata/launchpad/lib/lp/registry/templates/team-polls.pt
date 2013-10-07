@@ -1,0 +1,88 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+<body>
+
+  <metal:heading fill-slot="heading">
+    <h1>Polls for <span tal:replace="context/displayname" /></h1>
+  </metal:heading>
+
+  <div metal:fill-slot="main">
+
+    <h2>Current polls</h2>
+
+    <p tal:condition="not: view/has_current_polls">
+      This team has no open polls nor polls that are not yet opened.
+    </p>
+
+    <ul tal:condition="view/has_current_polls">
+      <li tal:repeat="poll view/openpolls">
+        <a tal:attributes="href poll/fmt:url">
+          <span tal:replace="poll/title" />
+        </a> - closes
+        <span
+          tal:attributes="title poll/datecloses/fmt:datetime"
+          tal:content="poll/datecloses/fmt:displaydate" />.
+
+        <tal:block define="user request/lp:person" condition="user">
+          <tal:block condition="python: poll.personVoted(user)">
+            You have
+            <span tal:replace="poll/closesIn/fmt:approximateduration" /> 
+            to change your vote if you wish.
+          </tal:block>
+
+          <tal:block condition="python: not poll.personVoted(user)">
+            You have
+            <span tal:replace="poll/closesIn/fmt:approximateduration" />
+            left to vote in this poll.
+          </tal:block>
+        </tal:block>
+
+      </li>
+
+      <li tal:repeat="poll view/notyetopenedpolls">
+        <a tal:attributes="href poll/fmt:url">
+          <span tal:replace="poll/title" />
+        </a> - opens
+        <span
+          tal:attributes="title poll/dateopens/fmt:datetime"
+          tal:content="poll/dateopens/fmt:displaydate" />
+      </li>
+    </ul>
+
+    <tal:block condition="view/closedpolls" >
+      <h2>Closed polls</h2>
+
+      <ul>
+        <li tal:repeat="poll view/closedpolls">
+          <a tal:attributes="href poll/fmt:url">
+            <span tal:replace="poll/title" />
+          </a> - closed
+          <span
+            tal:attributes="title poll/datecloses/fmt:datetime"
+            tal:content="poll/datecloses/fmt:displaydate" />
+        </li>
+      </ul>
+    </tal:block>
+
+    <br />
+    <tal:block tal:condition="request/lp:person">
+      <ul tal:condition="context/required:launchpad.Edit">
+        <li><a class="sprite add" href="+newpoll">Set up a new poll</a></li>
+      </ul>
+    </tal:block>
+
+    <tal:block tal:condition="not: request/lp:person">
+      <a href="+login">Log in as an admin to set up a new poll</a>
+    </tal:block>
+
+  </div>
+
+</body>
+</html>
+

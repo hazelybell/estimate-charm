@@ -1,0 +1,161 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+>
+<body>
+
+  <tal:heading metal:fill-slot="heading">
+    <h1 tal:content="view/page_title" />
+  </tal:heading>
+
+  <tal:registering metal:fill-slot="registering">
+      Registered
+      <span tal:content="context/date_created/fmt:displaydate">
+      on 2005-01-01</span>
+  </tal:registering>
+
+  <tal:main
+    metal:fill-slot="main"
+    define="overview_menu context/menu:overview">
+
+    <div class="top-portlet" tal:condition="context/description">
+      <p tal:content="structure context/description/fmt:text-to-html" />
+    </div>
+
+    <div class="yui-g">
+      <div class="portlet">
+        <h2>Archive information</h2>
+          <div class="yui-u first">
+            <div class="two-column-list">
+              <dl id="owner">
+                <dt>Owner:</dt>
+                <dd>
+                  <span tal:content="structure context/owner/fmt:link" />
+                  <a tal:replace="structure overview_menu/reassign/fmt:icon"/>
+                </dd>
+              </dl>
+
+              <dl id="status">
+                <dt>Status:</dt>
+                <dd>
+                  <tal:status replace="context/status/title">Official</tal:status>
+                  <a tal:replace="structure overview_menu/review/fmt:icon"/>
+                </dd>
+              </dl>
+            </div>
+
+            <dl id="whiteboard"
+              tal:condition="context/required:launchpad.Edit">
+            <dt>
+              Whiteboard
+              <a tal:replace="structure overview_menu/review/fmt:icon"/>
+            </dt>
+            <dd tal:content="structure context/whiteboard/fmt:text-to-html" />
+        </dl>
+
+        </div>
+
+        <div class="yui-u">
+          <div class="two-column-list">
+            <dl id="speed">
+              <dt>Speed:</dt>
+              <dd tal:content="context/speed/title" />
+            </dl>
+            <dl id="country">
+              <dt>Country:</dt>
+              <dd tal:content="context/country/name" />
+            </dl>
+            <dl id="type">
+              <dt>Type:</dt>
+              <dd tal:content="context/content/title" />
+            </dl>
+            <dl id="organisation">
+                <dt>Organisation:</dt>
+                <dd tal:condition="context/displayname"
+                  tal:content="context/displayname" />
+                <dd tal:condition="not: context/displayname">None</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+    <div class="portlet"
+         id="last-probe"
+         tal:define="probe context/last_probe_record">
+      <h2>Last probe</h2>
+      <tal:not-probe condition="not: probe">
+              <p tal:condition="context/isOfficial">
+                This mirror has never been verified.
+              </p>
+
+              <p tal:condition="not: context/isOfficial">
+                This mirror of
+                <tal:distro tal:replace="context/distribution/title">Ubuntu</tal:distro>
+                will not be verified because its status is
+                '<tal:status replace="context/status/title">Official</tal:status>'.
+              </p>
+          </tal:not-probe>
+          <tal:probe condition="probe">
+              <p>This mirror was last verified
+                <span
+                   tal:attributes="title probe/date_created/fmt:datetime"
+                   tal:content="probe/date_created/fmt:displaydate" />.
+
+                <tal:is-owner condition="context/required:launchpad.Edit">
+                  You can see the
+                  <a tal:attributes="href probe/log_file/http_url">log file</a> of the
+                  probe.
+                </tal:is-owner>
+              </p>
+          </tal:probe>
+    </div>
+
+    <div class="portlet">
+    <h2>Mirror location information</h2>
+
+    <ul class="webref" id="mirror-urls">
+      <li tal:condition="context/http_base_url" >
+        <a tal:content="context/http_base_url"
+           tal:attributes="href context/http_base_url">http://url/</a>
+      </li>
+      <li tal:condition="context/ftp_base_url" >
+        <a tal:content="context/ftp_base_url"
+           tal:attributes="href context/ftp_base_url">ftp://url/</a>
+      </li>
+      <li tal:condition="context/rsync_base_url" >
+        <a tal:content="context/rsync_base_url"
+           tal:attributes="href context/rsync_base_url">
+          rsync://url/</a>
+      </li>
+    </ul>
+
+    <tal:entries condition="context/content/enumvalue:ARCHIVE"
+                 replace="structure view/sources_list_entries" />
+
+    <tal:has-last-probe condition="context/last_probe_record">
+      <tal:archive-mirror condition="context/content/enumvalue:ARCHIVE"
+        define="arch_series view/summarized_arch_series;
+                source_series view/summarized_source_series">
+        <metal:mirror-content
+          use-macro="context/@@+distributionmirror-macros/archive-mirror-content" />
+      </tal:archive-mirror>
+
+      <tal:cdimage-mirror condition="context/content/enumvalue:RELEASE"
+        define="flavours_by_series view/getCDImageMirroredFlavoursBySeries">
+        <metal:mirror-content
+          use-macro="context/@@+distributionmirror-macros/cdimage-mirror-content" />
+      </tal:cdimage-mirror>
+    </tal:has-last-probe>
+    </div>
+    </div>
+  </tal:main>
+
+  <tal:side metal:fill-slot="side" condition="context/required:launchpad.Edit">
+    <tal:menu replace="structure context/@@+global-actions" />
+  </tal:side>
+</body>
+</html>

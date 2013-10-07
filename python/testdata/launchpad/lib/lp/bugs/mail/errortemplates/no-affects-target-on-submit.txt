@@ -1,0 +1,15 @@
+You didn't specify the project, distribution, or package that the bug is about.
+
+To do this, include a line that starts with a blank space, then the word 'affects', then the Launchpad ID of the project or distribution, then (if it's a package) a slash and the name of the package.
+
+For example, reporting a bug on an upstream project:
+
+ affects bzr
+
+Reporting a bug on a distribution:
+
+ affects ubuntu
+
+Reporting a bug on a distribution source package:
+
+ affects ubuntu/firefox

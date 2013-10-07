@@ -1,0 +1,41 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+
+<body>
+
+<div metal:fill-slot="main">
+
+  <div metal:use-macro="context/@@launchpad_form/form">
+    <div metal:fill-slot="extra_info">
+      <tal:uploadsize
+         define="
+             max_file_size modules/lp.services.config/config/launchpad/max_productrelease_file_size;">
+        <p tal:condition="max_file_size">
+          You may upload files up to
+          <tal:maxsize replace="max_file_size/fmt:bytes" /> in size.
+        </p>
+      </tal:uploadsize>
+      <p>
+        A digital signature associates a verifiable identity to the files
+        you upload, allowing end-users to know you signed and approved this
+        file for distribution.
+      </p>
+      <p>
+        To create a digital signature, use the following command:<br />
+        <code>% gpg --armor --sign --detach-sig &lt;filename&gt;.</code>
+      </p>
+      <p>
+        This command will create <code>filename.asc</code>, which you can
+        then upload as the signature file.
+      </p>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+  <body>
+    <div class="top-portlet" metal:fill-slot="main">
+      <h1 class="exception">Timeout error</h1>
+      <p>
+        Sorry, something just went wrong in Launchpad.
+      </p>
+      <p>
+        We&#8217;ve recorded what happened,
+        and we&#8217;ll fix it as soon as possible.
+        Apologies for the inconvenience.
+      </p>
+      <p>
+        Trying again in a couple of minutes might work.
+      </p>
+      <p>
+        (Error <abbr>ID</abbr>:
+        <tal:oops replace="structure view/oops_id_text" />)
+      </p>
+      <tal:replace tal:replace="structure view/maybeShowTraceback" />
+    </div>
+  </body>
+</html>

@@ -1,0 +1,30 @@
+<bug>
+  <bug_id>%(bug_id)s</bug_id>
+  <bug_status>%(status)s</bug_status>
+  <product>NOT USED</product>
+  <priority>%(priority)s</priority>
+  <version>NOT USED</version>
+  <assigned_to>NOT USED</assigned_to>
+  <delta_ts>NOT USED</delta_ts>
+  <component>NOT USED</component>
+  <reporter>matt@helixcode.com</reporter>
+  <target_milestone>NOT USED</target_milestone>
+  <bug_severity>%(severity)s</bug_severity>
+  <creation_ts>NOT USED</creation_ts>
+  <qa_contact>NOT USED</qa_contact>
+  <op_sys>NOT USED</op_sys>
+  <resolution>%(resolution)s</resolution>
+  <short_desc>NOT USED</short_desc>
+  <long_desc encoding="base64">
+   <who>NOT USED</who>
+   <bug_when>NOT USED</bug_when>
+   <thetext>NOT USED
+</thetext>
+  </long_desc>
+  <long_desc encoding="base64">
+   <who>NOT USED</who>
+   <bug_when>NOT USED</bug_when>
+   <thetext>NOT USED
+</thetext>
+  </long_desc>
+</bug>

@@ -1,0 +1,92 @@
+<!-- Copyright 2009-2011 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="launchpad">
+
+    <!-- Widgets -->
+
+    <view
+        type="zope.publisher.interfaces.browser.IBrowserRequest"
+        for="lp.services.fields.ITitle"
+        provides="zope.formlib.interfaces.IInputWidget"
+        factory="lp.app.widgets.textwidgets.TitleWidget"
+        permission="zope.Public"
+        />
+
+    <view
+        type="zope.publisher.interfaces.browser.IBrowserRequest"
+        for="lp.services.fields.ISummary"
+        provides="zope.formlib.interfaces.IInputWidget"
+        factory="lp.app.widgets.textwidgets.SummaryWidget"
+        permission="zope.Public"
+        />
+
+    <view
+        type="zope.publisher.interfaces.browser.IBrowserRequest"
+        for="lp.services.fields.IDescription"
+        provides="zope.formlib.interfaces.IInputWidget"
+        factory="lp.app.widgets.textwidgets.DescriptionWidget"
+        permission="zope.Public"
+        />
+
+    <view
+        type="zope.publisher.interfaces.browser.IBrowserRequest"
+        for="lp.services.fields.INoneableDescription"
+        provides="zope.formlib.interfaces.IInputWidget"
+        factory="lp.app.widgets.textwidgets.NoneableDescriptionWidget"
+        permission="zope.Public"
+        />
+
+    <view
+        type="zope.publisher.interfaces.browser.IBrowserRequest"
+        for="lp.services.fields.IWhiteboard"
+        provides="zope.formlib.interfaces.IInputWidget"
+        factory="lp.app.widgets.textwidgets.WhiteboardWidget"
+        permission="zope.Public"
+        />
+
+    <view
+        type="zope.publisher.interfaces.browser.IBrowserRequest"
+        for="lp.services.fields.IStrippedTextLine"
+        provides="zope.formlib.interfaces.IInputWidget"
+        factory="lp.app.widgets.textwidgets.StrippedTextWidget"
+        permission="zope.Public"
+        />
+
+    <view
+        type="zope.publisher.interfaces.browser.IBrowserRequest"
+        for="lp.services.fields.INoneableTextLine"
+        provides="zope.formlib.interfaces.IInputWidget"
+        factory="lp.app.widgets.textwidgets.NoneableTextWidget"
+        permission="zope.Public"
+        />
+
+    <view
+        type="zope.publisher.interfaces.browser.IBrowserRequest"
+        for="lp.services.fields.IURIField"
+        provides="zope.formlib.interfaces.IInputWidget"
+        factory="lp.app.widgets.textwidgets.URIWidget"
+        permission="zope.Public"
+        />
+
+     <view
+        type="zope.publisher.interfaces.browser.IBrowserRequest"
+        for="lp.services.fields.ContentNameField"
+        provides="zope.formlib.interfaces.IInputWidget"
+        factory="lp.app.widgets.textwidgets.LowerCaseTextWidget"
+        permission="zope.Public"
+        />
+
+     <view
+        type="zope.publisher.interfaces.browser.IBrowserRequest"
+        for="lp.services.fields.FormattableDate"
+        provides="zope.formlib.interfaces.IInputWidget"
+        factory="lp.app.widgets.date.DateWidget"
+        permission="zope.Public"
+        />
+</configure>

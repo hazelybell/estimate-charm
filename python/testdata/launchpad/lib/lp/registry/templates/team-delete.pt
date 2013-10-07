@@ -1,0 +1,30 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+  <body>
+    <div metal:fill-slot="main">
+      <p>
+        Deleting a team is permanent. It cannot be undone.
+      </p>
+
+      <p tal:condition="view/has_mailing_list">
+        <strong>This team cannot be deleted until its mailing list is first
+        deactivated, then purged after the deactivation is confirmed.</strong>
+      </p>
+
+      <p tal:condition="context/activemembers/count">
+        <tal:dupe_name replace="context/fmt:displayname" /> has
+        <tal:member_count replace="context/activemembers/count" />
+        active members who will be removed before it is deleted.
+      </p>
+
+      <div metal:use-macro="context/@@launchpad_form/form">
+        <tal:suppress-superfluous-widgets metal:fill-slot="widgets" />
+      </div>
+    </div>
+  </body>
+</html>

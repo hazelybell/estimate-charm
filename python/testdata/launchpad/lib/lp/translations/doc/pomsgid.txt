@@ -1,0 +1,11 @@
+POMsgID.byMsgid()
+=================
+
+Test that byMsgid is working:
+
+>>> from lp.translations.model.pomsgid import POMsgID
+>>> created = POMsgID(msgid="This is a launchpad test")
+>>> got = POMsgID.byMsgid("This is a launchpad test")
+>>> got == created
+True
+

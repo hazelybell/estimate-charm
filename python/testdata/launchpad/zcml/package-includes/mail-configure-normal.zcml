@@ -1,0 +1,27 @@
+<!-- Copyright 2009 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:mail="http://namespaces.zope.org/mail"
+    i18n_domain="zope">
+
+    <include package="zope.sendmail"/>
+
+    <mail:stubMailer
+        name="stub" from_addr="root@localhost" to_addr="root@localhost"
+        />
+
+    <!-- Production should use this in its 
+        override-includes/mail-configure.zcml
+
+    <mail:queuedDelivery permission="zope.SendMail"
+        queuePath="/var/tmp/launchpad_mailqueue" mailer="sendmail" />
+    -->
+
+    <!-- Development configuration to avoid spamming innocent people -->
+    <mail:directDelivery
+        name="Mail" permission="zope.SendMail" mailer="stub" />
+
+</configure>

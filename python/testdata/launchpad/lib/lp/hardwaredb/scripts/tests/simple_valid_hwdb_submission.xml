@@ -1,0 +1,168 @@
+<?xml version="1.0" ?>
+<system version="1.0">
+  <summary>
+    <live_cd value="False"/>
+    <system_id value="f982bb1ab536469cebfd6eaadcea0ffc"/>
+    <distribution value="Ubuntu"/>
+    <distroseries value="8.04"/>
+    <architecture value="amd64"/>
+    <private value="False"/>
+    <contactable value="False"/>
+    <date_created value="2008-09-08T12:05:23.187453"/>
+    <client name="hwtest" version="0.9"/>
+  </summary>
+
+  <hardware>
+    <hal version="0.5.11rc2">
+      <device id="287" udi="/org/freedesktop/Hal/devices/computer">
+        <property name="info.subsystem" type="str">
+          unknown
+        </property>
+        <property name="info.product" type="str">
+          Computer
+        </property>
+        <property name="info.udi" type="str">
+          /org/freedesktop/Hal/devices/computer
+        </property>
+        <property name="info.bus" type="str">
+          unknown
+        </property>
+        <property name="system.product" type="str">
+          LIFEBOOK E8210 
+        </property>
+        <property name="system.vendor" type="str">
+          FUJITSU SIEMENS
+        </property>
+        <property name="system.kernel.machine" type="str">
+          x86_64
+        </property>
+        <property name="system.kernel.version" type="str">
+          2.6.24-19-generic
+        </property>
+        <property name="system.kernel.name" type="str">
+          Linux
+        </property>
+        <property name="system.hardware.product" type="str">
+          LIFEBOOK E8210
+        </property>
+        <property name="system.hardware.version" type="str">
+        </property>
+        <property name="system.hardware.vendor" type="str">
+          FUJITSU SIEMENS
+        </property>
+      </device>
+      <device id="333" udi="/org/freedesktop/Hal/devices/pci_8086_27c5">
+        <property name="info.subsystem" type="str">
+          pci
+        </property>
+        <property name="info.product" type="str">
+          82801GBM/GHM (ICH7 Family) SATA AHCI Controller
+        </property>
+        <property name="info.vendor" type="str">
+          Intel Corporation
+        </property>
+        <property name="info.parent" type="str">
+          /org/freedesktop/Hal/devices/computer
+        </property>
+        <property name="info.bus" type="str">
+          pci
+        </property>
+        <property name="info.linux.driver" type="str">
+          ahci
+        </property>
+        <property name="info.udi" type="str">
+          /org/freedesktop/Hal/devices/pci_8086_27c5
+        </property>
+        <property name="pci.product" type="str">
+          82801GBM/GHM (ICH7 Family) SATA AHCI Controller
+        </property>
+        <property name="pci.vendor_id" type="int">
+          32902
+        </property>
+        <property name="pci.vendor" type="str">
+          Intel Corporation
+        </property>
+        <property name="pci.product_id" type="int">
+          10181
+        </property>
+        <property name="pci.device_protocol" type="int">
+          1
+        </property>
+        <property name="pci.subsys_vendor" type="str">
+          Fujitsu Limited.
+        </property>
+        <property name="pci.device_class" type="int">
+          1
+        </property>
+      </device>
+    </hal>
+    <processors>
+      <processor id="123" name="0">
+        <property name="wp" type="bool">
+                True
+        </property>
+        <property name="flags" type="list">
+          <value type="str">
+                  fpu
+          </value>
+          <value type="str">
+                  vme
+          </value>
+          <value type="str">
+                  de
+          </value>
+        </property>
+        <property name="cpu_mhz" type="float">
+                1000.0
+        </property>
+      </processor>
+    </processors>
+  </hardware>
+  <software>
+    <lsbrelease>
+      <property name="release" type="str">
+        8.04
+      </property>
+      <property name="codename" type="str">
+        hardy
+      </property>
+      <property name="distributor-id" type="str">
+        Ubuntu
+      </property>
+      <property name="description" type="str">
+        Ubuntu 8.04.1
+      </property>
+    </lsbrelease>
+    <packages>
+      <package id="2025" name="linux-image-2.6.24-19-generic">
+        <property name="description" type="str">
+          Linux kernel image for version 2.6.24 on x86/x86_64
+        </property>
+        <property name="version" type="str">
+          2.6.24-19-generic
+        </property>
+      </package>
+    </packages>
+  </software>
+  <questions>
+    <question name="resolution">
+      <answer type="multiple_choice">
+        yes
+      </answer>
+      <answer_choices>
+      <value type="str">
+        yes
+      </value>
+      <value type="str">
+        no
+      </value>
+      <value type="str">
+        skip
+      </value>
+      </answer_choices>
+      <comment>
+
+      </comment>
+    </question>
+  </questions>
+</system>

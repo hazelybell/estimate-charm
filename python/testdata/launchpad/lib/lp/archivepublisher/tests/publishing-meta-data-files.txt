@@ -1,0 +1,65 @@
+Publishing Meta-Data Custom Files
+=================================
+
+Meta-data custom files are published, unmodified, to a special area
+outside the actual archive directory.  This is so that the files can be
+seen even when the archive is private, and allows commercial customers
+to browse contents for potential later purchase.
+
+We can demonstrate this publishing behaviour by creating a
+PackageUploadCustom object for a meta-data upload:
+
+    >>> from lp.services.librarian.interfaces import (
+    ...     ILibraryFileAliasSet)
+    >>> from cStringIO import StringIO
+    >>> from lp.services.log.logger import FakeLogger
+    >>> from lp.registry.interfaces.distribution import IDistributionSet
+    >>> from lp.soyuz.enums import PackageUploadCustomFormat
+    >>> from lp.soyuz.interfaces.publishing import PackagePublishingPocket
+    >>> from lp.soyuz.model.queue import PackageUploadCustom
+
+    >>> bat = getUtility(IDistributionSet)['ubuntutest']['breezy-autotest']
+    >>> ppa = factory.makeArchive(distribution=bat.distribution)
+    >>> package_upload = bat.createQueueEntry(
+    ...     pocket=PackagePublishingPocket.RELEASE, changesfilename="test",
+    ...     changesfilecontent="test",
+    ...     archive=ppa)
+    >>> content = "test"
+    >>> test_file = getUtility(
+    ...     ILibraryFileAliasSet).create(
+    ...         "testmeta", len(content), StringIO(content), "text/plain")
+    >>> custom_upload = PackageUploadCustom()
+    >>> custom_upload.customformat = PackageUploadCustomFormat.META_DATA
+    >>> custom_upload.packageupload = package_upload
+    >>> custom_upload.libraryfilealias = test_file
+    >>> # commit so that the file is put in the librarian.
+    >>> import transaction
+    >>> transaction.commit()
+
+Now we can publish the custom upload:
+
+    >>> custom_upload.publish(logger=FakeLogger())
+    DEBUG Publishing custom testmeta to ubuntutest/breezy-autotest
+
+The custom file is just called "testmeta" with the contents "test".  It will
+be published in a location of the scheme:
+
+/<person_name>/meta/<ppa_name>/<filename>
+
+    >>> import os
+    >>> from lp.archivepublisher.config import getPubConfig
+    >>> pub_config = getPubConfig(ppa)
+    >>> ppa_root = pub_config.distroroot
+    >>> final_destination = os.path.join(
+    ...     ppa_root, ppa.owner.name, "meta", ppa.name)
+    >>> published_file = os.path.join(
+    ...     final_destination, "testmeta")
+
+    >>> os.path.exists(published_file)
+    True
+
+    >>> with open(published_file, 'rb') as fp:
+    ...     content = fp.read()
+
+    >>> print content
+    test

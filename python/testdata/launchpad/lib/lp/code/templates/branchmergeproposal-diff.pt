@@ -1,0 +1,37 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+>
+
+  <div class="boardComment attachment diff"
+       tal:define="attachment view/preview_diff/diff_text">
+    <tal:real-diff condition="attachment">
+      <div class="boardCommentDetails filename">
+        <ul class="horizontal">
+          <li>
+            <a tal:attributes="href view/preview_diff/fmt:url">
+              <img src="/@@/download"/>
+              Download diff
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="boardCommentBody attachmentBody">
+        <tal:diff replace="structure view/preview_diff_text/fmt:diff" />
+        <tal:diff-not-available condition="not: view/diff_available">
+            The diff is not available at this time. You can reload the
+            page or download it.
+        </tal:diff-not-available>
+      </div>
+      <div class="boardCommentFooter"
+           tal:condition="view/diff_oversized">
+        The diff has been truncated for viewing.
+      </div>
+    </tal:real-diff>
+    <tal:empty-diff condition="not: attachment">
+      <div class="boardCommentBody attachmentBody">
+        <em>Empty</em>
+      </div>
+    </tal:empty-diff>
+  </div>
+
+</tal:root>

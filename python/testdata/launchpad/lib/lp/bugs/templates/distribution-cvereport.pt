@@ -1,0 +1,52 @@
+<distribution-cve-report
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    metal:use-macro="view/macro:page/main_only"
+    i18n:domain="launchpad">
+
+  <div metal:fill-slot="heading"
+       tal:define="series context/series">
+    <h1 tal:condition="not: series">
+      CVEs related to bugs in <span tal:replace="context/displayname" />
+    </h1>
+    <h1 tal:condition="series">
+      CVE reports in releases of <span tal:replace="context/displayname" />
+    </h1>
+  </div>
+
+  <div class="top-portlet"
+       metal:fill-slot="main"
+       tal:define="series context/series">
+    <tal:no_series tal:condition="not: series">
+      <tal:open-issues define="bugtaskcves view/open_cve_bugtasks">
+        <h2>Open bugs</h2>
+        <tal:listing condition="bugtaskcves">
+          <metal:table use-macro="context/@@bugtask-macros-cve/table-listing" />
+        </tal:listing>
+        <p tal:condition="not: bugtaskcves">
+          There are no CVEs related to bugs open in <span
+          tal:replace="context/displayname">Ubuntu</span>.
+        </p>
+      </tal:open-issues>
+      <tal:resolved-issues define="bugtaskcves view/resolved_cve_bugtasks">
+        <h2>Resolved bugs</h2>
+        <tal:listing condition="bugtaskcves">
+          <metal:table use-macro="context/@@bugtask-macros-cve/table-listing" />
+        </tal:listing>
+        <p tal:condition="not: bugtaskcves">
+          There are no CVEs related to bugs resolved in <span
+          tal:replace="context/displayname">Ubuntu</span>.
+        </p>
+      </tal:resolved-issues>
+    </tal:no_series>
+    <tal:series condition="series">
+      <ul>
+        <li tal:repeat="series series"
+            tal:content="structure series/fmt:link/+cve" />
+      </ul>
+    </tal:series>
+  </div>
+
+</distribution-cve-report>

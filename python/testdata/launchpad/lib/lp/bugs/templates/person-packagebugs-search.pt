@@ -1,0 +1,69 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+>
+  <body>
+
+  <div metal:fill-slot="head_epilogue">
+    <style type="text/css">
+        .section-header {
+          padding-left: 3px;
+          color: #828282;
+          border: 1px solid #cfcfcf;
+          background-color: #E0E0E0;
+          text-align: left;
+        }
+
+        .section {
+          padding-top: 4px;
+          border-style: solid;
+          border-color: #cfcfcf;
+          border-width: 0px 1px 0px 1px;
+        }
+
+        label {
+          font-weight: normal;
+        }
+    </style>
+  </div>
+
+  <metal:side fill-slot="side">
+    <tal:menu replace="structure context/@@+global-actions" />
+  </metal:side>
+
+  <div metal:fill-slot="main">
+      <tal:do_not_show_advanced_form
+        condition="not: view/shouldShowAdvancedForm">
+      <strong>
+        <small tal:content="view/current_package/displayname">
+          mozilla-firefox (Ubuntu)
+        </small>
+      </strong>
+      <div tal:define="batch_navigator view/search">
+        <div tal:define="advanced_search_url view/getBugSubscriberPackageAdvancedSearchURL">
+          <div metal:use-macro="context/@@+bugtarget-macros-search/simple-search-form">
+            <div metal:fill-slot="extra-search-widgets">
+              <tal:widget content="structure view/widgets/distribution/hidden" />
+              <tal:widget content="structure view/widgets/sourcepackagename/hidden" />
+            </div>
+          </div>
+        </div>
+        <br />
+        <tal:buglisting content="structure batch_navigator/@@+table-view" />
+      </div>
+      </tal:do_not_show_advanced_form>
+
+      <tal:show_advanced condition="view/shouldShowAdvancedForm">
+        <metal:advanced_form
+          use-macro="context/@@+bugtask-macros-tableview/advanced_search_form" />
+      </tal:show_advanced>
+  </div>
+</body>
+</html>

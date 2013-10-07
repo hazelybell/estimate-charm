@@ -1,0 +1,38 @@
+<table>
+  <tr>
+    <td>
+      <label>
+        <input
+            type="radio" value="package"
+            tal:replace="structure view/options/package" />
+        Distribution
+      </label>
+    </td>
+    <td>
+      <tal:distribution tal:replace="structure view/distribution_widget" />
+    </td>
+  </tr>
+  <tr>
+    <td align="right">
+      <label tal:attributes="for string:${view/name}.option.package">
+        Package
+      </label>
+    </td>
+    <td>
+      <tal:package tal:replace="structure view/package_widget" />
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <label>
+        <input type="radio" value="product"
+               tal:replace="structure view/options/product" />
+       Project 
+      </label>
+    </td>
+    <td>
+      <tal:product tal:replace="structure view/product_widget" />
+    </td>
+  </tr>
+</table>

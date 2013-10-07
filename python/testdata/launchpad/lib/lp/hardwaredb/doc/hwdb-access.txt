@@ -1,0 +1,131 @@
+Access to HWDB tables
+=====================
+
+The access to most HWDB tables is restricted to members of the team
+"canonical".
+
+    >>> from lp.registry.interfaces.person import IPersonSet
+    >>> hwdb_team = getUtility(IPersonSet).getByName('hwdb-team')
+    >>> no_priv = getUtility(IPersonSet).getByName('no-priv')
+    >>> no_priv.inTeam(hwdb_team)
+    False
+    >>> sample_person = getUtility(IPersonSet).getByName('name12')
+    >>> sample_person.inTeam(hwdb_team)
+    True
+
+    >>> from zope.security.interfaces import Unauthorized
+    >>> def check_authorized_for(obj, attribute, person_name_or_address):
+    ...     login(person_name_or_address)
+    ...     has_access = True
+    ...     try:
+    ...         getattr(obj, attribute)
+    ...     except Unauthorized:
+    ...         has_access = False
+    ...         print "Access for %s denied" % person_name_or_address
+    ...     if has_access:
+    ...         print "Access for %s allowed" % person_name_or_address
+    ...     logout()
+
+    >>> def check_authorized_only_for_hwdb_team(obj, attribute):
+    ...     check_authorized_for(obj, attribute, ANONYMOUS)
+    ...     check_authorized_for(obj, attribute, 'no-priv@canonical.com')
+    ...     check_authorized_for(obj, attribute, 'test@canonical.com')
+
+HWDriver
+--------
+
+    >>> from lp.hardwaredb.interfaces.hwdb import IHWDriverSet
+    >>> login('test@canonical.com')
+    >>> driver = getUtility(IHWDriverSet).search(name='sd')[0]
+    >>> check_authorized_only_for_hwdb_team(driver, 'name')
+    Access for launchpad.anonymous denied
+    Access for no-priv@canonical.com denied
+    Access for test@canonical.com allowed
+
+
+HWDriverName
+------------
+
+    >>> login('test@canonical.com')
+    >>> driver_name = getUtility(IHWDriverSet).all_driver_names()[0]
+    >>> check_authorized_only_for_hwdb_team(driver_name, 'name')
+    Access for launchpad.anonymous denied
+    Access for no-priv@canonical.com denied
+    Access for test@canonical.com allowed
+
+
+HWDriverPackageName
+-------------------
+
+    >>> login('test@canonical.com')
+    >>> package_name = getUtility(IHWDriverSet).all_package_names()[0]
+    >>> logout()
+    >>> check_authorized_only_for_hwdb_team(package_name, 'package_name')
+    Access for launchpad.anonymous denied
+    Access for no-priv@canonical.com denied
+    Access for test@canonical.com allowed
+
+
+HWVendorID
+----------
+
+    >>> from lp.hardwaredb.interfaces.hwdb import HWBus, IHWVendorIDSet
+    >>> login('test@canonical.com')
+    >>> vendor_id = getUtility(IHWVendorIDSet).getByBusAndVendorID(
+    ...     HWBus.PCI, '0x10de')
+    >>> check_authorized_only_for_hwdb_team(vendor_id, 'bus')
+    Access for launchpad.anonymous denied
+    Access for no-priv@canonical.com denied
+    Access for test@canonical.com allowed
+
+
+HWDevice
+--------
+
+    >>> from lp.hardwaredb.interfaces.hwdb import IHWDeviceSet
+    >>> login('test@canonical.com')
+    >>> device = getUtility(IHWDeviceSet).getByDeviceID(
+    ...     HWBus.PCI, '0x10de', '0x0455')
+    >>> check_authorized_only_for_hwdb_team(device, 'name')
+    Access for launchpad.anonymous denied
+    Access for no-priv@canonical.com denied
+    Access for test@canonical.com allowed
+
+
+HWDeviceClass
+-------------
+
+The access to most HWDB tables is restricted to members of the team
+"canonical". the current user, Sample Person, is a member of this team,
+No-Priv is not (see above).
+
+    >>> login('test@canonical.com')
+    >>> device_class = device.getOrCreateDeviceClass(12, 3)
+    >>> check_authorized_only_for_hwdb_team(device_class, 'main_class')
+    Access for launchpad.anonymous denied
+    Access for no-priv@canonical.com denied
+    Access for test@canonical.com allowed
+
+
+HWSubmissionDevice
+------------------
+
+    >>> from lp.hardwaredb.interfaces.hwdb import IHWSubmissionDeviceSet
+    >>> login('test@canonical.com')
+    >>> submission_device = getUtility(IHWSubmissionDeviceSet).get(1)
+    >>> check_authorized_only_for_hwdb_team(
+    ...     submission_device, 'hal_device_id')
+    Access for launchpad.anonymous denied
+    Access for no-priv@canonical.com denied
+    Access for test@canonical.com allowed
+
+
+Methods of IHWDBApplication
+---------------------------
+
+    >>> from lp.hardwaredb.interfaces.hwdb import IHWDBApplication
+    >>> app = getUtility(IHWDBApplication)
+    >>> check_authorized_only_for_hwdb_team(app, 'numOwnersOfDevice')
+    Access for launchpad.anonymous denied
+    Access for no-priv@canonical.com denied
+    Access for test@canonical.com allowed

@@ -1,0 +1,514 @@
+TestBugzillaXMLRPCTransport
+===========================
+
+The TestBugzillaXMLRPCTransport is an XML-RPC transport which simulates
+a remote Bugzilla instance that implements the Launchpad plugin API.
+
+    >>> import xmlrpclib
+    >>> from lp.bugs.tests.externalbugtracker import (
+    ...     TestBugzillaXMLRPCTransport)
+    >>> bugzilla_transport = TestBugzillaXMLRPCTransport(
+    ...     'http://example.com/xmlrpc.cgi')
+    >>> server = xmlrpclib.ServerProxy(
+    ...     'http://example.com/xmlrpc.cgi', transport=bugzilla_transport)
+
+The test transport will only allow calls to methods in a predefined set
+of namespaces.
+
+    >>> server.spam.eggs()
+    Traceback (most recent call last):
+      ...
+    AssertionError: All methods should be in one of the following
+    namespaces: ...
+
+Adding a new namespace to the transport's methods dict will make methods
+in that namespace callable. Of course, if the method doesn't exist, an
+error will be raised.
+
+    >>> bugzilla_transport.methods['spam'] = ['eggs']
+    >>> server.spam.eggs()
+    Traceback (most recent call last):
+      ...
+    AttributeError: TestBugzillaXMLRPCTransport instance has no
+    attribute 'eggs'
+
+    >>> del bugzilla_transport.methods['spam']
+
+If a namespace exists but there is no method registered under that
+namespace with a given method name, an AssertionError will be raised.
+
+    >>> 'unregistered_method' in bugzilla_transport.methods['Launchpad']
+    False
+
+    >>> server.Launchpad.unregistered_method()
+    Traceback (most recent call last):
+      ...
+    AssertionError: No method 'unregistered_method' in namespace 'Launchpad'.
+
+
+Authentication
+--------------
+
+Some methods require authentication.
+
+    >>> server.Test.login_required()
+    Traceback (most recent call last):
+      ...
+    Fault: <Fault 410: 'Login Required'>
+
+To be authenticated, we need to provide a login cookie. The test
+transport doesn't validate this cookie, it just checks that it exists.
+
+    >>> bugzilla_transport.setCookie(
+    ...     "Bugzilla_logincookie=Want moar cookies plz")
+    >>> print server.Test.login_required()
+    Wonderful, you've logged in! Aren't you a clever biped?
+
+
+Launchpad.login()
+-----------------
+
+The Launchpad.login() method is used to log in to the remote service. It
+takes a single parameter, token, which is a Launchpad LoginToken.
+
+We can use the internal XML-RPC API to generate such a token.
+
+    >>> from lp.bugs.xmlrpc.bug import ExternalBugTrackerTokenAPI
+    >>> token_api = ExternalBugTrackerTokenAPI(None, None)
+    >>> token_text = token_api.newBugTrackerToken()
+
+Launchpad.login() will check that the token is valid and will set two
+cookies, Bugzilla_logincookie and Bugzilla_login, in its response. It
+will also return the user ID of the user on the Bugzilla instance.
+
+In the test instance, the cookie is randomly generated. The returned
+user id is always the same.
+
+    >>> response_dict = server.Launchpad.login({'token': token_text})
+    >>> print response_dict['user_id']
+    42
+
+The login cookies are in the transport's cookie jar.
+
+    >>> print bugzilla_transport.cookie_processor.cookiejar
+    <cookielib.CookieJar[<Cookie Bugzilla_login=...>,
+        <Cookie Bugzilla_logincookie=...>]>
+
+
+Launchpad.time()
+----------------
+
+Launchpad.time() returns the current time on the remote server, the
+remote server's timezone and what the remote server believes to be the
+current UTC time.
+
+    >>> time_dict = server.Launchpad.time()
+    >>> for key in sorted(time_dict):
+    ...     print "%s: %s" % (key, time_dict[key])
+    local_time: 2008-05-01 01:01:01
+    tz_name: UTC
+    utc_time: 2008-05-01 01:01:01
+
+We can set the local time value on the remote server to make testing
+more useful.
+
+    >>> from datetime import datetime
+
+    >>> remote_datetime = datetime(2008, 5, 15, 16, 19, 53)
+    >>> bugzilla_transport.local_datetime = remote_datetime
+    >>> bugzilla_transport.timezone = "US/Central"
+    >>> bugzilla_transport.utc_offset = -6*60*60
+
+    >>> time_dict = server.Launchpad.time()
+    >>> for key in sorted(time_dict):
+    ...     print "%s: %s" % (key, time_dict[key])
+    local_time: 2008-05-15 16:19:53
+    tz_name: US/Central
+    utc_time: 2008-05-15 22:19:53
+
+
+Launchpad.get_bugs()
+--------------------
+
+The plugin API offers a get_bugs() method which can be used to retrieve
+bugs from a remote Bugzilla instance. It takes a list of bug IDs to
+retrieve and returns a list of dicts containing those bugs' data.  As is
+standard with the Bugzilla XMLRPC API, arguments are enclosed in a dict
+so that they are treated as "key: value" pairs.
+
+    >>> return_value = server.Launchpad.get_bugs(
+    ...     {'ids': [1], 'permissive': True})
+    >>> [bug_dict] = return_value['bugs']
+    >>> for key in sorted(bug_dict):
+    ...     print "%s: %s" % (key, bug_dict[key])
+    alias:
+    assigned_to: test@canonical.com
+    component: GPPSystems
+    creation_time: 2008-06-10 16:19:53
+    id: 1
+    internals:...
+    is_open: True
+    last_change_time: 2008-06-10 16:19:53
+    priority: P1
+    product: Marvin
+    resolution: FIXED
+    see_also: []
+    severity: normal
+    status: RESOLVED
+    summary: That bloody robot still exists.
+
+If more than one ID is specified when get_bugs() is called, more than
+one bug will be returned (assuming they all exist and are accessible).
+
+    >>> return_value = server.Launchpad.get_bugs(
+    ...     {'ids': [1, 2], 'permissive': True})
+    >>> bug_dicts = return_value['bugs']
+    >>> for bug_dict in bug_dicts:
+    ...     for key in sorted(bug_dict):
+    ...         print "%s: %s" % (key, bug_dict[key])
+    ...     print
+    alias:
+    assigned_to: test@canonical.com
+    component: GPPSystems
+    creation_time: 2008-06-10 16:19:53
+    id: 1
+    internals:...
+    is_open: True
+    last_change_time: 2008-06-10 16:19:53
+    priority: P1
+    product: Marvin
+    resolution: FIXED
+    see_also: []
+    severity: normal
+    status: RESOLVED
+    summary: That bloody robot still exists.
+    <BLANKLINE>
+    alias: bug-two
+    assigned_to: marvin@heartofgold.ship
+    component: Crew
+    creation_time: 2008-06-11 09:23:12
+    id: 2
+    internals:...
+    is_open: True
+    last_change_time: 2008-06-11 09:24:29
+    priority: P1
+    product: HeartOfGold
+    resolution:
+    see_also: []
+    severity: high
+    status: NEW
+    summary: Collect unknown persons in docking bay 2.
+
+Bug aliases can also be used to request remote bugs.
+
+    >>> return_value = server.Launchpad.get_bugs(
+    ...     {'ids': ['bug-two'], 'permissive': True})
+    >>> [bug_dict] = return_value['bugs']
+    >>> for key in sorted(bug_dict):
+    ...     print "%s: %s" % (key, bug_dict[key])
+    alias: bug-two
+    assigned_to: marvin@heartofgold.ship
+    component: Crew
+    creation_time: 2008-06-11 09:23:12
+    id: 2
+    internals:...
+    is_open: True
+    last_change_time: 2008-06-11 09:24:29
+    priority: P1
+    product: HeartOfGold
+    resolution:
+    see_also: []
+    severity: high
+    status: NEW
+    summary: Collect unknown persons in docking bay 2.
+
+Specifying a 'changed_since' parameter when calling Launchpad.get_bugs()
+will cause the method to only return bugs that have changed since that
+date / time. This acts as an intersection with the 'ids' parameter,
+allowing Launchpad to get only the recently-updated subset of a given
+set of remote bugs.
+
+    >>> changed_since = datetime(2008, 6, 11, 9, 0, 0)
+
+    >>> return_value = server.Launchpad.get_bugs({
+    ...     'ids': [1, 2],
+    ...     'changed_since': changed_since,
+    ...     'permissive': True,
+    ...     })
+
+    >>> bug_dicts = return_value['bugs']
+    >>> assert len(bug_dicts) == 1, "There should only be one bug dict."
+
+    >>> bug_dict = bug_dicts[0]
+    >>> for key in sorted(bug_dict):
+    ...     print "%s: %s" % (key, bug_dict[key])
+    alias: bug-two
+    assigned_to: marvin@heartofgold.ship
+    component: Crew
+    creation_time: 2008-06-11 09:23:12
+    id: 2
+    internals:...
+    is_open: True
+    last_change_time: 2008-06-11 09:24:29
+    priority: P1
+    product: HeartOfGold
+    resolution:
+    see_also: []
+    severity: high
+    status: NEW
+    summary: Collect unknown persons in docking bay 2.
+
+Setting changed_since to a date in the future will mean that no bugs are
+returned.
+
+    >>> from datetime import timedelta
+    >>> changed_since = datetime.now() + timedelta(days=42)
+
+    >>> return_value = server.Launchpad.get_bugs({
+    ...     'ids': [1, 2],
+    ...     'changed_since': changed_since,
+    ...     'permissive': True,
+    ...     })
+
+    >>> bug_dicts = return_value['bugs']
+    >>> len(bug_dicts)
+    0
+
+Specifying a 'products' parameter will cause Launchpad.get_bugs() to
+only return bugs which affect those products.
+
+    >>> return_value = server.Launchpad.get_bugs({
+    ...     'products': ['HeartOfGold'],
+    ...     'permissive': True,
+    ...     })
+
+    >>> bug_dicts = return_value['bugs']
+    >>> assert len(bug_dicts) == 1, "There should only be one bug dict."
+
+    >>> bug_dict = bug_dicts[0]
+    >>> for key in sorted(bug_dict):
+    ...     print "%s: %s" % (key, bug_dict[key])
+    alias: bug-two
+    assigned_to: marvin@heartofgold.ship
+    component: Crew
+    creation_time: 2008-06-11 09:23:12
+    id: 2
+    internals:...
+    is_open: True
+    last_change_time: 2008-06-11 09:24:29
+    priority: P1
+    product: HeartOfGold
+    resolution:
+    see_also: []
+    severity: high
+    status: NEW
+    summary: Collect unknown persons in docking bay 2.
+
+If both products and ids are specified when calling
+Launchpad.get_bugs(), the union of bugs in (ids, products) will be
+returned.
+
+    >>> return_value = server.Launchpad.get_bugs({
+    ...     'ids': [1],
+    ...     'products': ['HeartOfGold'],
+    ...     'permissive': True,
+    ...     })
+
+    >>> bug_dicts = return_value['bugs']
+    >>> len(bug_dicts)
+    0
+
+
+Launchpad.comments()
+--------------------
+
+The Launchpad Bugzilla plugin defines a Launchpad.comments() method which
+allows a remote system to get the comments for a given bug or set of
+bugs. We'll define a helper method for printing out comments.
+
+    >>> import operator
+    >>> def print_bug_comments(bugs_dict, sort_key='number'):
+    ...     for key in sorted(bugs_dict):
+    ...         print "Bug %s:" % key
+    ...         bug_comments = sorted(
+    ...             bugs_dict[key],
+    ...             key=operator.itemgetter(sort_key))
+    ...
+    ...         for comment in bug_comments:
+    ...             for comment_key in sorted(comment):
+    ...                 print "    %s: %s" % (
+    ...                     comment_key, comment[comment_key])
+    ...             print
+    ...         print
+
+If Launchpad.comments() is passed a list of bug IDs it will return all
+the comments for all of those bugs.
+
+    >>> return_dict = server.Launchpad.comments({'bug_ids': [1, 2]})
+    >>> bugs_dict = return_dict['bugs']
+
+    >>> print_bug_comments(bugs_dict)
+    Bug 1:
+        author: trillian
+        id: 1
+        number: 1
+        text: I'd really appreciate it if Marvin would enjoy life a bit.
+        time: 2008-06-16 12:44:29
+    <BLANKLINE>
+        author: marvin
+        id: 3
+        number: 2
+        text: Life? Don't talk to me about life.
+        time: 2008-06-16 13:22:29
+    <BLANKLINE>
+    <BLANKLINE>
+    Bug 2:
+        author: trillian
+        id: 2
+        number: 1
+        text: Bring the passengers to the bridge please Marvin.
+        time: 2008-06-16 13:08:08
+    <BLANKLINE>
+        author: Ford Prefect <ford.prefect@h2g2.com>
+        id: 4
+        number: 2
+        text: I appear to have become a perfectly safe penguin.
+        time: 2008-06-17 20:28:40
+
+If an ids parameter is specified along with bug_ids, only the comments
+whose IDs are in the list of IDs passed will be returned.
+
+    >>> return_dict = server.Launchpad.comments(
+    ...     {'bug_ids': [1, 2], 'ids': [1, 2]})
+    >>> bugs_dict = return_dict['bugs']
+
+    >>> print_bug_comments(bugs_dict)
+    Bug 1:
+        author: trillian
+        id: 1
+        number: 1
+        text: I'd really appreciate it if Marvin would enjoy life a bit.
+        time: 2008-06-16 12:44:29
+    <BLANKLINE>
+    <BLANKLINE>
+    Bug 2:
+        author: trillian
+        id: 2
+        number: 1
+        text: Bring the passengers to the bridge please Marvin.
+        time: 2008-06-16 13:08:08
+
+Passing an include_fields parameter allows us to limit which fields are
+returned for each comment.
+
+    >>> return_dict = server.Launchpad.comments(
+    ...     {'bug_ids': [1, 2], 'include_fields': ('id', 'author')})
+    >>> bugs_dict = return_dict['bugs']
+
+    >>> print_bug_comments(bugs_dict, sort_key='id')
+    Bug 1:
+        author: trillian
+        id: 1
+    <BLANKLINE>
+        author: marvin
+        id: 3
+    <BLANKLINE>
+    <BLANKLINE>
+    Bug 2:
+        author: trillian
+        id: 2
+    <BLANKLINE>
+        author: Ford Prefect <ford.prefect@h2g2.com>
+        id: 4
+
+It's worth noting that, due to a quirk in the XML-RPC spec, the bug IDs
+in the returned 'bugs' dict are strings, not integers:
+
+    >>> print sorted(bugs_dict)
+    ['1', '2']
+
+
+Launchpad.add_comment()
+-----------------------
+
+The plugin API offers a method, Launchpad.add_comment(), which can be
+used to add comments to a remote bug. It takes two arguments: the ID of
+the remote comment and the body of the comment to be added to it.
+
+add_comment() requires authentication.
+
+    >>> bugzilla_transport.expireCookie(bugzilla_transport.auth_cookie)
+    >>> server.Launchpad.add_comment({'id': 1, 'comment': "This won't work"})
+    Traceback (most recent call last):
+      ...
+    Fault: <Fault 410: 'Login Required'>
+
+Launchpad.add_comment() will return the integer comment ID of the new comment
+on the remote server.
+
+    >>> comment = "Didn't we have a lovely time the day we went to Bangor?"
+    >>> bugzilla_transport.auth_cookie = 'open sesame'
+    >>> return_dict = server.Launchpad.add_comment(
+    ...     {'id': 1, 'comment': comment})
+    >>> print return_dict['comment_id']
+    5
+
+The comment will be stored with the other comments on the remote server.
+
+    >>> return_dict = server.Launchpad.comments({'bug_ids': [1], 'ids': [5]})
+    >>> bugs_dict = return_dict['bugs']
+
+    >>> print_bug_comments(bugs_dict, sort_key='id')
+    Bug 1:
+        author: launchpad
+        id: 5
+        number: 3
+        text: Didn't we have a lovely time the day we went to Bangor?
+        time: ...
+
+If add_comment is called on a bug that doesn't exist a fault will be
+raised.
+
+    >>> server.Launchpad.add_comment({'id': 42, 'comment': "This won't work"})
+    Traceback (most recent call last):
+      ...
+    Fault: <Fault 101: 'Bug #42 does not exist.'>
+
+
+Launchpad.set_link()
+--------------------
+
+The plugin API method Launchpad.set_link() allows Launchpad to tell the
+remote Bugzilla which Launchpad bug links to a given bug on that
+Bugzilla. It takes two arguments: the ID of the remote bug and the ID of
+the Launchpad bug linking to it.
+
+Launchpad.set_link() requires authentication.
+
+    >>> bugzilla_transport.expireCookie(bugzilla_transport.auth_cookie)
+    >>> server.Launchpad.set_link({'id': 1, 'launchpad_id': 1})
+    Traceback (most recent call last):
+      ...
+    Fault: <Fault 410: 'Login Required'>
+
+Launchpad.set_link() will return  0 if no Launchpad bug has ever linked
+to the remote bug.
+
+    >>> bugzilla_transport.auth_cookie = "here we go again"
+    >>> result = server.Launchpad.set_link({'id': 1, 'launchpad_id': 10})
+    >>> print result['launchpad_id']
+    0
+
+Otherwise, Launchpad.set_link() will return the ID of the last Launchpad
+bug linked to the remote bug.
+
+    >>> result = server.Launchpad.set_link({'id': 1, 'launchpad_id': 11})
+    >>> print result['launchpad_id']
+    10
+
+The new Launchpad bug ID will be recorded in the remote bug's
+`internals` dict.
+
+    >>> for key, val in bugzilla_transport.bugs[1]['internals'].items():
+    ...     print "%s: %s" % (key, val)
+    launchpad_id: 11

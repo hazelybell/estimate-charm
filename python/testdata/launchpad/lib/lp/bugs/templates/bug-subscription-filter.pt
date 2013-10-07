@@ -1,0 +1,48 @@
+<dl
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    xml:lang="en" lang="en" dir="ltr"
+    tal:define="conditions view/conditions;
+                filters_everything view/filters_everything;"
+    tal:omit-tag="">
+  <dt tal:define="description view/description">
+    <span tal:condition="description">
+      &#8220;<span tal:content="view/description" />&#8221;
+    </span>
+    <span tal:condition="not:description">
+      This filter
+    </span>
+    <span tal:condition="conditions">
+      allows mail through when:
+    </span>
+    <span tal:condition="not:conditions">
+      <tal:condition condition="filters_everything">
+        allows no mail through.
+      </tal:condition>
+      <tal:condition condition="not:filters_everything">
+        allows all mail through.
+      </tal:condition>
+    </span>
+  </dt>
+  <dd tal:condition="conditions">
+    <tal:conditions repeat="condition conditions">
+      <span tal:content="condition" />
+      <tal:conjunction condition="not:repeat/condition/end">
+        <b>and</b> <br />
+      </tal:conjunction>
+    </tal:conditions>
+    <tal:editable condition="context/required:launchpad.Edit">
+      <br /><a tal:attributes="href context/fmt:url/+edit">(edit)</a>
+    </tal:editable>
+  </dd>
+  <dd tal:condition="not:conditions">
+    <tal:condition condition="not:filters_everything">
+      There are no filter conditions!
+    </tal:condition>
+    <tal:editable condition="context/required:launchpad.Edit">
+      <br /><a tal:attributes="href context/fmt:url/+edit">(edit)</a>
+    </tal:editable>
+  </dd>
+</dl>

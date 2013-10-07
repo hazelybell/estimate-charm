@@ -1,0 +1,122 @@
+= Email addresses as bug trackers =
+
+== The EMAILADDRESS BugTrackerType ==
+
+Launchpad allows users to register an email address as an external bug
+tracker. This means that bugs for that bug tracker can be forwarded to
+the specified email address.
+
+The BugTrackerType enumeration defines an EMAILADDRESS bug tracker
+type.
+
+    >>> from lp.bugs.interfaces.bugtracker import BugTrackerType
+    >>> BugTrackerType.EMAILADDRESS.title
+    'Email Address'
+
+Since email addresses are not external bug trackers in the classic
+sense there is no ExternalBugTracker descendant for them. Trying to
+create a new ExternalBugTracker for an email address will fail.
+
+    >>> from lp.bugs.externalbugtracker import (
+    ...     get_external_bugtracker)
+    >>> from lp.bugs.tests.externalbugtracker import (
+    ...     new_bugtracker)
+    >>> bug_tracker = get_external_bugtracker(
+    ...     new_bugtracker(BugTrackerType.EMAILADDRESS))
+    Traceback (most recent call last):
+      ...
+    UnknownBugTrackerTypeError: EMAILADDRESS
+
+A bug tracker of type EMAILADDRESS can be created in the same way as
+any other bug tracker, but with a baseurl in the form
+mailto:<email-address>.
+
+    >>> from zope.component import getUtility
+    >>> from lp.testing import verifyObject
+    >>> from lp.bugs.interfaces.bugtracker import (
+    ...     IBugTracker,
+    ...     IBugTrackerSet,
+    ...     )
+    >>> from lp.registry.interfaces.person import IPersonSet
+
+    >>> sample_person = getUtility(IPersonSet).getByEmail(
+    ...     'test@canonical.com')
+    >>> email_tracker = getUtility(IBugTrackerSet).ensureBugTracker(
+    ...     baseurl='mailto:somebugaddress@example.com', owner=sample_person,
+    ...     bugtrackertype=BugTrackerType.EMAILADDRESS,
+    ...     title="Sample email address tracker", summary="Nothing",
+    ...     contactdetails="None", name='email-tracker')
+    >>> verifyObject(IBugTracker, email_tracker)
+    True
+
+Passing no name parameter to ensureBugTracker() will create a new bug
+tracker with a name in the form auto-<local_name>, where local name is
+the local part of an email address (e.g. <local_name>@foobar.com).
+
+    >>> other_tracker = getUtility(IBugTrackerSet).ensureBugTracker(
+    ...     baseurl='mailto:another.bugtracker@example.com',
+    ...     owner=sample_person, bugtrackertype=BugTrackerType.EMAILADDRESS,
+    ...     title="Sample email address tracker", summary="Nothing",
+    ...     contactdetails="None")
+    >>> verifyObject(IBugTracker, other_tracker)
+    True
+
+    >>> other_tracker.name
+    u'auto-another.bugtracker'
+
+
+== Adding a BugWatch to an upstream email address ==
+
+We can add a bug watch to an upstream email address in the normal
+fashion. For email addresses, we record the message ID of the mail sent
+to the remote email address, if it is known. The presence of a bug watch
+means that a message has been sent to the upstream tracker.
+
+    >>> from lp.bugs.interfaces.bug import IBugSet
+    >>> example_bug = getUtility(IBugSet).get(15)
+
+If the message ID of the email sent to the remote tracker is not known,
+we record a remotebug value of '' for the bugwatch (we can't use None
+because BugWatch.remotebug is a NOT NULL field).
+
+    >>> from lp.app.interfaces.launchpad import ILaunchpadCelebrities
+    >>> bug_watch = example_bug.addWatch(bugtracker=email_tracker,
+    ...     remotebug='', owner=getUtility(ILaunchpadCelebrities).janitor)
+    >>> bug_watch.bugtracker.name, bug_watch.remotebug, bug_watch.bug.id
+    (u'email-tracker', u'', 15)
+
+By contrast, if the message ID is known it is recorded in the remotebug
+field.
+
+    >>> from email.Utils import make_msgid
+    >>> message_id = make_msgid('launchpad')
+    >>> bug_watch = example_bug.addWatch(bugtracker=email_tracker,
+    ...     remotebug=message_id,
+    ...     owner=getUtility(ILaunchpadCelebrities).janitor)
+    >>> bug_watch.remotebug == message_id
+    True
+
+Normally, BugTracker.getBugsWatching() returns a shortlist of the bugs
+watching a given remote bug for that bug tracker. However, since with
+an email address bug tracker Launchpad can never know a remote bug ID,
+calling getBugsWatching() on an email address bug tracker will always
+return an empty list.
+
+    >>> sorted(watch.remotebug for watch in email_tracker.latestwatches)
+    [u'', u'...launchpad@...']
+
+    >>> email_tracker.getBugsWatching('')
+    []
+
+    >>> email_tracker.getBugsWatching(message_id)
+    []
+
+Similarly, Bug.getBugWatch() will always return None for email address
+bug trackers.
+
+    >>> print example_bug.getBugWatch(email_tracker, '')
+    None
+
+    >>> print example_bug.getBugWatch(email_tracker, message_id)
+    None
+

@@ -1,0 +1,92 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+  <body>
+
+<div metal:fill-slot="main"
+     tal:define="user view/user;
+                 is_ubuntu_coc_signer user/is_ubuntu_coc_signer|nothing;
+                 gpg_keys user/gpg_keys|nothing">
+
+      <h1>Ubuntu Codes of Conduct</h1>
+      <p>
+        The <a tal:attributes="href context/current_code_of_conduct/fmt:url">
+          current version</a> is
+        <tal:version replace="context/current_code_of_conduct/version" />,
+        released
+        <tal:date replace="context/current_code_of_conduct/datereleased/fmt:date" />
+      </p>
+
+      <div tal:condition="not: is_ubuntu_coc_signer">
+
+        <h2>Sign the Ubuntu Code of Conduct</h2>
+
+        Ubuntu community members may commit to observing the Ubuntu Code of
+        Conduct by signing it online:
+
+        <ol style="margin-left: 4em">
+            <li>
+              <tal:logged_in condition="user">
+                 <a tal:attributes="href string:${user/fmt:url}/+editpgpkeys">
+                 Register an OpenPGP key</a>.</tal:logged_in>
+              <tal:not_logged_in tal:condition="not: user">
+                <a href="+login">Log in</a> and register an OpenPGP key.
+              </tal:not_logged_in>
+              <p tal:condition="gpg_keys"
+                 class="informational message"
+                 style="margin-top: 20px">
+                It appears you have already done this.
+
+                <tal:multiple_keys condition="python: gpg_keys.count() > 1">
+                <span tal:replace="gpg_keys/count" /> keys are
+                </tal:multiple_keys>
+
+                <tal:single_key condition="python: gpg_keys.count() == 1">
+                The key <code tal:content="python: gpg_keys[0].keyid" /> is
+                </tal:single_key>
+
+                registered on your account. You can skip to the next step if
+                you are not intending on signing with a different
+                key.
+              </p>
+            </li>
+            <li><a tal:attributes="href
+                string:${context/current_code_of_conduct/fmt:url}/+download">
+                Download</a> the current Code of Conduct.</li>
+            <li><a tal:attributes="href
+                string:${context/current_code_of_conduct/fmt:url}/+sign">
+                Sign it!</a></li>
+        </ol>
+      </div>
+
+      <p tal:condition="is_ubuntu_coc_signer">
+        Congratulations, you have already <a tal:attributes="href
+        string:${user/fmt:url}/+codesofconduct">signed</a> the Ubuntu Code
+        of Conduct.
+      </p>
+
+      <h2>Older (obsolete) versions of the Code of Conduct</h2>
+
+      <ul class="document">
+         <tal:codes tal:repeat="code context">
+            <tal:not_current condition="not: code/current">
+              <li><a tal:content="code/title"
+                     tal:attributes="href code/fmt:url" /></li>
+            </tal:not_current>
+         </tal:codes>
+      </ul>
+
+      <br />
+      <p>
+        <a tal:replace="structure context/menu:overview/admin/render" />
+      </p>
+
+</div>
+
+</body>
+</html>

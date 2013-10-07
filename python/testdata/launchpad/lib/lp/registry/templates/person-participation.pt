@@ -1,0 +1,86 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+  >
+
+<body>
+  <div metal:fill-slot="main">
+
+    <p tal:condition="view/has_participations">
+      <span tal:replace="context/title">Foo Bar</span>
+      is a member of the following teams:
+    </p>
+
+    <p id="no-participation" tal:condition="not: view/has_participations">
+      <span tal:replace="context/title">Foo Bar</span>
+       has not yet joined any teams.
+    </p>
+
+    <table id="participation" class="listing sortable"
+      tal:condition="view/has_participations">
+      <thead>
+        <tr>
+          <th>Team</th>
+          <th>Joined</th>
+          <th>Role</th>
+          <th>Via</th>
+          <th
+            tal:condition="not: context/teamowner">Mailing List</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr tal:repeat="participation view/active_participations">
+          <td>
+            <a tal:replace="structure participation/team/fmt:link">name</a>
+          </td>
+          <td>
+            <tal:date condition="not: participation/via"
+              tal:replace="participation/datejoined/fmt:date">
+              2005-06-17
+            </tal:date>
+            <tal:no-date condition="participation/via">
+              &mdash;
+            </tal:no-date>
+          </td>
+          <td tal:content="participation/role">
+            Member
+          </td>
+          <td>
+            <tal:indirect condition="participation/via"
+              replace="participation/via">
+              a, b, c
+            </tal:indirect>
+            <tal:direct condition="not: participation/via">
+              &mdash;
+            </tal:direct>
+          </td>
+          <td
+            tal:condition="not: context/teamowner">
+            <tal:subscribed replace="structure participation/subscribed">
+              yes
+            </tal:subscribed>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <tal:user condition="not: context/teamowner">
+      <ul id="participation-actions" class="horizontal"
+        tal:condition="context/required:launchpad.Edit">
+        <li>
+          <a class="sprite add" href="/people/+newteam">Register a team</a>
+        </li>
+        <li>
+          <a class="sprite edit"
+            tal:attributes="href context/menu:overview/editemailaddresses/fmt:url"
+            >Change mailing list subscriptions</a>
+        </li>
+      </ul>
+    </tal:user>
+  </div>
+</body>
+</html>

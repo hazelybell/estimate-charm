@@ -1,0 +1,16 @@
+<!-- Copyright 2010 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+    <browser:page
+        name="+yuitest"
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        class="lp.testing.yuixhr.YUITestFixtureControllerView"
+        attribute="__call__"
+        permission="zope.Public"/>
+
+</configure>

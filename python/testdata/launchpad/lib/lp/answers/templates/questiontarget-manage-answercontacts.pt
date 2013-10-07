@@ -1,0 +1,65 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<body>
+
+<div metal:fill-slot="main">
+
+  <div metal:use-macro="context/@@launchpad_form/form">
+
+    <p metal:fill-slot="extra_top">
+    An <em>answer contact</em> is implicitly subscribed to all
+    questions. By checking the box below, you will receive changes
+    related to all questions (written in one of your <a
+    tal:attributes="href string:${request/lp:person/fmt:url}/+editlanguages"
+    >preferred languages</a>) opened on <span
+    tal:replace="context/displayname">Mozilla Firefox</span>, and thus
+    receive mail notifications about them.
+    </p>
+
+    <div metal:fill-slot="widgets">
+      <div class="row">
+
+        <div class="field">
+          <strong>Choose:</strong><br />
+          <div tal:replace="structure view/widgets/want_to_be_answer_contact" />
+          <label style="font-weight: normal"
+              tal:attributes="for view/widgets/want_to_be_answer_contact/name">
+            I want to be an answer contact for
+            <span tal:replace="context/displayname">Mozilla Firefox</span>
+          </label>
+        </div>
+
+      </div>
+
+      <div class="row"
+           tal:condition="view/widgets/answer_contact_teams/vocabulary">
+
+        <div tal:define="error view/widgets/answer_contact_teams/error"
+             tal:attributes="class python:error and 'error' or 'field'">
+          <label>Let the following teams be an answer contact for
+          <span tal:replace="context/displayname">Mozilla
+          Firefox</span>:</label>
+          <div id="answer-contact-teams"
+               tal:content="structure view/widgets/answer_contact_teams" />
+          <div tal:condition="error" class="message"
+            tal:content="structure error"
+          >An error message.</div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>

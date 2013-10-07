@@ -1,0 +1,29 @@
+= launchpadlib =
+
+Just to show that we're actually talking to the appserver, first check to see
+if a specific user exists...
+
+    >>> browser = Browser('foo.bar@canonical.com:test')
+    >>> from lp.testing.layers import BaseLayer
+    >>> root_url = BaseLayer.appserver_root_url()
+    >>> browser.open(root_url)
+    >>> browser.vhost
+    'http://launchpad.dev'
+    >>> browser.urlpath
+    '/'
+
+    >>> browser.open('%s/~stimpy' % root_url)
+    Traceback (most recent call last):
+    ...
+    HTTPError: HTTP Error 404: Not Found
+
+...and when he doesn't, create him.
+
+    >>> browser.open('%s/people/+newteam' % root_url)
+    >>> browser.getControl(name='field.name').value = 'stimpy'
+    >>> browser.getControl('Display Name').value = 'Stimpson J. Cat'
+    >>> browser.getControl('Create').click()
+    >>> browser.vhost
+    'http://launchpad.dev'
+    >>> browser.urlpath
+    '/~stimpy'

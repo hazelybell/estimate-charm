@@ -1,0 +1,207 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+>
+<body>
+
+<tal:heading metal:fill-slot="heading">
+  <h1 tal:content="context/title">Mozilla</h1>
+</tal:heading>
+
+<div metal:fill-slot="main">
+
+  <tal:do-this-first replace="view/setUpTokenAndVotes" />
+
+  <div
+    class="highlighted"
+    tal:content="structure context/proposition/fmt:text-to-html"
+  />
+  <br />
+
+  <p tal:condition="not: context/getActiveOptions">
+    This poll does not yet have any voting options. Please <a
+    href="+newoption">add an option</a>. Note, you need more than one option
+    for a real poll, of course :-)
+  </p>
+
+  <div class="two-column-list">
+    <dl>
+      <dt>Opens:</dt>
+      <dd
+        tal:attributes="title context/dateopens/fmt:datetime"
+        tal:content="context/dateopens/fmt:approximatedate" />
+    </dl>
+
+    <dl>
+      <dt>Type:</dt>
+      <dd tal:content="context/type/title" />
+    </dl>
+
+    <dl>
+      <dt>Closes:</dt>
+      <dd
+        tal:attributes="title context/datecloses/fmt:datetime"
+        tal:content="context/datecloses/fmt:approximatedate" />
+    </dl>
+
+    <dl>
+      <dt>Secrecy:</dt>
+      <dd tal:content="context/secrecy/title" />
+    </dl>
+  </div>
+  <br />
+
+  <tal:details replace="structure context/@@+portlet-options" />
+  <br />
+
+  <tal:is_open condition="context/isOpen">
+    <p tal:condition="not: request/lp:person">
+      You need to <a href="+login">login to vote</a>.
+    </p>
+  </tal:is_open>
+
+  <tal:block condition="context/isClosed">
+
+    <h2>Voting has closed</h2>
+
+    <p>Voting closed
+      <span
+        tal:attributes="title context/datecloses/fmt:datetime"
+        tal:content="context/datecloses/fmt:displaydate" />.
+    </p>
+
+    <tal:block condition="view/userVoted">
+      <tal:block condition="view/isSecret">
+        <tal:block condition="not: view/gotTokenAndVotes">
+          <p>
+            This was a secret poll: your vote is identified only by the key
+            you were given when you voted. To view your vote you must enter
+            your key:
+          </p>
+          <form action="" method="POST">
+            <input type="text" name="token" />
+            <input type="submit" value="Show My Vote" name="showvote" />
+          </form>
+        </tal:block>
+      </tal:block>
+
+      <tal:block condition="view/gotTokenAndVotes">
+        <tal:block condition="view/isSimple">
+          <p>Your vote was for
+            <b tal:condition="not: view/currentVote/option">
+              none of the options.
+            </b>
+            <b tal:condition="view/currentVote/option" 
+               tal:content="view/currentVote/option/name" /></p>
+        </tal:block>
+
+        <tal:block condition="view/isCondorcet">
+          <tal:block condition="view/currentVotes">
+            <p>Your vote was as follows:</p>
+            <p tal:repeat="vote view/currentVotes">
+              <tal:block tal:condition="vote/preference">
+                <b tal:content="vote/preference" />. 
+                <span tal:replace="vote/option/name" />
+              </tal:block>
+            </p>
+          </tal:block>
+
+          <tal:block condition="not: view/currentVotes">
+            <p>You haven't voted for any of the existing options.</p> 
+          </tal:block>
+        </tal:block>
+
+      </tal:block>
+    </tal:block>
+
+    <h2>Results</h2>
+
+    <tal:block condition="view/isSimple">
+      <tal:block define="winners context/getWinners">
+        <p tal:condition="winners">The winner(s) of this poll is(are) 
+          <tal:block repeat="winner winners">
+            <b tal:content="winner/title"
+              /><span tal:condition="not: repeat/winner/end">,</span>
+          </tal:block>
+        </p>
+
+        <p tal:condition="not: winners">This poll has no winner(s).</p>
+      </tal:block>
+
+      <p>Here are the number of votes each option received.</p>
+      <table class="listing">
+        <thead>
+          <tr>
+            <th>Option</th>
+            <th>Votes</th>
+          </tr>
+        </thead>
+
+        <tr tal:repeat="option context/getAllOptions">
+          <tal:block define="votes python: view.getVotesByOption(option)">
+          <td>
+            <span tal:replace="option/title" />
+            <tal:block tal:condition="not: option/active">
+              (Inactive)
+            </tal:block>
+          </td>
+          <td tal:content="votes">
+          </td>
+          </tal:block>
+        </tr>
+      </table>
+    </tal:block>
+
+    <tal:block condition="view/isCondorcet">
+      <p>This is the pairwise matrix for this poll.</p>
+
+      <table border="2"
+             tal:define="pairwise_matrix view/getPairwiseMatrixWithHeaders">
+        <tr tal:repeat="row pairwise_matrix">
+          <tal:block repeat="column pairwise_matrix">
+            <tal:block tal:define="x repeat/row/index; y repeat/column/index">
+              <td tal:condition="python: x == y" 
+                  style="background-color: black" />
+
+              <tal:block condition="python: x != y">
+                <td tal:condition="python: x != 0 and y != 0"
+                    style="text-align: right">
+                  <span tal:replace="python: pairwise_matrix[x][y]" />
+                </td>
+                <td tal:condition="python: x == 0 or y == 0">
+                  <span tal:replace="python: pairwise_matrix[x][y]" />
+                </td>
+              </tal:block>
+            </tal:block>
+          </tal:block>
+        </tr>
+      </table>
+    </tal:block>
+
+  </tal:block>
+
+  <tal:block condition="context/isNotYetOpened">
+    <h2>Voting hasn't opened yet</h2>
+
+    <p>
+      The vote will commence
+      <span
+        tal:attributes="title context/dateopens/fmt:datetime"
+        tal:content="context/dateopens/fmt:displaydate" />.
+    </p>
+  </tal:block>
+
+</div>
+
+<div metal:fill-slot="side">
+  <div id="object-actions" class="top-portlet">
+    <tal:menu replace="structure view/@@+global-actions" />
+  </div>
+</div>
+
+</body>
+</html>

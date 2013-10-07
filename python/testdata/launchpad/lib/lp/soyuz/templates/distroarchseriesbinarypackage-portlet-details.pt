@@ -1,0 +1,31 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  class="portlet" id="portlet-details">
+
+  <h2>Package "<span tal:replace="context/name">apache2</span>"
+  (<span tal:replace="context/distroarchseries/architecturetag">i386</span>)
+  in
+  <span tal:replace="context/distribution/name">ubuntu</span>
+  <span tal:replace="context/distroseries/name">hoary</span></h2>
+
+  <div tal:define="cr context/currentrelease">
+
+    <tal:has_currentrelease condition="cr">
+      <b>Current release:</b>
+      <a tal:content="cr/version"
+         tal:attributes="href cr/fmt:url">3.2.1-3</a><br />
+    </tal:has_currentrelease>
+    <tal:no_currentrelease condition="not: cr">
+      <i>There is no current release for this package in
+        <span tal:replace="context/distribution/displayname">ubuntu</span>
+        <span tal:replace="context/distroseries/name">hoary</span>
+        (<span tal:replace="context/distroarchseries/architecturetag">
+          i386
+        </span>)</i>
+    </tal:no_currentrelease>
+
+  </div>
+
+</div>

@@ -1,0 +1,13 @@
+Rejected:
+%(SUMMARY)s
+
+%(CHANGESFILE)s
+
+===
+
+If you don't understand why your files were rejected please send an email
+to %(USERS_ADDRESS)s for help (requires membership).
+
+--%(ARCHIVE_URL)s
+You are receiving this email because you are the uploader of the above
+PPA package.

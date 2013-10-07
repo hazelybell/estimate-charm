@@ -1,0 +1,96 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+  <body>
+
+<div metal:fill-slot="heading">
+  <h1 tal:content="context/title"/>
+</div>
+
+<div metal:fill-slot="main">
+
+
+  <div class="top-portlet">
+  <tal:description replace="structure context/description/fmt:text-to-html">
+     Package Description
+  </tal:description>
+  </div>
+
+  <div class="yui-g">
+
+  <div class="first yui-u">
+    <div tal:replace="structure context/@@+portlet-details" />
+  </div>
+
+  <div class="yui-u">
+    <div class="portlet">
+      <h2>Downloadable files</h2>
+      <div id="files">
+        <div id="build" tal:condition="context/build">
+            <a tal:define="pbuild context/build"
+               tal:content="pbuild/title"
+               tal:attributes="href pbuild/fmt:url">BUILD</a> produced
+            <span tal:condition="context/files">
+              these files:
+            </span>
+            <span tal:condition="not: context/files">
+              no files for this binary package.
+            </span>
+        </div>
+
+        <div id="downloadable-files">
+            <ul tal:condition="context/files">
+              <li tal:repeat="file context/files">
+                <tal:deleted condition="file/libraryfile/deleted">
+                  <tal:filename content="file/libraryfile/filename" />
+                  (deleted)
+                </tal:deleted>
+                <tal:not-deleted condition="not: file/libraryfile/deleted">
+                  <a class="sprite"
+                     tal:content="file/libraryfile/filename"
+                     tal:attributes="href file/libraryfile/http_url"></a>
+                  (<span tal:replace="file/libraryfile/content/filesize/fmt:bytes" />)
+                </tal:not-deleted>
+              </li>
+            </ul>
+        </div>
+      </div>
+      <!-- No build and no downloadable files -->
+      <div tal:condition="not: context/build">
+        <span tal:condition="not: context/files">
+          There are no downloadable files for this binary package.
+        </span>
+      </div>
+    </div><!--portlet-->
+  </div><!--yui-u-->
+
+  </div><!--yui-g-->
+
+
+  <style>#relationships div {padding-top:0.5em;}</style>
+  <div class="yui-g" tal:define="bpr context/binarypackagerelease">
+  <div class="portlet" id="relationships">
+
+    <h2>Package relationships</h2>
+
+    <div tal:replace="structure bpr/@@+portlet-depends" />
+    <div tal:replace="structure bpr/@@+portlet-conflicts" />
+    <div tal:replace="structure bpr/@@+portlet-provides" />
+    <div tal:replace="structure bpr/@@+portlet-replaces" />
+    <div tal:replace="structure bpr/@@+portlet-suggests" />
+    <div tal:replace="structure bpr/@@+portlet-recommends" />
+    <div tal:replace="structure bpr/@@+portlet-predepends" />
+    <div tal:replace="structure bpr/@@+portlet-enhances" />
+    <div tal:replace="structure bpr/@@+portlet-breaks" />
+
+  </div><!--portlet-->
+  </div><!--yui-g-->
+
+</div>
+</body>
+</html>

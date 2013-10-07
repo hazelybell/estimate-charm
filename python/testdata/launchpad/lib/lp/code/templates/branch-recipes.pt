@@ -1,0 +1,34 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  tal:define="context_menu view/context/menu:context"
+  id="related-bugs-and-blueprints">
+
+  <h3>Related source package recipes</h3>
+
+  <div id="recipe-links" class="actions">
+    <div id="recipe-summary">
+      <img src="/@@/source-package-recipe" />
+      <tal:no-recipes condition="not: view/context/recipes/count">
+      No recipes
+      </tal:no-recipes>
+      <tal:recipes condition="view/context/recipes/count">
+        <a href="+recipes" tal:content="structure view/recipe_count_text">
+          1 branch
+        </a>
+      </tal:recipes>
+      using this branch.
+
+      <a href="/+help-code/related-recipes.html" target="help"
+         class="sprite maybe action-icon">(?)</a>
+    </div>
+
+    <span
+      tal:define="link context_menu/create_recipe"
+      tal:condition="link/enabled"
+      tal:replace="structure link/render"
+      />
+  </div>
+
+</div>

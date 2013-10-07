@@ -1,0 +1,12 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+  <pre class="changelog"
+     tal:attributes="id string:${context/name}_${context/version}"
+     tal:content="structure view/changelog_entry"
+    >Changelog example</pre>
+
+</tal:root>

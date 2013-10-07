@@ -1,0 +1,69 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+>
+
+<head>
+    <metal:block fill-slot="head_epilogue">
+    <script>
+            LPJS.use('base', 'node', 'event', 'lp.registry.sharing.sharingdetailsview',
+                function(Y) {
+            Y.on('domready', function() {
+                var details_module  = Y.lp.registry.sharing.sharingdetailsview;
+                var details_view = new details_module.SharingDetailsView();
+                details_view.render();
+            });
+          });
+    </script>
+    </metal:block>
+</head>
+
+<body>
+  <div metal:fill-slot="main">
+
+    <div id="observer-summary">
+      <p>
+      <tal:bugs replace="view/shared_bugs_count">0</tal:bugs> bugs,
+      <tal:branches replace="view/shared_branches_count">0</tal:branches> branches,
+      and  <tal:specifications
+      replace="view/shared_specifications_count">0</tal:specifications>
+      blueprints shared with <tal:name replace="view/person/displayname">
+      grantee</tal:name>.<br />
+
+      <tal:is-team condition="view/person/is_team">
+        <tal:members>3</tal:members> team members can view these bugs and
+        branches.
+      </tal:is-team>
+      </p>
+    </div>
+
+    <table id="shared-table" class="listing sortable">
+      <col width="auto"/>
+      <col width="20px"/>
+      <col width="auto"/>
+      <thead>
+        <tr>
+          <th colspan="2" width="">
+            Subscribed Bug Report, Branch, or Blueprint
+          </th>
+          <th>
+            Information Type
+          </th>
+        </tr>
+      </thead>
+      <tbody id="sharing-table-body">
+          <tr>
+              <td colspan="3">
+                  There are no shared bugs, branches, or blueprints.
+              </td>
+          </tr>
+      </tbody>
+    </table>
+
+  </div>
+</body>
+</html>

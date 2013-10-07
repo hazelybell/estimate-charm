@@ -1,0 +1,9 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+  <pre id="copyright" class="pre"
+     tal:content="structure view/highlighted_copyright"
+    >Changelog example</pre>
+</tal:root>

@@ -1,0 +1,62 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="malone"
+>
+
+<head>
+  <tal:head-epilogue metal:fill-slot="head_epilogue">
+    <script type="text/javascript">
+      LPJS.use('lp.registry.structural_subscription', 'lp.bugs.subscription',
+              function(Y) {
+          var ss_module = Y.lp.registry.structural_subscription;
+          var info_module = Y.lp.bugs.subscription;
+          Y.on('domready', function() {
+              info_module.show_subscription_description(
+                  {description_box: "#subscription-description-box"});
+          });
+          Y.on('contentready', function() {
+              // This happens only after show_subscription_description()
+              // is called in 'domready' handler, because that's what
+              // inserts '#other-subscriptions-list' into DOM.
+              ss_module.setup_bug_subscriptions(
+                  {content_box: "#other-subscriptions-list"});
+          }, '#other-subscriptions-list');
+      });
+    </script>
+    <style>
+
+      div#other-subscriptions-header {
+        margin-top: 1em;
+      }
+
+      div.subscription-description {
+        margin: 0px;
+        margin-top: 2em;
+        padding: 1em;
+        border: 1px solid #ddd;
+      }
+    </style>
+  </tal:head-epilogue>
+</head>
+<body>
+  <div metal:fill-slot="main">
+
+    <div id="maincontent">
+      <div id="nonportlets">
+        <div id="subscription-description-box"></div>
+        <div id="subscription-listing"></div>
+
+            <div id="structural-subscription-content-box"></div>
+
+      </div>
+    </div>
+  </div>
+</body>
+</html>

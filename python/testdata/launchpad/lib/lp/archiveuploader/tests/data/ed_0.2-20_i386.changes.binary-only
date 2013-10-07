@@ -1,0 +1,58 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Format: 1.7
+Date: Wed,  2 Apr 2003 17:19:47 +0100
+Source: ed
+Binary: ed
+Architecture: i386
+Version: 0.2-20
+Distribution: unstable
+Urgency: low
+Maintainer: James Troup <james@nocrew.org>
+Changed-By: James Troup <james@nocrew.org>
+Description: 
+ ed         - The classic unix line editor
+Closes: 122517 130327 179957
+Changes: 
+ ed (0.2-20) unstable; urgency=low
+ .
+   * Move to dpatch; existing non-debian/ changes split into
+     01_buf.c-tmpfile, 02_-Wall-cleanup, 03_ed.1-cleanup and
+     04_Makfile.in-no-libed.
+   * debian/rules: include /usr/share/dpatch/dpatch.make.
+   * debian/rules (build): depend on patch-stamp.
+   * debian/rules (clean): depend on unpatch.  Remove debian/patched.
+   * debian/rules (.PHONY): add 'patch' and 'unpatch'.
+   * debian/control (Build-Depends): add dpatch.
+ .
+   * debian/rules: update copyright.
+   * debian/copyright: likewise and update upstream URL.
+   * debian/changelog: remove local-variables stuff.
+ .
+   * debian/rules: use install_foo convenience variables.
+   * debian/rules (clean): remove *~ in any subdirectory.
+ .
+   * debian/control (Standards-Version): bump to 3.5.8.0.
+   * debian/postinst, debian/prerm: no longer do /usr/doc symlinks.
+ .
+   * config, test/*: unused aegis cruft; removed.
+   * Undo s/%/$/ change in RCS keywords.
+ .
+   * debian/postinst: provide editor.1.gz alternative; thanks to Ben Harris
+     <bjh21@cam.ac.uk> for the suggestion.  Closes: #122517
+   * 05_ed.1-warning-fix.dpatch: new patch to avoid groff warnings.  Thanks
+     to Colin Watson <cjwatson@debian.org>.  Closes: #179957
+   * 06_testsuite-Makefile.dpatch: new patch to ensure the test suite bombs
+     out on errors.  Thanks to Joel Baker <fenton@debian.org>.
+     Closes: #130327
+Files: 
+ 379bf8c1d4fd2244d31851e15ee14ae0 46792 editors important ed_0.2-20_i386.deb
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+
+iEYEARECAAYFAkxtm0cACgkQDjSYZ10UdUfw1ACfUl2/eg6Iq3nBqQYnSd8c+w1+
+2LMAoIcLJiv3Rl8P9+ezamw8pNN8IOF3
+=guXd
+-----END PGP SIGNATURE-----

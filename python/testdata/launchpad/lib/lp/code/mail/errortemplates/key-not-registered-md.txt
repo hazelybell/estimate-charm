@@ -1,0 +1,3 @@
+All emails to %(context)s must be signed with your OpenPGP key,
+but your OpenPGP key isn't imported into Launchpad. Please go to
+%(import_url)s to import your key.

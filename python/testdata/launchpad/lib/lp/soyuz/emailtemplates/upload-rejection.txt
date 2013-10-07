@@ -1,0 +1,16 @@
+Rejected:
+%(SUMMARY)s
+
+%(CHANGESFILE)s
+
+%(DATE)s%(CHANGEDBY)s%(MAINTAINER)s%(SIGNER)s%(ORIGIN)s
+
+===
+
+If you don't understand why your files were rejected, or if the
+override file requires editing, please go to:
+http://answers.launchpad.net/soyuz
+
+-- 
+You are receiving this email because you are the uploader, maintainer or
+signer of the above package.

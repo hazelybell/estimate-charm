@@ -1,0 +1,291 @@
+= gettext_po_exporter =
+
+To export translation files from Rosetta, the data must be displayed in po
+file fomrat which is a text file format.
+
+    >>> from lp.translations.interfaces.translations import (
+    ...     TranslationConstants)
+    >>> from lp.translations.utilities.gettext_po_exporter import (
+    ...     comments_text_representation, export_translation_message)
+    >>> from lp.translations.utilities.translation_common_format import (
+    ...     TranslationMessageData)
+
+== comments_text_representation ==
+
+Special comments are created from metadata of each translation message.
+Message flags are represented by the #, comment.
+
+    >>> translation_message = TranslationMessageData()
+    >>> translation_message.msgid_singular = u'foo'
+    >>> translation_message.addTranslation(
+    ...     TranslationConstants.SINGULAR_FORM, u'bar')
+    >>> translation_message.flags = ('fuzzy', )
+    >>> comments_text_representation(translation_message)
+    u'#, fuzzy'
+
+Multiple flags are divided by commas.
+
+    >>> translation_message = TranslationMessageData()
+    >>> translation_message.msgid_singular = u'%d foo'
+    >>> translation_message.addTranslation(
+    ...     TranslationConstants.SINGULAR_FORM, u'%d bar')
+    >>> translation_message.flags = ('fuzzy', 'c-format')
+    >>> comments_text_representation(translation_message)
+    u'#, fuzzy, c-format'
+
+Simple comments are preceded by a single # sign.
+
+    >>> translation_message = TranslationMessageData()
+    >>> translation_message.msgid_singular = u'a'
+    >>> translation_message.addTranslation(
+    ...     TranslationConstants.SINGULAR_FORM, u'b')
+    >>> translation_message.comment = u' blah\n'
+    >>> comments_text_representation(translation_message)
+    u'# blah'
+
+Any other comments have been stored verbatim during import and are now
+prepended with a # sign again.
+
+    >>> translation_message = TranslationMessageData()
+    >>> translation_message.msgid_singular = u'foo'
+    >>> translation_message.addTranslation(
+    ...     TranslationConstants.SINGULAR_FORM, u'bar')
+    >>> translation_message.comment = u'  line1\n| msgid line2\n'
+    >>> comments_text_representation(translation_message)
+    u'#  line1\n#| msgid line2'
+
+The order of comments must be kept, so #| are moved to the end.
+
+    >>> translation_message = TranslationMessageData()
+    >>> translation_message.msgid_singular = u'foo'
+    >>> translation_message.addTranslation(
+    ...     TranslationConstants.SINGULAR_FORM, u'bar')
+    >>> translation_message.comment = u'  line1\n| msgid line2\n'
+    >>> translation_message.file_references = u'src/file.c'
+    >>> comments_text_representation(translation_message)
+    u'#  line1\n#: src/file.c\n#| msgid line2'
+
+
+== wrap_text ==
+We are not using textwrap module because the .po file format has some
+peculiarities like:
+
+msgid ""
+"a really long line."
+
+instead of:
+
+msgid "a really long"
+"line."
+
+with a wrapping width of 21.
+
+    >>> translation_message = TranslationMessageData()
+    >>> translation_message.msgid_singular = u'abcdefghijkl'
+    >>> translation_message.addTranslation(
+    ...     TranslationConstants.SINGULAR_FORM, u'z')
+    >>> export_translation_message(translation_message, wrap_width=20)
+    u'msgid "abcdefghijkl"\nmsgstr "z"'
+
+    >>> translation_message = TranslationMessageData()
+    >>> translation_message.msgid_singular = u'abcdefghijklmnopqr'
+    >>> translation_message.addTranslation(
+    ...     TranslationConstants.SINGULAR_FORM, u'z')
+    >>> export_translation_message(translation_message, wrap_width=20)
+    u'msgid ""\n"abcdefghijklmnopqr"\nmsgstr "z"'
+
+    >>> translation_message = TranslationMessageData()
+    >>> translation_message.msgid_singular = u'abcdef hijklm'
+    >>> translation_message.addTranslation(
+    ...     TranslationConstants.SINGULAR_FORM, u'z')
+    >>> export_translation_message(translation_message, wrap_width=20)
+    u'msgid ""\n"abcdef hijklm"\nmsgstr "z"'
+
+    >>> translation_message = TranslationMessageData()
+    >>> translation_message.msgid_singular = u'abcdefghijklmnopqr st'
+    >>> translation_message.addTranslation(
+    ...     TranslationConstants.SINGULAR_FORM, u'z')
+    >>> export_translation_message(translation_message, wrap_width=20)
+    u'msgid ""\n"abcdefghijklmnopqr "\n"st"\nmsgstr "z"'
+
+Newlines in the text interfere with wrapping.
+
+    >>> translation_message = TranslationMessageData()
+    >>> translation_message.msgid_singular = u'abc\ndef'
+    >>> translation_message.addTranslation(
+    ...     TranslationConstants.SINGULAR_FORM, u'z')
+    >>> export_translation_message(translation_message, wrap_width=20)
+    u'msgid ""\n"abc\\n"\n"def"\nmsgstr "z"'
+
+But not when it's just a line that ends with a newline char
+
+    >>> translation_message = TranslationMessageData()
+    >>> translation_message.msgid_singular = u'abc\n'
+    >>> translation_message.addTranslation(
+    ...     TranslationConstants.SINGULAR_FORM, u'def\n')
+    >>> export_translation_message(translation_message)
+    u'msgid "abc\\n"\nmsgstr "def\\n"'
+
+It's time to test the wrapping with the '-' char:
+
+    >>> translation_message = TranslationMessageData()
+    >>> translation_message.msgid_singular = (
+    ...     u"WARNING: unsafe enclosing directory permissions on homedir"
+    ...     u" `%s'\n")
+    >>> translation_message.addTranslation(
+    ...     TranslationConstants.SINGULAR_FORM,
+    ...     u"WARNUNG: Unsichere Zugriffsrechte des umgebenden Verzeichnisses"
+    ...         u" des Home-Verzeichnisses `%s'\n")
+    >>> print export_translation_message(translation_message)
+    msgid "WARNING: unsafe enclosing directory permissions on homedir `%s'\n"
+    msgstr ""
+    "WARNUNG: Unsichere Zugriffsrechte des umgebenden Verzeichnisses des Home-"
+    "Verzeichnisses `%s'\n"
+
+When we changed the wrapping code, we got a bug with this string.
+
+    >>> translation_message = TranslationMessageData()
+    >>> translation_message.msgid_singular = (
+    ...     u"The location and hierarchy of the Evolution contact folders has"
+    ...         u" changed since Evolution 1.x.\n\n")
+    >>> print export_translation_message(translation_message)
+    msgid ""
+    "The location and hierarchy of the Evolution contact folders has changed "
+    "since Evolution 1.x.\n"
+    "\n"
+    msgstr ""
+
+When the wrapping size was exactly gotten past by in the middle of
+escape sequence like \" or \\, it got cut off in there, thus
+creating a broken PO message.  This is the test for bug #46156.
+
+    >>> translation_message = TranslationMessageData()
+    >>> translation_message.msgid_singular = (
+    ...     u"1234567890abcde word\"1234567890abcdefghij")
+    >>> print export_translation_message(translation_message, wrap_width=20)
+    msgid ""
+    "1234567890abcde "
+    "word\"1234567890abcd"
+    "efghij"
+    msgstr ""
+
+Lets also make sure that the unconditional break is not occurring
+inside a single long word in the middle of the escape sequence
+like \" or \\:
+
+    >>> translation_message = TranslationMessageData()
+    >>> translation_message.msgid_singular = (
+    ...     u"1234567890abcdefghij\\klmno")
+    >>> print export_translation_message(translation_message, wrap_width=20)
+    msgid ""
+    "1234567890abcdefghij"
+    "\\klmno"
+    msgstr ""
+
+    >>> translation_message = TranslationMessageData()
+    >>> translation_message.msgid_singular = (
+    ...     u"1234567890abcdefgh\\ijklmno")
+    >>> print export_translation_message(translation_message, wrap_width=20)
+    msgid ""
+    "1234567890abcdefgh\\"
+    "ijklmno"
+    msgstr ""
+
+    >>> translation_message = TranslationMessageData()
+    >>> translation_message.msgid_singular = (
+    ...     u"1234567890abcdefg\\\\hijklmno")
+    >>> print export_translation_message(translation_message, wrap_width=20)
+    msgid ""
+    "1234567890abcdefg\\"
+    "\\hijklmno"
+    msgstr ""
+
+For compatibility with msgcat -w, it also wraps on \\ properly.
+
+    >>> translation_message = TranslationMessageData()
+    >>> translation_message.msgid_singular = (
+    ...     u"\\\\\\\\\\")
+    >>> print export_translation_message(translation_message, wrap_width=5)
+    msgid ""
+    "\\\\"
+    "\\\\"
+    "\\"
+    msgstr ""
+
+    >>> print export_translation_message(translation_message, wrap_width=6)
+    msgid ""
+    "\\\\\\"
+    "\\\\"
+    msgstr ""
+
+There are a couple of other characters that will be escaped in the
+output, too.
+
+    >>> translation_message.msgid_singular = (ur'"' + u"\t\r")
+    >>> print export_translation_message(translation_message, wrap_width=10)
+    msgid ""
+    "\"\t\r"
+    msgstr ""
+
+
+== export_translation_message ==
+Putting it all together to export full translation messages in the correct
+format.
+
+    >>> translation_message = TranslationMessageData()
+    >>> translation_message.msgid_singular = u'foo'
+    >>> translation_message.addTranslation(
+    ...     TranslationConstants.SINGULAR_FORM, u'bar')
+    >>> export_translation_message(translation_message)
+    u'msgid "foo"\nmsgstr "bar"'
+
+Obsolete entries are prefixed with #~ .
+
+    >>> translation_message.is_obsolete = True
+    >>> export_translation_message(translation_message)
+    u'#~ msgid "foo"\n#~ msgstr "bar"'
+
+Also, obsolete entries preserve fuzzy strings.
+
+    >>> translation_message.flags = ('fuzzy', )
+    >>> export_translation_message(translation_message)
+    u'#, fuzzy\n#~ msgid "foo"\n#~ msgstr "bar"'
+
+Plural forms have its own way to represent translations.
+
+    >>> translation_message = TranslationMessageData()
+    >>> translation_message.msgid_singular = u'foo'
+    >>> translation_message.msgid_plural = u'foos'
+    >>> translation_message.addTranslation(
+    ...     TranslationConstants.SINGULAR_FORM, u'bar')
+    >>> translation_message.addTranslation(
+    ...     TranslationConstants.PLURAL_FORM, u'bars')
+    >>> translation_message.nplurals = 2
+    >>> export_translation_message(translation_message)
+    u'msgid "foo"\nmsgid_plural "foos"\nmsgstr[0] "bar"\nmsgstr[1] "bars"'
+
+Backslashes are escaped (doubled) and quotes are backslashed.
+
+    >>> translation_message = TranslationMessageData()
+    >>> translation_message.msgid_singular = u'foo"bar\\baz'
+    >>> translation_message.addTranslation(
+    ...     TranslationConstants.SINGULAR_FORM, u'z')
+    >>> export_translation_message(translation_message)
+    u'msgid "foo\\"bar\\\\baz"\nmsgstr "z"'
+
+Tabs are backslashed too, with standard C syntax.
+
+    >>> translation_message = TranslationMessageData()
+    >>> translation_message.msgid_singular = u'\tServer name: %s'
+    >>> export_translation_message(translation_message)
+    u'msgid "\\tServer name: %s"\nmsgstr ""'
+
+You can have context on messages.
+
+    >>> translation_message = TranslationMessageData()
+    >>> translation_message.context = u'bla'
+    >>> translation_message.msgid_singular = u'foo'
+    >>> translation_message.addTranslation(
+    ...     TranslationConstants.SINGULAR_FORM, u'bar')
+    >>> export_translation_message(translation_message)
+    u'msgctxt "bla"\nmsgid "foo"\nmsgstr "bar"'

@@ -1,0 +1,138 @@
+===============================
+The "watermark" TALES formatter
+===============================
+
+The watermark formatter is used to get the image and heading used on all the
+main Launchpad pages.  The image and heading are determined by the
+IRootContext for the context object.
+
+
+Watermark headings
+==================
+
+The `watermark:heading` is used when you want a heading for the nearest object
+that implements IRootContext.
+
+    >>> from lp.testing import test_tales
+    >>> class view:
+    ...     def __init__(self, context):
+    ...         self.context = context
+
+Products directly implement IRootContext.
+
+    >>> widget = factory.makeProduct(title='Widget')
+    >>> print test_tales('view/watermark:heading', view=view(widget))
+    <h...>Widget</h...>
+
+A series of the product still show the product watermark.
+
+    >>> dev_focus = widget.development_focus
+    >>> print test_tales('view/watermark:heading', view=view(dev_focus))
+    <h...>Widget</h...>
+
+ProjectGroups also directly implement IRootContext ...
+
+    >>> kde = factory.makeProject(title='KDE')
+    >>> print test_tales('view/watermark:heading', view=view(kde))
+    <h...>KDE</h...>
+
+... as do distributions ...
+
+    >>> mint = factory.makeDistribution(title='Mint Linux')
+    >>> print test_tales('view/watermark:heading', view=view(mint))
+    <h...>Mint Linux</h...>
+
+... and people ...
+
+    >>> eric = factory.makePerson(displayname="Eric the Viking")
+    >>> print test_tales('view/watermark:heading', view=view(eric))
+    <h...>Eric the Viking</h...>
+
+... and sprints.
+
+    >>> sprint = factory.makeSprint(title="Launchpad Epic")
+    >>> print test_tales('view/watermark:heading', view=view(sprint))
+    <h...>Launchpad Epic</h...>
+
+If there is no root context defined for the object, then the heading is
+'Launchpad.net' (differentiating from the Launchpad project within
+Launchpad.net).
+
+    >>> machine = factory.makeCodeImportMachine()
+    >>> print test_tales('view/watermark:heading', view=view(machine))
+    <h...>Launchpad.net</h...>
+
+Any HTML in the context title will be escaped to avoid XSS vulnerabilities.
+
+    >>> person = factory.makePerson(
+    ...     displayname="Fubar<br/><script>alert('XSS')</script>")
+    >>> print test_tales('view/watermark:heading', view=view(person))
+    <h...>Fubar&lt;br/&gt;&lt;script&gt;alert(&#x27;XSS&#x27;)&lt;/script&gt;</h...>
+
+
+Watermark images
+================
+
+The image for the watermark is determined effectively by context/image:logo.
+
+    >>> print test_tales('view/watermark:logo', view=view(dev_focus))
+    <a href="..."><img ... src="/@@/product-logo" /></a>
+
+    >>> print test_tales('view/watermark:logo', view=view(eric))
+    <img ... src="/@@/person-logo" />
+
+If there is no root context, the Launchpad logo is shown.
+
+    >>> print test_tales('view/watermark:logo', view=view(machine))
+    <img ... src="/@@/launchpad-logo" />
+
+
+Heading level
+=============
+
+The watermark heading is shown above the application tabs, in either H1 level
+or H2 level.  The heading level is determined by the view.  For the index view
+of the context, H1 is used.  For all non-index pages, i.e. subpages, H2 is
+used.
+
+The choice of heading level is controlled by a marker interface on the view.
+Normally, the view class does not implement the marker interface, meaning it
+is not the index page of the context.  In this case the heading is rendered in
+H2.
+
+    >>> print test_tales('view/watermark:heading', view=view(widget))
+    <h2>Widget</h2>
+
+If the view class implements IMajorHeadingView, then this is the index page
+for the context and the heading is rendered in H1.
+
+    >>> from zope.interface import implements
+    >>> from lp.app.interfaces.headings import IMajorHeadingView
+
+    >>> class view:
+    ...     implements(IMajorHeadingView)
+    ...     def __init__(self, context):
+    ...         self.context = context
+
+    >>> print test_tales('view/watermark:heading', view=view(widget))
+    <h1>Widget</h1>
+
+
+Editable headings
+=================
+
+Some index pages also allow for editing the context's title.  To specify
+this, the view must implement IEditableContextTitle and provide an method
+that returns all the HTML necessary to edit the context, including the
+appropriate H tag.
+
+    >>> from lp.app.interfaces.headings import IEditableContextTitle
+    >>> class view:
+    ...     implements(IEditableContextTitle)
+    ...     def __init__(self, context):
+    ...         self.context = context
+    ...     def title_edit_widget(self):
+    ...         return '<h0>EDIT ME</h0>'
+
+    >>> print test_tales('view/watermark:heading', view=view(widget))
+    <h0>EDIT ME</h0>

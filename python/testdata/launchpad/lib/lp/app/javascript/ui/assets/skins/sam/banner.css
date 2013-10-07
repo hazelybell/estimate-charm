@@ -1,0 +1,109 @@
+/* JS Banner styling */
+.yui3-banner {
+    /* Default to not visible so we can fade in */
+    opacity: 1;
+
+    /* Animations for fade-in/out */
+    -webkit-transition: opacity 0.3s ease-in;
+    -moz-transition: opacity 0.3s ease-in;
+    transition: opacity 0.3s ease-in;
+
+    width: 100%;
+}
+
+.yui3-banner.yui3-banner-hidden {
+    opacity: 0;
+}
+
+/* Nasty hack to get the bar moved since it's absolutely positioned
+ * This also needs to be updated
+ */
+body.beta #locationbar, body.private #locationbar {
+    top: 47px;
+}
+
+/* If we have both classes make room for two banners height */
+body.beta.private #locationbar {
+    top: 94px;
+}
+
+/* If the container exists make sure we start out with the rest of the page
+ * bumped down the starting distance to reduce flash effect
+ */
+.beta_banner_container, .private_banner_container {
+    min-height: 45px;
+}
+
+.yui3-banner-content {
+    box-shadow: 0 0 5px #333;
+    background-color: #666;
+    color: #fff;
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 21px;
+    padding: 8px 20px;
+    text-align: left;
+    text-shadow: 0 -1px 0 #631616;
+    z-index: 10;
+}
+
+.yui3-banner-content .badge {
+    display: inline-block;
+    height: 21px;
+    margin-right: 10px;
+    padding: 0;
+    vertical-align: middle;
+    width: 20px;
+}
+.yui3-banner-content .banner-content {}
+
+.yui3-banner-content.beta {
+    /* Some of these are required to override .beta CSS */
+
+    /* Defined for browsers that don't support transparency */
+    background-color: #606060;
+    /* Transparent background for browsers that support it */
+    background-color: rgba(64, 64, 64, 0.9);
+    height: auto;
+    margin-top: 0px;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
+    width: auto;
+}
+.yui3-banner-content.beta .yui3-banner-content-content {}
+.yui3-banner-content.beta .badge {
+    /* sprite-ref: icon-sprites */
+    background-color: #c10000;
+    background: linear-gradient(bottom, rgb(158,0,0) 0%, rgb(193,0,0) 70%);
+    background: -moz-linear-gradient(bottom, rgb(158,0,0) 0%, rgb(193,0,0) 70%);
+    background: -ms-linear-gradient(bottom, rgb(158,0,0) 0%, rgb(193,0,0) 70%);
+    background: -o-linear-gradient(bottom, rgb(158,0,0) 0%, rgb(193,0,0) 70%);
+    background: -webkit-linear-gradient(bottom, rgb(158,0,0) 0%, rgb(193,0,0) 70%);
+    border-radius: 5px;
+    border-top: 1px solid #e20000;
+    font-size: 12px;
+    font-weight: bold;
+    margin-right: 12px;
+    padding: 3px 6px 4px 6px;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    width: auto;
+}
+
+.yui3-banner-content.beta .beta-feature {
+    font-weight: bold;
+}
+.yui3-banner-content.beta .info-link {
+    color: #4884ef;
+}
+
+.yui3-banner-content.private {
+    /* Define colour for browsers that don't support transparency */
+    background: #8d1f1f;
+    /* Set transparent background for browsers that support it */
+    background: rgba(125,0,0,0.9);
+}
+.yui3-banner-content.private .banner-content {}
+.yui3-banner-content.private .badge {
+    background: url(/@@/notification-private.png);
+    background-repeat: no-repeat;
+}

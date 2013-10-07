@@ -1,0 +1,87 @@
+Received: (at submit) by bugs.debian.org; 10 Apr 2005 11:25:27 +0000
+From david@chrestomanci.org Sun Apr 10 04:25:27 2005
+Return-path: <david@chrestomanci.org>
+Received: from rutherford.zen.co.uk [212.23.3.142] 
+	by spohr.debian.org with esmtp (Exim 3.35 1 (Debian))
+	id 1DKaZC-0000t9-00; Sun, 10 Apr 2005 04:25:27 -0700
+Received: from [82.70.68.182] (helo=miranda.chrestomanci.org)
+	by rutherford.zen.co.uk with esmtp (Exim 4.34)
+	id 1DKaZB-0008Ka-7Z
+	for submit@bugs.debian.org; Sun, 10 Apr 2005 11:25:25 +0000
+Received: from david by miranda.chrestomanci.org with local (Exim 3.36 #1 (Debian))
+	id 1DKaZA-0003Sn-00
+	for <submit@bugs.debian.org>; Sun, 10 Apr 2005 12:25:24 +0100
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+From: David Pottage <david@chrestomanci.org>
+To: Debian Bug Tracking System <submit@bugs.debian.org>
+Subject: mozilla-firefox: Repeatable seg fault on
+ www.koreaherald.co.kr/SITE/data/html_dir/2005/04/09/200504090026.asp
+X-Mailer: reportbug 3.8
+Date: Sun, 10 Apr 2005 12:25:24 +0100
+Message-Id: <E1DKaZA-0003Sn-00@miranda.chrestomanci.org>
+X-Originating-Rutherford-IP: [82.70.68.182]
+Delivered-To: submit@bugs.debian.org
+X-Spam-Checker-Version: SpamAssassin 2.60-bugs.debian.org_2005_01_02 
+	(1.212-2003-09-23-exp) on spohr.debian.org
+X-Spam-Status: No, hits=-8.0 required=4.0 tests=BAYES_00,HAS_PACKAGE 
+	autolearn=no version=2.60-bugs.debian.org_2005_01_02
+X-Spam-Level: 
+
+Package: mozilla-firefox
+Version: 1.0.2-3
+Severity: important
+
+Firefox crashes immedately When vistiting:
+www.koreaherald.co.kr/SITE/data/html_dir/2005/04/09/200504090026.asp
+(The page was recently mentioned on slashdot)
+
+The page renders fine with mozilla-1.7.6 and Opera 7.54 on the same linux system. It also renders OK with Firefox 1.02 under Windows 2K.
+
+Exampel output:
+
+$ mozilla-firefox http://www.koreaherald.co.kr/SITE/data/html_dir/2005/04/09/200504090026.asp
+LoadPlugin: failed to initialize shared library /usr/local/j2sdk1.4.1_02/jre/plugin/i386/ns610/libjavaplugin_oji.so 
+[/usr/local/j2sdk1.4.1_02/jre/plugin/i386/ns610/libjavaplugin_oji.so: undefined symbol: GetGlobalServiceManager__16nsServiceManagerPP17nsIServiceManager]
+Segmentation fault
+
+I have not experenced crashes on other websites.
+
+Could this be related to Bug #235825
+
+-- System Information:
+Debian Release: 3.1
+  APT prefers testing
+  APT policy: (900, 'testing')
+Architecture: i386 (i686)
+Kernel: Linux 2.6.11
+Locale: LANG=C, LC_CTYPE=C (charmap=ANSI_X3.4-1968)
+
+Versions of packages mozilla-firefox depends on:
+ii  debianutils          2.8.4               Miscellaneous utilities specific t
+ii  fontconfig           2.3.1-2             generic font configuration library
+ii  libatk1.0-0          1.8.0-4             The ATK accessibility toolkit
+ii  libc6                2.3.2.ds1-20        GNU C Library: Shared libraries an
+ii  libfontconfig1       2.3.1-2             generic font configuration library
+ii  libfreetype6         2.1.7-2.3           FreeType 2 font engine, shared lib
+ii  libgcc1              1:3.4.3-12          GCC support library
+ii  libglib2.0-0         2.6.3-1             The GLib library of C routines
+ii  libgtk2.0-0          2.6.2-4             The GTK+ graphical user interface 
+ii  libidl0              0.8.5-1             library for parsing CORBA IDL file
+ii  libjpeg62            6b-9                The Independent JPEG Group's JPEG 
+ii  libkrb53             1.3.6-2             MIT Kerberos runtime libraries
+ii  libpango1.0-0        1.8.1-1             Layout and rendering of internatio
+ii  libpng12-0           1.2.8rel-1          PNG library - runtime
+ii  libstdc++5           1:3.3.5-8           The GNU Standard C++ Library v3
+ii  libx11-6             4.3.0.dfsg.1-12.0.1 X Window System protocol client li
+ii  libxext6             4.3.0.dfsg.1-12.0.1 X Window System miscellaneous exte
+ii  libxft2              2.1.2-6             FreeType-based font drawing librar
+ii  libxp6               4.3.0.dfsg.1-12.0.1 X Window System printing extension
+ii  libxt6               4.3.0.dfsg.1-12.0.1 X Toolkit Intrinsics
+ii  psmisc               21.5-1              Utilities that use the proc filesy
+ii  xlibs                4.3.0.dfsg.1-12     X Keyboard Extension (XKB) configu
+ii  zlib1g               1:1.2.2-3           compression library - runtime
+
+-- no debconf information
+

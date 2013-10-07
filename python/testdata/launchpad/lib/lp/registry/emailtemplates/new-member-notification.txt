@@ -1,0 +1,5 @@
+Hello %(recipient_name)s,
+
+%(reviewer)s added you as a member of %(team)s.
+  <%(team_url)s>
+%(list_instructions)s

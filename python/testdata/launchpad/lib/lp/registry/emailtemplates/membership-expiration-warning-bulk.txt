@@ -1,0 +1,14 @@
+Hello %(recipient_name)s,
+
+On %(expiration_date)s, %(approximate_duration)s from now, the membership
+of %(member_name)s (which you are
+the owner of) in the %(team_name)s Launchpad team
+is due to expire.
+<%(team_url)s>
+
+%(how_to_renew)s
+
+If the membership does expire, we'll send you one more message to let
+you know it's happened.
+
+Thanks for using Launchpad!

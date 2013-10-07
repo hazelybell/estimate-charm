@@ -1,0 +1,26 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+    <div id="translations-explanation">
+      <ul>
+        <li
+          tal:condition="not: context/translations_usage/enumvalue:LAUNCHPAD">
+          Launchpad allows communities to translate projects using imports
+          or a branch.
+        </li>
+        <li>
+          <a class="info sprite"
+             href="/+help-translations/getting-started-for-your-project.html"
+             target="help">
+             Getting started with translating your project in Launchpad
+          </a>
+        </li>
+        <li>
+          <a tal:replace="structure context/menu:overview/configure_translations/fmt:link"/>
+        </li>
+      </ul>
+    </div>
+</tal:root>

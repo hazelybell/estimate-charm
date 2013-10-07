@@ -1,0 +1,111 @@
+= Code review comments =
+
+When code is proposed to be merged, it's common to perform a review of
+that code, which is often in the form of a conversation.  The reviewer
+asks questions, makes comments, and offers an opinion (a 'vote') on
+whether or not the code should be merged.  The submitter responds to the
+reviewer until submitter and reviewer and reach an agreement about the
+status of the code or conclude that agreement cannot be reached.
+
+The ICodeReviewComment interface represents this kind of conversation.
+It has an IMessage as a member (in a one-to-one relationship), a vote
+(which is an enum), and a reference to the IBranchMergeProposal it is
+about.
+
+
+== Creating CodeReviewComments ==
+
+CodeReviewComments are created from their BranchMergeProposals:
+
+    >>> login('foo.bar@canonical.com')
+    >>> from lp.testing.factory import LaunchpadObjectFactory
+    >>> factory = LaunchpadObjectFactory()
+    >>> merge_proposal = factory.makeBranchMergeProposal()
+    >>> sender = factory.makePerson(
+    ...     email='sender@example.com', displayname='Sender Person')
+    >>> comment = merge_proposal.createComment(
+    ...     sender, 'Please merge', 'This patch is very nice.')
+
+The initial email that gets sent out has the message_id stored in the merge
+proposal.  Subsequent comments are marked as replies to the initial email.
+
+    >>> from lp.code.enums import CodeReviewVote
+    >>> comment2 = merge_proposal.createComment(
+    ...     sender, 'No!', 'You are ugly and stupid',
+    ...     CodeReviewVote.DISAPPROVE)
+    >>> comment2.message.parent is None
+    True
+
+Comments can be marked as replies to particular comments.
+
+    >>> comment3 = merge_proposal.createComment(
+    ...     sender, 'Hurt', "That wasn't a nice thing to say.",
+    ...     parent=comment2)
+    >>> comment3.message.parent == comment2.message
+    True
+
+When comments are added, a job is created to send the emails to the
+subscribers of the merge proposal.
+
+    >>> # Needed for now to make the iterReady show the jobs.
+    >>> factory.makeRevisionsForBranch(merge_proposal.source_branch)
+    >>> factory.makeRevisionsForBranch(merge_proposal.target_branch)
+    >>> from lp.code.tests.helpers import mark_all_merge_proposal_jobs_done
+    >>> mark_all_merge_proposal_jobs_done()
+
+If there is a subscriber to any of the branches involved in the merge,
+a notification is produced when the comment is created.
+
+    >>> from lp.code.enums import (
+    ...     BranchSubscriptionDiffSize, BranchSubscriptionNotificationLevel,
+    ...     CodeReviewNotificationLevel)
+    >>> source_subscriber = factory.makePerson(
+    ...     email='subscriber@example.com', displayname='Subscriber Person')
+    >>> _unused = merge_proposal.source_branch.subscribe(source_subscriber,
+    ...     BranchSubscriptionNotificationLevel.NOEMAIL,
+    ...     BranchSubscriptionDiffSize.NODIFF,
+    ...     CodeReviewNotificationLevel.FULL, source_subscriber)
+    >>> from lp.testing.mail_helpers import (
+    ...     pop_notifications, print_emails)
+    >>> _unused = pop_notifications()
+    >>> merge_proposal.root_message_id = '<201003111740.test.root@example.com>'
+    >>> comment = merge_proposal.createComment(
+    ...     sender, 'Please merge', 'This patch is very nice.',
+    ...     vote=CodeReviewVote.APPROVE, review_type='DB')
+
+Now run the pending job to send the email.
+
+    >>> from lp.code.interfaces.branchmergeproposal import (
+    ...     IBranchMergeProposalJobSource)
+    >>> [job] = list(getUtility(IBranchMergeProposalJobSource).iterReady())
+    >>> job.run()
+
+    >>> notifications = pop_notifications()
+    >>> notifications = [email for email in notifications if
+    ...                  email['X-Launchpad-Message-Rationale'] == 'Owner']
+    >>> print_emails(include_reply_to=True, notifications=notifications)
+    From: Sender Person <sender@example.com>
+    To: ...
+    Reply-To: mp+1@code.launchpad.dev
+    Subject: Please merge
+    Review: Approve db
+    This patch is very nice.
+    --...
+    You are the owner of lp://dev/~...
+    ----------------------------------------
+    >>> print notifications[0]['X-Launchpad-Branch']
+    ~person-name.../product-name.../branch...
+    >>> notifications[0]['Message-Id'] == comment.message.rfc822msgid
+    True
+    >>> (notifications[0]['In-Reply-To'] == merge_proposal.root_message_id)
+    True
+
+
+== Interfaces ==
+
+The CodeReviewComment must implement the ICodeReviewComment interface.
+
+    >>> from lp.testing import verifyObject
+    >>> from lp.code.interfaces.codereviewcomment import ICodeReviewComment
+    >>> verifyObject(ICodeReviewComment, comment)
+    True

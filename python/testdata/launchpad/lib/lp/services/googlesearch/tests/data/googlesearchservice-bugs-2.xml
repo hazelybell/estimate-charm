@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<GSP VER="3.2">
+<TM>0.416786</TM><Q>bugs site:launchpad.net</Q>
+<PARAM name="as_sitesearch" value="launchpad.net" original_value="launchpad.net"/>
+<PARAM name="client" value="google-csbe" original_value="google-csbe"/>
+<PARAM name="cx" value="011948274177882366108:ixpjdn21yfg" original_value="011948274177882366108%3Aixpjdn21yfg"/>
+<PARAM name="ie" value="utf8" original_value="utf8"/>
+<PARAM name="num" value="20" original_value="20"/>
+<PARAM name="oe" value="utf8" original_value="utf8"/>
+<PARAM name="output" value="xml_no_dtd" original_value="xml_no_dtd"/>
+<PARAM name="q" value="bugs" original_value="bugs"/>
+<PARAM name="start" value="20" original_value="20"/>
+<PARAM name="adkw" value="AELymgURIr4plE6V5qUaesxj1S8kUSFxCVrVLNU_OeCogh9Q7W5be6lEGMcbb0q6WTDgLL7zsnlnYGLvVrsdxgx3AamFm0M6ARaxerSLvSf-1JQHrOLuhsQ" original_value="AELymgURIr4plE6V5qUaesxj1S8kUSFxCVrVLNU_OeCogh9Q7W5be6lEGMcbb0q6WTDgLL7zsnlnYGLvVrsdxgx3AamFm0M6ARaxerSLvSf-1JQHrOLuhsQ"/>
+<PARAM name="hl" value="en" original_value="en"/>
+<Context><title>Launchpad Search Engine</title></Context><RES SN="21" EN="25">
+
+<M>25</M>
+<FI/><NB><NU>/custom?q=bugs+site:launchpad.net&amp;num=20&amp;hl=en&amp;output=xml_no_dtd&amp;client=google-csbe&amp;cx=011948274177882366108:ixpjdn21yfg&amp;ie=UTF-8&amp;oe=UTF-8&amp;start=20&amp;sa=N</NU>
+</NB>
+
+<R N="1"><U>https://bugs.launchpad.net/ubuntu/hoary/+bug/2</U><UE>https://bugs.launchpad.net/ubuntu/hoary/+bug/2</UE><T>&lt;b&gt;Bug&lt;/b&gt; #2 in Ubuntu Hoary: “Blackhole Trash folder”</T><RK>0</RK><CRAWLDATE>17 hours ago</CRAWLDATE><S>&lt;b&gt;Bug&lt;/b&gt; tracking &lt;b&gt;...&lt;/b&gt; Search &lt;b&gt;bugs&lt;/b&gt; reports &lt;b&gt;...&lt;/b&gt; Launchpad’s &lt;b&gt;bug&lt;/b&gt; tracker allows collaboration</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><RT/></HAS></R>
+
+<R N="2"><U>https://bugs.launchpad.net/debian/+source/mozilla-firefox/+bug/2</U><UE>https://bugs.launchpad.net/debian/+source/mozilla-firefox/+bug/2</UE><T>&lt;b&gt;Bug&lt;/b&gt; #2 in mozilla-firefox (Debian): “Blackhole Trash folder”</T><RK>0</RK><S>Lorem ipsum dolor &lt;b&gt;bug&lt;/b&gt; amet, consectetuer adipiscing elit &lt;b&gt;...&lt;/b&gt; Proin &lt;b&gt;bug&lt;/b&gt; sem at porta suscipit, arcu justo porttitor odio &lt;b&gt;...&lt;/b&gt; ut &lt;b&gt;bug&lt;/b&gt; sem odio scelerisque metus.</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><C SZ="37k" CID="5y3q5Izgz60J"/><RT/></HAS></R>
+
+<R N="3"><U>https://bugs.launchpad.net/debian/+source/mozilla-firefox/+bug/3</U><UE>https://bugs.launchpad.net/debian/+source/mozilla-firefox/+bug/3</UE><T>&lt;b&gt;Bug&lt;/b&gt; #3 in mozilla-firefox (Debian): “Bug Title Test”</T><RK>0</RK><S>Lorem ipsum dolor &lt;b&gt;bug&lt;/b&gt; amet, consectetuer adipiscing elit &lt;b&gt;...&lt;/b&gt; Proin &lt;b&gt;bug&lt;/b&gt; sem at porta suscipit, arcu justo porttitor odio &lt;b&gt;...&lt;/b&gt; ut &lt;b&gt;bug&lt;/b&gt; sem odio scelerisque metus.</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><RT/></HAS></R>
+
+<R N="4"><U>https://bugs.launchpad.net/bugs/bugtrackers</U><UE>https://bugs.launchpad.net/bugs/bugtrackers</UE><T>&lt;b&gt;Bug&lt;/b&gt; trackers registered in Launchpad</T><RK>0</RK><S>Lorem ipsum dolor &lt;b&gt;bug&lt;/b&gt; amet, consectetuer adipiscing elit &lt;b&gt;...&lt;/b&gt; Proin &lt;b&gt;bug&lt;/b&gt; sem at porta suscipit, arcu justo porttitor odio &lt;b&gt;...&lt;/b&gt; ut &lt;b&gt;bug&lt;/b&gt; sem odio scelerisque metus.</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><C SZ="58k" CID="TnoSh7JenqwJ"/><RT/></HAS></R>
+
+<R N="5"><U>https://bugs.launchpad.net/bugs/bugtrackers/debbugs</U><UE>https://bugs.launchpad.net/bugs/bugtrackers/debbugs</UE><T>&lt;b&gt;Bug&lt;/b&gt; tracker “Debian Bug tracker”</T><RK>0</RK><S>Lorem ipsum dolor &lt;b&gt;bug&lt;/b&gt; amet, consectetuer adipiscing elit &lt;b&gt;...&lt;/b&gt; Proin &lt;b&gt;bug&lt;/b&gt; sem at porta suscipit, arcu justo porttitor odio &lt;b&gt;...&lt;/b&gt; ut &lt;b&gt;bug&lt;/b&gt; sem odio scelerisque metus.</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><C SZ="64k" CID="vqkMzdYmI84J"/><RT/></HAS></R>
+
+</RES>
+</GSP>
+

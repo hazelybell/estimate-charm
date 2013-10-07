@@ -1,0 +1,16 @@
+<!-- Copyright 2009-2011 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:xmlrpc="http://namespaces.zope.org/xmlrpc"
+    i18n_domain="launchpad">
+
+    <class class="lp.services.mail.notificationrecipientset.NotificationRecipientSet">
+        <allow interface="lp.services.mail.interfaces.INotificationRecipientSet" />
+    </class>
+
+</configure>

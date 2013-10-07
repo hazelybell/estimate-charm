@@ -1,0 +1,29 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+<body>
+<div metal:fill-slot="main">
+
+  <div metal:use-macro="context/@@launchpad_form/form">
+
+    <p metal:fill-slot="extra_info" class="exception">
+      <strong>Adding a port has big consequences for the archive and all its mirrors.
+      Please be very careful.</strong>
+    </p>
+
+  </div>
+
+  <p>
+    Once again, please make sure that you are certain you know what you are
+    doing and why before pressing the button.
+  </p>
+
+</div>
+    
+</body>
+</html>

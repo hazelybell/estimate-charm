@@ -1,0 +1,86 @@
+== Security Proxied URI Objects ==
+
+URI objects can be compared for equality even in the presence of Zope
+security proxies.
+
+  >>> from zope.security.proxy import ProxyFactory
+  >>> from lazr.uri import URI
+
+  >>> uri1 = URI('http://a/b/c/d;p?q')
+  >>> uri2 = URI('http://a/b/c/d;p?q')
+  >>> uri3 = URI('https://launchpad.net')
+  >>> proxied_uri1 = ProxyFactory(uri1)
+  >>> proxied_uri2 = ProxyFactory(uri2)
+  >>> proxied_uri3 = ProxyFactory(uri3)
+
+We can access the various URI components:
+
+  >>> print proxied_uri1.scheme
+  http
+  >>> print proxied_uri1.userinfo
+  None
+  >>> print proxied_uri1.host
+  a
+  >>> print proxied_uri1.port
+  None
+  >>> print proxied_uri1.path
+  /b/c/d;p
+  >>> print proxied_uri1.query
+  q
+  >>> print proxied_uri1.fragment
+  None
+  >>> print proxied_uri1.authority
+  a
+  >>> print proxied_uri1.hier_part
+  //a/b/c/d;p
+
+We can test for equality:
+
+  >>> uri1 == uri2
+  True
+  >>> uri1 == proxied_uri2
+  True
+  >>> proxied_uri1 == uri2
+  True
+  >>> proxied_uri1 == proxied_uri2
+  True
+
+  >>> proxied_uri1 == proxied_uri3
+  False
+
+Similarly, inequality can be checked:
+
+  >>> proxied_uri1 != proxied_uri3
+  True
+
+We can get the string value and representation of a URI:
+
+  >>> print str(proxied_uri1)
+  http://a/b/c/d;p?q
+  >>> print repr(proxied_uri1)
+  URI('http://a/b/c/d;p?q')
+
+We can replace components:
+
+  >>> print proxied_uri1.replace(scheme='https')
+  https://a/b/c/d;p?q
+
+We can append a component:
+
+  >>> print proxied_uri1.append('e/f')
+  http://a/b/c/d;p/e/f
+
+We can check for containment:
+
+  >>> proxied_uri1.contains(proxied_uri2)
+  True
+  >>> proxied_uri1.contains(proxied_uri3)
+  False
+
+We can create a URI that ensures it has or does not have a trailing
+slash:
+
+  >>> print proxied_uri1.ensureSlash()
+  http://a/b/c/d;p/?q
+  >>> print proxied_uri1.ensureNoSlash()
+  http://a/b/c/d;p?q

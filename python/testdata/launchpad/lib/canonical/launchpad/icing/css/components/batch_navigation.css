@@ -1,0 +1,23 @@
+.batch-navigation-links .next {
+    /* Next links have icons: */
+    background: center right no-repeat;
+    padding-right: 14px;
+    }
+.batch-navigation-links .next {
+    background-image: url(/@@/arrowRight);
+    }
+.batch-navigation-links .next.inactive {
+    background-image: url(/@@/arrowRight-inactive);
+    }
+.batch-navigation-links .inactive {
+    color: #999ea7;
+    }
+.batch-navigation-links .previous, .batch-navigation-links .next,
+.batch-navigation-links .last {
+    /* And all the links have spacing between them: */
+    margin-left: 0.25em;
+    }
+.batch-navigation-links .first, .batch-navigation-links .previous,
+.batch-navigation-links .next {
+    margin-right: 0.25em;
+    }

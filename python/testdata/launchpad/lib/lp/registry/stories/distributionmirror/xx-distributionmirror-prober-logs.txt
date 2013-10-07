@@ -1,0 +1,34 @@
+= Distribution mirror prober logs =
+
+Every time we probe a mirror for its contents we keep a log of the probe.
+All these logs can be seen by the mirror owner or the mirror admin of
+that mirror's distribution.
+
+    >>> browser.addHeader('Authorization', 'Basic mark@example.com:test')
+    >>> browser.open(
+    ...     'http://launchpad.dev/ubuntu/+mirror/archive-mirror2/')
+
+    >>> browser.getLink('Prober logs').click()
+    >>> browser.url
+    'http://launchpad.dev/ubuntu/+mirror/archive-mirror2/+prober-logs'
+
+    >>> navigation = find_tags_by_class(
+    ...     browser.contents, 'batch-navigation-index')[0]
+    >>> extract_text(navigation.renderContents())
+    u'1...&rarr;...1...of...1...result'
+
+A random logged in user won't have the rights to see that page.
+
+    >>> user_browser.open(
+    ...     'http://launchpad.dev/ubuntu/+mirror/archive-mirror2/')
+    >>> user_browser.getLink('Content check logs')
+    Traceback (most recent call last):
+    ...
+    LinkNotFoundError
+
+    >>> user_browser.open(
+    ...     'http://launchpad.dev/ubuntu/+mirror/archive-mirror2/'
+    ...     '+prober-logs')
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...

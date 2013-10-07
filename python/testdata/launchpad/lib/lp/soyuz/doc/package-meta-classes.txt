@@ -1,0 +1,177 @@
+Package Meta Classes
+^^^^^^^^^^^^^^^^^^^^
+
+There are a bunch of meta classes used for combine information from
+our Database Model for packages in a intuitive manner, they are:
+
+ >>> from lp.registry.model.distribution import Distribution
+ >>> from lp.registry.model.sourcepackagename import SourcePackageName
+ >>> from lp.soyuz.model.distributionsourcepackagerelease import (
+ ...     DistributionSourcePackageRelease)
+ >>> from lp.soyuz.model.distroseriessourcepackagerelease import (
+ ...     DistroSeriesSourcePackageRelease)
+ >>> from lp.soyuz.model.sourcepackagerelease import SourcePackageRelease
+
+ >>> from lp.soyuz.interfaces.distributionsourcepackagerelease import IDistributionSourcePackageRelease
+ >>> from lp.soyuz.interfaces.distroseriessourcepackagerelease import IDistroSeriesSourcePackageRelease
+
+
+DistributionSourcePackage class is tested in:
+    distribution-sourcepackage.txt
+
+Combining Distribution and SourcePackageRelease:
+
+ >>> distribution = Distribution.get(1)
+ >>> distribution.name
+ u'ubuntu'
+
+ >>> src_name = SourcePackageName.selectOneBy(name='pmount')
+ >>> src_name.name
+ u'pmount'
+
+ >>> sourcepackagerelease = SourcePackageRelease.selectOneBy(
+ ...     sourcepackagenameID=src_name.id, version='0.1-1')
+ >>> sourcepackagerelease.name
+ u'pmount'
+
+ >>> from lp.testing import verifyObject
+ >>> dspr = DistributionSourcePackageRelease(distribution,
+ ...                                         sourcepackagerelease)
+ >>> verifyObject(IDistributionSourcePackageRelease, dspr)
+ True
+
+ >>> dspr.displayname, dspr.version
+ (u'pmount in ubuntu', u'0.1-1')
+
+
+Combining DistroSeries and SourcePackageRelease:
+
+ >>> distroseries = distribution['hoary']
+
+ >>> drspr = DistroSeriesSourcePackageRelease(distroseries,
+ ...                                           sourcepackagerelease)
+ >>> verifyObject(IDistroSeriesSourcePackageRelease, drspr)
+ True
+
+ >>> print drspr.displayname
+ pmount 0.1-1
+
+ >>> print drspr.title
+ "pmount" 0.1-1 source package in The Hoary Hedgehog Release
+
+== Querying builds for DistributionSPR and DistroSeriesSPR ==
+
+Both the DistroSeriesSourcePackageRelease class and the
+DistributionSourcePackageRelease have a builds() method which
+returns all the builds for the source package that have been published
+in a main archive.
+
+The build may have been built and published initially in a PPA (such as a
+security PPA), but it will only be included in the results if it has also
+been published in a main archive.
+
+First, publish a build in the main archive of ubuntutest.
+
+    >>> from lp.registry.interfaces.distribution import (
+    ...     IDistributionSet)
+    >>> from lp.soyuz.enums import (
+    ...     PackagePublishingStatus)
+    >>> from lp.soyuz.tests.test_publishing import (
+    ...      SoyuzTestPublisher)
+    >>> login('foo.bar@canonical.com')
+    >>> ubuntutest = getUtility(IDistributionSet)['ubuntutest']
+    >>> test_publisher = SoyuzTestPublisher()
+    >>> test_publisher.prepareBreezyAutotest()
+    >>> source_pub = test_publisher.getPubSource(
+    ...     status=PackagePublishingStatus.PUBLISHED,
+    ...     sourcename='foo',
+    ...     archive=ubuntutest.main_archive)
+    >>> [build] = source_pub.createMissingBuilds()
+
+We also need to ensure that a binary pkg release has been published in the
+archive:
+
+    >>> binary_pkg_release = test_publisher.uploadBinaryForBuild(
+    ...     build, 'foo-bin')
+    >>> binary_pkg_pub_history = test_publisher.publishBinaryInArchive(
+    ...     binary_pkg_release, ubuntutest.main_archive)
+
+Next we create our DistroSeriesSourcePackageRelease and our
+DistributionSourcePackageRelease
+
+    >>> breezy_autotest = ubuntutest['breezy-autotest']
+    >>> breezytest_dsspr_foo = DistroSeriesSourcePackageRelease(
+    ...     breezy_autotest, source_pub.sourcepackagerelease)
+    >>> ubuntutest_dspr_foo = DistributionSourcePackageRelease(
+    ...     ubuntutest, source_pub.sourcepackagerelease)
+
+Create a helper for printing builds:
+
+    >>> def print_builds(builds):
+    ...     for build in builds:
+    ...         print "%s in %s" % (build.source_package_release.name,
+    ...                             build.archive.displayname)
+
+Now we can query the builds:
+
+    >>> print_builds(breezytest_dsspr_foo.builds)
+    foo in Primary Archive for Ubuntu Test
+    >>> print_builds(ubuntutest_dspr_foo.builds)
+    foo in Primary Archive for Ubuntu Test
+
+If we add a build to the partner archive, it is included in the
+results as well.
+
+    >>> partner_archive = ubuntutest.all_distro_archives[1]
+    >>> partner_pub = source_pub.copyTo(breezy_autotest, source_pub.pocket,
+    ...     partner_archive)
+    >>> [partner_build] = partner_pub.createMissingBuilds()
+    >>> binary_pkg_release = test_publisher.uploadBinaryForBuild(
+    ...     partner_build, 'foo-bin')
+    >>> binary_pkg_pub_history = test_publisher.publishBinaryInArchive(
+    ...     binary_pkg_release, partner_archive)
+
+    >>> print_builds(breezytest_dsspr_foo.builds)
+    foo in Partner Archive for Ubuntu Test
+    foo in Primary Archive for Ubuntu Test
+    >>> print_builds(ubuntutest_dspr_foo.builds)
+    foo in Partner Archive for Ubuntu Test
+    foo in Primary Archive for Ubuntu Test
+
+If we publish the source and binary in a PPA,
+
+    >>> from lp.registry.interfaces.person import IPersonSet
+    >>> cprov = getUtility(IPersonSet).getByName('cprov')
+    >>> source_pub = test_publisher.getPubSource(
+    ...     status=PackagePublishingStatus.PUBLISHED,
+    ...     sourcename='bar',
+    ...     archive=cprov.archive)
+    >>> [build] = source_pub.createMissingBuilds()
+    >>> binary_pkg_release = test_publisher.uploadBinaryForBuild(
+    ...     build, 'bar-bin')
+    >>> binary_pkg_pub_history = test_publisher.publishBinaryInArchive(
+    ...     binary_pkg_release, cprov.archive)
+    >>> breezytest_dsspr_bar = DistroSeriesSourcePackageRelease(
+    ...     breezy_autotest, source_pub.sourcepackagerelease)
+    >>> ubuntutest_dspr_bar = DistributionSourcePackageRelease(
+    ...     ubuntutest, source_pub.sourcepackagerelease)
+
+the build will not be returned.
+
+    >>> print_builds(breezytest_dsspr_bar.builds)
+
+    >>> print_builds(ubuntutest_dspr_bar.builds)
+
+But if the package is copied into the main archive (and the binary published
+there) then it will then be included in the results.
+
+    >>> main_pub = source_pub.copyTo(breezy_autotest, source_pub.pocket,
+    ...     ubuntutest.main_archive)
+    >>> binary_pkg_pub_history = test_publisher.publishBinaryInArchive(
+    ...     binary_pkg_release, ubuntutest.main_archive)
+
+    >>> print_builds(breezytest_dsspr_bar.builds)
+    bar in PPA for Celso Providelo
+    >>> print_builds(ubuntutest_dspr_bar.builds)
+    bar in PPA for Celso Providelo
+

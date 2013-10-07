@@ -1,0 +1,160 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad">
+
+  <body>
+    <metal:block fill-slot="head_epilogue">
+      <metal:yui-dependencies
+        use-macro="context/@@launchpad_widget_macros/yui2calendar-dependencies" />
+      <script id="milestone-script" type="text/javascript"
+        tal:condition="context/menu:overview/create_milestone/enabled"
+        tal:content="view/register_milestone_script"></script>
+      <tal:uses_launchpad_bugtracker
+         condition="context/bug_tracking_usage/enumvalue:LAUNCHPAD">
+        <script type="text/javascript">
+            LPJS.use('lp.registry.structural_subscription', function(Y) {
+                var module = Y.lp.registry.structural_subscription;
+                Y.on('domready', function() {
+                  module.setup({content_box: "#structural-subscription-content-box"});
+                });
+            });
+        </script>
+      </tal:uses_launchpad_bugtracker>
+    </metal:block>
+
+    <tal:heading metal:fill-slot="heading">
+      <h1 tal:content="context/displayname">project 1.x series</h1>
+    </tal:heading>
+
+    <tal:registering metal:fill-slot="registering">
+        Registered by
+        <a tal:replace="structure context/registrant/fmt:link" />
+        <span tal:content="context/date_created/fmt:displaydate"
+              tal:attributes="title context/date_created/fmt:datetime"
+          >on 2005-01-01</span>
+    </tal:registering>
+
+    <div metal:fill-slot="main">
+      <div class="top-portlet"
+        tal:define="binarycount context/binarycount">
+        <div class="summary"
+          tal:content="structure context/summary/fmt:text-to-html" />
+
+        <div tal:content="structure context/description/fmt:text-to-html" />
+
+        <form name="search" action="+search" method="GET"
+          tal:condition="binarycount">
+          <input size="35" type="text" name="text"/>
+          <input type="submit" value="Find a Package"/>
+        </form>
+
+        <p tal:condition="not: binarycount">
+          <tal:distroseries replace="context/title" />
+          has no packages recorded in Launchpad.
+        </p>
+      </div>
+
+      <div class="yui-g">
+        <div class="yui-u first">
+          <div
+            tal:replace="structure context/@@+portlet-details"/>
+        </div>
+        <div class="yui-u"
+             tal:condition="python: context.isDerivedSeries() or
+                            context.getInitializationJob() is not None">
+          <div tal:replace="structure context/@@+portlet-derivation" />
+        </div>
+
+        <div class="yui-u">
+          <div tal:replace="structure context/@@+portlet-package-summary" />
+        </div>
+      </div>
+
+      <div class="portlet">
+        <h2>Milestones</h2>
+
+        <table tal:replace="structure context/@@+table-milestones" />
+
+        <ul class="horizontal" style="margin-bottom: 1em;">
+          <li>
+            <a tal:replace="structure context/menu:overview/create_milestone/fmt:icon-link" />
+          </li>
+        </ul>
+      </div>
+
+      <div class="yui-g">
+        <div class="yui-u first">
+          <div
+            tal:replace="structure context/@@+portlet-architectures" />
+          <div
+            tal:content="structure context/@@+portlet-latestbugs"
+            tal:condition="context/@@+get-involved/official_malone" />
+        </div>
+
+        <div class="yui-u">
+          <div tal:replace="structure context/@@+portlet-latestuploads" />
+
+          <div
+            tal:content="structure context/@@+portlet-latestspecs"
+            tal:define="blueprints_usage context/@@+get-involved/blueprints_usage"
+            condition="blueprints_usage/enumvalue:LAUNCHPAD" />
+
+          <div
+           tal:replace="structure context/distribution/@@+portlet-coming-sprints" />
+
+          <div class="portlet">
+            <h2>Related series and milestones</h2>
+
+            <ul id="related-series">
+              <li>
+                <a class="sprite info"
+                  tal:attributes="href context/distribution/fmt:url/+series">All
+                  series for
+                  <tal:project replace="context/distribution/displayname" /></a>
+              </li>
+              <li>
+                <a class="sprite info"
+                  tal:attributes="href context/distribution/fmt:url/+milestones">All
+                  milestones for
+                  <tal:project replace="context/distribution/displayname" /></a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="yui-u">
+          <div id="structural-subscription-content-box"></div>
+        </div>
+      </div>
+    </div>
+
+    <tal:side metal:fill-slot="side"
+      define="overview_menu context/menu:overview">
+      <div id="global-actions" class="portlet"
+           condition="overview_menu/subscribe_to_bug_mail/enabled|overview_menu/subscribe/enabled|nothing">
+        <ul>
+          <li tal:condition="overview_menu/edit/enabled">
+            <a tal:replace="structure overview_menu/edit/fmt:link" />
+          </li>
+          <li tal:condition="overview_menu/admin/enabled">
+            <a tal:replace="structure overview_menu/admin/fmt:link" />
+          </li>
+          <li tal:condition="overview_menu/initseries/enabled|nothing">
+            <a tal:replace="structure overview_menu/initseries/fmt:link" />
+          </li>
+          <li tal:condition="overview_menu/subscribe/enabled|nothing">
+            <a tal:replace="structure overview_menu/subscribe/fmt:link" />
+          </li>
+          <li tal:condition="overview_menu/subscribe_to_bug_mail/enabled|nothing">
+            <a tal:replace="structure overview_menu/subscribe_to_bug_mail/fmt:link" />
+          </li>
+        </ul>
+      </div>
+
+      <div tal:replace="structure context/@@+get-involved" />
+    </tal:side>
+  </body>
+</html>

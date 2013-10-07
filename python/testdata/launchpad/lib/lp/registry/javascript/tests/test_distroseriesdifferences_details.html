@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<!--
+Copyright 2012 Canonical Ltd.  This software is licensed under the
+GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<html>
+  <head>
+      <title>Test distroseriesdifferences_details</title>
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+      <!-- YUI and test setup -->
+      <script type="text/javascript"
+              src="../../../../../build/js/yui/yui/yui.js">
+      </script>
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/console/assets/console-core.css" />
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/test-console/assets/skins/sam/test-console.css" />
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/test/assets/skins/sam/test.css" />
+
+      <script type="text/javascript"
+              src="../../../../../build/js/lp/app/testing/testrunner.js"></script>
+      <script type="text/javascript"
+              src="../../../../../build/js/lp/app/testing/helpers.js"></script>
+      <script type="text/javascript"
+              src="../../../../../build/js/lp/app/testing/mockio.js"></script>
+
+      <link rel="stylesheet" href="../../../app/javascript/testing/test.css" />
+
+      <!-- Dependencies -->
+      <script type="text/javascript" src="../../../../../build/js/lp/app/client.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/ui/ui.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/extras/extras.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/anim/anim.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/effects/effects.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/overlay/overlay.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/formoverlay/formoverlay.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/soyuz/base.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/soyuz/lp_dynamic_dom_updater.js"></script>
+
+      <!-- The module under test. -->
+      <script type="text/javascript" src="../distroseriesdifferences_details.js"></script>
+
+      <!-- Any css assert for this module. -->
+      <!-- <link rel="stylesheet" href="../assets/distroseriesdifferences_details-core.css" /> -->
+
+      <!-- The test suite. -->
+      <script type="text/javascript" src="test_distroseriesdifferences_details.js"></script>
+
+    </head>
+    <body class="yui3-skin-sam">
+        <ul id="suites">
+            <li>lp.registry.distroseriesdifferences_details.test</li>
+        </ul>
+
+        <h1>Testing the DistroSeriesDifferenceDetails javascript</h1>
+
+        <h2>Errors</h2>
+        <div id="errors"></div>
+
+        <table id="placeholder" style="display:none;">
+        </table>
+
+        <script type="text/x-template" id="derivedtd-template">
+          <td id="derived_row">
+            <a href="/deribuntu/deriwarty/+source/{package_name}/{derived_version}"
+               class="derived-version">{derived_version}</a>
+          </td>
+         </script>
+
+        <script type="text/x-template" id="localpackagediffs-template">
+          <tr class="{package_name}">
+            <td>
+              <input type="checkbox" value="2"
+                     id="field.selected_differences.2"
+                     name="field.selected_differences" />
+              <a href="/d/d/+source/{package_name}
+                 evolution/+difference/ubuntu/warty"
+                 class="js-action toggle-extra treeCollapsed
+                 sprite">{package_name}</a>
+            </td>
+            <td>
+              <a href="/ubuntu/warty" class="parent-name">Warty</a>
+           </td>
+           <td>
+             <a href="/ubuntu/warty/+source/{package_name}/{parent_version}"
+                class="parent-version">{parent_version}</a>
+            </td>
+           {derivedrow}
+           <td class="packagesets"></td>
+            <td class="last-changed"></td>
+            <td class="latest-comment-fragment"></td>
+          </tr>
+        </script>
+
+        <script type="text/x-template" id="blacklist_html">
+            <div class="blacklist-options" style="float:left">
+              <dl>
+                <dt>Ignored:</dt>
+                <dd>
+                  <form>
+                    <div>
+                      <div class="value">
+                        <label for="field.blacklist_options.0">
+                          <input type="radio" value="NONE"
+                            name="field.blacklist_options"
+                            id="field.blacklist_options.0" checked="checked"
+                            class="radioType">&nbsp;No</input>
+                        </label><br>
+                        <label for="field.blacklist_options.1">
+                          <input type="radio" value="BLACKLISTED_ALWAYS"
+                           name="field.blacklist_options"
+                            id="field.blacklist_options.1" class="radioType">
+                            &nbsp;All versions</input>
+                        </label><br>
+                        <label for="field.blacklist_options.2">
+                          <input type="radio" value="BLACKLISTED_CURRENT"
+                            name="field.blacklist_options"
+                            id="field.blacklist_options.2"
+                            class="radioType">&nbsp;These versions</input>
+                        </label>
+                      </div>
+                      <input type="hidden" value="1"
+                        name="field.blacklist_options-empty-marker" />
+                    </div>
+                  </form>
+                </dd>
+              </dl>
+            </div>
+       </script>
+
+       <script type="text/x-template" id="blacklist_extra_row">
+          <tr id="extra_row">
+            <td>
+              <div class="diff-extra-container">
+                <div>
+                <dl>
+                <dt class="package-diff-placeholder">
+                 <span class="package-diff-compute-request">
+                  <a class="js-action sprite add" href="">
+                    Compute differences from last common version:
+                  </a>
+                </span></dt>
+                <dd>
+                  <ul class="package-diff-status">
+                    <li>
+                      <span id="derived" class="PENDING">
+                       1.2.1 to Derilucid version: 1.2.4
+                      </span>
+                    </li>
+                    <li>
+                      <span id="parent" class="request-derived-diff">
+                        1.2.1 to Lucid version: 1.2.3
+                      </span>
+                    </li>
+                  </ul>
+                </dd>
+                </dl>
+                </div>
+                {blacklist_html}
+                <div class="boardComment ">
+                  <div class="boardCommentDetails">
+                    <a class="sprite person" href="/~mark">Mark S.</a>
+                    wrote on 2010-06-26
+                  </div>
+                  <div class="boardCommentBody">Body</div>
+                </div>
+                <div class="add-comment-placeholder evolution">
+                  <a href="" class="widget-hd js-action sprite add">
+                  Add comment</a>
+                </div>
+              </div>
+            </td>
+          </tr>
+      </script>
+      <script type="text/x-template" id="blacklist_whole_table">
+          <table class="listing">
+              <tbody>
+                   {row}
+                   {extra_row}
+               </tbody>
+          </table>
+      </script>
+  </body>
+</html>

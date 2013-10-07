@@ -1,0 +1,49 @@
+<tal:ns xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        xmlns:foaf="http://xmlns.com/foaf/0.1/"
+        xmlns:tal="http://xml.zope.org/namespaces/tal"
+        xmlns:metal="http://xml.zope.org/namespaces/metal"
+        xmlns:lp="https://launchpad.net/rdf/launchpad#"
+        xmlns:wot="http://xmlns.com/wot/0.1/">
+  <tal:is-person condition="not:context/is_team" define="person context">
+      <foaf:Person>
+        <foaf:name tal:content="person/displayname">Display Name</foaf:name>
+        <foaf:nick tal:content="person/name">Nick name</foaf:nick>
+        <foaf:img tal:condition="person/logo"
+                  tal:attributes="rdf:resource person/logo/http_url" />
+        <foaf:img tal:condition="person/mugshot"
+                  tal:attributes="rdf:resource person/mugshot/http_url" />
+        <foaf:mbox_sha1sum
+            tal:condition="person/preferredemail"
+            tal:content="person/preferredemail/rdf_sha1"
+            >0BEEC7B5EA3f0FDBC95D0DD47F3C5BC275DA8A33</foaf:mbox_sha1sum>
+        <wot:hasKey tal:repeat="gpgkey person/gpg_keys">
+          <wot:PubKey>
+            <wot:hex_id tal:content="gpgkey/keyid">91CFA34D</wot:hex_id>
+            <wot:length tal:content="gpgkey/keysize">1024</wot:length>
+            <wot:fingerprint tal:content="gpgkey/fingerprint">04FFF3AC57DF217C6D383DBC0110FB923756EA0B</wot:fingerprint>
+            <wot:pubkeyAddress
+                tal:attributes="rdf:resource gpgkey/keyserverURL" />
+          </wot:PubKey>
+        </wot:hasKey>
+        <tal:sshkeys repeat="sshkey person/sshkeys">
+          <lp:sshPubKey tal:content="sshkey/keytext"></lp:sshPubKey>
+        </tal:sshkeys>
+      </foaf:Person>
+  </tal:is-person>
+  <tal:public tal:condition="context/name|nothing">
+    <foaf:Group tal:condition="context/is_team">
+        <foaf:name tal:content="context/displayname">
+            Team Display Name
+        </foaf:name>
+        <foaf:nick tal:content="context/name">Nick name</foaf:nick>
+        <foaf:img tal:condition="context/icon"
+                  tal:attributes="rdf:resource context/icon/http_url" />
+        <foaf:img tal:condition="context/logo"
+                  tal:attributes="rdf:resource context/logo/http_url" />
+        <foaf:img tal:condition="context/mugshot"
+                  tal:attributes="rdf:resource context/mugshot/http_url" />
+        <foaf:member tal:repeat="person context/allmembers"
+                     tal:attributes="rdf:resource string:${person/fmt:url}/+rdf" />
+    </foaf:Group>
+  </tal:public>
+</tal:ns>

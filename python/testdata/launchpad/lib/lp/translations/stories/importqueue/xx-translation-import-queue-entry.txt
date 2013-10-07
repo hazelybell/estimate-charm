@@ -1,0 +1,43 @@
+TranslationImportQueueEntry page
+================================
+
+Submission and cancellation links
+---------------------------------
+
+If we load an import queue entry directly from the global import queue and
+approve it, we end up back on the global translations import queue.
+
+XXX DaniloSegan 2009-09-01: due to Zope bug #98437 we can't test that
+this works properly when no "referer" header is sent.
+
+    >>> admin_browser.open('http://translations.launchpad.dev/+imports')
+    >>> admin_browser.getLink(url='imports/1').click()
+    >>> print admin_browser.getLink('Cancel').url
+    http://translations.launchpad.dev/+imports
+    >>> admin_browser.getControl('Approve').click()
+    >>> print admin_browser.url
+    http://translations.launchpad.dev/+imports
+
+Going to the same entry from the Evolution import queue, and then approving
+it, brings us back to the Evolution import queue.
+
+    >>> admin_browser.open(
+    ...     'http://translations.launchpad.dev/evolution/+imports')
+    >>> admin_browser.getLink(url='imports/1').click()
+    >>> print admin_browser.getLink('Cancel').url
+    http://translations.launchpad.dev/evolution/+imports
+    >>> admin_browser.getControl('Approve').click()
+    >>> print admin_browser.url
+    http://translations.launchpad.dev/evolution/+imports
+
+Similarly, if we go to an import queue entry through the user's import
+queue, after approving the entry we are back looking at user's import queue.
+
+    >>> admin_browser.open(
+    ...     'http://translations.launchpad.dev/~name16/+imports')
+    >>> admin_browser.getLink(url='imports/1').click()
+    >>> print admin_browser.getLink('Cancel').url
+    http://translations.launchpad.dev/~name16/+imports
+    >>> admin_browser.getControl('Approve').click()
+    >>> print admin_browser.url
+    http://translations.launchpad.dev/~name16/+imports

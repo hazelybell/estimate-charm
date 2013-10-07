@@ -1,0 +1,384 @@
+= Translation Import Queue Filtering =
+
+With this test we are going to test the entries filtering on the
+translation import queue form.
+
+To get the filter widgets we will use their names directly because there
+is no human readable labels associated with them.
+
+    >>> import lp.translations
+    >>> import os.path
+    >>> test_file_name = os.path.join(
+    ...     os.path.dirname(lp.translations.__file__),
+    ...     'stories/importqueue/xx-translation-import-queue-filtering.tar.gz')
+    >>> tarball = open(test_file_name)
+
+Our star for this session is Carlos, who has full access rights to the
+import queue.
+
+    >>> browser = setupBrowser(auth='Basic carlos@canonical.com:test')
+
+For starters, Carlos uploads a tarball with 100 files to the queue.
+
+    >>> browser.open(
+    ...     'http://translations.launchpad.dev/evolution/trunk/'
+    ...     '+translations-upload')
+    >>> file_ctrl = browser.getControl('File:')
+    >>> file_ctrl.add_file(
+    ...     tarball, 'application/x-gzip', 'foo.tar.gz')
+    >>> browser.getControl('Upload').click()
+    >>> for tag in find_tags_by_class(browser.contents, 'message'):
+    ...     print tag
+    <div...Thank you for your upload. 100 files from the tarball will be
+    automatically reviewed...
+
+On the import queue page, Carlos sees widgets for filtering his view of
+the queue, as well as the entries he just imported and the two that were
+already included in the sample data.
+
+    >>> def print_batch_heading(browser):
+    ...     """Print "x -> y of z results" batch navigator heading."""
+    ...     heading = find_tags_by_class(
+    ...         browser.contents, 'batch-navigation-index')[0]
+    ...     print extract_text(heading).encode('us-ascii', 'backslashreplace')
+
+    >>> def print_dropdown(browser, name, index=0):
+    ...     """Print contents of named dropdown."""
+    ...     dropdown = browser.getControl(name=name, index=index)
+    ...     for item in dropdown.displayOptions:
+    ...         print item
+
+    >>> def print_targets(browser):
+    ...     """Print contents of the import target dropdown."""
+    ...     print_dropdown(browser, 'field.filter_target')
+
+    >>> browser.open('http://translations.launchpad.dev/+imports')
+    >>> browser.getLink('Next')
+    <Link
+      text='Next'
+      url='http://.../+imports/+index?batch=5&memo=5&start=5'>
+
+
+== Target filter ==
+
+The queue contains import requests for only one target: Evolution.  This
+is shown in a view filter dropdown, as well as an option to display all
+targets.
+
+    >>> print_targets(browser)
+    All targets
+    Any project
+    Any distribution
+    Evolution
+
+
+== Status filter ==
+
+Another dropdown offers the option to filter by status.
+
+    >>> print_dropdown(browser, 'field.filter_status')
+    All statuses
+    Approved
+    Imported
+    Deleted
+    Failed
+    Needs Review
+    Blocked
+    Needs Information
+
+    >>> print_batch_heading(browser)
+    1 ... 5 of 102 results
+
+Carlos chooses to filter on Needs Review.  The entries that need review,
+initially, are all entries minus the two already included in sample
+data.
+
+    >>> browser.getControl(
+    ...     name='field.filter_status', index=0).value = ['NEEDS_REVIEW']
+    >>> browser.getControl('Filter').click()
+    >>> browser.getControl(name='field.filter_status', index=0).value
+    ['NEEDS_REVIEW']
+    >>> browser.getControl(name='field.filter_extension', index=0).value
+    ['all']
+
+    >>> print_batch_heading(browser)
+    1 ... 5 of 100 results
+
+Since Evolution has queue entries in the Needs Review state, Evolution
+now shows up in the target dropdown with an asterisk.
+
+    >>> print_targets(browser)
+    All targets
+    Any project
+    Any distribution
+    Evolution*
+
+
+== File type filter ==
+
+Now Carlos selects only the .po files, and only 96 of the entries are
+shown.
+
+    >>> browser.open(
+    ...     'http://translations.launchpad.dev/+imports?'
+    ...     'field.filter_status=all&field.filter_extension=po')
+    >>> browser.getControl(name='field.filter_status', index=0).value
+    ['all']
+    >>> browser.getControl(name='field.filter_extension', index=0).value
+    ['po']
+    >>> print_batch_heading(browser)
+    1 ... 5 of 96 results
+
+When filtering for .pot files, the other 6 entries show up instead.
+
+    >>> browser.open(
+    ...     'http://translations.launchpad.dev/+imports?'
+    ...     'field.filter_status=all&field.filter_extension=pot')
+    >>> browser.getControl(name='field.filter_status', index=0).value
+    ['all']
+    >>> browser.getControl(name='field.filter_extension', index=0).value
+    ['pot']
+    >>> print_batch_heading(browser)
+    1 ... 5 of 6 results
+
+
+== Status changes ==
+
+Next Carlos filters for Approved entries.
+
+    >>> browser.open(
+    ...     'http://translations.launchpad.dev/+imports?'
+    ...     'field.filter_status=APPROVED&field.filter_extension=all')
+    >>> browser.getControl(name='field.filter_status', index=0).value
+    ['APPROVED']
+    >>> browser.getControl(name='field.filter_extension', index=0).value
+    ['all']
+    >>> print browser.contents
+    <!DOCTYPE...
+    ...There are no entries that match this filtering...
+
+Evolution shows up in the dropdown without asterisk again, since it has
+no entries matching the status that Carlos is filtering for.
+
+    >>> print_targets(browser)
+    All targets
+    Any project
+    Any distribution
+    Evolution
+
+Carlos changes the status of the third entry to Blocked.
+
+    >>> browser.open('http://translations.launchpad.dev/+imports')
+    >>> browser.getControl(name='field.status_3').value
+    ['NEEDS_REVIEW']
+    >>> browser.getControl(name='field.status_3').value = ['BLOCKED']
+    >>> browser.getControl('Change status').click()
+    >>> print browser.url
+    http://translations.launchpad.dev/+imports/+index
+
+The entry now shows up in the Blocked filter.
+
+    >>> browser.open(
+    ...     'http://translations.launchpad.dev/+imports?'
+    ...     'field.filter_status=BLOCKED&field.filter_extension=all')
+    >>> browser.getControl(name='field.status_3').value
+    ['BLOCKED']
+    >>> print_batch_heading(browser)
+    1 ... 1 of 1 result
+
+    >>> print_targets(browser)
+    All targets
+    Any project
+    Any distribution
+    Evolution*
+
+And the entries that need review are only 99.
+
+    >>> browser.open(
+    ...     'http://translations.launchpad.dev/+imports?'
+    ...     'field.filter_status=NEEDS_REVIEW&field.filter_extension=all')
+    >>> browser.getControl(name='field.filter_status', index=0).value
+    ['NEEDS_REVIEW']
+    >>> browser.getControl(name='field.filter_extension', index=0).value
+    ['all']
+    >>> print_batch_heading(browser)
+    1 ... 5 of 99 results
+
+The fourth entry, Carlos deletes by setting its status to Deleted.
+
+    >>> browser.open('http://translations.launchpad.dev/+imports')
+    >>> browser.getControl(name='field.status_4').value
+    ['NEEDS_REVIEW']
+    >>> browser.getControl(name='field.status_4').value = ['DELETED']
+    >>> browser.getControl('Change status').click()
+    >>> browser.url
+    'http://translations.launchpad.dev/+imports/+index'
+
+It shows up in the Deleted filter.
+
+    >>> browser.open(
+    ...     'http://translations.launchpad.dev/+imports?'
+    ...     'field.filter_status=DELETED&field.filter_extension=all')
+    >>> browser.getControl(name='field.status_4').value
+    ['DELETED']
+    >>> print_batch_heading(browser)
+    1 ... 1 of 1 result
+
+Thus only 98 entries remain in the Needs Review filter.
+
+    >>> browser.open(
+    ...     'http://translations.launchpad.dev/+imports?'
+    ...     'field.filter_status=NEEDS_REVIEW&field.filter_extension=all')
+    >>> browser.getControl(name='field.filter_status', index=0).value
+    ['NEEDS_REVIEW']
+    >>> browser.getControl(name='field.filter_extension', index=0).value
+    ['all']
+    >>> print_batch_heading(browser)
+    1 ... 5 of 98 results
+
+
+== Status filter validation ==
+
+An attempt to filter for an undefined status is an UnexpectedFormData. 
+
+    >>> browser.open(
+    ...     'http://translations.launchpad.dev/+imports?'
+    ...     'field.filter_status=boguscode')
+    Traceback (most recent call last):
+    ...
+    UnexpectedFormData: Invalid status parameter.
+
+
+== Target changes ==
+
+It's also possible to filter by target. In this case, Evolution.
+
+    >>> browser.open(
+    ...     'http://translations.launchpad.dev/+imports?'
+    ...     'field.filter_target=evolution')
+    >>> browser.getControl(name='field.filter_target', index=0).value
+    ['evolution']
+    >>> print_batch_heading(browser)
+    1 ... 5 of 102 results
+
+Carlos uploads files for Evolution in Ubuntu Hoary.
+
+    >>> import transaction
+    >>> from StringIO import StringIO
+    >>> admin_browser.open(
+    ...     'http://translations.launchpad.dev/ubuntu/hoary/+source/'
+    ...     'evolution/+pots/evolution-2.2/+upload')
+    >>> file_ctrl = admin_browser.getControl('File:')
+    >>> file_ctrl.add_file(
+    ...     StringIO('foo'), 'application/x-po', 'foo.pot')
+    >>> admin_browser.getControl('Upload').click()
+    >>> for tag in find_tags_by_class(admin_browser.contents, 'message'):
+    ...     print extract_text(tag.renderContents())
+    Thank you for your upload. It will be automatically reviewed...
+
+    # Commit the transaction so librarian stores the uploaded file.
+    >>> transaction.commit()
+
+Hoary now shows up as a filter option in the target filter dropdown.
+Carlos selects that option and filters for it.
+
+    >>> user_browser.open(
+    ...     'http://translations.launchpad.dev/+imports')
+    >>> user_browser.getControl(
+    ...     name='field.filter_target', index=0).value = ['ubuntu/hoary']
+    >>> user_browser.getControl('Filter').click()
+    >>> print user_browser.url
+    http://.../+imports/+index?field.filter_target=ubuntu/hoary&...
+
+The only entry that shows up now is the one Carlos just uploaded.
+
+    >>> def represent_queue_entry(entry_html):
+    ...     text_contents = extract_text(entry_html)
+    ...     return text_contents.encode('ascii', 'backslashreplace')
+
+    >>> import_list = find_tag_by_id(
+    ...     user_browser.contents, 'import-entries-list')
+    >>> first_entry = import_list.findNext('tr')
+    >>> print represent_queue_entry(first_entry)
+    foo.pot in evolution in Ubuntu Hoary
+    Needs Review
+
+
+=== Special target filters ===
+
+Besides the unfiltered view and the specific distroseries, package, or
+productseries views, the page can also filter by "special" targets.
+This is useful for the Launchpad Translations team, which regularly
+goes over unreviewed template uploads for all projects outside of
+Ubuntu.
+
+    >>> import re
+
+    >>> def summarize_displayed_queue_entries(browser):
+    ...     """Show import queue entries that browser currently sees."""
+    ...     output = []
+    ...     import_list = find_tag_by_id(
+    ...         browser.contents, 'import-entries-list') 
+    ...     for entry in import_list.findAll('tr'):
+    ...         output.append(represent_queue_entry(entry))
+    ...     return '\n'.join(output)
+
+    >>> browser.open('http://translations.launchpad.dev/+imports')
+
+The queue has uploads for Hoary (a Distribution release series) and for
+Evolution (a separate project registered in Launchpad).
+
+    >>> print_targets(browser)
+    All targets
+    Any project
+    Any distribution
+    Hoary
+    Evolution
+
+    >>> user_browser.getControl(
+    ...     name='field.filter_target', index=0).value = ['[PRODUCT]']
+    >>> user_browser.getControl('Filter').click()
+
+The "Any project" filter here shows only those Evolution uploads.
+
+    >>> displayed_entries = summarize_displayed_queue_entries(user_browser)
+    >>> print displayed_entries
+    po/evolution-2.2-test.pot in Evolution trunk series ...
+    po/pt_BR.po in Evolution trunk series ...
+    foo-01.po in Evolution trunk series ...
+    foo-02.po in Evolution trunk series ...
+    foo-03.po in Evolution trunk series ...
+
+None of the Hoary uploads are shown.
+
+    >>> print re.findall('Hoary', displayed_entries)
+    []
+
+The "Any distribution" filter on the other hand shows the Hoary upload
+(for "evolution" the package), but not the uploads for "Evolution" the
+project.
+
+    >>> user_browser.getControl(
+    ...     name='field.filter_target', index=0).value = ['[DISTRIBUTION]']
+    >>> user_browser.getControl('Filter').click()
+
+    >>> displayed_entries = summarize_displayed_queue_entries(user_browser)
+    >>> print displayed_entries
+    foo.pot in evolution in Ubuntu Hoary ...
+
+    >>> print re.findall('Evolution', displayed_entries)
+    []
+
+
+=== Target filter validation ===
+
+If Carlos attempts to filter for a nonexistent target, e.g. through a
+mistyped URL, an UnexpectedFormData is raised.
+
+    >>> browser.open(
+    ...     'http://translations.launchpad.dev/+imports?'
+    ...     'field.filter_target=bogus/target')
+    Traceback (most recent call last):
+    ...
+    UnexpectedFormData: Unknown target.
+

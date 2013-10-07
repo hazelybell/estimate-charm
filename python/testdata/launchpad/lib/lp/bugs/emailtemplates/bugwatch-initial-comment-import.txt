@@ -1,0 +1,7 @@
+Launchpad has imported %(num_of_comments)s comments from the remote bug at
+%(bug_watch_url)s.
+
+If you reply to an imported comment from within Launchpad, your comment
+will be sent to the remote bug automatically. Read more about
+Launchpad's inter-bugtracker facilities at
+https://help.launchpad.net/InterBugTracking.

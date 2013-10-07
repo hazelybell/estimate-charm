@@ -1,0 +1,30 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Format: 1.7
+Date: Tue, 25 Apr 2006 10:36:14 -0300
+Source: bar
+Binary: bar
+Architecture: source
+Version: 1.0-4
+Distribution: breezy
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Celso R. Providelo <cprov@ubuntu.com>
+Description: 
+ bar        - Stuff for testing
+Changes: 
+ bar (1.0-4) breezy; urgency=low
+ .
+   * Changer using non-preferred email
+Files: 
+ be386b637d1ae323eb7d0f0aa00ce555 512 devel optional bar_1.0-4.dsc
+ 47bbc226f689a212554415cb8e247a8d 711 devel optional bar_1.0-4.diff.gz
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.3 (GNU/Linux)
+
+iD8DBQFFt7s4jn63CGxkqMURAjVKAJ9fsCKPh+p9N/oQixBPBBgArzgXEACeI1DH
+iKPQuyTD0kTMPsr7F4caOl0=
+=rT1f
+-----END PGP SIGNATURE-----

@@ -1,0 +1,95 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad">
+  <body>
+    <div metal:fill-slot="main"
+         style="margin-bottom: 2em;">
+      <p>
+        Translation groups are communities of teams and individuals
+        who have each taken responsibility for reviewing translations
+        in a particular language. Projects and distributions select
+        the translation group best suited to their translation
+        policies. (<a href="https://help.launchpad.net/Translations/YourProject/ChoosingAGroup">More
+          about translation groups</a>)
+      </p>
+
+      <p>
+        If you are trying to decide which translation group to use for your
+        project, we recommend
+        <a href="launchpad-translators">Launchpad Translators</a> — read
+        more about
+        <a href="https://help.launchpad.net/Translations/LaunchpadTranslators">
+          what that group is about</a>.
+      </p>
+
+      <table class="sortable listing" id="translation-groups"
+             style="margin-top:1em; margin-bottom:1em;">
+        <thead>
+          <tr>
+            <th style="text-align:left;">Translation group</th>
+            <th>Manages translations for</th>
+            <th>Languages</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr tal:repeat="group context">
+            <td>
+              <a tal:replace="structure group/fmt:link">Ubuntu Translators</a>
+            </td>
+            <td>
+              <tal:projects condition="group/top_projects">
+                <span tal:repeat="project group/top_projects">
+                  <a tal:replace="structure project/fmt:link">ubuntu
+                  </a><tal:comma condition="not: repeat/project/end">, 
+                  </tal:comma>
+                </span>
+                <span tal:condition="group/number_of_remaining_projects">
+                  and
+                  <a tal:attributes="href group/name"
+                     tal:content="
+                         string:${group/number_of_remaining_projects}
+                         other projects">
+                    5 other projects</a>
+                </span>
+              </tal:projects>
+            </td>
+            <td style="text-align: center;">
+              <span class="sortkey"
+                tal:content="group/translators/count" />
+              <span
+                tal:content="group/translators/count">
+                50
+              </span>
+            </td>
+            <td>
+              <span class="sortkey"
+                tal:content="group/datecreated/fmt:datetime" />
+              <span
+                tal:attributes="title group/datecreated/fmt:datetime"
+                tal:content="group/datecreated/fmt:approximatedate">
+                2007-08-15
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div><!--main-->
+    <tal:side metal:fill-slot="side"
+              define="overview_menu context/menu:overview"
+              condition="context/required:launchpad.Admin">
+      <div class="portlet ">
+        <span class="add sprite">
+          <a href="+new">Create a new translation group</a>
+        </span>
+      </div>
+    </tal:side>
+  </body>
+</html>

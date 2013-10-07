@@ -1,0 +1,72 @@
+<!-- Copyright 2009-2010 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:grok="http://namespaces.zope.org/grok"
+    xmlns:webservice="http://namespaces.canonical.com/webservice"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="launchpad">
+
+    <includeOverrides
+        package="lp.services.webapp"
+        file="meta-overrides.zcml" />
+    <include package="lp.services.mail" file="meta.zcml" />
+    <include package="lp.services.webapp" file="meta.zcml" />
+    <include package="grokcore.component" file="meta.zcml" />
+    <include package="lazr.enum" />
+    <include package="lazr.restful" file="meta.zcml" />
+    <include package="lazr.uri" />
+
+    <include package="lp.services" />
+    <include package="lp.answers" />
+    <include package="lp.app" />
+    <include package="lp.archivepublisher" />
+    <include package="lp.blueprints" />
+    <include package="lp.bugs" />
+    <include package="lp.buildmaster" />
+    <include package="lp.code" />
+    <include package="lp.coop.answersbugs" />
+    <include package="lp.hardwaredb" />
+    <include package="lp.soyuz" />
+    <include package="lp.translations" />
+    <include package="lp.testing" />
+    <include package="lp.testopenid" />
+    <include package="lp.registry" />
+    <include package="lp.xmlrpc" />
+
+    <include file="permissions.zcml" />
+
+    <webservice:register module="lp.patchwebservice" />
+    <authorizations module="lp.security" />
+
+    <!-- The default Zope 3 configuration of the SimpleComponentTraverser is
+        that it applies to any object that provides Interface.
+        This excludes objects that we're using just as instances of classes
+        without providing any interfaces.
+        -->
+    <view
+        for="*"
+        type="zope.publisher.interfaces.browser.IBrowserRequest"
+        provides="zope.publisher.interfaces.browser.IBrowserPublisher"
+        factory="zope.app.publication.traversers.SimpleComponentTraverser"
+        permission="zope.Public"
+        />
+    <!-- We don't include zope.app.publication (see zopeapp.zcml in the
+         top level), so we lose the default registration that makes our
+         private XMLRPC server work.  Copy that from Zope into here.
+         -->
+    <view
+        for="zope.interface.Interface"
+        type="zope.publisher.interfaces.xmlrpc.IXMLRPCRequest"
+        provides="zope.publisher.interfaces.xmlrpc.IXMLRPCPublisher"
+        factory="zope.app.publication.traversers.SimpleComponentTraverser"
+        permission="zope.Public"
+        />
+
+    <!-- Register a handler to fix things up just before the application
+         starts (and after zcml has been processed). -->
+    <subscriber handler=".services.webapp.initialization.handle_process_start" />
+</configure>

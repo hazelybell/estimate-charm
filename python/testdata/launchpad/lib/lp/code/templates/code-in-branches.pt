@@ -1,0 +1,24 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+  
+  <body>
+    <h1 metal:fill-slot="heading">Projects with active branches</h1>
+    <div metal:fill-slot="main">
+
+      <div><strong><a href="/">&laquo; Back</a></strong></div>
+
+      <div id="project-tags">
+        <a tal:repeat="product view/products"
+           tal:attributes="href product/url;
+                           class product/html_class;
+                           title product/html_title"
+           tal:content="product/name">project</a>
+      </div>
+    </div>
+  </body>
+</html>

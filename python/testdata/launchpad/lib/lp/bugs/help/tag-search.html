@@ -1,0 +1,65 @@
+<html>
+  <head>
+    <title>Bug tag search</title>
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssreset/reset.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssfonts/fonts.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssbase/base.css" />
+  </head>
+  <body>
+    <h1>Bug tag search</h1>
+
+    <p>
+      You can get a list of bugs depending on the tags that those bugs have or
+      don't have.
+    </p>
+
+    <p>
+      Next to the <em>Tags</em> search box are two radio buttons: <em>Any</em>
+      and <em>All</em>. Select <em>Any</em> and Launchpad will return bugs
+      that match any part of your search term. Select <em>All</em> for bugs
+      that match your entire search query.
+    </p>
+
+    <p>
+      To search for the absence of a particular bug tag, place a minus sign
+      before its name: e.g. <code>-test</code>
+    </p>
+
+
+    <h2>Examples</h2>
+
+    <ul>
+      <li>
+        <strong>Find bugs with the <em>test</em> tag:</strong> search for
+        <code>test</code>
+      </li>
+      <li>
+        <strong>Find bugs that don't have the <em>test</em> tag:</strong>
+        search for <code>-test</code>
+      </li>
+      <li>
+        <strong>Find bugs that have both the <em>test</em> and <em>ui</em>
+        tags:</strong> search for <code>test ui</code> and select the <em>All
+        </em> radio button.
+      </li>
+      <li>
+        <strong>Find bugs that have either the <em>test</em> tag or do not
+        have the <em>ui</em> tag:</strong> search for <code>test -ui</code>
+        and select the <em>Any</em> radio button.
+      </li>
+      <li>
+        <strong>Find all bugs with one or more tags:</strong> search for
+        <code>*</code>
+      </li>
+      <li><strong>Find all bugs that have no tags:</strong> search for <code>
+        -*</code>
+      </li>
+    </ul>
+
+    <p>You can mix the different types of search.</p>
+
+  </body>
+</html>

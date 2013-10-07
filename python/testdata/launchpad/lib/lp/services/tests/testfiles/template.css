@@ -1,0 +1,16 @@
+.add { background-image: url(/@@/add.png); /* sprite-ref: group1 */ }
+.foo { background-image: url(/@@/add.png); /* sprite-ref: group1 */ }
+.bar { background-image: url(/@@/add.png); /* sprite-ref: group2 */ }
+.edit {
+    background-image: url(/@@/edit.png);
+    /* sprite-ref: group1 */
+    background-repeat: no-repeat;
+}
+.info {
+    background-image: url(/@@/info.png); /* sprite-ref: group2 */
+    background-repeat: no-repeat;
+}
+.bluebar {
+    background-image: url(/@@/blue-bar.png); /* sprite-ref: group1 */
+    background-repeat: repeat-x;
+}

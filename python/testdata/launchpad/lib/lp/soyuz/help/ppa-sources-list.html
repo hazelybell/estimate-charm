@@ -1,0 +1,84 @@
+<html>
+  <head>
+    <title>How do I use software from a PPA?</title>
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssreset/reset.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssfonts/fonts.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssbase/base.css" />
+  </head>
+  <body>
+    <h1>How do I use software from a PPA?</h1>
+
+    <p>
+      To start installing and using software from a Personal Package Archive,
+       you first need to tell Ubuntu where to find the PPA.
+    </p>
+
+    <p>
+      <strong>Important:</strong> The contents of Personal Package Archives
+      are not checked or monitored. You install software from them at your own
+      risk.
+    </p>
+
+    <p>
+      If you're using the most recent version of Ubuntu (or any version from
+      Ubuntu 9.10 onwards), you can add a PPA to your system with a single
+      line in your terminal.
+    </p>
+
+    <p>
+      <strong>Step 1:</strong> On the PPA's overview page, look for the
+      heading that reads <em>Adding this PPA to your system</em>. Make a note
+      of the PPA's location, which looks like:
+    </p>
+
+    <p>
+      <code>ppa:gwibber-daily/ppa</code>
+    </p>
+
+    <p>
+      <strong>Step 2:</strong> Open a terminal and enter:
+    </p>
+
+    <p>
+      <code>sudo add-apt-repository ppa:user/ppa-name</code>
+    </p>
+
+    <p>
+      Replace <code>ppa:user/ppa-name</code> with the PPA's location that you
+      noted above.
+    </p>
+
+    <img src="images/add-apt-repo1.png" alt="Screen shot of a terminal with the sudo add-apt-repoistory line" style="margin-bottom: 15px;" />
+
+    <p>
+      Your system will now fetch the PPA's key. This enables your Ubuntu
+      system to verify that the packages in the PPA have not been interfered
+      with since they were built.
+    </p>
+
+    <img src="images/add-apt-repo2.png" alt="Screen shot of a system retrieving the PPA details" style="margin-bottom: 15px;" />
+
+    <p>
+      <strong>Step 3:</strong> Now, as a one-off, you should tell your system
+      to pull down the latest list of software from each archive it knows
+      about, including the PPA you just added:
+    </p>
+
+    <p>
+      <code>sudo apt-get update</code>
+    </p>
+
+    <p>
+      Now you're ready to start installing software from the PPA!
+    </p>
+
+   <p>
+     <a href="https://help.launchpad.net/Packaging/PPA" target="_blank">Read
+     more about Personal Package Archives</a> in our help wiki.
+   </p>
+
+  </body>
+</html>

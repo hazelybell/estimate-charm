@@ -1,0 +1,19 @@
+Hello %(recipient_name)s,
+
+Launchpad: cancellation of archive access
+-----------------------------------------
+
+Your access to the private software archive "%(ppa_name)s", which is hosted by Launchpad, has been cancelled.
+
+You will now no longer be able to download software from this archive. If you think this cancellation is in error, you should contact the owner of the archive to verify it.
+
+You can contact the archive owner by visiting their Launchpad page here:
+
+<%(ppa_owner_url)s>
+
+If you have any concerns you can contact the Launchpad team by emailing feedback@launchpad.net
+
+
+Regards,
+The Launchpad team
+

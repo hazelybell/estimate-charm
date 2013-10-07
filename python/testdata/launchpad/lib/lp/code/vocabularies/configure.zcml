@@ -1,0 +1,58 @@
+<!-- Copyright 2010-2012 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <securedutility
+     name="BuildableDistroSeries"
+     component=".sourcepackagerecipe.BuildableDistroSeries"
+     provides="zope.schema.interfaces.IVocabularyFactory">
+    <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+  </securedutility>
+
+  <class class=".sourcepackagerecipe.BuildableDistroSeries">
+    <allow interface="lp.services.webapp.vocabulary.IHugeVocabulary"/>
+  </class>
+
+  <securedutility
+     name="TargetPPAs"
+     component=".sourcepackagerecipe.target_ppas_vocabulary"
+     provides="zope.schema.interfaces.IVocabularyFactory">
+    <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+  </securedutility>
+
+  <securedutility
+    name="Branch"
+    component=".branch.BranchVocabulary"
+    provides="zope.schema.interfaces.IVocabularyFactory">
+    <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+  </securedutility>
+
+  <class class=".branch.BranchVocabulary">
+    <allow interface="lp.services.webapp.vocabulary.IHugeVocabulary"/>
+  </class>
+
+  <securedutility
+    name="HostedBranchRestrictedOnOwner"
+    component=".branch.HostedBranchRestrictedOnOwnerVocabulary"
+    provides="zope.schema.interfaces.IVocabularyFactory">
+    <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+  </securedutility>
+
+  <class class=".branch.HostedBranchRestrictedOnOwnerVocabulary">
+    <allow interface="lp.services.webapp.vocabulary.IHugeVocabulary"/>
+  </class>
+
+  <securedutility
+    name="BranchRestrictedOnProduct"
+    component=".branch.BranchRestrictedOnProductVocabulary"
+    provides="zope.schema.interfaces.IVocabularyFactory">
+    <allow interface="zope.schema.interfaces.IVocabularyFactory"/>
+  </securedutility>
+
+  <class class=".branch.BranchRestrictedOnProductVocabulary">
+    <allow interface="lp.services.webapp.vocabulary.IHugeVocabulary"/>
+  </class>
+
+</configure>

@@ -1,0 +1,61 @@
+<!-- Copyright 2009-2010 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:zope="http://namespaces.zope.org/zope"
+    i18n_domain="launchpad">
+
+  <include file="client.zcml" />
+
+  <class class="lp.services.librarian.model.LibraryFileAlias">
+    <allow interface="lp.services.librarian.interfaces.ILibraryFileAlias" />
+  </class>
+
+  <class class="lp.services.librarian.model.LibraryFileAliasWithParent">
+    <allow interface="lp.services.librarian.interfaces.ILibraryFileAlias" />
+    <require
+      permission="launchpad.View"
+      attributes="createToken" />
+    <require
+      permission="launchpad.Edit"
+      set_attributes="mimetype restricted" />
+  </class>
+
+  <class class="lp.services.librarian.model.LibraryFileContent">
+    <allow interface="lp.services.librarian.interfaces.ILibraryFileContent" />
+  </class>
+
+  <securedutility
+    class="lp.services.librarian.model.LibraryFileAliasSet"
+    provides="lp.services.librarian.interfaces.ILibraryFileAliasSet">
+    <allow interface="lp.services.librarian.interfaces.ILibraryFileAliasSet" />
+  </securedutility>
+
+  <browser:defaultView
+    for="lp.services.librarian.interfaces.ILibraryFileAlias"
+    name="+index"
+    />
+
+  <browser:page
+    name="+index"
+    facet="overview"
+    permission="zope.Public"
+    for="lp.services.librarian.interfaces.ILibraryFileAlias"
+    class="lp.services.librarian.browser.LibraryFileAliasView"
+    />
+
+  <browser:page
+    name="+md5"
+    permission="zope.Public"
+    for="lp.services.librarian.interfaces.ILibraryFileAlias"
+    class="lp.services.librarian.browser.LibraryFileAliasMD5View"
+    />
+
+  <adapter
+    factory="lp.services.librarian.model.LibraryFileAliasWithParent"
+    provides="lp.services.librarian.interfaces.ILibraryFileAliasWithParent"
+    trusted="true" />
+</configure>

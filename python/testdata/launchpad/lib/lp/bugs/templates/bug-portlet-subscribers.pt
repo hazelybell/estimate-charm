@@ -1,0 +1,14 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  class="portlet vertical"
+  id="portlet-subscribers"
+  metal:define-macro="custom"
+>
+  <h2>Other bug subscribers</h2>
+  <div tal:define="context_menu context/menu:context">
+    <div tal:content="structure context_menu/addsubscriber/render" />
+  </div>
+  <div id="other-bug-subscribers"></div>
+</div>

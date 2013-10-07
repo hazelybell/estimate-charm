@@ -1,0 +1,10 @@
+You have been requested to review the proposed merge of %(source_branch)s into %(target_branch)s.
+
+For more details, see:
+%(proposal_url)s
+
+%(comment)s
+
+-- 
+%(diff_cutoff_warning)s%(proposal_url)s
+%(reason)s%(edit_subscription)s

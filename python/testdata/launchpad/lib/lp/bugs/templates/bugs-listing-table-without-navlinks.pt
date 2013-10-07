@@ -1,0 +1,79 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+<tal:results
+  condition="context/batch">
+  <table class="listing" id="buglisting">
+    <thead>
+      <tr>
+        <th colspan="4">Summary</th>
+        <th tal:condition="context/show_column/bugtargetdisplayname|nothing">
+          In
+        </th>
+        <th tal:condition="context/show_column/packagename|nothing">
+          Package
+        </th>
+        <th tal:condition="context/show_column/productname|nothing">
+          Project
+        </th>
+        <th tal:condition="context/show_column/importance|nothing">
+          Importance</th>
+        <th tal:condition="context/show_column/status|nothing">Status</th>
+        <th tal:condition="context/show_column/date_last_updated|nothing">
+          Date last updated
+        </th>
+        <th tal:condition="context/show_column/heat|nothing"
+            style="width: 55px">
+          Heat
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr tal:repeat="bugtask context/getBugListingItems">
+        <td class="icon right">
+          <span tal:replace="structure bugtask/image:icon" />
+        </td>
+        <td
+          class="amount"
+          tal:content="bugtask/bug/id"
+          tal:condition="context/show_column/id|nothing"
+        >42</td>
+        <td>
+          <a href="#"
+             tal:content="bugtask/bug/title"
+             tal:attributes="href bugtask/fmt:url"
+             tal:condition="context/show_column/summary|nothing">
+            drop-down list in search bar disappears when using blah blah blah
+          </a>
+        </td>
+        <td align="right" style="padding-right: 5px">
+          <tal:block replace="structure bugtask/image:badges" />
+        </td>
+        <td tal:content="bugtask/bugtargetdisplayname"
+            tal:condition="context/show_column/bugtargetdisplayname|nothing"
+        >mozilla-firefox (Ubuntu)</td>
+        <td tal:content="structure bugtask/sourcepackagename/name|default"
+            tal:condition="context/show_column/packagename|nothing"
+        >&mdash;</td>
+        <td tal:content="structure bugtask/product/name|default"
+            tal:condition="context/show_column/productname|nothing"
+        >&mdash;</td>
+        <td tal:content="bugtask/importance/title"
+            tal:attributes="class string:importance${bugtask/importance/name}"
+            tal:condition="context/show_column/importance|nothing">Critical</td>
+        <td tal:content="bugtask/status/title"
+            tal:attributes="class string:status${bugtask/status/name}"
+            tal:condition="context/show_column/status|nothing">Confirmed</td>
+        <td tal:content="bugtask/bug/date_last_updated/fmt:date"
+            tal:condition="context/show_column/date_last_updated|nothing">
+            2007-11-25</td>
+        <td tal:condition="context/show_column/heat|nothing"
+            tal:content="structure bugtask/bug_heat_html">
+            HEAT</td>
+      </tr>
+    </tbody>
+  </table>
+</tal:results>
+</tal:root>

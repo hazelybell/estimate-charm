@@ -1,0 +1,1 @@
+The 'affects' command got an unexpected argument: %(argument)s

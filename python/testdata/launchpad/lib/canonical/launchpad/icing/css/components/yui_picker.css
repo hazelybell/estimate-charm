@@ -1,0 +1,27 @@
+.yui3-picker {
+    min-width: 40%;
+    max-width: 40%;
+    }
+
+.yui3-picker-results div.badge {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    left: auto;
+    }
+.yui3-picker-results div.badge img {
+    position: relative;
+    padding-left: 3px;
+    padding-right: 0.5em;
+    }
+.yui3-picker-results div.affiliation img {
+    position: relative;
+    padding-left: 3px;
+    padding-right: 0.5em;
+    }
+.yui3-picker-results .affiliation-text {
+    padding-left: 20px;
+    }
+.yui3-picker-filter div {
+    padding-bottom: 1em;
+    }

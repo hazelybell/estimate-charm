@@ -1,0 +1,43 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="malone">
+
+  <body>
+    <metal:main fill-slot="main">
+      <div class="top-portlet">
+        <metal:form use-macro="context/@@launchpad_form/form">
+          <div metal:fill-slot="extra_info">
+            <p tal:condition="not: view/has_question">
+              The bug was not converted to a question. There is nothing
+              to change.
+            </p>
+
+            <p>
+              Reactivate this bug report by removing the question created
+              from the bug. The bug's status, importance, etc. can then
+              be edited. The bug's status will not be updated for any project
+              that it affects. A bug supervisor must update the appropriate
+              status after the question is removed. The question will still
+              exist -- its status can be updated separately from this bug.
+            </p>
+            <p>See also
+              <a href="https://help.launchpad.net/TurningABugIntoAQuestion">
+              Turning a bug into a question</a>.
+            </p>
+          </div>
+
+          <div class="actions" metal:fill-slot="buttons">
+            <input tal:repeat="action view/actions"
+              tal:replace="structure action/render"
+              tal:condition="view/has_question" />
+          </div>
+        </metal:form>
+      </div>
+    </metal:main>
+
+  </body>
+</html>

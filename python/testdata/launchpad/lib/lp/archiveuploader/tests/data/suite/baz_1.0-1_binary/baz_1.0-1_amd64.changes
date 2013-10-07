@@ -1,0 +1,18 @@
+Format: 1.7
+Date: Mon, 24 Jul 2006 09:04:09 +0000
+Source: baz
+Binary: baz
+Architecture: amd64
+Version: 1.0-1
+Distribution: warty-security
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Malcolm Cleaton <malcolm.cleaton@canonical.com>
+Description: 
+ baz        - Stuff for testing
+Changes: 
+ baz (1.0-1) warty-security; urgency=low
+ .
+   * Initial version
+Files: 
+ 163e0efec2f797a606ff1ebdee45b7d5 646 devel optional baz_1.0-1_amd64.deb

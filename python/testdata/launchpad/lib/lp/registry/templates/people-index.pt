@@ -1,0 +1,182 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+>
+  <body>
+    <h1 metal:fill-slot="heading">People and teams</h1>
+
+    <tal:side metal:fill-slot="side">
+      <tal:menu replace="structure view/@@+global-actions" />
+      <tal:menu replace="structure context/@@+related-pages" />
+    </tal:side>
+
+    <div metal:fill-slot="main">
+      There are currently
+      <strong tal:content="view/number_of_people">7</strong>
+      people and
+      <strong tal:content="view/number_of_teams">7</strong>
+      teams registered in Launchpad.
+      <tal:search define="batch view/searchPeopleBatchNavigator">
+        <div>
+          <form class="central" name="search" action="." method="GET">
+            <table style="margin-bottom: 1em;">
+              <tr>
+                <td>
+                  <input type="text" name="name" size="50"
+                         tal:attributes="value request/name|nothing"
+                         />
+                  <input
+                    tal:condition="not: batch"
+                    type="submit"
+                    value="Search"
+                  />
+                  <input
+                    tal:condition="batch"
+                    type="submit"
+                    value="Search Again"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td class="formHelp">Search for people or teams by their
+                    name or email address.
+                </td>
+              </tr>
+              <tr>
+                <td tal:define="searchfor request/searchfor|nothing">
+                  <label>
+                    <input
+                      tal:condition="python: searchfor == 'peopleonly'"
+                      checked="checked"
+                      type="radio"
+                      name="searchfor"
+                      value="peopleonly"
+                    />
+                    <input
+                      tal:condition="python: searchfor != 'peopleonly'"
+                      type="radio"
+                      name="searchfor"
+                      value="peopleonly"
+                    />
+                    people
+                  </label>
+                  <label>
+                    <input
+                      tal:condition="python: searchfor == 'teamsonly'"
+                      checked="checked"
+                      type="radio"
+                      name="searchfor"
+                      value="teamsonly"
+                    />
+                    <input
+                      tal:condition="python: searchfor != 'teamsonly'"
+                      type="radio"
+                      name="searchfor"
+                      value="teamsonly"
+                    />
+                    teams
+                  </label>
+                  <label>
+                    <input
+                      tal:condition="python: searchfor == 'all' or
+                                             searchfor == nothing"
+                      checked="checked"
+                      type="radio"
+                      name="searchfor"
+                      value="all"
+                    />
+                    <input
+                      tal:condition="python: searchfor == 'teamsonly' or
+                                             searchfor == 'peopleonly'"
+                      type="radio"
+                      name="searchfor"
+                      value="all"
+                    />
+                    both
+                  </label>
+                </td>
+              </tr>
+            </table>
+          </form>
+          <script type="text/javascript">
+              LPJS.use('lp', function (Y) {
+                  setFocusByName('name');
+              });
+          </script>
+
+        </div>
+
+        <tal:block condition="not: batch">
+          <div id="application-summary"
+               tal:define="menu view/menu:overview">
+            <p>Launchpad creates
+            <a href="https://help.launchpad.net/YourAccount">profiles</a> for
+            people based on Launchpad usage, as well as information collected
+            from public sources such as bug trackers, mailing lists, public
+            key servers, and published application translations.
+            <tal:manage tal:condition="not: menu/create_account/enabled">You
+            can
+            <a href="/people/+me">manage your account</a> in Launchpad, and
+            you can
+            <a href="" tal:attributes="href menu/register_team/url">create
+            teams of people</a> for organizing
+            around common interests, discussions or
+            permissions.</tal:manage>  You can also
+            <a href="" tal:attributes="href menu/register_project/url">create
+            a new project</a> in Launchpad.</p>
+
+            <p>Launchpad may create
+            <a href="https://help.launchpad.net/YourAccount/Merging">duplicate
+            profiles</a> for you as it automatically collects information from
+            public sources.  If you find you have more than one profile on
+            Launchpad, you can
+            <a href="" tal:attributes="href menu/request_merge/url">request a
+            merge</a> of the duplicate profiles.</p>
+          </div>
+        </tal:block>
+        <tal:batch tal:condition="batch">
+          <tal:multipage tal:condition="batch/has_multiple_pages">
+            <tal:navigation
+             replace="structure batch/@@+navigation-links-upper"/>
+          </tal:multipage>
+          <table id="people-results" class="listing sortable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Launchpad ID</th>
+                <th tal:condition="not: view/is_teams_only">Karma</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr tal:repeat="person batch/currentBatch">
+                <td><a tal:content="person/displayname"
+                       tal:attributes="href person/fmt:url"/>
+                </td>
+                <td tal:content="person/name">foobar</td>
+                <td class="amount"
+                  tal:condition="not: view/is_teams_only">
+                  <tal:user
+                    condition="not: person/is_team"
+                    content="person/karma">34</tal:user>
+                  <tal:team
+                    condition="person/is_team">&mdash;</tal:team>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <tal:multipage condition="batch/has_multiple_pages">
+            <tal:navigation
+             replace="structure batch/@@+navigation-links-lower"/>
+          </tal:multipage>
+        </tal:batch>
+      </tal:search>
+    </div>
+  </body>
+</html>

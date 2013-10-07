@@ -1,0 +1,54 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  metal:use-macro="view/macro:page/main_only"
+>
+
+<body>
+
+<div metal:fill-slot="main">
+
+  <div metal:use-macro="context/@@launchpad_form/form">
+    <div metal:fill-slot="extra_info">
+      <h2 class="legend" id="step-title">Step
+        <tal:step_number tal:replace="view/step_number"/>
+        (of <tal:total_steps tal:replace="view/total_steps"/>):
+        <tal:step_description tal:replace="view/step_description"/>
+      </h2>
+      <p>
+        Links from distribution packages to upstream project series let
+        distribution and upstream maintainers share bugs, patches, and
+        translations efficiently.
+      </p>
+    </div>
+
+    <div metal:fill-slot="extra_bottom" tal:condition="view/product">
+      If you need a new series created, contact the owner of
+      <a tal:content="structure view/product/fmt:link"/>.
+    </div>
+
+    <div metal:fill-slot="buttons">
+      <input tal:repeat="action view/actions"
+             tal:replace="structure action/render"
+        />
+      &nbsp;or&nbsp;
+      <tal:comment condition="nothing">
+        This template is for a multistep view, and only the first
+        step provides the register_upstream_url.
+      </tal:comment>
+      <a id="register-upstream-link"
+         tal:condition="view/register_upstream_url | nothing"
+         tal:attributes="href view/register_upstream_url">
+        Register the upstream project
+      </a>
+      <tal:has-cancel-link condition="view/cancel_url">
+        &nbsp;or&nbsp;
+        <a tal:attributes="href view/cancel_url">Cancel</a>
+      </tal:has-cancel-link>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

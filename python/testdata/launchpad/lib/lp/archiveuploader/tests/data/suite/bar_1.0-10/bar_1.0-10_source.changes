@@ -1,0 +1,30 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Format: 1.7
+Date: Wed, 17 Oct 2007 12:14:09 -0300
+Source: bar
+Binary: bar
+Architecture: source
+Version: 1.0-10
+Distribution: breezy
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Celso Providelo <cprov@canonical.com>
+Description: 
+ bar        - Stuff for testing
+Changes: 
+ bar (1.0-10) breezy; urgency=low
+ .
+   * Another version bump, this time target to universe.
+Files: 
+ a41d29a67ee5abbd97338584cb929c18 514 universe/devel optional bar_1.0-10.dsc
+ b142da985ea26b89aed7c22fe3acb036 650 universe/devel optional bar_1.0-10.diff.gz
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+
+iD8DBQFHFkfxjn63CGxkqMURAm+5AJ9G/k3sFE6l+1ZeJOPdKFo45IkbvQCgnqCq
+cIQMk4DmJMFT5hRq0PFRDr0=
+=jmgc
+-----END PGP SIGNATURE-----

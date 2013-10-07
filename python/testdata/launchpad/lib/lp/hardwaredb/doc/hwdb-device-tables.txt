@@ -1,0 +1,2752 @@
+Hardware Database Device Tables
+===============================
+
+These tables represent devices and complete systems in the database. They
+allow look up of devices by their bus IDs and by their human readable
+vendor and product names. They also link devices to drivers.
+
+HWVendorName
+------------
+
+HWVendorName is a simple list of vendor names. A new entry is created by
+IHWVendorNameSet.create().
+
+    >>> from lp.hardwaredb.interfaces.hwdb import IHWVendorNameSet
+    >>> vendor_name_set = getUtility(IHWVendorNameSet)
+    >>> intel_name = vendor_name_set.create(name='Intel')
+    >>> print intel_name.name
+    Intel
+
+Each name in the table must be unique. The attempt to create a second
+row with the same name raises an IntegrityError error.
+
+    >>> from storm.store import Store
+    >>> store = Store.of(intel_name)
+    >>> from lp.testing.layers import LaunchpadZopelessLayer
+    >>> LaunchpadZopelessLayer.txn.commit()
+    >>> vendor_name_set.create('Intel')
+    <HWVendorName ...
+    >>> store.flush()
+    Traceback (most recent call last):
+    ...
+    IntegrityError: ...
+    <BLANKLINE>
+    >>> LaunchpadZopelessLayer.txn.abort()
+
+The database checks the uniqueness of the lower-case name, hence we
+cannot insert another name like "INTEL" or "intel".
+
+    >>> vendor_name_set.create('INTEL')
+    <HWVendorName ...
+    >>> store.flush()
+    Traceback (most recent call last):
+    ...
+    IntegrityError: ...
+    <BLANKLINE>
+    >>> LaunchpadZopelessLayer.txn.abort()
+
+    >>> vendor_name_set.create('intel')
+    <HWVendorName ...
+    >>> store.flush()
+    Traceback (most recent call last):
+    ...
+    IntegrityError: ...
+    <BLANKLINE>
+    >>> LaunchpadZopelessLayer.txn.abort()
+
+The lower-case uniqueness constraint works for latin characters with
+diacritical marks too...
+
+    >>> a_umlaut_upper = u'\N{LATIN CAPITAL LETTER A WITH DIAERESIS}'
+    >>> a_umlaut_lower = u'\N{LATIN SMALL LETTER A WITH DIAERESIS}'
+    >>> a_umlaut_name = vendor_name_set.create(name=a_umlaut_upper)
+    >>> LaunchpadZopelessLayer.txn.commit()
+    >>> print repr(a_umlaut_name.name)
+    u'\xc4'
+
+    >>> vendor_name_set.create(name=a_umlaut_lower)
+    <HWVendorName ...
+    >>> store.flush()
+    Traceback (most recent call last):
+    ...
+    IntegrityError: ...
+    <BLANKLINE>
+    >>> LaunchpadZopelessLayer.txn.abort()
+
+...as well as for Cyrillic characters...
+
+    >>> cyrillic_de_upper = u'\N{CYRILLIC CAPITAL LETTER DE}'
+    >>> cyrillic_de_lower = u'\N{CYRILLIC SMALL LETTER DE}'
+    >>> cyrillic_de_name = vendor_name_set.create(name=cyrillic_de_upper)
+    >>> print repr(cyrillic_de_name.name)
+    u'\u0414'
+
+    >>> vendor_name_set.create(name=cyrillic_de_lower)
+    <HWVendorName ...
+    >>> store.flush()
+    Traceback (most recent call last):
+    ...
+    IntegrityError: ...
+    <BLANKLINE>
+    >>> LaunchpadZopelessLayer.txn.abort()
+
+...and Greek characters.
+
+    >>> alpha_upper = u'\N{GREEK CAPITAL LETTER ALPHA}'
+    >>> alpha_lower = u'\N{GREEK SMALL LETTER ALPHA}'
+    >>> cyrillic_de_name = vendor_name_set.create(name=alpha_upper)
+    >>> print repr(cyrillic_de_name.name)
+    u'\u0391'
+
+    >>> vendor_name_set.create(name=alpha_lower)
+    <HWVendorName ...
+    >>> store.flush()
+    Traceback (most recent call last):
+    ...
+    IntegrityError: ...
+    <BLANKLINE>
+    >>> LaunchpadZopelessLayer.txn.abort()
+
+Existing IHWVendorName records are retrieved by IHWVendorName.getByName().
+
+    >>> intel_name = vendor_name_set.getByName('Intel')
+    >>> print intel_name.name
+    Intel
+
+The capitalization of the name does not metter.
+
+    >>> intel_name = vendor_name_set.getByName('INTEL')
+    >>> print intel_name.name
+    Intel
+
+    >>> intel_name = vendor_name_set.getByName('intel')
+    >>> print intel_name.name
+    Intel
+
+    >>> umlaut_name = vendor_name_set.getByName(
+    ...     u'\N{LATIN CAPITAL LETTER A WITH DIAERESIS}')
+    >>> print repr(umlaut_name.name)
+    u'\xc4'
+
+    >>> umlaut_name = vendor_name_set.getByName(
+    ...     u'\N{LATIN SMALL LETTER A WITH DIAERESIS}')
+    >>> print repr(umlaut_name.name)
+    u'\xc4'
+
+If no record matching the given name exists, IHWVendorName.getByName()
+returns None.
+
+    >>> print vendor_name_set.getByName('Babbage Computers')
+    None
+
+
+HWVendorID
+----------
+
+HWVendorID associates a bus, as enumerated by HWBus, with a bus-specific
+vendor ID and a vendor name. We store the IDs as a string, because not all
+all busses use numeric IDs. Numbers are represented as strings with
+hexadecimal digits, prepended by '0x'.
+
+    >>> from lp.hardwaredb.interfaces.hwdb import HWBus, IHWVendorIDSet
+    >>> vendor_id_set = getUtility(IHWVendorIDSet)
+    >>> intel_pci_id = vendor_id_set.create(bus=HWBus.PCI,
+    ...                                     vendor_id='0x8086',
+    ...                                     vendor_name=intel_name)
+    >>> print intel_pci_id.bus.title, intel_pci_id.vendor_id_for_bus
+    PCI 0x8086
+    >>> print intel_pci_id.vendor_name.name
+    Intel
+
+The tuple (bus, vendor id, vendor name) must be unique.
+
+    >>> LaunchpadZopelessLayer.txn.commit()
+    >>> vendor_id_set.create(bus=HWBus.PCI,
+    ...                      vendor_id='0x8086',
+    ...                      vendor_name=intel_name)
+    <HWVendorID ...
+    >>> store.flush()
+    Traceback (most recent call last):
+    ...
+    IntegrityError: ...
+    <BLANKLINE>
+    >>> LaunchpadZopelessLayer.txn.abort()
+
+We store the (bus specific) vendor ID as a string, but several busses
+have stricter constraints for their vendor ID. The PCI and USB busses use
+16 bit integers, the IEEE1394 bus uses 24 bit integers, the SCSI bus
+uses ASCII strings with exactly 8 characters. The constructor of
+HWVendorID ensures that the vendor IDs match the bus-specific format.
+
+USB, PCI and PCCard IDs are represented as strings with a four-digit
+hexadecimal number, prefixed by '0x'; the digits a..f must be lower
+cases characters. Other ID values raise a ParameterError.
+
+The characters a..f are accepted as digits.
+
+    >>> another_pci_vendor_id = vendor_id_set.create(bus=HWBus.PCI,
+    ...                                              vendor_id='0x10ae',
+    ...                                              vendor_name=intel_name)
+    >>> print another_pci_vendor_id.bus.title
+    PCI
+    >>> print another_pci_vendor_id.vendor_id_for_bus
+    0x10ae
+    >>> print another_pci_vendor_id.vendor_name.name
+    Intel
+
+    >>> another_pci_vendor_id = vendor_id_set.create(bus=HWBus.PCCARD,
+    ...                                              vendor_id='0x10ae',
+    ...                                              vendor_name=intel_name)
+    >>> print another_pci_vendor_id.bus.title
+    PC Card (32 bit)
+    >>> print another_pci_vendor_id.vendor_id_for_bus
+    0x10ae
+    >>> print another_pci_vendor_id.vendor_name.name
+    Intel
+
+    >>> another_usb_vendor_id = vendor_id_set.create(bus=HWBus.USB,
+    ...                                              vendor_id='0x10ae',
+    ...                                              vendor_name=intel_name)
+    >>> print another_usb_vendor_id.bus.title
+    USB
+    >>> print another_usb_vendor_id.vendor_id_for_bus
+    0x10ae
+    >>> print another_usb_vendor_id.vendor_name.name
+    Intel
+
+A..F is rejected.
+
+    >>> vendor_id_set.create(bus=HWBus.PCI,
+    ...                      vendor_id='0x10AE',
+    ...                      vendor_name=intel_name)
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0x10AE' is not a valid vendor ID for PCI
+    >>> from storm.tracer import debug; debug(True)
+    >>> store.flush()
+    >>> debug(False)
+
+    >>> vendor_id_set.create(bus=HWBus.PCCARD,
+    ...                      vendor_id='0x10AE',
+    ...                      vendor_name=intel_name)
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0x10AE' is not a valid vendor ID for PC Card (32 bit)
+
+    >>> vendor_id_set.create(bus=HWBus.USB,
+    ...                      vendor_id='0x10AE',
+    ...                      vendor_name=intel_name)
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0x10AE' is not a valid vendor ID for USB
+
+The ID must have the prefix "0x".
+
+    >>> vendor_id_set.create(bus=HWBus.PCI,
+    ...                      vendor_id='8086',
+    ...                      vendor_name=intel_name)
+    Traceback (most recent call last):
+    ...
+    ParameterError: '8086' is not a valid vendor ID for PCI
+
+    >>> vendor_id_set.create(bus=HWBus.PCCARD,
+    ...                      vendor_id='8086',
+    ...                      vendor_name=intel_name)
+    Traceback (most recent call last):
+    ...
+    ParameterError: '8086' is not a valid vendor ID for PC Card (32 bit)
+
+    >>> vendor_id_set.create(bus=HWBus.USB,
+    ...                      vendor_id='8086',
+    ...                      vendor_name=intel_name)
+    Traceback (most recent call last):
+    ...
+    ParameterError: '8086' is not a valid vendor ID for USB
+
+The number must have four digits.
+
+    >>> vendor_id_set.create(bus=HWBus.PCI,
+    ...                      vendor_id='0x123',
+    ...                      vendor_name=intel_name)
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0x123' is not a valid vendor ID for PCI
+
+    >>> vendor_id_set.create(bus=HWBus.PCCARD,
+    ...                      vendor_id='0x123',
+    ...                      vendor_name=intel_name)
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0x123' is not a valid vendor ID for PC Card (32 bit)
+
+    >>> vendor_id_set.create(bus=HWBus.USB,
+    ...                      vendor_id='0x123',
+    ...                      vendor_name=intel_name)
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0x123' is not a valid vendor ID for USB
+
+    >>> vendor_id_set.create(bus=HWBus.PCI,
+    ...                      vendor_id='0x12345',
+    ...                      vendor_name=intel_name)
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0x12345' is not a valid vendor ID for PCI
+
+    >>> vendor_id_set.create(bus=HWBus.PCCARD,
+    ...                      vendor_id='0x12345',
+    ...                      vendor_name=intel_name)
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0x12345' is not a valid vendor ID for PC Card (32 bit)
+
+    >>> vendor_id_set.create(bus=HWBus.USB,
+    ...                      vendor_id='0x12345',
+    ...                      vendor_name=intel_name)
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0x12345' is not a valid vendor ID for USB
+
+Only hex digits are allowed.
+
+    >>> vendor_id_set.create(bus=HWBus.PCI,
+    ...                      vendor_id='0xblah',
+    ...                      vendor_name=intel_name)
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0xblah' is not a valid vendor ID for PCI
+
+    >>> vendor_id_set.create(bus=HWBus.PCCARD,
+    ...                      vendor_id='0xblah',
+    ...                      vendor_name=intel_name)
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0xblah' is not a valid vendor ID for PC Card (32 bit)
+
+    >>> vendor_id_set.create(bus=HWBus.USB,
+    ...                      vendor_id='0xblah',
+    ...                      vendor_name=intel_name)
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0xblah' is not a valid vendor ID for USB
+
+IEEE1394 IDs are represented as strings with a six-digit hexadecimal
+number, prefixed by '0x'; the digits a..f must be lower cases characters.
+Other ID values raise a value error.
+
+    >>> vendor_id_1394 = vendor_id_set.create(bus=HWBus.IEEE1394,
+    ...                                       vendor_id='0x0010e0',
+    ...                                       vendor_name=intel_name)
+    >>> print vendor_id_1394.bus.title
+    IEEE1394
+    >>> print vendor_id_1394.vendor_id_for_bus
+    0x0010e0
+    >>> print vendor_id_1394.vendor_name.name
+    Intel
+
+A..F is rejected.
+
+    >>> vendor_id_set.create(bus=HWBus.IEEE1394,
+    ...                      vendor_id='0x0010E0',
+    ...                      vendor_name=intel_name)
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0x0010E0' is not a valid vendor ID for IEEE1394
+
+The ID must have the prefix "0x".
+
+    >>> vendor_id_set.create(bus=HWBus.IEEE1394,
+    ...                      vendor_id='0010E0',
+    ...                      vendor_name=intel_name)
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0010E0' is not a valid vendor ID for IEEE1394
+
+The number must have six digits.
+
+    >>> vendor_id_set.create(bus=HWBus.IEEE1394,
+    ...                      vendor_id='0x12345',
+    ...                      vendor_name=intel_name)
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0x12345' is not a valid vendor ID for IEEE1394
+
+    >>> vendor_id_set.create(bus=HWBus.IEEE1394,
+    ...                      vendor_id='0x1234567',
+    ...                      vendor_name=intel_name)
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0x1234567' is not a valid vendor ID for IEEE1394
+
+Only hex digits are allowed.
+
+    >>> vendor_id_set.create(bus=HWBus.IEEE1394,
+    ...                      vendor_id='0xfoobar',
+    ...                      vendor_name=intel_name)
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0xfoobar' is not a valid vendor ID for IEEE1394
+
+SCSI vendor IDs are ASCII strings with exactly eight characters.
+
+    >>> intel_scsi_id = vendor_id_set.create(bus=HWBus.SCSI,
+    ...                                      vendor_id='INTEL   ',
+    ...                                      vendor_name=intel_name)
+    >>> print intel_scsi_id.bus.title
+    SCSI
+    >>> intel_scsi_id.vendor_id_for_bus
+    u'INTEL   '
+    >>> print intel_scsi_id.vendor_name.name
+    Intel
+
+Strings with less than eight characters are not allowed as SCSI vendor IDs...
+
+    >>> vendor_id_set.create(bus=HWBus.SCSI,
+    ...                      vendor_id='1234567',
+    ...                      vendor_name=intel_name)
+    Traceback (most recent call last):
+    ...
+    ParameterError: '1234567' is not a valid vendor ID for SCSI
+
+...as well as strings with more than eight characters.
+
+    >>> vendor_id_set.create(bus=HWBus.SCSI,
+    ...                      vendor_id='123456789',
+    ...                      vendor_name=intel_name)
+    Traceback (most recent call last):
+    ...
+    ParameterError: '123456789' is not a valid vendor ID for SCSI
+
+HWVendorIDSet.getByBusAndVendorID() is used to look up a HWVendorID record.
+
+    >>> vendor_id = vendor_id_set.getByBusAndVendorID(bus=HWBus.PCI,
+    ...                                               vendor_id='0x8086')
+    >>> print vendor_id.bus.title
+    PCI
+    >>> print vendor_id.vendor_name.name
+    Intel
+
+If no record exists for the given bus and vendor ID,
+HWVendorIDSet.getByBusAndVendorID() returns None.
+
+    >>> vendor_id = vendor_id_set.getByBusAndVendorID(bus=HWBus.PCI,
+    ...                                               vendor_id='0xffff')
+    >>> print vendor_id
+    None
+
+HWVendorIDSet.getByBusAndVendorID() performs the same validity tests of
+the vendor ID as HWVendorSet.create(): The vendor ID passed to
+HWVendorIDSet.getByBusAndVendorID() must be a valid ID for the given bus.
+
+    >>> vendor_id_set.getByBusAndVendorID(bus=HWBus.PCI, vendor_id='8086')
+    Traceback (most recent call last):
+    ...
+    ParameterError: '8086' is not a valid vendor ID for PCI
+
+HWVendorIDSet.get() returns the HWVendorID record with the given ID...
+
+    >>> vendor_id = vendor_id_set.get(1)
+    >>> print vendor_id.bus.name, vendor_id.vendor_id_for_bus
+    SYSTEM MSI
+
+...or None, if no such record exists.
+
+    >>> print vendor_id_set.get(1000000)
+    None
+
+HWVendorIDSet.idsForBus() returns all known HWVendorIDs for a given bus.
+
+    >>> for vendor_id in vendor_id_set.idsForBus(HWBus.PCI):
+    ...     print vendor_id.bus.name, vendor_id.vendor_id_for_bus
+    PCI 0x10ae
+    PCI 0x10de
+    PCI 0x8086
+
+
+HWDevice
+--------
+
+A HWDevice instance stores core data about a hardware device: The bus
+it can connect to, the vendor ID, the product ID, the human readable
+product name, variant (see below), and the number of submissions with
+a device.
+
+Aside from "real" devices like keyboards, mice, hard disks, PCI cards,
+i.e., "thingies" one can connect to and remove from a computer, we also
+store data about "systems" (computers) and "components" in the HWDevice
+table. A component is a part that is "permanently built" into a system,
+like a hard disk controller that is soldered onto the main board.
+
+A new device record is created by IHWDeviceSet.create.
+
+    >>> from lp.hardwaredb.interfaces.hwdb import IHWDeviceSet
+    >>> device_set = getUtility(IHWDeviceSet)
+    >>> product_name='82801GBM/GHM (ICH7 Family) USB2 EHCI Controller'
+    >>> usb_controller = device_set.create(bus=HWBus.PCI,
+    ...                                    vendor_id='0x8086',
+    ...                                    product_id='0x27cc',
+    ...                                    product_name=product_name)
+
+Bus and vendor ID are not directly stored as HWDevice attributes; we can
+access them, as well as the vendor name, either via the attribute
+bus_vendor, which references HWVendorID...
+
+    >>> print usb_controller.bus_vendor.bus.title
+    PCI
+    >>> print usb_controller.bus_vendor.vendor_id_for_bus
+    0x8086
+    >>> print usb_controller.bus_vendor.vendor_name.name
+    Intel
+
+...or via the (read-only) HWDevice properties bus, vendor_id, vendor_name.
+
+    >>> print usb_controller.bus.title
+    PCI
+    >>> print usb_controller.vendor_id
+    0x8086
+    >>> print usb_controller.vendor_name
+    Intel
+
+Other attributes stored in HWDevice are the product ID, the product name,
+the product variant and submissions. submissions is a counter of the
+number of submissions with this device.
+
+    >>> print usb_controller.bus_product_id
+    0x27cc
+    >>> print usb_controller.name
+    82801GBM/GHM (ICH7 Family) USB2 EHCI Controller
+    >>> print usb_controller.variant
+    None
+    >>> print usb_controller.submissions
+    0
+
+Like vendor IDs, product IDs of some busses have certain constraints.
+USB and PCI product IDs are 16 bit integers; SCSI IDs are strings
+with 16 characters. (Note that the IEEE1394 does _not_ define a product
+ID.)
+
+USB, PCI and PCCard IDs are represented as strings with a four-digit
+hexadecimal number, prefixed by '0x'; the digits a..f must be lower
+cases characters. Other ID values raise a ParameterError.
+
+    >>> another_pci_product = device_set.create(bus=HWBus.PCI,
+    ...                                         vendor_id='0x8086',
+    ...                                         product_id='0xabcd',
+    ...                                         product_name='A PCI card')
+    >>> print another_pci_product.bus_product_id
+    0xabcd
+
+    >>> another_pci_product = device_set.create(bus=HWBus.PCCARD,
+    ...                                         vendor_id='0x8086',
+    ...                                         product_id='0xabcd',
+    ...                                         product_name='A PC Card')
+    >>> print another_pci_product.bus_product_id
+    0xabcd
+
+    >>> another_usb_product = device_set.create(bus=HWBus.USB,
+    ...                                         vendor_id='0x8086',
+    ...                                         product_id='0xabcd',
+    ...                                         product_name='A USB device')
+    >>> print another_usb_product.bus_product_id
+    0xabcd
+
+A..F is rejected.
+
+    >>> device_set.create(bus=HWBus.PCI,
+    ...                   vendor_id='0x8086',
+    ...                   product_id='0xABCD',
+    ...                   product_name='A PCI card')
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0xABCD' is not a valid product ID for PCI
+
+    >>> device_set.create(bus=HWBus.PCCARD,
+    ...                   vendor_id='0x8086',
+    ...                   product_id='0xABCD',
+    ...                   product_name='A PC Card')
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0xABCD' is not a valid product ID for PC Card (32 bit)
+
+    >>> device_set.create(bus=HWBus.USB,
+    ...                   vendor_id='0x8086',
+    ...                   product_id='0xABCD',
+    ...                   product_name='A USB device')
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0xABCD' is not a valid product ID for USB
+
+The ID must have the prefix "0x".
+
+    >>> device_set.create(bus=HWBus.PCI,
+    ...                   vendor_id='0x8086',
+    ...                   product_id='1234',
+    ...                   product_name='A PCI card')
+    Traceback (most recent call last):
+    ...
+    ParameterError: '1234' is not a valid product ID for PCI
+
+    >>> device_set.create(bus=HWBus.PCCARD,
+    ...                   vendor_id='0x8086',
+    ...                   product_id='1234',
+    ...                   product_name='A PC Card')
+    Traceback (most recent call last):
+    ...
+    ParameterError: '1234' is not a valid product ID for PC Card (32 bit)
+
+    >>> device_set.create(bus=HWBus.USB,
+    ...                   vendor_id='0x8086',
+    ...                   product_id='1234',
+    ...                   product_name='A USB device')
+    Traceback (most recent call last):
+    ...
+    ParameterError: '1234' is not a valid product ID for USB
+
+The number must have four digits.
+
+    >>> device_set.create(bus=HWBus.PCI,
+    ...                   vendor_id='0x8086',
+    ...                   product_id='0x123',
+    ...                   product_name='A PCI card')
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0x123' is not a valid product ID for PCI
+
+    >>> device_set.create(bus=HWBus.PCCARD,
+    ...                   vendor_id='0x8086',
+    ...                   product_id='0x123',
+    ...                   product_name='A PC Card')
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0x123' is not a valid product ID for PC Card (32 bit)
+
+    >>> device_set.create(bus=HWBus.USB,
+    ...                   vendor_id='0x8086',
+    ...                   product_id='0x123',
+    ...                   product_name='A USB device')
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0x123' is not a valid product ID for USB
+
+    >>> device_set.create(bus=HWBus.PCI,
+    ...                   vendor_id='0x8086',
+    ...                   product_id='0x12345',
+    ...                   product_name='A PCI card')
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0x12345' is not a valid product ID for PCI
+
+    >>> device_set.create(bus=HWBus.PCCARD,
+    ...                   vendor_id='0x8086',
+    ...                   product_id='0x12345',
+    ...                   product_name='A PC Card')
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0x12345' is not a valid product ID for PC Card (32 bit)
+
+    >>> device_set.create(bus=HWBus.USB,
+    ...                   vendor_id='0x8086',
+    ...                   product_id='0x12345',
+    ...                   product_name='A USB device')
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0x12345' is not a valid product ID for USB
+
+Only hex digits are allowed.
+
+    >>> device_set.create(bus=HWBus.PCI,
+    ...                   vendor_id='0x8086',
+    ...                   product_id='0xblah',
+    ...                   product_name='A PCI card')
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0xblah' is not a valid product ID for PCI
+
+    >>> device_set.create(bus=HWBus.PCCARD,
+    ...                   vendor_id='0x8086',
+    ...                   product_id='0xblah',
+    ...                   product_name='A PC Card')
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0xblah' is not a valid product ID for PC Card (32 bit)
+
+    >>> device_set.create(bus=HWBus.USB,
+    ...                   vendor_id='0x8086',
+    ...                   product_id='0xblah',
+    ...                   product_name='A USB device')
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0xblah' is not a valid product ID for USB
+
+SCSI product IDs are ASCII strings with 16 characters.
+
+    >>> scsi_device = device_set.create(bus=HWBus.SCSI,
+    ...                                 vendor_id='INTEL   ',
+    ...                                 product_id='12345678901234  ',
+    ...                                 product_name='A SCSI device')
+    >>> scsi_device.bus_product_id
+    u'12345678901234  '
+
+Strings with less than 16 characters are not allowed as SCSI product IDs...
+
+    >>> device_set.create(bus=HWBus.SCSI,
+    ...                   vendor_id='INTEL   ',
+    ...                   product_id='123456789012345',
+    ...                   product_name='A SCSI device')
+    Traceback (most recent call last):
+    ...
+    ParameterError: '123456789012345' is not a valid product ID for SCSI
+
+...as well as strings with more than 16 characters.
+
+    >>> device_set.create(bus=HWBus.SCSI,
+    ...                   vendor_id='INTEL   ',
+    ...                   product_id='12345678901234567',
+    ...                   product_name='A SCSI device')
+    Traceback (most recent call last):
+    ...
+    ParameterError: '12345678901234567' is not a valid product ID for SCSI
+
+
+Unknown Vendor IDs
+..................
+
+If IHWDevice.create is called with a vendor ID that for which there
+is no IHWVendorID record, the latter is automatically created. Since
+we do not pass the vendor name to IHWDevice.create, this method
+cannot set the real vendor name for the new IHWVendorID record.
+Instead, the vendor name is set to "Unknown".
+
+Reason: IHWDevice will be populated with data collected by the
+HWDB client, which gets most of the device data from HAL, and HAL
+quite often does not know the vendor name. Hence we will populate
+and update IHWVendorID from sources like
+
+http://www.linux-usb.org/usb.ids
+http://www.pcidatabase.com/reports.php?type=csv
+http://standards.ieee.org/regauth/oui/oui.txt
+
+    >>> new_vendor_device = device_set.create(bus=HWBus.PCI,
+    ...                                       vendor_id='0x4321',
+    ...                                       product_id='0x8765',
+    ...                                       product_name='mind sensor')
+    >>> print new_vendor_device.bus_vendor.vendor_name.name
+    Unknown
+
+
+Device Variants
+...............
+
+While most devices can be uniquely identified by their vendor and product
+IDs, there are some cases, where different devices have identical IDs:
+
+(a) The IDs are assigned to a USB chipset that is used in different
+    devices.
+(b) A vendor may inadvertently "recycle" a product ID
+(c) A chip manufacturer who does not have its own vendor ID may "forge"
+    the vendor ID.
+
+A real world example of the first case is the scanner chipset from
+Plustek with the USB ID 0x07b3/0x0017. This chipset is used in devices
+that differ for example in the maximum scan window size.
+
+We do not necessarily know in advance that there are different devices
+with identical IDs, so we may have a HWDevice record without the variant
+attribute set.
+
+    >>> plustek_name = vendor_name_set.create('Plustek')
+    >>> plustek_usb_id = vendor_id_set.create(bus=HWBus.USB,
+    ...                                       vendor_id='0x07b3',
+    ...                                       vendor_name=plustek_name)
+    >>> some_plustek_scanner = device_set.create(bus=HWBus.USB,
+    ...                                          vendor_id='0x07b3',
+    ...                                          product_id='0x0017',
+    ...                                          product_name='some scanner')
+    >>> print some_plustek_scanner.bus_vendor.vendor_id_for_bus
+    0x07b3
+    >>> print some_plustek_scanner.bus_vendor.vendor_name.name
+    Plustek
+    >>> print some_plustek_scanner.name
+    some scanner
+    >>> print some_plustek_scanner.variant
+    None
+
+Once we know that (bus, vendor ID, product ID) does not uniquely
+identify a device, we can disambiguate these devices by creating
+IHWDevice records, where the attribute variant is, for example, set
+to the product name.
+
+    >>> optic_pro_ut12 = device_set.create(bus=HWBus.USB,
+    ...                                    vendor_id='0x07b3',
+    ...                                    product_id='0x0017',
+    ...                                    variant='OpticPro UT12',
+    ...                                    product_name='OpticPro UT12')
+    >>> optic_pro_ut16 = device_set.create(bus=HWBus.USB,
+    ...                                    vendor_id='0x07b3',
+    ...                                    product_id='0x0017',
+    ...                                    variant='OpticPro UT16',
+    ...                                    product_name='OpticPro UT16')
+
+For systems, we use HWBus.SYSTEM as the "bus name"; the HAL property
+system.vendor is stored as the vendor ID and vendor name, and the HAL
+property system.product is stored as the product ID and the product
+name.
+
+    >>> hal_vendor_name = 'Tonka'
+    >>> hal_product_name = 'Tuffbook 2600'
+    >>> tonka_name = vendor_name_set.create(name=hal_vendor_name)
+    >>> tonka_system_id = vendor_id_set.create(bus=HWBus.SYSTEM,
+    ...                                        vendor_id=hal_vendor_name,
+    ...                                        vendor_name=tonka_name)
+    >>> tuffbook_2600 = device_set.create(bus=HWBus.SYSTEM,
+    ...                                   vendor_id=hal_vendor_name,
+    ...                                   product_id=hal_product_name,
+    ...                                   product_name=hal_product_name)
+    >>> print tuffbook_2600.bus_vendor.bus.title
+    System
+    >>> print tuffbook_2600.bus_vendor.vendor_id_for_bus
+    Tonka
+    >>> print tuffbook_2600.bus_vendor.vendor_name.name
+    Tonka
+    >>> print tuffbook_2600.bus_product_id
+    Tuffbook 2600
+    >>> print tuffbook_2600.name
+    Tuffbook 2600
+
+The tuple (bus_vendor, bus_product_id, variant) must be unique.
+The attempt to create two rows with the same data raises a
+IntegrityError error.
+
+    >>> LaunchpadZopelessLayer.txn.commit()
+    >>> another_scanner = device_set.create(bus=HWBus.USB,
+    ...                                     vendor_id='0x07b3',
+    ...                                     product_id='0x0017',
+    ...                                     product_name='some scanner')
+    >>> store.flush()
+    Traceback (most recent call last):
+    ...
+    IntegrityError: ...
+    <BLANKLINE>
+    >>> LaunchpadZopelessLayer.txn.abort()
+
+    >>> another_scanner = device_set.create(bus=HWBus.USB,
+    ...                                     vendor_id='0x07b3',
+    ...                                     product_id='0x0017',
+    ...                                     variant='OpticPro UT16',
+    ...                                     product_name='OpticPro UT16')
+    >>> store.flush()
+    Traceback (most recent call last):
+    ...
+    IntegrityError: ...
+    <BLANKLINE>
+    >>> LaunchpadZopelessLayer.txn.abort()
+
+Retrieving HWDevice records
+...........................
+
+Existing HWDevice records can be retrieved by calling
+HWDeviceSet.getByDeviceID()
+
+    >>> device = device_set.getByDeviceID(HWBus.USB, '0x07b3', '0x0017')
+    >>> print device.bus_vendor.bus.title
+    USB
+    >>> print device.bus_vendor.vendor_id_for_bus
+    0x07b3
+    >>> print device.bus_product_id
+    0x0017
+    >>> print device.name
+    some scanner
+
+The call to HWDeviceSet.getByDeviceID() above did not specify a product
+variant. In such a case, the record having variant==None is returned
+
+    >>> print device.variant
+    None
+
+If a variant name is given, we get the HWDevice record of that variant.
+
+    >>> device = device_set.getByDeviceID(HWBus.USB, '0x07b3', '0x0017',
+    ...                                   'OpticPro UT16')
+    >>> print device.bus_vendor.bus.title
+    USB
+    >>> print device.bus_vendor.vendor_id_for_bus
+    0x07b3
+    >>> print device.bus_product_id
+    0x0017
+    >>> print device.name
+    OpticPro UT16
+    >>> print device.variant
+    OpticPro UT16
+
+If the given parameters do not match any existing record, None is
+returned.
+
+    >>> print device_set.getByDeviceID(HWBus.PCI, '0x07b3', '0x0017',
+    ...                                'OpticPro UT16')
+    None
+    >>> print device_set.getByDeviceID(HWBus.USB, '0xffff', '0x0017',
+    ...                                'OpticPro UT16')
+    None
+    >>> print device_set.getByDeviceID(HWBus.PCI, '0x07b3', '0xffff',
+    ...                                'OpticPro UT16')
+    None
+    >>> print device_set.getByDeviceID(HWBus.PCI, '0x07b3', '0x0017',
+    ...                                'nonsense')
+    None
+
+The parameters vendor_id and product_id must be valid IDs for the
+given bus.
+
+    >>> device_set.getByDeviceID(HWBus.USB, '07b3', '0x0017')
+    Traceback (most recent call last):
+    ...
+    ParameterError: '07b3' is not a valid vendor ID for USB
+
+    >>> device_set.getByDeviceID(HWBus.USB, '0x07b3', '0017')
+    Traceback (most recent call last):
+    ...
+    ParameterError: '0017' is not a valid product ID for USB
+
+HWDeviceSet.getOrCreate() returns an existing record matching the given
+parameters or creates a new one, if no existing record matches.
+
+    >>> device2 = device_set.getOrCreate(bus=HWBus.USB,
+    ...                                  vendor_id='0x07b3',
+    ...                                  product_id='0x0017',
+    ...                                  product_name='OpticPro UT16',
+    ...                                  variant='OpticPro UT16')
+    >>> print device2.bus_vendor.bus.title
+    USB
+    >>> print device2.bus_vendor.vendor_id_for_bus
+    0x07b3
+    >>> print device2.bus_product_id
+    0x0017
+    >>> print device2.name
+    OpticPro UT16
+    >>> print device2.variant
+    OpticPro UT16
+    >>> print device2.id == device.id
+    True
+
+    >>> device3 = device_set.getByDeviceID(bus=HWBus.USB,
+    ...                                    vendor_id='0x07b3',
+    ...                                    product_id='0x0017',
+    ...                                    variant='Some other scanner')
+    >>> print device3
+    None
+    >>> device3 = device_set.getOrCreate(bus=HWBus.USB,
+    ...                                  vendor_id='0x07b3',
+    ...                                  product_id='0x0017',
+    ...                                  product_name='Some other scanner',
+    ...                                  variant='Some other scanner')
+    >>> print device3.bus_vendor.bus.title
+    USB
+    >>> print device3.bus_vendor.vendor_id_for_bus
+    0x07b3
+    >>> print device3.bus_product_id
+    0x0017
+    >>> print device3.name
+    Some other scanner
+    >>> print device3.variant
+    Some other scanner
+
+    >>> device4 = device_set.getOrCreate(bus=HWBus.USB,
+    ...                                  vendor_id='0x07b3',
+    ...                                  product_id='0x0015',
+    ...                                  product_name='OpticPro U24')
+    >>> print device4.bus_vendor.bus.title
+    USB
+    >>> print device4.bus_vendor.vendor_id_for_bus
+    0x07b3
+    >>> print device4.bus_product_id
+    0x0015
+    >>> print device4.name
+    OpticPro U24
+    >>> print device4.variant
+    None
+
+
+HWDeviceSet.getByID() returns a HWDevice record with the given database ID.
+
+    >>> device = device_set.getByID(1)
+    >>> print device.id
+    1
+    >>> print device.vendor_id
+    MSI
+    >>> print device.bus_product_id
+    MS-7369
+
+HWDeviceSet.getByID() returns None if no record with the passed ID exists.
+
+    >>> device = device_set.getByID(1000000)
+    >>> print device
+    None
+
+HWDeviceSet.search() returns all devices with a given bus and vendor ID.
+
+    >>> devices = device_set.search(bus=HWBus.USB, vendor_id='0x07b3')
+    >>> for device in devices:
+    ...     print device.bus.title, device.vendor_id, device.bus_product_id,
+    ...     print device.variant
+    USB 0x07b3 0x0017 None
+    USB 0x07b3 0x0017 OpticPro UT12
+    USB 0x07b3 0x0017 OpticPro UT16
+    USB 0x07b3 0x0017 Some other scanner
+    USB 0x07b3 0x0015 None
+
+Searching can be limited to a single product ID.
+
+    >>> devices = device_set.search(
+    ...     bus=HWBus.USB, vendor_id='0x07b3', product_id='0x0017')
+    >>> for device in devices:
+    ...     print device.bus.title, device.vendor_id, device.bus_product_id,
+    ...     print device.variant
+    USB 0x07b3 0x0017 None
+    USB 0x07b3 0x0017 OpticPro UT12
+    USB 0x07b3 0x0017 OpticPro UT16
+    USB 0x07b3 0x0017 Some other scanner
+
+HWDeviceSet.search() raises a ParameterError for vendor or product IDs
+that are not valid for the given bus.
+
+    >>> devices = device_set.search(
+    ...     bus=HWBus.USB, vendor_id='invalid', product_id='0x0017')
+    Traceback (most recent call last):
+    ...
+    ParameterError: 'invalid' is not a valid vendor ID for USB
+
+    >>> devices = device_set.search(
+    ...     bus=HWBus.USB, vendor_id='0x07b3', product_id='nonsense')
+    Traceback (most recent call last):
+    ...
+    ParameterError: 'nonsense' is not a valid product ID for USB
+
+HWDevice.getSubmissions() returns submissions which contain this device.
+
+We'll switch the DB user from hwdb-submission-processor to the ordinary
+Launchpad user, because the former has no access to the table
+distribution, which we want to access in this test.
+
+    >>> from lp.testing.dbuser import (
+    ...     lp_dbuser,
+    ...     switch_dbuser,
+    ...     )
+
+    >>> switch_dbuser('launchpad')
+    >>> sata_controller = device_set.getByDeviceID(
+    ...     bus=HWBus.PCI, vendor_id='0x10de', product_id='0x045d')
+    >>> for submission in sata_controller.getSubmissions():
+    ...     print submission.submission_key
+    sample-submission
+
+We can limit the results to a specific driver. (See below for details about
+HWDriver.)
+
+    >>> from lp.hardwaredb.interfaces.hwdb import IHWDriverSet
+    >>> ahci_driver = getUtility(IHWDriverSet).getByPackageAndName(
+    ...     'linux-image-2.6.24-19-generic', 'ahci')
+    >>> for submission in sata_controller.getSubmissions(
+    ...     driver=ahci_driver):
+    ...     print submission.submission_key
+    sample-submission
+
+    >>> usb_storage_driver = getUtility(IHWDriverSet).getByPackageAndName(
+    ...     'linux-image-2.6.24-19-generic', 'usb-storage')
+    >>> print list(sata_controller.getSubmissions(
+    ...     driver=usb_storage_driver))
+    []
+
+We can limit the results to a specific distribution.
+
+    >>> from lp.registry.interfaces.distribution import (
+    ...     IDistributionSet)
+    >>> distribution_set = getUtility(IDistributionSet)
+    >>> ubuntu = distribution_set.getByName('ubuntu')
+    >>> for submission in sata_controller.getSubmissions(
+    ...     distribution=ubuntu):
+    ...     print submission.submission_key
+    sample-submission
+
+    >>> debian = distribution_set.getByName('debian')
+    >>> sata_controller.getSubmissions(distribution=debian).count()
+    0
+
+We can limit the results to a specific architecture.
+
+    >>> for submission in sata_controller.getSubmissions(
+    ...     architecture='i386'):
+    ...     print submission.submission_key
+    sample-submission
+
+    >>> sata_controller.getSubmissions(architecture='amd64').count()
+    0
+
+We can limit the results to a specific distro series.
+
+    >>> for submission in sata_controller.getSubmissions(
+    ...     distroseries=ubuntu['hoary']):
+    ...     print submission.submission_key
+    sample-submission
+
+    >>> sata_controller.getSubmissions(distroseries=ubuntu['warty']).count()
+    0
+
+We can even limit the results to a specific distro series and architecture.
+
+    >>> for submission in sata_controller.getSubmissions(
+    ...     distroseries=ubuntu['hoary'], architecture='i386'):
+    ...     print submission.submission_key
+    sample-submission
+
+    >>> sata_controller.getSubmissions(
+    ...     distroseries=ubuntu['hoary'], architecture='powerpc').count()
+    0
+
+We can also search for submissions from a particular user.
+
+    >>> from lp.registry.interfaces.person import IPersonSet
+    >>> owner = getUtility(IPersonSet).getByName('name12')
+    >>> for submission in sata_controller.getSubmissions(owner=owner):
+    ...     print submission.submission_key
+    sample-submission
+
+    >>> not_owner = getUtility(IPersonSet).getByName('name20')
+    >>> sata_controller.getSubmissions(owner=not_owner).count()
+    0
+
+    >>> import transaction
+    >>> transaction.abort()
+    >>> switch_dbuser('hwdb-submission-processor')
+
+HWDevice.drivers is the set of drivers that are associated via
+HWDeviceDriverLink (see below) with this device.
+
+    >>> for driver in sata_controller.drivers:
+    ...     print driver.package_name, driver.name
+    linux-image-2.6.24-19-generic ahci
+
+
+HWDeviceNameVariant
+-------------------
+
+Many OEM products are sold by more than one vendor under different
+product names; some manufacturers sell the same device under
+different names in different parts of the world. The support status
+of such devices does not depend on the "publicly visible" vendor and
+product name, so we consider these devices to be identical. Users will
+nevertheless want to look up devices by the vendor and product name
+they see in a store. HWDeviceNameVariant allows us to assign alternative
+vendor and product names to a device.
+
+    >>> from lp.hardwaredb.interfaces.hwdb import IHWDeviceNameVariantSet
+    >>> device_name_variant_set = getUtility(IHWDeviceNameVariantSet)
+    >>> variant = device_name_variant_set.create(device=optic_pro_ut16,
+    ...                                          vendor_name='Medion',
+    ...                                          product_name='MD 1234')
+    >>> print variant.device.bus_vendor.vendor_name.name
+    Plustek
+    >>> print variant.vendor_name.name
+    Medion
+    >>> print variant.product_name
+    MD 1234
+
+We count the number of submissions which told us an alternative device
+name.
+
+    >>> print variant.submissions
+    0
+
+The tuple (device, vendor_name, product_name) must be unique.
+The attempt to create two rows with the same data raises an
+IntegrityError error.
+
+    >>> LaunchpadZopelessLayer.txn.commit()
+    >>> same_variant = device_name_variant_set.create(device=optic_pro_ut16,
+    ...                                               vendor_name='Medion',
+    ...                                               product_name='MD 1234')
+    >>> store.flush()
+    Traceback (most recent call last):
+    ...
+    IntegrityError: ...
+    <BLANKLINE>
+    >>> LaunchpadZopelessLayer.txn.abort()
+
+
+HWDriver
+--------
+
+If a device is reported as having problems, then we are more
+interested in which drivers are involved rather than the fact that
+there are problems. The table HWDriver stores minimal data about
+drivers: its package name, the driver name itself and the driver's
+license. This data is linked to HWDevice records via the table
+HWDeviceDriverLink (see below).
+
+The driver is not in every case a kernel driver, it may also be for
+example a Ghostscript driver of a printer or a Sane scanner backend.
+
+    >>> from lp.hardwaredb.interfaces.hwdb import IHWDriverSet
+    >>> from lp.registry.interfaces.product import License
+    >>> driver_set = getUtility(IHWDriverSet)
+    >>> usb_driver = driver_set.create(package_name='linux-image-generic',
+    ...                                name='usb',
+    ...                                license=License.GNU_GPL_V2)
+    >>> print usb_driver.name
+    usb
+    >>> print usb_driver.package_name
+    linux-image-generic
+    >>> print usb_driver.license.title
+    GNU GPL v2
+
+The submitted data does not need to contain package information for all
+drivers, hence the field package_name may be None or the empty string
+(see below). In both cases, a HWDriver record is created where
+package_name is the empty string.
+
+    >>> driver2 = driver_set.create(package_name=None,
+    ...                             name='whatever',
+    ...                             license=License.GNU_GPL_V2)
+    >>> print driver2.name
+    whatever
+    >>> print repr(driver2.package_name)
+    u''
+    >>> print driver2.license.title
+    GNU GPL v2
+
+    >>> driver_blank_package_name = driver_set.create(package_name='',
+    ...                                               name='bar',
+    ...                             license=License.GNU_GPL_V3)
+    >>> print driver_blank_package_name.name
+    bar
+    >>> print repr(driver_blank_package_name.package_name)
+    u''
+    >>> print driver_blank_package_name.license.title
+    GNU GPL v3
+
+Since we also do not always know the license of a driver, the license
+may too be None.
+
+    >>> driver3 = driver_set.create(package_name='',
+    ...                             name='something_else',
+    ...                             license=None)
+    >>> print driver3.name
+    something_else
+    >>> print repr(driver3.package_name)
+    u''
+    >>> print driver3.license
+    None
+
+The tuple (driver name, package name) must be unique.
+
+    >>> LaunchpadZopelessLayer.txn.commit()
+    >>> driver = driver_set.create(package_name='linux-image-generic',
+    ...                            name='usb',
+    ...                            license=License.GNU_GPL_V2)
+    >>> store.flush()
+    Traceback (most recent call last):
+    ...
+    IntegrityError: ...
+    <BLANKLINE>
+    >>> LaunchpadZopelessLayer.txn.abort()
+
+    >>> driver = driver_set.create(package_name=None,
+    ...                            name='whatever',
+    ...                            license=License.GNU_GPL_V2)
+    >>> store.flush()
+    Traceback (most recent call last):
+    ...
+    IntegrityError: ...
+    <BLANKLINE>
+    >>> LaunchpadZopelessLayer.txn.abort()
+
+An IHWDriver record is retrieved by calling
+IHWDriverSet.getByPackageAndName().
+
+    >>> driver = driver_set.getByPackageAndName('linux-image-generic', 'usb')
+    >>> print driver.package_name
+    linux-image-generic
+    >>> print driver.name
+    usb
+
+If we want to search for a driver without a known package, we can
+pass None as well as the empty string.
+
+    >>> driver = driver_set.getByPackageAndName('', 'whatever')
+    >>> print repr(driver.package_name)
+    u''
+    >>> print driver.name
+    whatever
+
+    >>> driver2 = driver_set.getByPackageAndName(None, 'whatever')
+    >>> driver2.id == driver.id
+    True
+
+If no existing record matches the parameters of the
+IHWDriverSet.getByPackageAndName() call, None is returned.
+
+    >>> driver = driver_set.getByPackageAndName('nonsense', 'more nonsense')
+    >>> print driver
+    None
+
+IHWDriverSet.getOrCreate() returns an existing record matching
+the given parameters or creates a new one, if no existing record matches.
+
+    >>> driver = driver_set.getOrCreate('linux-image-generic', 'usb')
+    >>> print driver.package_name
+    linux-image-generic
+    >>> print driver.name
+    usb
+
+    >>> driver = driver_set.getByPackageAndName('linux-image-generic', 'foo')
+    >>> print driver
+    None
+    >>> driver = driver_set.getOrCreate('linux-image-generic', 'foo')
+    >>> print driver.name
+    foo
+    >>> print driver.package_name
+    linux-image-generic
+
+If we pass None as the value for package_name, we get records where
+package_name is None or the empty string.
+
+    >>> driver = driver_set.getOrCreate(None, 'whatever')
+    >>> print repr(driver.package_name)
+    u''
+    >>> print driver.name
+    whatever
+
+Older HWDriver records may store None as the package name. We can
+retrieve these records by passing None for package_name...
+
+    >>> from lp.hardwaredb.model.hwdb import HWDriver
+    >>> old_driver = HWDriver(package_name=None, name=u'foo', license=None)
+    >>> print old_driver.name
+    foo
+    >>> print old_driver.package_name
+    None
+
+    >>> driver = driver_set.getOrCreate(None, 'foo')
+    >>> driver.id == old_driver.id
+    True
+
+...as well as the empty string.
+
+    >>> driver = driver_set.getOrCreate('', 'foo')
+    >>> driver.id == old_driver.id
+    True
+
+IHWDriverSet.search() returns a sequence of driver records matching the
+given parameters.
+
+    >>> drivers = driver_set.search(package_name='linux-image-generic')
+    >>> for driver in drivers:
+    ...    print driver.package_name, driver.name
+    linux-image-generic usb
+    linux-image-generic foo
+
+    >>> drivers = driver_set.search(name='usb')
+    >>> for driver in drivers:
+    ...    print driver.package_name, driver.name
+    linux-image-2.6.24-19-generic usb
+    linux-image-generic usb
+
+    >>> drivers = driver_set.search(
+    ...     package_name='linux-image-2.6.24-19-generic', name='ahci')
+    >>> for driver in drivers:
+    ...    print driver.package_name, driver.name
+    linux-image-2.6.24-19-generic ahci
+
+If package_name is an empty string, driver records are returned where
+the package name is not recorded (which is denoted by None or the
+empty string. See also bug 306265: Disallow the column value
+HWDriver.package_name=null).
+
+    >>> drivers = driver_set.search(package_name='')
+    >>> for driver in drivers:
+    ...    print repr(driver.package_name), driver.name
+    u'' whatever
+    u'' bar
+    u'' something_else
+    None foo
+
+    >>> drivers = driver_set.search(package_name='', name='whatever')
+    >>> for driver in drivers:
+    ...    print repr(driver.package_name), driver.name
+    u'' whatever
+
+    >>> drivers = driver_set.search(package_name='', name='foo')
+    >>> for driver in drivers:
+    ...    print repr(driver.package_name), driver.name
+    None foo
+
+If no parameters are specified, IHWDriverSet.search() returns all driver
+records.
+
+    >>> drivers = driver_set.search()
+    >>> for driver in drivers:
+    ...    print repr(driver.package_name), driver.name
+    u'linux-image-2.6.24-19-generic' ehci_hcd
+    u'linux-image-2.6.24-19-generic' usb
+    u'linux-image-2.6.24-19-generic' usb-storage
+    u'linux-image-2.6.24-19-generic' sd
+    u'linux-image-2.6.24-19-generic' hub
+    u'linux-image-2.6.24-19-generic' ahci
+    u'linux-image-2.6.24-19-generic' sr
+    u'linux-image-generic' usb
+    u'' whatever
+    u'' bar
+    u'' something_else
+    u'linux-image-generic' foo
+    None foo
+
+HWDriverSet.getByID() returns a HWDriver record with the given database ID.
+
+    >>> driver = driver_set.getByID(1)
+    >>> print driver.id
+    1
+    >>> print driver.package_name
+    linux-image-2.6.24-19-generic
+    >>> print driver.name
+    ehci_hcd
+
+HWDriverSet.getByID() returns None if no record with the passed ID exists.
+
+    >>> driver = driver_set.getByID(1000000)
+    >>> print driver
+    None
+
+    >>> transaction.abort()
+    >>> switch_dbuser('launchpad')
+
+We can search all the submissions related to a driver.
+
+    >>> driver = driver_set.getByID(1)
+    >>> for submission in driver.getSubmissions():
+    ...     print submission.submission_key
+    sample-submission
+
+We can limit our search to submissions for a particular distribution.
+
+    >>> for submission in driver.getSubmissions(distribution=ubuntu):
+    ...     print submission.submission_key
+    sample-submission
+
+    >>> print driver.getSubmissions(distribution=debian).count()
+    0
+
+We can limit the results to a specific distro series.
+
+    >>> for submission in driver.getSubmissions(
+    ...     distroseries=ubuntu['hoary']):
+    ...     print submission.submission_key
+    sample-submission
+
+    >>> driver.getSubmissions(distroseries=ubuntu['warty']).count()
+    0
+
+We can also limit the results to a specific distro series and architecture.
+
+    >>> for submission in driver.getSubmissions(
+    ...     distroseries=ubuntu['hoary'], architecture='i386'):
+    ...     print submission.submission_key
+    sample-submission
+
+    >>> driver.getSubmissions(
+    ...     distroseries=ubuntu['hoary'], architecture='powerpc').count()
+    0
+
+And We can search for submissions from a particular user.
+
+    >>> for submission in driver.getSubmissions(owner=owner):
+    ...     print submission.submission_key
+    sample-submission
+
+    >>> driver.getSubmissions(owner=not_owner).count()
+    0
+
+    >>> transaction.abort()
+    >>> switch_dbuser('hwdb-submission-processor')
+
+
+Driver names and package names
+------------------------------
+
+The same driver names can appear multiple times in HWDriver.
+HWDriverSet.all_driver_names() returns a list of distinct driver
+names used in the table HWDriver.
+
+    >>> switch_dbuser('launchpad')
+    >>> for driver_name in driver_set.all_driver_names():
+    ...     print driver_name.name
+    ahci
+    bar
+    ehci_hcd
+    hub
+    sd
+    something_else
+    sr
+    usb
+    usb-storage
+    whatever
+
+Similary, the same package names appear more than once in HWDriver.
+HWDriverSet.all_package_names() returns a list of distinct package
+names. Note that the package name value None (used in older submissions)
+is not included.
+
+    >>> from lp.hardwaredb.model.hwdb import HWDriver
+    >>> store.add(HWDriver(name='foo', package_name=None))
+    <HWDriver at...
+    >>> for package_name in driver_set.all_package_names():
+    ...     print package_name.package_name
+    <BLANKLINE>
+    linux-image-2.6.24-19-generic
+    linux-image-generic
+
+    >>> switch_dbuser('hwdb-submission-processor')
+
+
+HWDeviceDriverLink
+------------------
+
+This table links devices and drivers.
+
+    >>> from lp.hardwaredb.interfaces.hwdb import IHWDeviceDriverLinkSet
+    >>> device_driver_link_set = getUtility(IHWDeviceDriverLinkSet)
+    >>> usb_controller_usb_link = device_driver_link_set.create(
+    ...     device=usb_controller, driver=usb_driver)
+    >>> print usb_controller_usb_link.device.name
+    82801GBM/GHM (ICH7 Family) USB2 EHCI Controller
+    >>> print usb_controller_usb_link.driver.name
+    usb
+
+A device may be linked to more than one driver. A USB2 host controller
+for example has two drivers, the "generic" USB driver and the ehci-hcd
+driver.
+
+    >>> ehci_hcd_driver = driver_set.create(
+    ...     package_name='linux-image-generic', name='ehci_hcd',
+    ...     license=License.GNU_GPL_V2)
+    >>> usb_controller_ehci_hcd_link = device_driver_link_set.create(
+    ...     device=usb_controller, driver=ehci_hcd_driver)
+    >>> print usb_controller_ehci_hcd_link.device.name
+    82801GBM/GHM (ICH7 Family) USB2 EHCI Controller
+    >>> print usb_controller_ehci_hcd_link.driver.name
+    ehci_hcd
+
+A scanner can be linked to the kernel driver for the physical interface
+and to its Sane backend.
+
+    >>> scanner_usb_driver_link = device_driver_link_set.create(
+    ...     device=optic_pro_ut12, driver=usb_driver)
+    >>> print scanner_usb_driver_link.device.name
+    OpticPro UT12
+    >>> print scanner_usb_driver_link.driver.name
+    usb
+
+    >>> sane_plustek_driver = driver_set.create(package_name='libsane',
+    ...                                         name='plustek',
+    ...                                         license=License.GNU_GPL_V2)
+    >>> scanner_sane_plustek_link = device_driver_link_set.create(
+    ...     device=optic_pro_ut12, driver=sane_plustek_driver)
+    >>> print scanner_sane_plustek_link.device.name
+    OpticPro UT12
+    >>> print scanner_sane_plustek_link.driver.name
+    plustek
+
+Devices can have alternative drivers. Let's assume that Plustek
+provides a closed-source driver for its scanners.
+
+    >>> closed_driver = driver_set.create(package_name='plustek-scanner',
+    ...                                   name='ut12',
+    ...                                   license=License.OTHER_PROPRIETARY)
+
+Now we can link the OpticPro UT12 to the closed-source driver too.
+
+    >>> link3 = device_driver_link_set.create(device=optic_pro_ut12,
+    ...                                         driver=closed_driver)
+    >>> print link3.device.name
+    OpticPro UT12
+    >>> print link3.driver.name
+    ut12
+
+We have two cases, where we do not (or can not) store driver information
+for a HWDevice record:
+  - it does not make much sense to assign drivers to an entire system;
+  - HAL can list a device without providing driver information. This is
+    for example the case for an unsupported device.
+
+Since the tables HWSubmissionDevice, HWTestAnswer and HWTestAnswerCount
+(see below) link to HWDeviceDriverLink, we need a record in the latter
+table, even when we do not know about a driver of a device or system.
+Thus we can create a HWDeviceDriverLink record, where driver is None.
+
+    >>> tuffbook_2600_device_driver_link = device_driver_link_set.create(
+    ...     device=tuffbook_2600, driver=None)
+
+The tuple (device, driver) must be unique.
+
+    >>> LaunchpadZopelessLayer.txn.commit()
+    >>> device_driver_link_set.create(device=optic_pro_ut12,
+    ...                               driver=closed_driver)
+    <HWDeviceDriverLink...
+    >>> store.flush()
+    Traceback (most recent call last):
+    ...
+    IntegrityError: ...
+    <BLANKLINE>
+    >>> LaunchpadZopelessLayer.txn.abort()
+
+    >>> device_driver_link_set.create(device=tuffbook_2600, driver=None)
+    <HWDeviceDriverLink...
+    >>> store.flush()
+    Traceback (most recent call last):
+    ...
+    IntegrityError: ...
+    <BLANKLINE>
+    >>> LaunchpadZopelessLayer.txn.abort()
+
+An IHWDeviceDriverLink record is retrieved by
+IHWDeviceDriverSet.getByDeviceAndDriver().
+
+    >>> link = device_driver_link_set.getByDeviceAndDriver(optic_pro_ut12,
+    ...                                                    closed_driver)
+    >>> print link.device.name
+    OpticPro UT12
+    >>> print link.driver.name
+    ut12
+
+If no record exists for the given tuple (device, driver),
+IHWDeviceDriverSet.getByDeviceAndDriver() returns None.
+
+    >>> link = device_driver_link_set.getByDeviceAndDriver(optic_pro_ut12,
+    ...                                                    ehci_hcd_driver)
+    >>> print link
+    None
+
+HWDeviceDriverLinkSet.getOrCreate() returns an existing record matching
+the given parameters or creates a new one, if no existing record matches.
+
+    >>> link = device_driver_link_set.getOrCreate(optic_pro_ut12,
+    ...                                           closed_driver)
+    >>> print link.device.name
+    OpticPro UT12
+    >>> print link.driver.name
+    ut12
+    >>> print link.id == link3.id
+    True
+    >>> link = device_driver_link_set.getByDeviceAndDriver(optic_pro_ut12,
+    ...                                                    None)
+    >>> print link
+    None
+    >>> link = device_driver_link_set.getOrCreate(optic_pro_ut12, None)
+    >>> print link.device.name
+    OpticPro UT12
+    >>> print link.driver
+    None
+
+
+HWDeviceClass
+-------------
+
+This table specifies the class or classes of a device. A device class
+describes the capabilities of a device, i.e, if it is a printer,
+input device, sound device etc. HWDeviceClass stores the main class of
+a device, enumerated by HWMainClass, as well as a sub-class, enumerated
+by HWSubClass. The required main class specifies the generic type of
+a device, the optional sub-class a more detailed type.
+
+Note that this information is not very reliable for some devices.
+For example, the USB bus has no specification at all for scanners;
+many vendors use the "generic" class/sub-class 0/0 for their scanners,
+while other vendors use 0x10/0, at least for some of their scanners.
+
+We have also hardware reports with obviously broken devices. For example
+some USB/WLAN adapters with vendor/product IDs 0x050d/0x705a and
+0x050d/0x905b claim that they implement the USB class 6, imaging.
+Similary, a number of PCI devices return clearly invalid class/subclass
+data.
+
+Let's pretend that Plustek uses the inofficial class/subclass 0x10/0
+for their Optic Pro 12 scanner.
+
+    >>> device_class_optic_pro_ut12 = optic_pro_ut12.getOrCreateDeviceClass(
+    ...     main_class=0x10, sub_class=0)
+    >>> device_class_optic_pro_ut12.main_class
+    16
+    >>> device_class_optic_pro_ut12.sub_class
+    0
+
+We can assign more than one class to devices. This should only be
+done for USB devices, which may have different classes for each
+of their interfaces. Let's add a second device class, "USB printer",
+for the scanner.
+
+    >>> device_class_printer = optic_pro_ut12.getOrCreateDeviceClass(
+    ...     main_class=0x07, sub_class=0x01)
+    >>> print device_class_printer.device.name
+    OpticPro UT12
+    >>> print device_class_printer.main_class
+    7
+    >>> print device_class_printer.sub_class
+    1
+
+IHWDdevice.classes contains the set of classes defined for this device.
+
+    >>> for device_class in optic_pro_ut12.classes:
+    ...     print device_class.main_class, device_class.sub_class
+    7 1
+    16 0
+
+We get the device class data from HWDB submissiions. Some submissions
+contain devices with obviously broken device class information, like
+a PCI SCSI controller claiming to be a graphics card, or a USB WLAN
+adapter claiming to be an imaging device. If we notice such kind of
+broken device class data, we can remove it by calling
+IHWDevice.removeDeviceClass().
+
+    >>> LaunchpadZopelessLayer.txn.commit()
+    >>> switch_dbuser('launchpad')
+    >>> optic_pro_ut12.removeDeviceClass(main_class=0x07, sub_class=0x01)
+    >>> for device_class in optic_pro_ut12.classes:
+    ...     print device_class.main_class, device_class.sub_class
+    16 0
+
+    >>> switch_dbuser('hwdb-submission-processor')
+
+
+HWSubmissionDevice
+------------------
+
+This table links devices listed in a submission to the
+HWDeviceDriverLink table. Additionally it links a device of a
+submission to its parent device, as modeled by HAL. A submission
+may contain two or more identical devices. In order to unambiugously
+relate HWSubmissionDevice records to devices as represented in the
+submitted data, we store the attribute "id" of the HAL device node
+too.
+
+We need a submission to which we can link HWSubmissionDevice entries.
+
+    >>> from lp.hardwaredb.interfaces.hwdb import IHWSubmissionSet
+    >>> sample_submission = getUtility(IHWSubmissionSet).getBySubmissionKey(
+    ...     'test_submission_id_1')
+
+A HWSubmissionDevice record for a system does not have any parent...
+
+    >>> from lp.hardwaredb.interfaces.hwdb import IHWSubmissionDeviceSet
+    >>> submission_device_set = getUtility(IHWSubmissionDeviceSet)
+    >>> submitted_tuffbook_2600 = submission_device_set.create(
+    ...     device_driver_link=tuffbook_2600_device_driver_link,
+    ...     submission=sample_submission, parent=None, hal_device_id=1)
+    >>> print submitted_tuffbook_2600.device_driver_link.device.name
+    Tuffbook 2600
+    >>> print submitted_tuffbook_2600.device.name
+    Tuffbook 2600
+    >>> print submitted_tuffbook_2600.driver
+    None
+    >>> print submitted_tuffbook_2600.submission.submission_key
+    test_submission_id_1
+    >>> print submitted_tuffbook_2600.parent
+    None
+    >>> print submitted_tuffbook_2600.hal_device_id
+    1
+
+...while ordinary device entries have the attribute parent set. The
+parent/child relationship may extend to several "generations". For
+example, our Inspiron 1234 has a USB host controller; its parent
+is the system itself.
+
+    >>> submitted_usb_ehci_hcd_controller = submission_device_set.create(
+    ...      device_driver_link=usb_controller_ehci_hcd_link,
+    ...      submission=sample_submission,
+    ...      parent=submitted_tuffbook_2600,
+    ...      hal_device_id=2)
+
+For the "output aspect" of the USB controller, we have
+usb_controller_usb_link; its parent is submitted_usb_ehci_hcd_controller
+that we just have created.
+
+    >>> submitted_usb_controller = submission_device_set.create(
+    ...      device_driver_link=usb_controller_usb_link,
+    ...      submission=sample_submission,
+    ...      parent=submitted_usb_ehci_hcd_controller,
+    ...      hal_device_id=3)
+    >>> print submitted_usb_controller.device_driver_link.device.name
+    82801GBM/GHM (ICH7 Family) USB2 EHCI Controller
+    >>> print submitted_usb_controller.device_driver_link.driver.name
+    usb
+    >>> print submitted_usb_controller.device.name
+    82801GBM/GHM (ICH7 Family) USB2 EHCI Controller
+    >>> print submitted_usb_controller.driver.name
+    usb
+    >>> print submitted_usb_controller.hal_device_id
+    3
+
+The USB controller is connected to an (often internal) USB hub. We don't
+yet have HWDevice and HWDeviceDriverLink records for this hub, so we must
+create them first.
+
+    >>> usb_hub = device_set.create(bus=HWBus.USB,
+    ...                             vendor_id='0x8086',
+    ...                             product_id='0x1234',
+    ...                             product_name='Intel USB hub')
+    >>> usb_hub_driver_link = device_driver_link_set.create(
+    ...     device=usb_hub, driver=usb_driver)
+    >>> submitted_usb_hub = submission_device_set.create(
+    ...     device_driver_link=usb_hub_driver_link,
+    ...     submission=sample_submission,
+    ...     parent=submitted_usb_controller,
+    ...     hal_device_id=4)
+
+Finally, a scanner may be connected to the USB hub.
+
+    >>> submitted_scanner_usb = submission_device_set.create(
+    ...     device_driver_link=scanner_usb_driver_link,
+    ...     submission=sample_submission,
+    ...     parent=submitted_usb_hub,
+    ...     hal_device_id=5)
+
+    >>> submitted_scanner_sane = submission_device_set.create(
+    ...     device_driver_link=scanner_sane_plustek_link,
+    ...     submission=sample_submission,
+    ...     parent=submitted_scanner_usb,
+    ...     hal_device_id=6)
+
+IHWSubmissionDevice records belonging to a submission are retrieved by
+IHWSubmissionDeviceSet.getDevices().
+
+    >>> submitted_devices = submission_device_set.getDevices(
+    ...     submission=sample_submission)
+    >>> def print_device(submission_device, indent=0):
+    ...     if indent > 0:
+    ...         print '-' * indent + '>',
+    ...     device = submission_device.device_driver_link.device
+    ...     driver = submission_device.device_driver_link.driver
+    ...     print device.bus_vendor.vendor_name.name, device.name,
+    ...     if driver is not None:
+    ...         print driver.name
+    ...     else:
+    ...         print '(no driver)'
+    ...     for sub_device in submitted_devices:
+    ...         if sub_device.parent == submission_device:
+    ...             print_device(sub_device, indent+1)
+    >>> devices_without_parent = [
+    ...     device for device in submitted_devices if device.parent is None]
+    >>> root_device, = devices_without_parent
+    >>> print_device(root_device)
+    Tonka Tuffbook 2600 (no driver)
+    -> Intel 82801GBM/GHM (ICH7 Family) USB2 EHCI Controller ehci_hcd
+    --> Intel 82801GBM/GHM (ICH7 Family) USB2 EHCI Controller usb
+    ---> Unknown Intel USB hub usb
+    ----> Plustek OpticPro UT12 usb
+    -----> Plustek OpticPro UT12 plustek
+
+A single IHWSubmissionDevice record is retrieved by
+IHWSubmissionDeviceSet.get().
+
+    >>> submitted_device = submission_device_set.get(1)
+    >>> print_device(submitted_device)
+    MSI MS-7369 (no driver)
+
+This method returns None if a nonexistent ID is passed.
+
+    >>> print submission_device_set.get(1000000)
+    None
+
+
+Statistical functions
+---------------------
+
+HWSubmissionDeviceSet.numDevicesInSubmissions() returns how often a
+device appears in HWDB submissions.
+
+    >>> print submission_device_set.numDevicesInSubmissions(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ')
+    1
+
+If a device appears more than once in a submission, it is counted as often
+as it appears in the submission. We have currently only unique devices
+in the existing data, so let's add another IDE disk to submission 2.
+
+    >>> ide_disk = device_set.getByDeviceID(
+    ...     HWBus.IDE, 'SEAGATE', 'ST3250820NS     ')
+    >>> # We'll use the same parent as that of the existing IDE disk.
+    >>> parent = getUtility(IHWSubmissionDeviceSet).get(17)
+    >>> submission = getUtility(IHWSubmissionSet).getBySubmissionKey(
+    ...     'sample-submission')
+    >>> # The value of hal_device_id is arbitrary: It is intended for
+    >>> # for consistency checks and debugging.
+    >>> factory.makeHWSubmissionDevice(submission, ide_disk, None, parent, 1)
+    <HWSubmissionDevice at...
+
+The number returned for the query "count the number of Seagate
+ST3250820NS" disks increased.
+
+    >>> print submission_device_set.numDevicesInSubmissions(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ')
+    2
+
+Note that we did _not_ add a HWSubmissionDevice entry for the device
+driven by the kernel's sd driver. So, when we query the number of
+disks driven by the sd driver, we'll get 1 as without the recently
+added device.
+
+    >>> print submission_device_set.numDevicesInSubmissions(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='sd')
+    1
+
+Let's now create another HWDB submission, and let's add
+HWSubmissionDevice entries for the disk and the new submission, both
+for the "plain" disk and for the disk driven by the sd driver.
+
+    >>> with lp_dbuser():
+    ...     # Set the emailaddress and hence the owner to a non-default
+    ...     # value so that we have submissions with different owners.
+    ...     submission = factory.makeHWSubmission(
+    ...         emailaddress='foo.bar@canonical.com')
+    >>> first_device = factory.makeHWSubmissionDevice(
+    ...     submission, ide_disk, None, None, 1)
+    >>> driver = getUtility(IHWDriverSet).getOrCreate(
+    ...     'linux-image-generic', 'sd')
+    >>> factory.makeHWSubmissionDevice(
+    ...     submission, ide_disk, driver, first_device, 2)
+    <HWSubmissionDevice at...
+    >>> from lp.hardwaredb.interfaces.hwdb import (
+    ...    HWSubmissionProcessingStatus)
+    >>> # We consider only submissions in the status PROCESSED for
+    >>> # statistics.
+    >>> submission.status = HWSubmissionProcessingStatus.PROCESSED
+    >>> LaunchpadZopelessLayer.txn.commit()
+
+The number of all ST3250820NS disks and of those disks driven by
+the sd driver has now increased by 1.
+
+    >>> print submission_device_set.numDevicesInSubmissions(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ')
+    3
+    >>> print submission_device_set.numDevicesInSubmissions(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='sd')
+    2
+
+We can optionally specify a driver's package name too.
+
+    >>> print submission_device_set.numDevicesInSubmissions(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='sd', package_name='linux-image-2.6.24-19-generic')
+    1
+    >>> print submission_device_set.numDevicesInSubmissions(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='sd', package_name='nonsense')
+    0
+
+And we can query for devices having any driver from a given package too.
+
+    >>> print submission_device_set.numDevicesInSubmissions(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     package_name='linux-image-2.6.24-19-generic')
+    1
+    >>> print submission_device_set.numDevicesInSubmissions(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     package_name='nonsense')
+    0
+
+We can also get the number of all devices controlled by a given driver.
+
+    >>> print submission_device_set.numDevicesInSubmissions(
+    ...     driver_name='sd')
+    6
+
+We can limit this count to a given package.
+
+    >>> print submission_device_set.numDevicesInSubmissions(
+    ...     driver_name='sd', package_name='linux-image-2.6.24-19-generic')
+    5
+
+While the parameters for a device or a driver are optional, specifying
+neither of them leads to an error.
+
+    >>> submission_device_set.numDevicesInSubmissions()
+    Traceback (most recent call last):
+    ...
+    ParameterError: Specify (bus, vendor_id, product_id) or driver_name.
+
+We can additionally query for devices in submissions made for a given
+distribution. The device from the new submission we just created is
+not counted here, because we created the new submission for a new
+distribution.
+
+    >>> switch_dbuser('launchpad')
+    >>> print submission_device_set.numDevicesInSubmissions(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distro_target=ubuntu)
+    2
+    >>> print submission_device_set.numDevicesInSubmissions(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distro_target=debian)
+    0
+
+Similary, we can limit the count to devices mentioned in submissions
+made for a given distroseries.
+
+    >>> print submission_device_set.numDevicesInSubmissions(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distro_target=ubuntu['hoary'])
+    2
+    >>> print submission_device_set.numDevicesInSubmissions(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distro_target=ubuntu['warty'])
+    0
+
+And we can also search for devices mentioned in submissions made on a
+given processor architecture.
+
+    >>> print submission_device_set.numDevicesInSubmissions(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distro_target=ubuntu['hoary']['i386'])
+    2
+    >>> print submission_device_set.numDevicesInSubmissions(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distro_target=ubuntu['hoary']['hppa'])
+    0
+
+We can also query the number of devices controlled by a given driver
+for a distrotarget.
+
+    >>> print submission_device_set.numDevicesInSubmissions(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='sd', distro_target=ubuntu['hoary']['i386'])
+    1
+    >>> print submission_device_set.numDevicesInSubmissions(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='nonsense', distro_target=ubuntu['hoary']['i386'])
+    0
+
+And we can additionally specify a package name.
+
+    >>> print submission_device_set.numDevicesInSubmissions(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='sd', package_name='linux-image-2.6.24-19-generic',
+    ...     distro_target=ubuntu['hoary']['i386'])
+    1
+    >>> print submission_device_set.numDevicesInSubmissions(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='sd', package_name='nonsense',
+    ...     distro_target=ubuntu['hoary']['i386'])
+    0
+
+HWSubmissionSet.numSubmissionsWithDevice() returns all submissions
+mentioning a given device and all processed submissions.
+
+We have currently two processed submissions, both containing the
+Seagate ST3250820NS disk. Let's add another submission for hoary/i386
+and mark it as "processed" so that we have one processed submission
+that does not contain this disk.
+
+    >>> submission = factory.makeHWSubmission(
+    ...     distroarchseries=ubuntu['hoary']['i386'])
+    >>> submission.status = HWSubmissionProcessingStatus.PROCESSED
+
+    >>> submission_set = getUtility(IHWSubmissionSet)
+    >>> print submission_set.numSubmissionsWithDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ')
+    (2L, 3L)
+
+We can limit the results to a given driver...
+
+    >>> print submission_set.numSubmissionsWithDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='sd')
+    (2L, 3L)
+    >>> print submission_set.numSubmissionsWithDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='usb')
+    (0L, 3L)
+
+...or we can ask for all submissions containing any device controlled
+by a given driver.
+
+    >>> print submission_set.numSubmissionsWithDevice(
+    ...     driver_name='sd')
+    (2L, 3L)
+
+While the parameters for a device or a driver are optional, specifying
+neither of them leads to an error.
+
+    >>> print submission_set.numSubmissionsWithDevice()
+    Traceback (most recent call last):
+    ...
+    ParameterError: Specify (bus, vendor_id, product_id) or driver_name.
+
+This count can be limited to a given package.
+
+    >>> print submission_set.numSubmissionsWithDevice(
+    ...     driver_name='sd', package_name='linux-image-2.6.24-19-generic')
+    (1L, 3L)
+
+We can also limit the count to a distibution...
+
+    >>> print submission_set.numSubmissionsWithDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distro_target=ubuntu)
+    (1L, 2L)
+    >>> print submission_set.numSubmissionsWithDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distro_target=debian)
+    (0L, 0L)
+
+...to a distroseries...
+
+    >>> print submission_set.numSubmissionsWithDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distro_target=ubuntu['hoary'])
+    (1L, 2L)
+    >>> print submission_set.numSubmissionsWithDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distro_target=ubuntu['warty'])
+    (0L, 0L)
+
+...or to a distroarchseries.
+
+    >>> print submission_set.numSubmissionsWithDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distro_target=ubuntu['hoary']['i386'])
+    (1L, 2L)
+    >>> print submission_set.numSubmissionsWithDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distro_target=ubuntu['hoary']['hppa'])
+    (0L, 0L)
+
+We can specify a distro target as well as a driver or package name.
+
+    >>> print submission_set.numSubmissionsWithDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='sd', distro_target=ubuntu['hoary']['i386'])
+    (1L, 2L)
+    >>> print submission_set.numSubmissionsWithDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='nosense', distro_target=ubuntu['hoary']['i386'])
+    (0L, 2L)
+
+    >>> print submission_set.numSubmissionsWithDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     package_name='linux-image-2.6.24-19-generic',
+    ...     distro_target=ubuntu['hoary']['i386'])
+    (1L, 2L)
+    >>> print submission_set.numSubmissionsWithDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     package_name='nonsense', distro_target=ubuntu['hoary']['i386'])
+    (0L, 2L)
+
+    >>> print submission_set.numSubmissionsWithDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='sd', package_name='linux-image-2.6.24-19-generic',
+    ...     distro_target=ubuntu['hoary']['i386'])
+    (1L, 2L)
+    >>> print submission_set.numSubmissionsWithDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='nonsense',
+    ...     package_name='linux-image-2.6.24-19-generic',
+    ...     distro_target=ubuntu['hoary']['i386'])
+    (0L, 2L)
+
+HWSubmission.numDeviceOwners() returns the number of device owners.
+Note that we identify owners by the email address as queried by the
+HWDB client, not by HWSubmission.owner.
+
+We have currently three submissions from two submitters, and submissions
+from both submitters mention the Seagate ST3250820NS disk. Let's add
+another, empty, submission for hoary/i386 from another submitter.
+
+    >>> submission = factory.makeHWSubmission(
+    ...     emailaddress='charles@babbage.com',
+    ...     distroarchseries=ubuntu['hoary']['i386'])
+    >>> submission.status = HWSubmissionProcessingStatus.PROCESSED
+
+Now we have three submitters, two of them own our Seagate disk.
+
+    >>> submission_set.numOwnersOfDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ')
+    (2L, 3L)
+
+We can limit the results to a given driver.
+
+    >>> print submission_set.numOwnersOfDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='sd')
+    (2L, 3L)
+    >>> print submission_set.numOwnersOfDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='usb')
+    (0L, 3L)
+
+We can also ask for submitters who use a given driver with any device.
+
+    >>> print submission_set.numOwnersOfDevice(
+    ...     driver_name='sd')
+    (2L, 3L)
+
+This count can be limited to a given package.
+
+    >>> print submission_set.numOwnersOfDevice(
+    ...     driver_name='sd', package_name='linux-image-2.6.24-19-generic')
+    (1L, 3L)
+
+While the parameters for a device or a driver are optional, specifying
+neither of them leads to an error.
+
+    >>> print submission_set.numOwnersOfDevice()
+    Traceback (most recent call last):
+    ...
+    ParameterError: Specify (bus, vendor_id, product_id) or driver_name.
+
+We can limit the count to a distibution...
+
+    >>> print submission_set.numOwnersOfDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distro_target=ubuntu)
+    (1L, 2L)
+    >>> print submission_set.numOwnersOfDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distro_target=debian)
+    (0L, 0L)
+
+...to a distroseries...
+
+    >>> print submission_set.numOwnersOfDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distro_target=ubuntu['hoary'])
+    (1L, 2L)
+    >>> print submission_set.numOwnersOfDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distro_target=ubuntu['warty'])
+    (0L, 0L)
+
+...or to a distroarchseries.
+
+    >>> print submission_set.numOwnersOfDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distro_target=ubuntu['hoary']['i386'])
+    (1L, 2L)
+    >>> print submission_set.numOwnersOfDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     distro_target=ubuntu['hoary']['hppa'])
+    (0L, 0L)
+
+We can specify a distro target as well as a driver or package name.
+
+    >>> print submission_set.numOwnersOfDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='sd', distro_target=ubuntu['hoary']['i386'])
+    (1L, 2L)
+    >>> print submission_set.numOwnersOfDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='nosense', distro_target=ubuntu['hoary']['i386'])
+    (0L, 2L)
+
+    >>> print submission_set.numOwnersOfDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     package_name='linux-image-2.6.24-19-generic',
+    ...     distro_target=ubuntu['hoary']['i386'])
+    (1L, 2L)
+    >>> print submission_set.numOwnersOfDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     package_name='nonsense', distro_target=ubuntu['hoary']['i386'])
+    (0L, 2L)
+
+    >>> print submission_set.numOwnersOfDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='sd', package_name='linux-image-2.6.24-19-generic',
+    ...     distro_target=ubuntu['hoary']['i386'])
+    (1L, 2L)
+    >>> print submission_set.numOwnersOfDevice(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='nonsense',
+    ...     package_name='linux-image-2.6.24-19-generic',
+    ...     distro_target=ubuntu['hoary']['i386'])
+    (0L, 2L)
+
+
+Relations between bugs and HWDB submissions
+-------------------------------------------
+
+We can query which owners of a device, or which people owning a device
+controlled by a given driver, are related to a set of bugs. We must
+specify a device's bus, vendor ID and product ID and one or more bugs.
+
+By default, only bug reporters are looked up. Sample Person has made
+a hardware report containing the IDE disk Seagate ST3250820NS, and
+he has filed bug 1.
+
+    >>> from lp.bugs.interfaces.bug import IBugSet
+    >>> bug_set = getUtility(IBugSet)
+    >>> bug_one = bug_set.get(1)
+    >>> print bug_one.owner.displayname
+    Sample Person
+    >>> for person in submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     bug_ids=[1]):
+    ...     print person.displayname
+    Sample Person
+
+If Foo Bar says that he is affected by this bug, he will be listed
+too, since he too owns the Seagate disk.
+
+    >>> foo_bar = getUtility(IPersonSet).getByEmail('foo.bar@canonical.com')
+    >>> bug_one = bug_set.get(1)
+    >>> bug_one.markUserAffected(foo_bar)
+    >>> for person in submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     bug_ids=[1], affected_by_bug=True):
+    ...     print person.displayname
+    Foo Bar
+    Sample Person
+
+When he says that he is not affected by the bug, he will no longer
+be listed.
+
+    >>> bug_one.markUserAffected(foo_bar, False)
+    >>> for person in submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     bug_ids=[1], affected_by_bug=True):
+    ...     print person.displayname
+    Sample Person
+
+By setting the parameter subscribed_to_bug to True, we can also look
+for bug subscribers who own a given device.
+
+    >>> bug_one.subscribe(foo_bar, subscribed_by=foo_bar)
+    <lp.bugs.model.bugsubscription.BugSubscription ...>
+    >>> for person in submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     bug_ids=[1], subscribed_to_bug=True):
+    ...     print person.displayname
+    Foo Bar
+    Sample Person
+
+    >>> bug_one.unsubscribe(foo_bar, unsubscribed_by=foo_bar)
+    >>> for person in submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     bug_ids=[1], subscribed_to_bug=True):
+    ...     print person.displayname
+    Sample Person
+
+We can specify more than one bug ID. If we specify bugs 1 and 3,
+deviceDriverOwnersAffectedByBugs() returns again Sample Person and
+Foo Bar.
+
+    >>> bug_three = bug_set.get(3)
+    >>> print bug_three.owner.displayname
+    Foo Bar
+    >>> for person in submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     bug_ids=[1, 3]):
+    ...     print person.displayname
+    Foo Bar
+    Sample Person
+
+Instead of passing a seqence of bug IDs, we can also specify one or
+more bug tags.
+
+    >>> from lp.services.searchbuilder import any
+    >>> from lp.bugs.interfaces.bugtask import IBugTaskSet
+    >>> from lp.bugs.interfaces.bugtasksearch import BugTaskSearchParams
+
+    >>> bugtask_set = getUtility(IBugTaskSet)
+    >>> bugtasks = bugtask_set.search(
+    ...     BugTaskSearchParams(user=foo_bar, tag=any('pebcak')))
+    >>> owners = set(bugtask.bug.owner for bugtask in bugtasks)
+    >>> for owner in owners:
+    ...     print owner.displayname
+    Sample Person
+    >>> bugtasks = bugtask_set.search(
+    ...     BugTaskSearchParams(user=foo_bar, tag=any('crash')))
+    >>> owners = set(bugtask.bug.owner for bugtask in bugtasks)
+    >>> for owner in owners:
+    ...     print owner.displayname
+    Foo Bar
+
+    >>> for person in submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     bug_tags=['pebcak']):
+    ...     print person.displayname
+    Sample Person
+
+    >>> for person in submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     bug_tags=['pebcak', 'crash']):
+    ...     print person.displayname
+    Foo Bar
+    Sample Person
+
+    >>> submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     bug_tags=['lunch-money']).count()
+    0
+
+We can limit the result to owners who use a device with a given driver
+by providing a driver_name parameter...
+
+    >>> for person in submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='sd', bug_tags=['pebcak', 'crash']):
+    ...     print person.displayname
+    Foo Bar
+    Sample Person
+
+    >>> print submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     driver_name='nonsense', bug_tags=['pebcak', 'crash']).count()
+    0
+
+...or a given package name by providing a package_name parameter.
+
+    >>> for person in submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     package_name='linux-image-2.6.24-19-generic',
+    ...     bug_tags=['pebcak', 'crash']):
+    ...     print person.displayname
+    Sample Person
+
+    >>> print submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     package_name='nonsense', bug_tags=['pebcak', 'crash']).count()
+    0
+
+Owners of private submissions are only included if the optional parameter
+`user` is the owner or an admin.
+
+    >>> private_submission = factory.makeHWSubmission(
+    ...     emailaddress='no-priv@canonical.com', private=True)
+    >>> switch_dbuser('hwdb-submission-processor')
+    >>> first_device = factory.makeHWSubmissionDevice(
+    ...     private_submission, ide_disk, None, None, 1)
+    >>> switch_dbuser('launchpad')
+    >>> no_priv = getUtility(IPersonSet).getByEmail('no-priv@canonical.com')
+    >>> bug_one.subscribe(no_priv, subscribed_by=no_priv)
+    <lp.bugs.model.bugsubscription.BugSubscription ...>
+    >>> for person in submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     bug_ids=[1], subscribed_to_bug=True, user=no_priv):
+    ...     print person.displayname
+    No Privileges Person
+    Sample Person
+
+    >>> for person in submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     bug_ids=[1], subscribed_to_bug=True, user=foo_bar):
+    ...     print person.displayname
+    No Privileges Person
+    Sample Person
+
+    >>> sample_person = getUtility(IPersonSet).getByEmail(
+    ...     'test@canonical.com')
+    >>> for person in submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     bug_ids=[1], subscribed_to_bug=True, user=sample_person):
+    ...     print person.displayname
+    Sample Person
+
+    >>> for person in submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     bus=HWBus.IDE, vendor_id='SEAGATE', product_id='ST3250820NS     ',
+    ...     bug_ids=[1], subscribed_to_bug=True):
+    ...     print person.displayname
+    Sample Person
+
+
+Searching for drivers instead of devices
+........................................
+
+We can also look for people using a given driver and being affected by a
+bug.
+
+    >>> for person in submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     driver_name='sd', bug_ids=[1]):
+    ...     print person.displayname
+    Sample Person
+
+If Foo Bar says that he is affected by this bug, he will be listed
+too, since his machine too uses the sd driver.
+
+    >>> bug_one.markUserAffected(foo_bar)
+    >>> for person in submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     driver_name='sd', bug_ids=[1], affected_by_bug=True):
+    ...     print person.displayname
+    Foo Bar
+    Sample Person
+
+He is also listed, if he subscribes to bug 1.
+
+    >>> bug_one.markUserAffected(foo_bar, False)
+    >>> bug_one.subscribe(foo_bar, subscribed_by=foo_bar)
+    <lp.bugs.model.bugsubscription.BugSubscription ...>
+    >>> for person in submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     driver_name='sd', bug_ids=[1], subscribed_to_bug=True):
+    ...     print person.displayname
+    Foo Bar
+    Sample Person
+
+We can specify more than one bug ID. If we specify bugs 1 and 3,
+deviceDriverOwnersAffectedByBugs() returns again Sample Person and
+Foo Bar.
+
+    >>> bug_one.unsubscribe(foo_bar, unsubscribed_by=foo_bar)
+    >>> for person in submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     driver_name='sd', bug_ids=[1, 3]):
+    ...     print person.displayname
+    Foo Bar
+    Sample Person
+
+Instead of passing a sequence of bug IDs, we can also specify one or
+more bug tags.
+
+    >>> for person in submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     driver_name='sd', bug_tags=['pebcak']):
+    ...     print person.displayname
+    Sample Person
+
+    >>> for person in submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     driver_name='sd', bug_tags=['pebcak', 'crash']):
+    ...     print person.displayname
+    Foo Bar
+    Sample Person
+
+    >>> submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     driver_name='sd', bug_tags=['lunch-money']).count()
+    0
+
+We can also query for both bug ids and bug tags together.
+
+    >>> for person in submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     driver_name='sd', bug_ids=[2], bug_tags=['pebcak']):
+    ...     print person.displayname
+    Sample Person
+
+Also, confirm that nothing is returned where there is no matching
+tag on a given bug id.
+
+    >>> print len(list(submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     driver_name='sd', bug_ids=[3], bug_tags=['pebcak'])))
+    0
+
+If neither a device nor a driver name is specified,
+deviceDriverOwnersAffectedByBugs() raises an error.
+
+    >>> submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     bug_tags=['lunch-money'])
+    Traceback (most recent call last):
+    ...
+    ParameterError: Specify (bus, vendor_id, product_id) or driver_name.
+
+If one of the parameters bus, vendor_id, product_id is supplied, the
+others must be supplied too.
+
+    >>> submission_set.deviceDriverOwnersAffectedByBugs(
+    ...     bus=HWBus.IDE, bug_ids=[1], subscribed_to_bug=True)
+    Traceback (most recent call last):
+    ...
+    ParameterError: Either specify bus, vendor_id and product_id or none
+    of them.
+
+For a given bug, we can get a list of devices by device owner.
+The result is a tuple of (owner_id, bus_number, vender_id, product_id).
+
+    >>> sample_person = getUtility(IPersonSet).getByName('name12')
+
+    >>> for entry in submission_set.hwInfoByBugRelatedUsers(
+    ...     bug_ids=[1]):
+    ...     print entry
+    (u'name12', <DBItem HWBus.SYSTEM, (0) System>, u'MSI', u'MS-7369')
+    (u'name12', <DBItem HWBus.SYSTEM, (0) System>, u'Tonka', u'Tuffbook 2600')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x10de', u'0x0455')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x10de', u'0x045d')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x8086', u'0x27cc')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x04b4', u'0x6560')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x07b3', u'0x0017')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x0dda', u'0x2026')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x8086', u'0x1234')
+    (u'name12', <DBItem HWBus.IDE, (7) IDE>, u'Optiarc', u'DVD RW AD-7170S ')
+    (u'name12', <DBItem HWBus.IDE, (7) IDE>, u'SEAGATE', u'ST3250820NS     ')
+
+This method can also take a list of bugs.
+
+    >>> for entry in submission_set.hwInfoByBugRelatedUsers(
+    ...     bug_ids=[1, 3]):
+    ...     print entry
+    (u'name12', <DBItem HWBus.SYSTEM, (0) System>, u'MSI', u'MS-7369')
+    (u'name12', <DBItem HWBus.SYSTEM, (0) System>, u'Tonka', u'Tuffbook 2600')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x10de', u'0x0455')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x10de', u'0x045d')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x8086', u'0x27cc')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x04b4', u'0x6560')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x07b3', u'0x0017')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x0dda', u'0x2026')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x8086', u'0x1234')
+    (u'name12', <DBItem HWBus.IDE, (7) IDE>, u'Optiarc', u'DVD RW AD-7170S ')
+    (u'name12', <DBItem HWBus.IDE, (7) IDE>, u'SEAGATE', u'ST3250820NS     ')
+    (u'name16', <DBItem HWBus.IDE, (7) IDE>, u'SEAGATE', u'ST3250820NS     ')
+
+We can also query for bug tags instead of bug numbers.
+
+    >>> for entry in submission_set.hwInfoByBugRelatedUsers(
+    ...     bug_tags=['pebcak']):
+    ...     print entry
+    (u'name12', <DBItem HWBus.SYSTEM, (0) System>, u'MSI', u'MS-7369')
+    (u'name12', <DBItem HWBus.SYSTEM, (0) System>, u'Tonka', u'Tuffbook 2600')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x10de', u'0x0455')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x10de', u'0x045d')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x8086', u'0x27cc')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x04b4', u'0x6560')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x07b3', u'0x0017')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x0dda', u'0x2026')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x8086', u'0x1234')
+    (u'name12', <DBItem HWBus.IDE, (7) IDE>, u'Optiarc', u'DVD RW AD-7170S ')
+    (u'name12', <DBItem HWBus.IDE, (7) IDE>, u'SEAGATE', u'ST3250820NS     ')
+
+    >>> for entry in submission_set.hwInfoByBugRelatedUsers(
+    ...     bug_tags=['pebcak', 'crash']):
+    ...     print entry
+    (u'name12', <DBItem HWBus.SYSTEM, (0) System>, u'MSI', u'MS-7369')
+    (u'name12', <DBItem HWBus.SYSTEM, (0) System>, u'Tonka', u'Tuffbook 2600')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x10de', u'0x0455')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x10de', u'0x045d')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x8086', u'0x27cc')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x04b4', u'0x6560')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x07b3', u'0x0017')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x0dda', u'0x2026')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x8086', u'0x1234')
+    (u'name12', <DBItem HWBus.IDE, (7) IDE>, u'Optiarc', u'DVD RW AD-7170S ')
+    (u'name12', <DBItem HWBus.IDE, (7) IDE>, u'SEAGATE', u'ST3250820NS     ')
+    (u'name16', <DBItem HWBus.IDE, (7) IDE>, u'SEAGATE', u'ST3250820NS     ')
+
+We can also query for both bug ids and bug tags together.
+
+    >>> for entry in submission_set.hwInfoByBugRelatedUsers(
+    ...     bug_ids=[2], bug_tags=['pebcak']):
+    ...     print entry
+    (u'name12', <DBItem HWBus.SYSTEM, (0) System>, u'MSI', u'MS-7369')
+    (u'name12', <DBItem HWBus.SYSTEM, (0) System>, u'Tonka', u'Tuffbook 2600')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x10de', u'0x0455')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x10de', u'0x045d')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x8086', u'0x27cc')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x04b4', u'0x6560')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x07b3', u'0x0017')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x0dda', u'0x2026')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x8086', u'0x1234')
+    (u'name12', <DBItem HWBus.IDE, (7) IDE>, u'Optiarc', u'DVD RW AD-7170S ')
+    (u'name12', <DBItem HWBus.IDE, (7) IDE>, u'SEAGATE', u'ST3250820NS     ')
+
+Also, confirm that nothing is returned where there is no matching
+tag on a given bug id.
+
+    >>> print len(submission_set.hwInfoByBugRelatedUsers(
+    ...     bug_ids=[3], bug_tags=['pebcak']))
+    0
+
+This method can also be used to list devices where the
+device owner is affected by the bug.
+
+    >>> bug_one.markUserAffected(foo_bar)
+
+    >>> for entry in submission_set.hwInfoByBugRelatedUsers(
+    ...     bug_ids=[1], affected_by_bug=True):
+    ...     print entry
+    (u'name12', <DBItem HWBus.SYSTEM, (0) System>, u'MSI', u'MS-7369')
+    (u'name12', <DBItem HWBus.SYSTEM, (0) System>, u'Tonka', u'Tuffbook 2600')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x10de', u'0x0455')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x10de', u'0x045d')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x8086', u'0x27cc')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x04b4', u'0x6560')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x07b3', u'0x0017')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x0dda', u'0x2026')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x8086', u'0x1234')
+    (u'name12', <DBItem HWBus.IDE, (7) IDE>, u'Optiarc', u'DVD RW AD-7170S ')
+    (u'name12', <DBItem HWBus.IDE, (7) IDE>, u'SEAGATE', u'ST3250820NS     ')
+    (u'name16', <DBItem HWBus.IDE, (7) IDE>, u'SEAGATE', u'ST3250820NS     ')
+
+    >>> bug_one.markUserAffected(foo_bar, False)
+
+We can also check for when the user is subscribed to the bug.
+
+    >>> bug_one.subscribe(foo_bar, subscribed_by=foo_bar)
+    <lp.bugs.model.bugsubscription.BugSubscription ...>
+
+    >>> for entry in submission_set.hwInfoByBugRelatedUsers(
+    ...     bug_ids=[1], subscribed_to_bug=True):
+    ...     print entry
+    (u'name12', <DBItem HWBus.SYSTEM, (0) System>, u'MSI', u'MS-7369')
+    (u'name12', <DBItem HWBus.SYSTEM, (0) System>, u'Tonka', u'Tuffbook 2600')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x10de', u'0x0455')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x10de', u'0x045d')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x8086', u'0x27cc')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x04b4', u'0x6560')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x07b3', u'0x0017')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x0dda', u'0x2026')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x8086', u'0x1234')
+    (u'name12', <DBItem HWBus.IDE, (7) IDE>, u'Optiarc', u'DVD RW AD-7170S ')
+    (u'name12', <DBItem HWBus.IDE, (7) IDE>, u'SEAGATE', u'ST3250820NS     ')
+    (u'name16', <DBItem HWBus.IDE, (7) IDE>, u'SEAGATE', u'ST3250820NS     ')
+
+    >>> bug_one.unsubscribe(foo_bar, unsubscribed_by=foo_bar)
+
+Data from private submissions is not included by default.
+The owner of a private submission can see his or her submission.
+
+    >>> bug_one.subscribe(no_priv, subscribed_by=no_priv)
+    <lp.bugs.model.bugsubscription.BugSubscription ...>
+
+    >>> for entry in submission_set.hwInfoByBugRelatedUsers(
+    ...     bug_ids=[1], subscribed_to_bug=True, user=no_priv):
+    ...     print entry
+    (u'name12', <DBItem HWBus.SYSTEM, (0) System>, u'MSI', u'MS-7369')
+    (u'name12', <DBItem HWBus.SYSTEM, (0) System>, u'Tonka', u'Tuffbook 2600')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x10de', u'0x0455')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x10de', u'0x045d')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x8086', u'0x27cc')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x04b4', u'0x6560')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x07b3', u'0x0017')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x0dda', u'0x2026')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x8086', u'0x1234')
+    (u'name12', <DBItem HWBus.IDE, (7) IDE>, u'Optiarc', u'DVD RW AD-7170S ')
+    (u'name12', <DBItem HWBus.IDE, (7) IDE>, u'SEAGATE', u'ST3250820NS     ')
+    (u'no-priv', <DBItem HWBus.IDE, (7) IDE>, u'SEAGATE', u'ST3250820NS     ')
+
+An admin can also see no_priv's private entry.
+
+    >>> for entry in submission_set.hwInfoByBugRelatedUsers(
+    ...     bug_ids=[1], subscribed_to_bug=True, user=foo_bar):
+    ...     print entry
+    (u'name12', <DBItem HWBus.SYSTEM, (0) System>, u'MSI', u'MS-7369')
+    (u'name12', <DBItem HWBus.SYSTEM, (0) System>, u'Tonka', u'Tuffbook 2600')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x10de', u'0x0455')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x10de', u'0x045d')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x8086', u'0x27cc')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x04b4', u'0x6560')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x07b3', u'0x0017')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x0dda', u'0x2026')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x8086', u'0x1234')
+    (u'name12', <DBItem HWBus.IDE, (7) IDE>, u'Optiarc', u'DVD RW AD-7170S ')
+    (u'name12', <DBItem HWBus.IDE, (7) IDE>, u'SEAGATE', u'ST3250820NS     ')
+    (u'no-priv', <DBItem HWBus.IDE, (7) IDE>, u'SEAGATE', u'ST3250820NS     ')
+
+But sample_person cannot see the private entry because she
+is not the owner or an admin.
+
+    >>> for entry in submission_set.hwInfoByBugRelatedUsers(
+    ...     bug_ids=[1], subscribed_to_bug=True, user=sample_person):
+    ...     print entry
+    (u'name12', <DBItem HWBus.SYSTEM, (0) System>, u'MSI', u'MS-7369')
+    (u'name12', <DBItem HWBus.SYSTEM, (0) System>, u'Tonka', u'Tuffbook 2600')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x10de', u'0x0455')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x10de', u'0x045d')
+    (u'name12', <DBItem HWBus.PCI, (1) PCI>, u'0x8086', u'0x27cc')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x04b4', u'0x6560')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x07b3', u'0x0017')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x0dda', u'0x2026')
+    (u'name12', <DBItem HWBus.USB, (2) USB>, u'0x8086', u'0x1234')
+    (u'name12', <DBItem HWBus.IDE, (7) IDE>, u'Optiarc', u'DVD RW AD-7170S ')
+    (u'name12', <DBItem HWBus.IDE, (7) IDE>, u'SEAGATE', u'ST3250820NS     ')
+
+    >>> bug_one.unsubscribe(no_priv, unsubscribed_by=no_priv)

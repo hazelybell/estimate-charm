@@ -1,0 +1,162 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+>
+
+  <head>
+    <tal:head-epilogue metal:fill-slot="head_epilogue">
+      <tal:uses_launchpad_bugtracker
+         condition="context/bug_tracking_usage/enumvalue:LAUNCHPAD">
+        <script type="text/javascript">
+            LPJS.use('lp.registry.structural_subscription', function(Y) {
+                var module = Y.lp.registry.structural_subscription;
+                Y.on('domready', function() {
+                  module.setup({content_box: "#structural-subscription-content-box"});
+                });
+            });
+        </script>
+      </tal:uses_launchpad_bugtracker>
+    </tal:head-epilogue>
+  </head>
+
+  <body>
+    <tal:registering metal:fill-slot="registering">
+      Registered
+      <tal:created replace="context/datecreated/fmt:approximatedate" />
+      by
+      <tal:registrant replace="structure context/registrant/fmt:link" />
+    </tal:registering>
+
+    <tal:main metal:fill-slot="main">
+
+    <div class="top-portlet">
+      <p id="project-inactive" class="warning message"
+         tal:condition="not: context/active">
+        This project is currently inactive
+        <a tal:attributes="href context/menu:overview/administer/url"
+          >(change this)</a>
+      </p>
+
+      <tal:block condition="view/required:launchpad.Edit">
+        <p tal:condition="not: context/products" class="warning message">
+          There are no projects registered for
+          <span tal:replace="context/displayname">project displayname</span>.
+          <br />
+          You need to <a href="+newproduct">register another project that is
+          part of <tal:project replace="context/displayname" /></a> or associate
+          an existing project with it.
+        </p>
+      </tal:block>
+
+      <div class="summary" tal:content="context/summary">
+        This is the project group Summary, which should be a single paragraph
+        summarising the project group's purpose.
+      </div>
+
+      <div class="description"
+           tal:content="structure context/description/fmt:text-to-html">
+        This is the Project Group Description, which is a much more
+        substantial description of the project group.  It should be
+        several paragraphs long, and give you a very clear insight into
+        the work of the Project Group, and the people behind it. It should
+        describe the project history, and organisation.
+
+        The Project Group Description should also mention the major project or
+        projects that make up the aggregate project. For example, the
+        Apache Project description would highlight its work on the
+        Apache Server, and mention other projects such as APR.
+      </div>
+
+      <ul id="external-links" class="horizontal"
+          tal:condition="context/homepageurl">
+        <li>
+          <a rel="nofollow" class="sprite external-link"
+             tal:attributes="href context/homepageurl">Home page</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="yui-g">
+      <div class="yui-u first">
+        <tal:details replace="structure context/@@+details" />
+
+        <tal:faqs content="structure context/@@+portlet-listfaqs"
+          condition="context/@@+get-involved/answers_usage/enumvalue:LAUNCHPAD" />
+
+        <tal:has-many-project condition="view/has_many_projects">
+          <tal:questions content="structure context/@@+portlet-latestquestions"
+            condition="context/@@+get-involved/answers_usage/enumvalue:LAUNCHPAD" />
+        </tal:has-many-project>
+
+        <tal:bugs content="structure context/@@+portlet-latestbugs"
+          condition="context/@@+get-involved/official_malone" />
+
+        <tal:has-many-project condition="view/has_many_projects">
+          <tal:specs content="structure context/@@+portlet-latestspecs"
+            condition="context/@@+get-involved/blueprints_usage/enumvalue:LAUNCHPAD" />
+        </tal:has-many-project>
+
+        <tal:contributors content="structure context/@@+portlet-top-contributors"/>
+
+        <tal:has-many-project condition="view/has_many_projects">
+          <tal:sprints content="structure context/@@+portlet-coming-sprints" />
+        </tal:has-many-project>
+
+        <h2>Milestones</h2>
+        <p>
+          <a tal:replace="structure context/menu:overview/milestones/fmt:link" />
+        </p>
+        <tal:search_by_tags_form
+          content="structure view/project_group_milestone_tag/@@+portlet-milestone-tag-search" />
+      </div>
+
+      <div class="yui-u" id="products">
+        <div class="portlet">
+          <h2>Projects</h2>
+          <p tal:condition="not: context/products">
+            There are no projects registered for
+            <span tal:replace="context/displayname">project displayname</span>.
+          </p>
+          <ul tal:condition="context/products"
+              tal:repeat="product context/products">
+            <li><a tal:replace="structure product/fmt:link">product</a></li>
+          </ul>
+          <ul style="margin-top: 0.5em;">
+            <li tal:condition="context/menu:overview/new_product/enabled">
+              <a tal:replace="structure context/menu:overview/new_product/fmt:link" />
+            </li>
+          </ul>
+        </div>
+
+        <tal:has-few-project condition="not: view/has_many_projects">
+          <tal:questions content="structure context/@@+portlet-latestquestions"
+            condition="context/@@+get-involved/answers_usage/enumvalue:LAUNCHPAD" />
+
+          <tal:specs content="structure context/@@+portlet-latestspecs"
+            condition="context/@@+get-involved/blueprints_usage/enumvalue:LAUNCHPAD" />
+
+          <tal:sprints content="structure context/@@+portlet-coming-sprints" />
+        </tal:has-few-project>
+      </div>
+      <div class="yui-u">
+        <div id="structural-subscription-content-box"></div>
+      </div>
+    </div>
+    </tal:main>
+
+    <tal:side metal:fill-slot="side">
+      <div id="object-actions" class="top-portlet">
+        <tal:menu replace="structure view/@@+global-actions" />
+      </div>
+
+      <div tal:replace="structure context/@@+get-involved" />
+
+      <tal:portlet tal:replace="structure context/@@+portlet-latestannouncements" />
+    </tal:side>
+
+  </body>
+</html>

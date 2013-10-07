@@ -1,0 +1,77 @@
+<html>
+  <head>
+    <title>Series initialisation</title>
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssreset/reset.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssfonts/fonts.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssbase/base.css" />
+  </head>
+  <body>
+    <h1>There are two ways to initialise a new series:</h1>
+    <ul>
+      <li>A continuation of a distribution with existing series. For example,
+      after the previous series was released you might want to open a new
+      development series by copying the previous one.
+      </li>
+      <li>A derived distribution series. This is where you have a new
+      distribution and you want to copy the packages from a series in a
+      different distribution.
+      </li>
+    </ul>
+    <p>
+        In both cases, initialisation is done as a background task after the
+        "Initialize Series" button is pressed.
+    </p>
+
+     <h3>Continuation series</h3>
+     <p>This will copy all the sources and binaries from the previous
+         series in the distribution.  Its parent series default to the
+         parent series used in the previous series, but they can be changed.
+         This is useful, for example, when the new series has a longer
+         support period and you wish to sync packages from a more stable
+         upstream series.  On an Ubuntu-sized distribution,
+         expect the background task to complete in around 10 minutes.
+     </p>
+     <p>It will also copy all of the settings from the previous series,
+         such as upload permissions and packagesets.</p>
+
+     <h3>New derived distribution series</h3>
+     <p>Initializing a new distribution is a complicated task. It takes a
+         long time and has a lot of checks. There are various things that
+         you need to specify:
+         <ul>
+           <li>One or more parents to inherit packages from.</li>
+           <li>Which architectures available in parents that you want to use.</li>
+           <li>Which packagesets you want to copy from the parents.</li>
+           <li>Whether to rebuild the copied packages,
+               or copy binaries from the parents.</li>
+         </ul>
+         Normally you can expect the initialisation to complete in minutes
+         if you have less than around 1000 packages, but it will non-linearly
+         increase as the number of copied packages increases, because it has
+         to check that you are not copying conflicting packages.
+     </p>
+
+     <h3>Pre-initialisation checks and errors</h3>
+     <p>
+       <ul>
+        <li><em>Parent Builds:</em> If the parent has any builds in
+            progress for sources that you are copying,
+            the initialisation will be refused. This is to stop you ending
+            up with the same version binary with contents that differ between
+            parent and child, because the child would rebuild a source
+            that didn't get its binary copied too.
+        </li>
+        <li><em>Pending (Queued) Parent Builds:</em> If the parent has any
+            builds for sources that you are copying that are waiting in the
+            pending-acceptance queues (pending archive admin action),
+            the initialisation will be refused for the same reasons as
+            copying "Parent Builds" above.
+        </li>
+       </ul>
+     </p>
+
+  </body>
+</html>

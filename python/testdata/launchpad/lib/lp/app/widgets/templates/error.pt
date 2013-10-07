@@ -1,0 +1,12 @@
+<span tal:content="context/errors" />
+<div 
+  tal:condition="python:len(context.errors) == 1"
+  tal:repeat="error context/errors" tal:omit-tag="">
+  <span tal:content="error/doc" />
+</div>
+<ul tal:condition="python:len(context.errors) > 1">
+  <li tal:repeat="error context/errors" tal:content="error/doc">
+    Error Message
+  </li>
+</ul>
+

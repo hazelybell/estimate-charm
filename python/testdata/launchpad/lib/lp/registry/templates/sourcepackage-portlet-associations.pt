@@ -1,0 +1,57 @@
+<tal:root
+   xmlns:tal="http://xml.zope.org/namespaces/tal"
+   xmlns:metal="http://xml.zope.org/namespaces/metal"
+   xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+   omit-tag="">
+
+  <div id="portlet-associations">
+    <h2>Upstream connections</h2>
+
+    <div tal:define="series context/productseries">
+      <tal:has_series condition="series">
+        <div tal:content="structure context/@@+upstream-connections"/>
+
+        <ul class="horizontal">
+          <li>
+            <a class="sprite info"
+               tal:attributes="href series/product/menu:overview/packages/fmt:url"
+               >Show upstream links</a>
+          </li>
+        </ul>
+      </tal:has_series>
+
+      <tal:has_no_series condition="not: series">
+        <div id="no-upstreams">
+          <p>
+            Launchpad doesn&#8217;t know which project and series this
+            package belongs to. Links from distribution packages to
+            upstream project let distribution and upstream
+            maintainers share bugs, patches, and translations
+            efficiently.
+          </p>
+
+          <p tal:condition="not: view/product_suggestions">
+          There are no projects registered in Launchpad that are a potential
+          match for this source package.  Can you help us find one?
+          </p>
+
+          <tal:message
+             define="count python:len(view.product_suggestions);
+                     singular string:Is the following project the upstream for this source package?;
+                     plural string:Is one of these projects the upstream for this source package?"
+             condition="view/product_suggestions">
+            <b>
+            <metal:message use-macro="context/@@+base-layout-macros/plural-message"/>
+            </b>
+          </tal:message>
+
+          <div metal:use-macro="context/@@launchpad_form/form">
+            <div class="actions" metal:fill-slot="buttons">
+              <input tal:replace="structure view/link/render"/>
+            </div>
+          </div>
+        </div>
+      </tal:has_no_series>
+    </div>
+  </div>
+</tal:root>

@@ -1,0 +1,34 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  id="privacy"
+  tal:attributes="
+    class python: path('context/private') and 'portlet private' or 'portlet public'
+  "
+  tal:define="link context/menu:context/visibility"
+>
+    <span id="information-type-summary"
+      tal:attributes="class view/information_type_css;">This branch
+      contains
+      <strong id="information-type" tal:content="view/information_type"></strong>
+      information</span>&nbsp;<a class="sprite edit action-icon" id="privacy-link"
+           tal:attributes="href link/path" tal:condition="link/enabled"
+           >Edit</a>
+    <div id="information-type-description" style="padding-top: 5px"
+         tal:content="view/information_type_description"></div>
+</div>
+
+<tal:script>
+  <script type="text/javascript">
+    LPJS.use('lp.code.branch.information_type_choice', function(Y) {
+        Y.on('domready',
+            function(e) {
+              var widget = new Y.lp.code.branch.information_type_choice.BranchInformationTypeWidget();
+              widget.render();
+            },
+            window);
+    });
+  </script>
+</tal:script>
+

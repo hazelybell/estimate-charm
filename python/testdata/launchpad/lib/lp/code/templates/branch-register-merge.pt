@@ -1,0 +1,71 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+  <body>
+    <div metal:fill-slot="main">
+      <div metal:use-macro="context/@@launchpad_form/form">
+
+        <metal:formbody fill-slot="widgets">
+          <table class="form">
+
+            <tal:widget define="widget nocall:view/widgets/target_branch">
+              <metal:block use-macro="context/@@launchpad_form/widget_row" />
+            </tal:widget>
+
+            <tal:widget define="widget nocall:view/widgets/comment">
+              <metal:block use-macro="context/@@launchpad_form/widget_row" />
+            </tal:widget>
+
+            <tal:widget define="widget nocall:view/widgets/reviewer">
+              <metal:block use-macro="context/@@launchpad_form/widget_row" />
+            </tal:widget>
+
+            <tal:widget define="widget nocall:view/widgets/review_type">
+              <metal:block use-macro="context/@@launchpad_form/widget_row" />
+            </tal:widget>
+
+            <td colspan="2">
+              <fieldset id="mergeproposal-extra-options"
+                        class="collapsible">
+                <legend>Extra options</legend>
+                <div class="hide-on-load"><!-- hidden by default -->
+                <table class="extra-options">
+                  <tal:widget define="widget nocall:view/widgets/commit_message">
+                    <metal:block use-macro="context/@@launchpad_form/widget_row" />
+                  </tal:widget>
+
+                  <tal:widget define="widget nocall:view/widgets/needs_review">
+                    <metal:block use-macro="context/@@launchpad_form/widget_row" />
+                  </tal:widget>
+
+                  <tal:widget define="widget nocall:view/widgets/prerequisite_branch">
+                    <metal:block use-macro="context/@@launchpad_form/widget_row" />
+                  </tal:widget>
+                </table>
+                </div>
+              </fieldset>
+            </td>
+
+          </table>
+        </metal:formbody>
+      </div>
+
+      <tal:script>
+        <script type="text/javascript">
+          LPJS.use('lp.code.branchmergeproposal.nominate', function(Y) {
+              Y.on('domready',
+                  function(e) {
+                    Y.lp.code.branchmergeproposal.nominate.setup();
+                  },
+                  window);
+          });
+        </script>
+      </tal:script>
+
+    </div>
+  </body>
+</html>

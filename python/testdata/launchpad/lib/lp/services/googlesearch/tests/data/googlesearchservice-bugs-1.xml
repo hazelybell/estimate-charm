@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<GSP VER="3.2">
+<TM>0.416786</TM><Q>bugs site:launchpad.net</Q>
+<PARAM name="as_sitesearch" value="launchpad.net" original_value="launchpad.net"/>
+<PARAM name="client" value="google-csbe" original_value="google-csbe"/>
+<PARAM name="cx" value="011948274177882366108:ixpjdn21yfg" original_value="011948274177882366108%3Aixpjdn21yfg"/>
+<PARAM name="ie" value="utf8" original_value="utf8"/>
+<PARAM name="num" value="20" original_value="20"/>
+<PARAM name="oe" value="utf8" original_value="utf8"/>
+<PARAM name="output" value="xml_no_dtd" original_value="xml_no_dtd"/>
+<PARAM name="q" value="bugs" original_value="bugs"/>
+<PARAM name="start" value="0" original_value="0"/>
+<PARAM name="adkw" value="AELymgURIr4plE6V5qUaesxj1S8kUSFxCVrVLNU_OeCogh9Q7W5be6lEGMcbb0q6WTDgLL7zsnlnYGLvVrsdxgx3AamFm0M6ARaxerSLvSf-1JQHrOLuhsQ" original_value="AELymgURIr4plE6V5qUaesxj1S8kUSFxCVrVLNU_OeCogh9Q7W5be6lEGMcbb0q6WTDgLL7zsnlnYGLvVrsdxgx3AamFm0M6ARaxerSLvSf-1JQHrOLuhsQ"/>
+<PARAM name="hl" value="en" original_value="en"/>
+<Context><title>Launchpad Search Engine</title></Context><RES SN="1" EN="20">
+
+<M>25</M>
+<FI/><NB><NU>/custom?q=bugs+site:launchpad.net&amp;num=20&amp;hl=en&amp;output=xml_no_dtd&amp;client=google-csbe&amp;cx=011948274177882366108:ixpjdn21yfg&amp;ie=UTF-8&amp;oe=UTF-8&amp;start=0&amp;sa=N</NU>
+</NB>
+
+<R N="1"><U>https://bugs.launchpad.net/</U><UE>https://bugs.launchpad.net/</UE><T>Launchpad Bugs</T><RK>0</RK><CRAWLDATE>17 hours ago</CRAWLDATE><S>&lt;b&gt;Bug&lt;/b&gt; tracking &lt;b&gt;...&lt;/b&gt; Search &lt;b&gt;bugs&lt;/b&gt; reports &lt;b&gt;...&lt;/b&gt; Launchpad’s &lt;b&gt;bug&lt;/b&gt; &lt;br&gt; tracker allows collaboration</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><RT/></HAS></R>
+
+<R N="2"><U>https://bugs.launchpad.net/ubuntu</U><UE>https://bugs.launchpad.net/ubuntu</UE><T>Bugs in Ubuntu Linux</T><RK>0</RK><S>Lorem ipsum dolor &lt;b&gt;bug&lt;/b&gt; amet, consectetuer adipiscing elit &lt;b&gt;...&lt;/b&gt; Proin &lt;b&gt;bug&lt;/b&gt; sem at porta suscipit, arcu justo &lt;br&gt; porttitor odio &lt;b&gt;...&lt;/b&gt; ut &lt;b&gt;bug&lt;/b&gt; sem odio scelerisque metus.</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><C SZ="37k" CID="5y3q5Izgz60J"/><RT/></HAS></R>
+
+<R N="3"><U>https://bugs.launchpad.net/~name12</U><UE>https://bugs.launchpad.net/~name12</UE><T>Bugs related to Sample Person</T><RK>0</RK><S>Lorem ipsum dolor &lt;b&gt;bug&lt;/b&gt; amet, consectetuer adipiscing elit &lt;b&gt;...&lt;/b&gt; Proin &lt;b&gt;bug&lt;/b&gt; sem at porta suscipit, arcu justo porttitor odio &lt;b&gt;...&lt;/b&gt; ut &lt;b&gt;bug&lt;/b&gt; sem odio scelerisque metus.</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><RT/></HAS></R>
+
+<R N="4"><U>https://bugs.launchpad.net/bugs/1</U><UE>https://bugs.launchpad.net/bugs/1</UE><T>&lt;b&gt;Bug&lt;/b&gt; #1 in Mozilla Firefox: “Firefox does not support SVG”</T><RK>0</RK><S>Lorem ipsum dolor &lt;b&gt;bug&lt;/b&gt; amet, consectetuer adipiscing elit &lt;b&gt;...&lt;/b&gt; Proin &lt;b&gt;bug&lt;/b&gt; sem at porta suscipit, arcu justo porttitor odio &lt;b&gt;...&lt;/b&gt; ut &lt;b&gt;bug&lt;/b&gt; sem odio scelerisque metus.</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><C SZ="58k" CID="TnoSh7JenqwJ"/><RT/></HAS></R>
+
+<R N="5"><U>https://bugs.launchpad.net/ubuntu/+source/thunderbird/?field.tag=crash</U><UE>https://bugs.launchpad.net/ubuntu/+source/thunderbird/?field.tag=crash</UE><T>Bugs in Source Package "thunderbird" in Ubuntu Linux</T><RK>0</RK><S>Lorem ipsum dolor &lt;b&gt;bug&lt;/b&gt; amet, consectetuer adipiscing elit &lt;b&gt;...&lt;/b&gt; Proin &lt;b&gt;bug&lt;/b&gt; sem at porta suscipit, arcu justo porttitor odio &lt;b&gt;...&lt;/b&gt; ut &lt;b&gt;bug&lt;/b&gt; sem odio scelerisque metus.</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><C SZ="64k" CID="vqkMzdYmI84J"/><RT/></HAS></R>
+
+<R N="6"><U>https://bugs.launchpad.net/ubuntu/+source/thunderbird/+bug/9</U><UE>https://bugs.launchpad.net/ubuntu/+source/thunderbird/+bug/9</UE><T>&lt;b&gt;Bug&lt;/b&gt; #9 in thunderbird (Ubuntu): “Thunderbird crashes”</T><RK>0</RK><S>Lorem ipsum dolor &lt;b&gt;bug&lt;/b&gt; amet, consectetuer adipiscing elit &lt;b&gt;...&lt;/b&gt; Proin &lt;b&gt;bug&lt;/b&gt; sem at porta suscipit, arcu justo porttitor odio &lt;b&gt;...&lt;/b&gt; ut &lt;b&gt;bug&lt;/b&gt; sem odio scelerisque metus.</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><C SZ="36k" CID="Dwzmpo41A5gJ"/><RT/></HAS></R>
+
+<R N="7"><U>https://bugs.launchpad.net/jokosher/+bug/11</U><UE>https://bugs.launchpad.net/jokosher/+bug/11</UE><T>&lt;b&gt;Bug&lt;/b&gt; #11 in Jokosher: “Make Jokosher use autoaudiosink”</T><RK>0</RK><S>Lorem ipsum dolor &lt;b&gt;bug&lt;/b&gt; amet, consectetuer adipiscing elit &lt;b&gt;...&lt;/b&gt; Proin &lt;b&gt;bug&lt;/b&gt; sem at porta suscipit, arcu justo porttitor odio &lt;b&gt;...&lt;/b&gt; ut &lt;b&gt;bug&lt;/b&gt; sem odio scelerisque metus.</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><C SZ="41k" CID="CEH7HMkU_cAJ"/><RT/></HAS></R>
+
+<R N="8"><U>https://bugs.launchpad.net/evolution/+bug/7</U><UE>https://bugs.launchpad.net/evolution/+bug/7</UE><T>&lt;b&gt;Bug&lt;/b&gt; #7 in Evolution: “A test bug”</T><RK>0</RK><S>Lorem ipsum dolor &lt;b&gt;bug&lt;/b&gt; amet, consectetuer adipiscing elit &lt;b&gt;...&lt;/b&gt; Proin &lt;b&gt;bug&lt;/b&gt; sem at porta suscipit, arcu justo porttitor odio &lt;b&gt;...&lt;/b&gt; ut &lt;b&gt;bug&lt;/b&gt; sem odio scelerisque metus.</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><C SZ="40k" CID="Q5nqL6XVMqwJ"/><RT/></HAS></R>
+
+<R N="9"><U>https://bugs.launchpad.net/ubuntu/+bug/2</U><UE>https://bugs.launchpad.net/ubuntu/+bug/2</UE><T>&lt;b&gt;Bug&lt;/b&gt; #2 in Ubuntu: “Blackhole Trash folder”</T><RK>0</RK><S>Lorem ipsum dolor &lt;b&gt;bug&lt;/b&gt; amet, consectetuer adipiscing elit &lt;b&gt;...&lt;/b&gt; Proin &lt;b&gt;bug&lt;/b&gt; sem at porta suscipit, arcu justo porttitor odio &lt;b&gt;...&lt;/b&gt; ut &lt;b&gt;bug&lt;/b&gt; sem odio scelerisque metus.</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><C SZ="37k" CID="T5hMsN5SD4UJ"/><RT/></HAS></R>
+
+<R N="10"><U>https://bugs.launchpad.net/debian/+source/mozilla-firefox/+bug/1</U><UE>https://bugs.launchpad.net/debian/+source/mozilla-firefox/+bug/1</UE><T>&lt;b&gt;Bug&lt;/b&gt; #1 in mozilla-firefox (Debian): “Firefox does not support SVG”</T><RK>0</RK><S>Lorem ipsum dolor &lt;b&gt;bug&lt;/b&gt; amet, consectetuer adipiscing elit &lt;b&gt;...&lt;/b&gt; Proin &lt;b&gt;bug&lt;/b&gt; sem at porta suscipit, arcu justo porttitor odio &lt;b&gt;...&lt;/b&gt; ut &lt;b&gt;bug&lt;/b&gt; sem odio scelerisque metus.</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><C SZ="38k" CID="8btScQoYx0oJ"/><RT/></HAS></R>
+
+<R N="11"><U>https://bugs.launchpad.net/tomcat/+bug/2</U><UE>https://bugs.launchpad.net/tomcat/+bug/2</UE><T>&lt;b&gt;Bug&lt;/b&gt; #2 in Tomcat: “Blackhole Trash folder”</T><RK>0</RK><S>Lorem ipsum dolor &lt;b&gt;bug&lt;/b&gt; amet, consectetuer adipiscing elit &lt;b&gt;...&lt;/b&gt; Proin &lt;b&gt;bug&lt;/b&gt; sem at porta suscipit, arcu justo porttitor odio &lt;b&gt;...&lt;/b&gt; ut &lt;b&gt;bug&lt;/b&gt; sem odio scelerisque metus.</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><C SZ="38k" CID="Q_XFrcs8bcIJ"/><RT/></HAS></R>
+
+<R N="12"><U>https://bugs.launchpad.net/firefox/1.0/+bug/5</U><UE>https://bugs.launchpad.net/firefox/1.0/+bug/5</UE><T>&lt;b&gt;Bug&lt;/b&gt; #5 in Mozilla Firefox 1.0: “Firefox install instructions should be complete”</T><RK>0</RK><S>Lorem ipsum dolor &lt;b&gt;bug&lt;/b&gt; amet, consectetuer adipiscing elit &lt;b&gt;...&lt;/b&gt; Proin &lt;b&gt;bug&lt;/b&gt; sem at porta suscipit, arcu justo porttitor odio &lt;b&gt;...&lt;/b&gt; ut &lt;b&gt;bug&lt;/b&gt; sem odio scelerisque metus.</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><C SZ="29k" CID="fTmhUHBzOv4J"/><RT/></HAS></R>
+
+<R N="13"><U>https://code.launchpad.net/~marysimpson/firefox/release-0.9.2</U><UE>https://code.launchpad.net/~marysimpson/firefox/release-0.9.2</UE><T>“Mozilla Firefox 0.9.2” branch in Launchpad</T><RK>0</RK><S>Lorem ipsum dolor &lt;b&gt;bug&lt;/b&gt; amet, consectetuer adipiscing elit &lt;b&gt;...&lt;/b&gt; Proin &lt;b&gt;bug&lt;/b&gt; sem at porta suscipit, arcu justo porttitor odio &lt;b&gt;...&lt;/b&gt; ut &lt;b&gt;bug&lt;/b&gt; sem odio scelerisque metus.</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><RT/></HAS></R>
+
+<R N="14"><U>https://bugs.launchpad.net/thunderbird/+bug/15</U><UE>https://bugs.launchpad.net/thunderbird/+bug/15</UE><T>&lt;b&gt;Bug&lt;/b&gt; #15 in Mozilla Thunderbird: “Nonsensical bugs are useless”</T><RK>0</RK><S>Lorem ipsum dolor &lt;b&gt;bug&lt;/b&gt; amet, consectetuer adipiscing elit &lt;b&gt;...&lt;/b&gt; Proin &lt;b&gt;bug&lt;/b&gt; sem at porta suscipit, arcu justo porttitor odio &lt;b&gt;...&lt;/b&gt; ut &lt;b&gt;bug&lt;/b&gt; sem odio scelerisque metus.</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><C SZ="36k" CID="DTyllBtRgKwJ"/><RT/></HAS></R>
+
+<R N="15"><U>https://bugs.launchpad.net/bugs/12</U><UE>https://bugs.launchpad.net/bugs/12</UE><T>&lt;b&gt;Bug&lt;/b&gt; #12 in Jokosher: “Copy, Cut and Delete operations should work on selections”</T><RK>0</RK><S>Lorem ipsum dolor &lt;b&gt;bug&lt;/b&gt; amet, consectetuer adipiscing elit &lt;b&gt;...&lt;/b&gt; Proin &lt;b&gt;bug&lt;/b&gt; sem at porta suscipit, arcu justo porttitor odio &lt;b&gt;...&lt;/b&gt; ut &lt;b&gt;bug&lt;/b&gt; sem odio scelerisque metus.</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><C SZ="34k" CID="1kGRGgf2FtkJ"/><RT/></HAS></R>
+
+<R N="16"><U>https://bugs.launchpad.net/jokosher/+bug/12</U><UE>https://bugs.launchpad.net/jokosher/+bug/12</UE><T>&lt;b&gt;Bug&lt;/b&gt; #12 in Jokosher: “Copy, Cut and Delete operations should work on selections”</T><RK>0</RK><S>Lorem ipsum dolor &lt;b&gt;bug&lt;/b&gt; amet, consectetuer adipiscing elit &lt;b&gt;...&lt;/b&gt; Proin &lt;b&gt;bug&lt;/b&gt; sem at porta suscipit, arcu justo porttitor odio &lt;b&gt;...&lt;/b&gt; ut &lt;b&gt;bug&lt;/b&gt; sem odio scelerisque metus.</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><C SZ="57k" CID="KmwXX8kaa8MJ"/><RT/></HAS></R>
+
+<R N="17"><U>https://bugs.launchpad.net/debian/sarge/+source/mozilla-firefox/+bug/3</U><UE>https://bugs.launchpad.net/debian/sarge/+source/mozilla-firefox/+bug/3</UE><T>&lt;b&gt;Bug&lt;/b&gt; #3 in mozilla-firefox (Debian Sarge): “Bug Title Test”</T><RK>0</RK><S>Lorem ipsum dolor &lt;b&gt;bug&lt;/b&gt; amet, consectetuer adipiscing elit &lt;b&gt;...&lt;/b&gt; Proin &lt;b&gt;bug&lt;/b&gt; sem at porta suscipit, arcu justo porttitor odio &lt;b&gt;...&lt;/b&gt; ut &lt;b&gt;bug&lt;/b&gt; sem odio scelerisque metus.</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><C SZ="37k" CID="bpOa7nDcPf4J"/><RT/></HAS></R>
+
+<R N="18"><U>https://bugs.launchpad.net/firefox/+bug/4</U><UE>https://bugs.launchpad.net/firefox/+bug/4</UE><T>&lt;b&gt;Bug&lt;/b&gt; #4 in Mozilla Firefox: “Reflow problems with complex page layouts”</T><RK>0</RK><S>Lorem ipsum dolor &lt;b&gt;bug&lt;/b&gt; amet, consectetuer adipiscing elit &lt;b&gt;...&lt;/b&gt; Proin &lt;b&gt;bug&lt;/b&gt; sem at porta suscipit, arcu justo porttitor odio &lt;b&gt;...&lt;/b&gt; ut &lt;b&gt;bug&lt;/b&gt; sem odio scelerisque metus.</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><C SZ="43k" CID="jUa1q7DI9y0J"/><RT/></HAS></R>
+
+<R N="19"><U>https://bugs.launchpad.net/firefox/</U><UE>https://bugs.launchpad.net/firefox/</UE><T>Bugs in Mozilla Firefox</T><RK>0</RK><S>Lorem ipsum dolor &lt;b&gt;bug&lt;/b&gt; amet, consectetuer adipiscing elit &lt;b&gt;...&lt;/b&gt; Proin &lt;b&gt;bug&lt;/b&gt; sem at porta suscipit, arcu justo porttitor odio &lt;b&gt;...&lt;/b&gt; ut &lt;b&gt;bug&lt;/b&gt; sem odio scelerisque metus.</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><C SZ="44k" CID="cHqxYeD9FV4J"/><RT/></HAS></R>
+
+<R N="20"><U>https://bugs.launchpad.net/bugs/9</U><UE>https://bugs.launchpad.net/bugs/9</UE><T>&lt;b&gt;Bug&lt;/b&gt; #9 in thunderbird (Ubuntu): “Thunderbird crashes”</T><RK>0</RK><CRAWLDATE>18 hours ago</CRAWLDATE><S>Lorem ipsum dolor &lt;b&gt;bug&lt;/b&gt; amet, consectetuer adipiscing elit &lt;b&gt;...&lt;/b&gt; Proin &lt;b&gt;bug&lt;/b&gt; sem at porta suscipit, arcu justo porttitor odio &lt;b&gt;...&lt;/b&gt; ut &lt;b&gt;bug&lt;/b&gt; sem odio scelerisque metus.</S><LANG>en</LANG><Label>_cse_ixpjdn21yfg</Label><HAS><L/><C SZ="28k" CID="zb4EoD-fVC0J"/><RT/></HAS></R>
+
+</RES>
+</GSP>
+

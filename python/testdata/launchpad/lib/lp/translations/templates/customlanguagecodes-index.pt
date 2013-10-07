@@ -1,0 +1,81 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+  >
+<body>
+  <div metal:fill-slot="main">
+    <div class="top-portlet">
+      <p>
+        You can define custom language codes for
+        <tal:target replace="structure context/displayname">Evolution</tal:target>
+        here.  Custom language codes will be treated like proper
+        language codes by translations imports, except each is
+        associated with a language you choose.
+      </p>
+      <p>
+        Avoid doing this if possible; it makes it harder to keep track
+        of what goes where during translations import, and why.
+      </p>
+    </div>
+    <div tal:condition="context/has_custom_language_codes"
+         class="portlet"
+         id="nonempty">
+      <p>
+        <tal:block replace="context/displayname">Evolution</tal:block>
+        uses the following custom language codes:
+      </p>
+      <table class="listing" style="max-width:800px">
+        <thead>
+          <tr>
+            <th>Code...</th>
+            <th>...maps to language</th>
+            <th tal:condition="context/required:launchpad.TranslationsAdmin">
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr tal:repeat="entry context/custom_language_codes">
+            <td align="center">
+              <a tal:attributes="href entry/fmt:url:translations"
+                 tal:content="entry/language_code">pt-PT</a>
+            </td>
+            <td>
+              <a tal:condition="entry/language"
+                 tal:replace="structure entry/language/fmt:link">
+                Portuguese (pt)
+              </a>
+              <tal:nolanguage condition="not: entry/language">
+                &mdash;
+              </tal:nolanguage>
+            </td>
+            <td tal:condition="context/required:launchpad.TranslationsAdmin">
+              <a tal:attributes="href entry/fmt:url:translations/+remove"
+                 alt="Remove"
+                 title="Remove"
+                 class="remove sprite"></a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p tal:condition="not: context/has_custom_language_codes"
+         class="portlet"
+         id="empty">
+      No custom language codes have been defined.
+    </p>
+
+    <div>
+      <a tal:attributes="href context/fmt:url:translations/+add-custom-language-code"
+         tal:condition="context/required:launchpad.TranslationsAdmin"
+         class="add sprite">
+        Add a custom language code
+      </a>
+    </div>
+  </div>
+</body>
+</html>

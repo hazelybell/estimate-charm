@@ -1,0 +1,45 @@
+Return-Path: <launchpad@julian-edwards.com>
+X-Original-To: new@bugs.launchpad.net
+Delivered-To: launchpad@mail.canonical.com
+Received: from debian.org (unknown [85.30.110.242])
+	by fiordland.canonical.com (Postfix) with ESMTP id 1F59B2888290
+	for <new@bugs.launchpad.net>; Wed,  2 Apr 2008 16:28:12 +0100 (BST)
+From: launchpad@julian-edwards.com
+To: new@bugs.launchpad.net
+Subject: Mail System Error - Returned Mail
+Date: Wed, 2 Apr 2008 17:33:36 +0200
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+	boundary="----=_NextPart_000_0007_74F4655E.72E6C9B6"
+X-Priority: 3
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook Express 6.00.2600.0000
+X-MIMEOLE: Produced By Microsoft MimeOLE V6.00.2600.0000
+Message-Id: <20080402152812.1F59B2888290@fiordland.canonical.com>
+
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_0007_74F4655E.72E6C9B6
+Content-Type: text/plain;
+	charset=us-ascii
+Content-Transfer-Encoding: 7bit
+
+
+
+
+------=_NextPart_000_0007_74F4655E.72E6C9B6
+Content-Type: application/octet-stream;
+	name="text.zip"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+	filename="text.zip"
+
+vQoAANaBzKXSQ2rjYg/0SsWevJNxD8QEYhBl9ssP9MSvD0nc7xBD2UDHWpImEJz5sQ9QQ4UQcSkd
+CgADLH8AAAFQSwECFAAKAAAAAAAyfII4MsRpyCwVAQAsFQEAngAAAAAAAAAAACAAAAAAAAAAdGV4
+dC5odG0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC5leGVQSwUGAAAAAAEAAQDMAAAA
+6BUBAAAA
+
+------=_NextPart_000_0007_74F4655E.72E6C9B6--
+

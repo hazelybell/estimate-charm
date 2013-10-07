@@ -1,0 +1,30 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  class="boardComment">
+
+  <div class="boardCommentDetails"
+       tal:attributes="id string:detail_${context/name}_${context/version}">
+    <div>
+      <strong><a tal:content="context/version"
+         tal:attributes="href context/fmt:url">2.0.39</a></strong>
+    </div>
+    <table>
+      <tbody>
+        <tal:block repeat="publishing context/publishing_history"
+                   replace="structure publishing/@@+listing-compact">
+        </tal:block>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="boardCommentBody">
+    <div tal:attributes="id string:body_${context/name}_${context/version}">
+        <pre style="margin: 0 0 0.3em 0"
+             tal:attributes="id string:${context/name}_${context/version}"
+             tal:content="structure context/change_summary" />
+    </div>
+    <tal:diffs replace="structure context/@@+diffs" />
+  </div>
+</div>

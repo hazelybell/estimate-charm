@@ -1,0 +1,24 @@
+This is all a bit speculative.
+
+Entry points
+============
+
+These are the bits of ZCML that are explicitly loaded by Python code. These
+ZCML files in turn load other parts.
+
+  webapp.zcml
+    The big kahuna. Various config files (e.g. launchpad.conf) refer to
+    this file.  For the time being, site.zcml exists as an alias in the
+    root directory of the Launchpad tree, since production configuration
+    files depend on it being there.
+
+  ftesting.zcml
+    Used to configure the functional testing layer.  Look in
+    lp.testing.layers to see how it gets hooked in.
+
+  script.zcml
+    The main ZCML used for "scripts". Anything that runs in the Zopeless layer
+    uses this.  See ``execute_zcml_for_scripts``.
+
+  script-testing.zcml
+    As for script.zcml, but for testing said scripts.

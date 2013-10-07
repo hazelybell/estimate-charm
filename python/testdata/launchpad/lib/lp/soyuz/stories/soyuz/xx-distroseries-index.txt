@@ -1,0 +1,59 @@
+DistroSeries page is reached by traversing the Distribution page with
+a given name.
+
+As it's main functionality this page allow users to search for binary
+packages within the distroseries in context:
+
+    >>> anon_browser.open("http://launchpad.dev/ubuntu/warty")
+    >>> anon_browser.getControl(name="text").value = "a"
+    >>> anon_browser.getControl("Find a Package").click()
+    >>> anon_browser.url
+    'http://launchpad.dev/ubuntu/warty/+search?text=a'
+    >>> print extract_text(
+    ...     find_tag_by_id(anon_browser.contents, 'search-results'))
+    1 &rarr; 3 of 3 results
+    First &bull; Previous &bull; Next &bull; Last
+    foobar: foobar is bad
+    mozilla-firefox: Mozilla Firefox Web Browser
+    at: at the mountains of madness
+    1 &rarr; 3 of 3 results
+    First &bull; Previous &bull; Next &bull; Last
+
+
+== Latest uploads page ==
+
+This page provides raw list of the last five source packages uploaded
+and published for a given distroseries.
+
+Each entry contains:
+
+ * source name & source version, linking to the LP page for this package
+ * ubuntu maintainer, linking to a valid LP user
+ * age, as approximateduration representation of the time passed since
+   the upload was done.
+
+  >>> anon_browser.open(
+  ...     "http://launchpad.dev/ubuntu/warty/+portlet-latestuploads")
+  >>> latest_uploads = str(find_tag_by_id(anon_browser.contents,
+  ...                      "latest-uploads"))
+  >>> 'mozilla-firefox 0.9' in latest_uploads
+  True
+  >>> 'Mark Shuttleworth' in latest_uploads
+  True
+
+The link presented points to the SourcePackageRelease inside the
+DistroSeries in question (a IDRSPR), we can check for consistency
+clicking on it:
+
+  >>> anon_browser.getLink("mozilla-firefox 0.9").click()
+  >>> anon_browser.url
+  'http://launchpad.dev/ubuntu/warty/+source/mozilla-firefox/0.9'
+
+Empty results are also presented properly (even if they are quite rare
+in production environment):
+
+  >>> anon_browser.open(
+  ...     "http://launchpad.dev/ubuntutest/breezy-autotest/"
+  ...     "+portlet-latestuploads")
+  >>> find_tag_by_id(anon_browser.contents, 'no-latest-uploads') is not None
+  True

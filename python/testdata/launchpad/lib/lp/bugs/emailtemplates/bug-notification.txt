@@ -1,0 +1,10 @@
+%(content)s
+
+-- 
+%(notification_rationale)s%(subscription_filters)s
+%(bug_url)s
+
+Title:
+%(bug_title)s
+
+%(subscriptions_message)s

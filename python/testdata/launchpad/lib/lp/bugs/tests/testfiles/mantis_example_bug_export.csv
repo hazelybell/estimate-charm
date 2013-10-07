@@ -1,0 +1,54 @@
+Id,Project,Reporter,Assigned To,Priority,Severity,Reproducibility,Product Version,Projection,Category,Date Submitted,ETA,OS,OS Version,Platform,View Status,Updated,Summary,Status,Resolution,Fixed in Version,Duplicate ID
+0003224,mantisbt,bhaddad,grangeway,normal,feature,always,,none,bugtracker,2003-07-11,none,,,,public,2005-01-31,error message does not tell where is the error,assigned,open,,0000000
+0007346,mantisbt,fman,zakman,normal,feature,always,1.0.5,none,custom fields,2006-08-09,none,,,,public,2007-07-06,Copy custom fields from one project to another,assigned,open,,0000000
+0006685,mantisbt,flangset,,normal,tweak,always,1.0.0,none,news,2006-02-08,none,,,,public,2007-07-06,News items should probably propagate down to sub-projects,new,open,,0000000
+0008104,mantisbt,brunosouza,vboctor,normal,block,always,,none,email,2007-06-27,none,,,,public,2007-07-06,Error send mail in 1.1.0a3,assigned,open,,0000000
+0006919,mantisbt,lifo2,giallu,normal,tweak,always,1.0.1,none,other,2006-04-06,none,,,,public,2007-07-05,Mixed up in code between project_view_status and view_status,assigned,open,,0000000
+0007895,mantisbt,danielm,giallu,normal,minor,always,,none,bugtracker,2007-04-12,none,,,,public,2007-07-05,Recently Visited when logged in as Anonymous shows issues i have not visited,assigned,open,,0000000
+0008126,mantisbt,konstbel,,normal,minor,sometimes,1.0.7,none,bugtracker,2007-07-04,none,Windows,2003,,public,2007-07-05,Warning "implode(): Bad arguments.",new,open,,0000000
+0002077,mantisbt,vboctor,vboctor,normal,minor,always,,none,bugtracker,2002-06-02,none,,,,public,2007-07-05,Project news not visible site wide,assigned,open,,0000000
+0007597,mantisbt,eval,grangeway,normal,minor,always,1.0.5,none,email,2006-11-13,none,Windows Server 2003,SP1,,public,2007-07-05,Notification e-mail contain no messages.,assigned,open,,0000000
+0006526,mantisbt,BenBE,grangeway,normal,major,always,1.0.0rc2,none,graphs,2005-12-21,none,Unix,,Server,public,2007-07-05,Graph module gives insufficent memory warning,resolved,no change required,,0000000
+0006781,mantisbt,Sjord,grangeway,normal,minor,always,,none,administration,2006-03-07,none,,,,public,2007-07-05,Memory size exhausted when trying to upgrade to 1.0.0/1.0.1,resolved,no change required,,0000000
+0006613,mantisbt,darksartago,grangeway,normal,major,always,1.0.0rc5,none,installation,2006-01-19,none,,,,public,2007-07-05,Unusable 1.0.0rc5 with PHP5/Apache 2.0.54/MySQL 4.1.13,resolved,no change required,,0000000
+0003477,mantisbt,Kick The Donkey,grangeway,normal,tweak,always,0.18.0,none,bugtracker,2003-12-24,none,Mandrake Linux,9.2,x86,public,2007-07-05,print_mantis_error() function does not display msg.,resolved,fixed,1.1.0a4,0000000
+0008120,mantisbt,kho,vboctor,normal,minor,always,1.0.8,none,installation,2007-07-03,none,CentOS,4.5,Linux,public,2007-07-05,all the files and directories has permission 777 in mantis-1.0.8.tar.gz,assigned,open,,0000000
+0008129,mantisbt,shura,,normal,feature,always,1.1.0a3,none,signup,2007-07-04,none,,,,public,2007-07-05,Alternative to captchas,new,open,,0000000
+0004731,mantisbt,kgrubbs,giallu,normal,feature,always,0.19.0,none,email,2004-10-18,none,,,,public,2007-07-05,Show list of users that received the email,assigned,open,,0000000
+0008130,mantisbt,kratib,,normal,feature,N/A,1.0.8,none,relationships,2007-07-05,none,,,,public,2007-07-05,Custom relationships,new,open,,0000000
+0006755,mantisbt,EBY,,normal,minor,always,,none,news,2006-02-24,none,,,,public,2007-07-05,News Problems,new,open,,0000000
+0008128,mantisbt,brazo,,normal,minor,always,1.1.0a2,none,bugtracker,2007-07-04,none,,,,public,2007-07-04,"a reporter can close an already closed issue, adding a note",new,open,,0000000
+0008127,mantisbt,brazo,,normal,feature,have not tried,,none,bugtracker,2007-07-04,none,,,,public,2007-07-04,Add allow_reporter_resolve,new,open,,0000000
+0008124,mantisbt,emathieu,,normal,crash,have not tried,,none,bugtracker,2007-07-03,none,,,,public,2007-07-04,Changes in Mantis behaviour should be controlled by global parameters,new,open,,0000000
+0008125,mantisbt,giallu,,normal,minor,always,,none,installation,2007-07-04,none,,,,public,2007-07-04,install fails if the database is already present,new,open,,0000000
+0008012,mantisbt,troglobit,,normal,feature,N/A,,none,security,2007-05-24,none,,,,public,2007-07-03,Consider supporting Linux-PAM for authentication,new,open,,0000000
+0008113,mantisbt,tuxsoul,zakman,normal,minor,always,1.0.8,none,localization,2007-07-01,none,,,,public,2007-07-03,Error typo $s_signup_link in Spanish traslation .....,resolved,fixed,1.1.0a4,0000000
+0008067,mantisbt,marc,zakman,normal,tweak,always,1.0.7,none,bugtracker,2007-06-15,none,,,,public,2007-07-03,show status legend on top AND bottom,resolved,fixed,1.1.0a4,0000000
+0008044,mantisbt,a_crossley,giallu,normal,minor,always,,none,bugtracker,2007-06-08,none,,,,public,2007-07-03,Edit/Delete bugnote buttons missing,resolved,fixed,1.1.0a4,0000000
+0008122,mantisbt,giallu,giallu,normal,minor,always,1.0.8,none,bugtracker,2007-07-03,none,,,,public,2007-07-03,Port 8044: Edit/Delete bugnote buttons missing,resolved,fixed,1.0.9,0000000
+0008123,mantisbt,Frank IJskes,,normal,minor,always,1.0.7,none,administration,2007-07-03,none,,,,public,2007-07-03,Adding a user requires "$g_lost_password_feature = ON",new,open,,0000000
+0008119,mantisbt,mantis_china,giallu,normal,major,always,1.0.8,none,other,2007-07-02,none,window,xp,window,public,2007-07-03,can't change <Assigned To> ?,resolved,no change required,,0000000
+0008051,mantisbt,James Fu,zakman,normal,trivial,always,1.1.0a3,none,localization,2007-06-12,none,,,,public,2007-07-03,[all lang] Wrong fIlename on print report,resolved,fixed,1.1.0a4,0000000
+0008121,mantisbt,seiji,,normal,text,always,1.1.0a3,none,custom fields,2007-07-03,none,Linux,Gentoo Linux,PC,public,2007-07-03,Error message doesn't show field name after entering invalid value in custom field,new,open,,0000000
+0008112,mantisbt,revealex,,normal,minor,have not tried,,none,roadmap,2007-06-30,none,,,,public,2007-07-03,Deadline,new,open,,0000000
+0008105,mantisbt,rufinus,vboctor,low,feature,N/A,1.1.0a3,none,time tracking,2007-06-27,none,,,,public,2007-07-03,Total time on billing page,resolved,fixed,1.1.0a4,0000000
+0008114,mantisbt,rata,,normal,minor,N/A,1.0.7,none,customization,2007-07-01,none,,,Windows,public,2007-07-03,Clone and Move customization,acknowledged,open,,0000000
+0008094,mantisbt,plofte,vboctor,normal,minor,have not tried,1.1.0a3,none,administration,2007-06-25,none,linux,1.1.0a3,mantis,public,2007-07-02,Managing versions / release schedule accross multiple projects.,resolved,fixed,1.1.0a4,0000000
+0008118,mantisbt,brazo,,normal,text,have not tried,,none,email,2007-07-02,none,,,,public,2007-07-02,send attach by email,new,open,,0000000
+0007809,mantisbt,lifo2,giallu,normal,minor,always,,none,custom fields,2007-03-09,none,,,,public,2007-07-02,Filter "none" on custom fields doesn't work,assigned,open,,0000000
+0008103,mantisbt,libregeek,,normal,minor,always,1.1.0a2,none,bugtracker,2007-06-27,none,,,,public,2007-07-02,Cannot modify the bugnote order.,new,open,,0000000
+0007965,mantisbt,vboctor,zakman,normal,minor,have not tried,,none,time tracking,2007-05-14,none,,,,public,2007-07-02,Time tracking information not shown on email notifications,assigned,open,,0000000
+0008117,mantisbt,zend,,normal,minor,always,1.1.0a3,none,filters,2007-07-02,none,,,,public,2007-07-02,Wrong data in "Create Permlink",new,open,,0000000
+0008116,mantisbt,axeljung,,normal,major,always,1.1.0a3,none,email,2007-07-02,none,Linux,,,public,2007-07-02,attachment failure in mail_api.php,new,open,,0000000
+0008115,mantisbt,vboctor,vboctor,normal,minor,have not tried,,none,integration,2007-07-02,none,,,,public,2007-07-02,Implement Twitter Integration,resolved,fixed,1.1.0a4,0000000
+0008111,mantisbt,giallu,,normal,minor,have not tried,,none,bugtracker,2007-06-29,none,,,,public,2007-06-29,No space between date and username in email notifications,new,open,,0000000
+0008110,mantisbt,giallu,,normal,minor,have not tried,,none,other,2007-06-29,none,,,,public,2007-06-29,Can not create wiki pages in the mantisbt:issue namespace,new,open,,0000000
+0008109,mantisbt,giallu,,normal,minor,always,,none,other,2007-06-29,none,,,,public,2007-06-29,Can not upload attachments to wiki,new,open,,0000000
+0008100,mantisbt,abock42,,normal,feature,N/A,1.1.0a2,none,feature,2007-06-27,none,,,,public,2007-06-29,Ability to change displayed names projectwise,new,open,,0000000
+0007871,mantisbt,giallu,giallu,normal,minor,always,1.1.0a2,none,bugtracker,2007-03-30,none,,,,public,2007-06-29,Move "Add Note" pane below previous notes,resolved,fixed,1.1.0a4,0000000
+0007476,mantisbt,inhale,giallu,normal,major,always,1.0.5,none,administration,2006-09-26,none,FreeBSD,,,public,2007-06-29,Sorting issues at "View Issues" page does not work,resolved,no change required,,0000000
+0006274,mantisbt,vadivelkm,giallu,normal,minor,always,1.0.0a2,none,administration,2005-09-20,none,,,,public,2007-06-29,Sorting doesn't work on Mantis "View Issues" on the menu,resolved,no change required,,0007476
+0007835,mantisbt,giallu,,normal,minor,have not tried,,none,feature,2007-03-16,none,,,,public,2007-06-29,Add "Has patch" flag to improve usefulness of the "Upload File" feature,acknowledged,open,,0000000
+0003096,mantisbt,ed,giallu,normal,feature,always,0.17.5,none,bugtracker,2003-03-28,none,,,,public,2007-06-29,Edit / Delete bug notes,resolved,fixed,,0008044
+0008108,mantisbt,pkrider,,normal,minor,always,,none,other,2007-06-29,none,,,,public,2007-06-29,Pass word for loging in for SDM Review Record,feedback,open,,0000000
+0008006,mantisbt,deboutv,giallu,normal,feature,N/A,1.1.0a2,none,email,2007-05-23,none,,,,public,2007-06-28,Add port option to the phpmailer config,resolved,no change required,,0000000

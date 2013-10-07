@@ -1,0 +1,24 @@
+Format: 1.7
+Date: Thu, 16 Feb 2006 15:34:09 +0000
+Source: foocomm
+Binary: foocomm
+Architecture: source
+Version: 1.0-2
+Distribution: breezy
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Foo Bar <foo.bar@canonical.com>
+Description: 
+ foocomm        - Stuff for testing
+Changes: 
+ foocomm (1.0-1) breezy; urgency=low
+ .
+   * Initial version
+ .
+ foocomm (1.0-2) breezy; urgency=low
+ .
+   * Version 2 testing
+Files: 
+ ef5bf669d990ce27aea38164b2c89779 291 partner/devel optional foocomm_1.0-2.dsc
+ e03c530973064ebbbde9226e03868cb1 595 partner/devel optional foocomm_1.0-2.diff.gz
+ ad436f97a58df5b233209857439f1e7c 171 partner/devel optional foocomm_1.0.orig.tar.gz

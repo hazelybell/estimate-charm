@@ -1,0 +1,194 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="view/macro:page/main_side"
+      i18n:domain="launchpad"
+>
+  <head>
+    <metal:block fill-slot="head_epilogue">
+    <style type="text/css" media="screen">
+  div.confirmBox {
+    margin: 0;
+    padding-right: 0.5em;
+    padding-bottom: 0.5em;
+    text-align: right;
+  }
+    </style>
+    <script type="text/javascript">
+        LPJS.use('base', 'node', 'event',
+                'lp.app.comment', 'lp.answers.subscribers',
+            function(Y) {
+        Y.on('domready', function() {
+            LP.cache.comment_context = LP.cache.context;
+            var first_comment = Y.one('.boardComment');
+            if (first_comment !== null) {
+              var cl = new Y.lp.app.comment.CommentList({
+                  comment_list_container: first_comment.get('parentNode')
+              });
+            cl.render();
+            }
+            new Y.lp.answers.subscribers.createQuestionSubscribersLoader();
+        });
+      });
+    </script>
+    </metal:block>
+  </head>
+  <body>
+    <metal:registering fill-slot="registering">
+        Asked by
+        <a tal:replace="structure context/owner/fmt:link" />
+        <span
+          tal:attributes="title context/datecreated/fmt:datetime"
+          tal:content="context/datecreated/fmt:displaydate">2005-10-05</span>
+
+    </metal:registering>
+
+
+    <metal:portlets fill-slot="side">
+      <div id="involvement" class="portlet">
+        <ul class="involvement">
+          <li class="single">
+            <a tal:attributes="href view/new_question_url"
+               class="sprite answers">
+              Ask a question
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div tal:replace="structure context/@@+global-actions" />
+      <tal:subscribers replace="structure context/@@+portlet-subscribers"/>
+    </metal:portlets>
+
+    <div metal:fill-slot="main">
+      <tal:description
+        define="global description context/description/fmt:obfuscate-email/fmt:text-to-html" />
+
+      <div class="report"
+        tal:content="structure description"/>
+
+      <div class="portlet">
+        <h2>Question information</h2>
+
+        <div class="yui-g">
+          <div class="yui-u first">
+             <tal:distro-information content="structure context/@@+portlet-details" />
+          </div>
+
+          <div class="yui-u">
+            <div tal:replace="structure context/@@+portlet-bugs" />
+
+            <p id="original-bug"
+              tal:define="bug view/original_bug"
+              tal:condition="bug">
+              This question was originally filed as
+              <a href="#"
+                tal:attributes="href bug/fmt:url">bug
+                #<tal:num replace="bug/id" /></a>.
+            </p>
+
+            <ul class="horizontal">
+              <li
+                tal:define="link context/menu:answers/linkbug"
+                tal:content="structure link/fmt:link" />
+              <li tal:condition="context/bugs"
+                tal:define="link context/menu:answers/unlinkbug"
+                tal:content="structure link/fmt:link" />
+            </ul>
+
+            <div id="related-faq" style="margin-top: 1em;">
+              <h3>Related FAQ:</h3>
+
+              <p>
+                <a class="sprite faq"
+                  tal:condition="context/faq"
+                  tal:attributes="href context/faq/fmt:url"
+                  tal:content="context/faq/title">FAQ Title</a>
+                <tal:none tal:condition="not: context/faq">
+                  None
+                </tal:none>
+                <a tal:replace="structure context/menu:answers/linkfaq/fmt:icon" />
+               </p>
+            </div>
+
+            <div tal:condition="context/reopenings"
+                 tal:replace="structure context/@@+portlet-reopenings" />
+          </div>
+        </div>
+      </div>
+
+      <tal:message repeat="message view/visible_messages">
+      <div tal:replace="structure message/@@+display" />
+      </tal:message>
+
+      <div id="question"
+          tal:attributes="xml:lang view/lang; lang view/lang; dir view/lang">
+        <div id="can-you-help-with-this-problem"
+          tal:condition="view/show_call_to_answer">
+          <h2>
+            Can you help with this problem?
+          </h2>
+
+          <p>
+            Provide an answer of your own, or ask
+            <span tal:replace="context/owner/displayname"></span>
+            for more information if necessary.
+          </p>
+        </div>
+        <div class="yui-g">
+          <ul class="horizontal" id="horizontal-menu">
+            <li tal:define="link context/menu:answers/history"
+                tal:condition="link/enabled"
+                tal:content="structure link/fmt:link" />
+            <li tal:define="link context/menu:answers/linkbug"
+                tal:condition="link/enabled"
+                tal:content="structure link/fmt:link" />
+            <li tal:define="link context/menu:answers/makebug"
+                tal:condition="link/enabled"
+                tal:content="structure link/fmt:link" />
+            <li tal:define="link context/menu:answers/linkfaq"
+                tal:condition="link/enabled"
+                tal:content="structure link/fmt:link" />
+            <li tal:define="link context/menu:answers/createfaq"
+                tal:condition="link/enabled"
+                tal:content="structure link/fmt:link" />
+          </ul>
+        </div>
+
+        <div tal:condition="view/hasActions">
+          <div metal:use-macro="context/@@launchpad_form/form">
+            <metal:no-heading fill-slot="heading" />
+            <tal:comment replace="nothing">
+              We control here the order of the action buttons and we omit
+              the confirmation action which is rendered using the
+              QuestionMessage view.
+            </tal:comment>
+            <div class="actions" metal:fill-slot="buttons">
+              <div>
+                <input tal:replace="structure view/answer_action/render" />
+                <input tal:replace="structure view/selfanswer_action/render" />
+                <input tal:replace="structure view/requestinfo_action/render" />
+                <input tal:replace="structure view/giveinfo_action/render" />
+                <input tal:replace="structure view/reopen_action/render" />
+                <input tal:replace="structure view/comment_action/render" />
+              </div>
+              <p id="answer-button-hint"
+                tal:condition="view/confirm_action/available">
+                To confirm an answer, use the
+                <strong>'This Solved My Problem'</strong> button located at
+                the bottom of the answer.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <tal:not-logged-in condition="not: request/lp:person">
+          <div align="center">
+            To post a message you must <a href="+login">log in</a>.
+          </div>
+        </tal:not-logged-in>
+      </div>
+    </div>
+  </body>
+</html>
+

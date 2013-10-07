@@ -1,0 +1,125 @@
+Storm Stores & Database Policies
+================================
+
+Launchpad has multiple master and slave databases. Changes to data are
+made on the master and replicated asynchronously to the slave
+databases. Slave databases will usually lag a few seconds behind their
+master. Under high load they may lag a few minutes behind, during
+maintenance they may lag a few hours behind and if things explode
+while admins are on holiday they may lag days behind.
+
+If know your code needs to change data, or must have the latest posible
+information, you retrieve objects from the master databases that stores
+the data for your database class.
+
+    >>> from lp.services.database.interfaces import IMasterStore
+    >>> from lp.registry.model.person import Person
+    >>> import transaction
+
+    >>> writable_janitor = IMasterStore(Person).find(
+    ...     Person, Person.name == 'janitor').one()
+
+    >>> writable_janitor.displayname = 'Jack the Janitor'
+    >>> transaction.commit()
+
+Sometimes though we know we will not make changes and don't care much
+if the information is a little out of date. In these cases you should
+explicitly retrieve objects from a slave.
+
+The more agressively we retrieve objects from slave databases instead
+of the master, the better the overall performance of Launchpad will be.
+We can distribute this load over many slave databases but are limited to
+a single master.
+
+    >>> from lp.services.database.interfaces import ISlaveStore
+    >>> ro_janitor = ISlaveStore(Person).find(
+    ...     Person, Person.name == 'janitor').one()
+    >>> ro_janitor is writable_janitor
+    False
+
+    >>> ro_janitor.displayname = 'Janice the Janitor'
+    >>> transaction.commit()
+    Traceback (most recent call last):
+    ...
+    InternalError: ...
+
+    >>> transaction.abort()
+
+Much of our code does not know if the objects being retrieved need to be
+updatable to or have to be absolutely up to date. In this case, we
+retrieve objects from the default store. What object being returned
+depends on the currently installed database policy.
+
+    >>> from lp.services.database.interfaces import IStore
+    >>> default_janitor = IStore(Person).find(
+    ...     Person, Person.name == 'janitor').one()
+    >>> default_janitor is writable_janitor
+    True
+
+As you can see, the default database policy retrieves objects from
+the master database. This allows our code written before database
+replication was implemented to keep working.
+
+To alter this behavior, you can install a different database policy.
+
+    >>> from lp.services.database.policy import SlaveDatabasePolicy
+    >>> with SlaveDatabasePolicy():
+    ...     default_janitor = IStore(Person).find(
+    ...         Person, Person.name == 'janitor').one()
+    >>> default_janitor is writable_janitor
+    False
+
+The database policy can also affect what happens when objects are
+explicitly retrieved from a slave or master database. For example,
+if we have code that needs to run during database maintenance or
+code we want to prove only accesses slave database resources, we can
+raise an exception if an attempt is made to access master database
+resources.
+
+    >>> from lp.services.database.policy import (
+    ...     SlaveOnlyDatabasePolicy)
+    >>> with SlaveOnlyDatabasePolicy():
+    ...     whoops = IMasterStore(Person).find(
+    ...         Person, Person.name == 'janitor').one()
+    Traceback (most recent call last):
+    ...
+    DisallowedStore: master
+
+We can even ensure no database activity occurs at all, for instance
+if we need to guarantee a potentially long running call doesn't access
+the database at all starting a new and potentially long running
+database transaction.
+
+    >>> from lp.services.database.policy import DatabaseBlockedPolicy
+    >>> with DatabaseBlockedPolicy():
+    ...     whoops = IStore(Person).find(
+    ...         Person, Person.name == 'janitor').one()
+    Traceback (most recent call last):
+    ...
+    DisallowedStore: ('main', 'default')
+
+Database policies can also be installed and uninstalled using the
+IStoreSelector utility for cases where the 'with' syntax cannot
+be used.
+
+    >>> from lp.services.database.interfaces import IStoreSelector
+    >>> getUtility(IStoreSelector).push(SlaveDatabasePolicy())
+    >>> try:
+    ...     default_janitor = IStore(Person).find(
+    ...         Person, Person.name == 'janitor').one()
+    ... finally:
+    ...     db_policy = getUtility(IStoreSelector).pop()
+    >>> default_janitor is ro_janitor
+    True
+
+Casting
+-------
+
+If you need to change an object you have a read only copy of, or are
+unsure if the object is writable or not, you can easily cast it
+to a writable copy. This is a noop if the object is already writable
+so is good defensive programming.
+
+    >>> from lp.services.database.interfaces import IMasterObject
+    >>> IMasterObject(ro_janitor) is writable_janitor
+    True

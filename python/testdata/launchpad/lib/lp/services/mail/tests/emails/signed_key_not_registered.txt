@@ -1,0 +1,18 @@
+Date: Wed, 13 Apr 2005 20:17:16 -0400
+From: Sample Person <testing@canonical.com>
+To: someone@somehost
+Subject: Signed with key not registered in Launchpad
+Message-ID: <20050413231717.HA16989@localhost.localdomain>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+The key used to sign this content isn't associated with Sample Person in
+Launchpad.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.1 (GNU/Linux)
+
+iD8DBQFDpUqbyQa43h3jIoMRAqKKAJ9Zj/ggdiA8A6OXsjQ8/Ydm7193TgCdEsNb
+DKW6cMXzXbfoAvAAW+wGqwQ=
+=+xwr
+-----END PGP SIGNATURE-----

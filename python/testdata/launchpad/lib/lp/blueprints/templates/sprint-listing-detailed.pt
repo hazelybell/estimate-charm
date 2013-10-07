@@ -1,0 +1,39 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<tr>
+  <td class="icon left">
+    <img alt="" src="/@@/meeting" />
+  </td>
+  <td>
+    <div>
+      <span>
+        <strong tal:content="context/time_starts/fmt:date">2005-10-05</strong>
+          to
+        <strong tal:content="context/time_ends/fmt:date">2005-10-05</strong>:
+      </span>
+      <strong><a tal:attributes="href context/fmt:url"
+      tal:content="context/title">Meeting Title Here</a></strong>: 
+    </div>
+    <div>
+      <span tal:replace="context/summary">summary here</span>
+      <span tal:condition="not:context/summary"
+            tal:replace="context/description/fmt:shorten/320">
+        Partial description if there is no summary
+      </span>
+      <div>
+        Registered by
+        <a
+          tal:attributes="href context/owner/fmt:url"
+          tal:content="context/owner/displayname">Foo Bar</a>
+        <span
+          tal:attributes="title context/datecreated/fmt:datetime"
+          tal:content="context/datecreated/fmt:displaydate">2005-10-05</span>
+      </div>
+    </div>
+  </td>
+</tr>
+</tal:root>

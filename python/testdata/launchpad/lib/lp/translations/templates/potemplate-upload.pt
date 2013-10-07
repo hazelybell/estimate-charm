@@ -1,0 +1,36 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<body>
+
+<div metal:fill-slot="main">
+  <p>
+    Here you can upload either a single PO template (<code>.pot</code>) or
+    a tar file containing a PO template and a set of PO files
+    (<code>.tar</code>, <code>.tar.gz</code> or <code>.tar.bz2</code>).
+    The files you upload will be imported into Launchpad shortly.
+  </p>
+
+  <form action="+upload" method="POST" enctype="multipart/form-data"
+        class="translations">
+    <div class="fields">
+      <label for="file_input">File:</label>
+      <input id="file_input" name="file" type="file" />
+    </div>
+    <div class="actions">
+      <p>
+        <input name="UPLOAD" type="submit" value="Upload"/>
+        or <a tal:attributes="href view/cancel_url">Cancel</a>
+      </p>
+    </div>
+  </form>
+</div>
+
+</body>
+</html>

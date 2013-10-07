@@ -1,0 +1,35 @@
+An anonymous user who tries to access the bugtask edit page will be
+redirected to the login page.
+
+    >>> browser.open("http://launchpad.dev/thunderbird/+bug/9/+editstatus")
+    Traceback (most recent call last):
+      ...
+    Unauthorized: ...
+
+Even when the product has a bug supervisor, see bug #49891.
+
+    >>> from zope.component import getUtility
+    >>> from lp.services.database.sqlbase import flush_database_updates
+    >>> from lp.testing import login, logout
+    >>> from lp.registry.interfaces.person import IPersonSet
+    >>> from lp.registry.interfaces.product import IProductSet
+
+    >>> login("test@canonical.com")
+
+    >>> firefox = getUtility(IProductSet).getByName("firefox")
+    >>> sample_person = getUtility(IPersonSet).getByName("name12")
+    >>> firefox.bug_supervisor = sample_person
+
+    >>> logout()
+
+    >>> browser.open("http://launchpad.dev/firefox/+bug/1/+editstatus")
+    Traceback (most recent call last):
+      ...
+    Unauthorized: ...
+
+Any logged-in user can edit a bugtask.
+
+    >>> browser = setupBrowser(auth="Basic test@canonical.com:test")
+    >>> browser.open("http://launchpad.dev/firefox/+bug/6/+editstatus")
+    >>> print browser.title
+    Edit status ...

@@ -1,0 +1,807 @@
+Answer Tracker Email Notifications
+==================================
+
+When a question is created or changed, an email notification is sent
+out, informing the subscribers and the answer contacts about the change.
+Let's start with creating a question, and see what the resulting
+notification looks like:
+
+    >>> from zope.event import notify
+    >>> from lp.answers.tests.test_question_notifications import (
+    ...     pop_questionemailjobs)
+    >>> from lp.registry.interfaces.distribution import IDistributionSet
+    >>> login('test@canonical.com')
+    >>> sample_person = getUtility(ILaunchBag).user
+    >>> ubuntu = getUtility(IDistributionSet).getByName('ubuntu')
+    >>> ubuntu_question = ubuntu.newQuestion(
+    ...     sample_person, "Can't install Ubuntu",
+    ...    "I insert the install CD in the CD-ROM drive, but it won't boot.")
+
+The notifications get sent to the question's subscribers, the question's
+target answer contacts as well as to the question's assignee. Initially,
+only the submitter, Sample Person, is subscribed to the question and
+there is no answer contact registered on Ubuntu, so only 1 notification
+is sent:
+
+    >>> ubuntu.answer_contacts
+    []
+
+    >>> [sub.person.displayname for sub in ubuntu_question.subscriptions]
+    [u'Sample Person']
+
+    >>> notifications = pop_questionemailjobs()
+    >>> len(notifications)
+    1
+
+Note that the From address uses the submitter's name with the question's
+email address. Answer's uses real names to help the questioner and the
+answerers communicate. The Reply-To address is the question's address.
+When using the mail client's reply feature, the user should clearly see
+that he is replying to the question and not the user. [sic] Kiko and
+Danilo have a story worth telling.
+
+    >>> add_notification = notifications[0]
+
+    >>> print add_notification.subject
+    [Question #...]: Can't install Ubuntu
+
+Like all Launchpad notifications should, the message contain in the
+footer the reason why the user is receiving the notification.
+
+    >>> print add_notification.body
+    New question #... on Ubuntu:
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+    I insert the install CD in the CD-ROM drive, but it won't boot.
+
+The notification also includes a 'X-Launchpad-Question' header that
+contains information about the question.
+
+    >>> print add_notification.headers['X-Launchpad-Question']
+    distribution=ubuntu; sourcepackage=None; status=Open;
+    assignee=None; priority=Normal; language=en
+
+Register the Ubuntu Team as Ubuntu's answer contact, so that they get
+notified about the changes as well:
+
+    >>> from lp.registry.interfaces.person import IPersonSet
+    >>> from lp.services.worlddata.interfaces.language import ILanguageSet
+    >>> ubuntu_team = getUtility(IPersonSet).getByName('ubuntu-team')
+    >>> ubuntu_team.addLanguage(getUtility(ILanguageSet)['en'])
+    >>> ubuntu.addAnswerContact(ubuntu_team, ubuntu_team.teamowner)
+    True
+
+And assign this question to Foo Bar, so that he will also receive
+notifications:
+
+    >>> login('foo.bar@canonical.com')
+    >>> ubuntu_question.assignee = getUtility(ILaunchBag).user
+
+
+Edit Notifications
+------------------
+
+If we edit the title and description of the question, a notification
+will be sent.
+
+    >>> from zope.interface import providedBy
+    >>> from lazr.lifecycle.event import ObjectModifiedEvent
+    >>> from lazr.lifecycle.snapshot import Snapshot
+
+    >>> login('no-priv@canonical.com')
+    >>> no_priv = getUtility(ILaunchBag).user
+    >>> unmodified_question = Snapshot(
+    ...     ubuntu_question, providing=providedBy(ubuntu_question))
+    >>> ubuntu_question.title = "Installer doesn't work on a Mac"
+    >>> ubuntu_question.description = """I insert the install CD in the CD-ROM
+    ... drive, but it won't boot.
+    ...
+    ... It boots straight into MacOS 9."""
+    >>> libstdcplusplus_sourcepackage = ubuntu.getSourcePackage('libstdc++')
+    >>> ubuntu_question.target = libstdcplusplus_sourcepackage
+    >>> notify(ObjectModifiedEvent(
+    ...     ubuntu_question, unmodified_question,
+    ...     ['title', 'description', 'target']))
+
+Three copies of the notification got sent, one to Sample Person, one to
+Foo Bar, and one to Ubuntu Team:
+
+    >>> notifications = pop_questionemailjobs()
+    >>> edit_notification = notifications[1]
+    >>> print edit_notification.subject
+    Re: [Question #...]: Installer doesn't work on a Mac
+
+    >>> print edit_notification.body
+    Question #... libstdc++ in Ubuntu changed:
+    http://.../ubuntu/+source/libstdc++/+question/...
+    <BLANKLINE>
+        Project: Ubuntu => libstdc++ in Ubuntu
+    <BLANKLINE>
+    Summary changed to:
+    Installer doesn't work on a Mac
+    <BLANKLINE>
+    Description changed to:
+    I insert the install CD in the CD-ROM
+    drive, but it won't boot.
+    <BLANKLINE>
+    It boots straight into MacOS 9.
+
+# XXX flacoste 2006-09-19: Add checks for notification of change to #
+status whiteboard, priority. For example, if a question is # transferred
+to another QuestionTarget and priority is changed, # the notification
+does not include priority.
+
+    >>> unmodified_question = Snapshot(
+    ...     ubuntu_question, providing=providedBy(ubuntu_question))
+    >>> ubuntu_question.target = ubuntu
+    >>> notify(ObjectModifiedEvent(
+    ...     ubuntu_question, unmodified_question, ['target']))
+    >>> notifications = pop_questionemailjobs()
+    >>> edit_notification = notifications[1]
+    >>> print edit_notification.body
+    Question #... Ubuntu changed:
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+        Project: libstdc++ in Ubuntu => Ubuntu
+
+Changing the assignee will trigger a notification.
+
+    >>> login('foo.bar@canonical.com')
+    >>> unmodified_question = Snapshot(
+    ...     ubuntu_question, providing=providedBy(ubuntu_question))
+    >>> ubuntu_question.assignee = no_priv
+    >>> notify(ObjectModifiedEvent(
+    ...     ubuntu_question, unmodified_question, ['assignee']))
+    >>> notifications = pop_questionemailjobs()
+    >>> edit_notification = notifications[1]
+    >>> print edit_notification.body
+    Question #... Ubuntu changed:
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+        Assignee: Foo Bar => No Privileges Person
+
+If we trigger a modification event when no changes worth notifying about
+was made, no notification is sent:
+
+    >>> unmodified_question = Snapshot(
+    ...     ubuntu_question, providing=providedBy(ubuntu_question))
+    >>> notify(ObjectModifiedEvent(
+    ...     ubuntu_question, unmodified_question, ['status']))
+
+    >>> notifications = pop_questionemailjobs()
+    >>> len(notifications)
+    0
+
+After receiving that notification, Foo Bar unassigned himself:
+
+    >>> ubuntu_question.assignee = None
+
+
+Bug Linking and Unlinking Notifications
+---------------------------------------
+
+
+Bug link Notification
+.....................
+
+If we create a bug from the question, it will be reported as a bug that
+has been linked to it:
+
+    >>> from lp.bugs.interfaces.bug import CreateBugParams
+
+    >>> login('no-priv@canonical.com')
+    >>> unmodified_question = Snapshot(
+    ...     ubuntu_question, providing=providedBy(ubuntu_question))
+    >>> params = CreateBugParams(
+    ...     owner=no_priv, title="Installer fails on a Mac PPC",
+    ...     comment=ubuntu_question.description)
+    >>> bug = ubuntu_question.target.createBug(params)
+    >>> ubuntu_question.linkBug(bug)
+    <QuestionBug...>
+
+    >>> notify(ObjectModifiedEvent(
+    ...     ubuntu_question, unmodified_question, ['bugs']))
+
+    >>> notifications = pop_questionemailjobs()
+    >>> len(notifications)
+    2
+
+    >>> edit_notification = notifications[1]
+    >>> print edit_notification.body
+    Question #... on Ubuntu changed:
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+        Linked to bug: #...
+        http://.../bugs/...
+        "Installer fails on a Mac PPC"
+
+
+Bug Unlinked Notification
+.........................
+
+A notification is also sent when a bug is unlinked from the question:
+
+    >>> unmodified_question = Snapshot(ubuntu_question,
+    ...     providing=providedBy(ubuntu_question))
+    >>> ubuntu_question.unlinkBug(bug)
+    <QuestionBug...>
+
+    >>> notify(ObjectModifiedEvent(
+    ...     ubuntu_question, unmodified_question, ['bugs']))
+
+    >>> notifications = pop_questionemailjobs()
+    >>> len(notifications)
+    2
+
+    >>> edit_notification = notifications[1]
+    >>> print edit_notification.body
+    Question #... on Ubuntu changed:
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+        Removed link to bug: #...
+        http://.../bugs/...
+        "Installer fails on a Mac PPC"
+
+
+Linked Bug Status Changed Notification
+......................................
+
+When a question is linked to a bug, the question's subscribers are
+notified of changes of the bug status. See answer-tracker-notifications-
+linked-bug.txt for more information.
+
+
+Workflow Notifications
+----------------------
+
+Notifications are also sent when workflow actions are done on questions.
+The content of the notification will be different depending on the
+workflow action done.
+
+    >>> request_message = ubuntu_question.requestInfo(
+    ...     no_priv, "What is your Mac model?")
+
+    >>> notifications = pop_questionemailjobs()
+    >>> support_notification = notifications[1]
+    >>> print support_notification.subject
+    Re: [Question #...]: Installer doesn't work on a Mac
+
+For workflow notifications, the content of the notification is slightly
+different based on whether you are the question owner or somebody else.
+
+For example, the notification to the answer contacts and every other
+subscribers except the question owner will look like this:
+
+    >>> print support_notification.body
+    Question #... on Ubuntu changed:
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+        Status: Open => Needs information
+    <BLANKLINE>
+    No Privileges Person requested more information:
+    What is your Mac model?
+
+But the owner notification has a slightly different preamble and has an
+extra footer.
+
+    >>> print notifications[0].body
+    Your question #... on Ubuntu changed:
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+        Status: Open => Needs information
+    <BLANKLINE>
+    No Privileges Person requested more information:
+    What is your Mac model?
+    <BLANKLINE>
+    --...
+    To answer this request for more information, you can either reply to
+    this email or enter your reply at the following page:
+    http://.../ubuntu/+question/...
+
+Of course, if the owner unsubscribe from the question, he won't receives
+a notification.
+
+    >>> login('test@canonical.com')
+    >>> ubuntu_question.unsubscribe(sample_person, sample_person)
+    >>> message = ubuntu_question.giveInfo('A PowerMac 7200.')
+
+    >>> notifications = pop_questionemailjobs()
+    >>> print notifications[1].body
+    Question #... on Ubuntu changed:
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+        Status: Needs information => Open
+    <BLANKLINE>
+    Sample Person gave more information on the question:
+    A PowerMac 7200.
+
+The notification for new messages on the question contain a 'References'
+header to the previous message for threading purpose.
+
+    >>> references = notifications[0].headers['References']
+    >>> print references
+    <...>
+
+    >>> references == ubuntu_question.messages[-2].rfc822msgid
+    True
+
+We already saw the notifications sent for the requestInfo() and
+giveInfo() transitions, let's see the other ones.
+
+    # Subscribe the owner back, to compare the different notifications
+    # sent.
+
+    >>> ubuntu_question.subscribe(sample_person)
+    <QuestionSubscription ...>
+
+
+Notifications for expireQuestion()
+..................................
+
+    >>> login('no-priv@canonical.com')
+    >>> message = ubuntu_question.expireQuestion(
+    ...     no_priv, "Expired because of no recent activity.")
+    >>> notifications = pop_questionemailjobs()
+
+Default notification when the question is expired:
+
+    >>> print notifications[1].body
+    Question #... on Ubuntu changed:
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+        Status: Open => Expired
+    <BLANKLINE>
+    No Privileges Person expired the question:
+    Expired because of no recent activity.
+    <BLANKLINE>
+
+Notification received by the owner:
+
+    >>> print notifications[0].body
+    Your question #... on Ubuntu changed:
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+        Status: Open => Expired
+    <BLANKLINE>
+    No Privileges Person expired the question:
+    Expired because of no recent activity.
+    <BLANKLINE>
+    --...
+    If you're still having this problem, you can reopen your question either
+    by replying to this email or by going to the following page and
+    entering more information about your problem:
+    http://.../ubuntu/+question/...
+
+
+Notifications for reopen()
+..........................
+
+(This example will also show that comments are wrapped for 72 columns
+display.)
+
+    >>> login('test@canonical.com')
+    >>> from lp.services.messages.interfaces.message import IMessageSet
+    >>> email_msg = getUtility(IMessageSet).fromText(
+    ...     subject=(
+    ...         "Re: [Question %d]: Installer doesn't work on "
+    ...         "a Mac" % ubuntu_question.id),
+    ...     content=(
+    ...         "I really need some help. I tried googling a bit but didn't "
+    ...         "find anything useful.\n\nPlease provide some help to a "
+    ...         "newbie."),
+    ...     owner=sample_person)
+    >>> message = ubuntu_question.reopen(email_msg)
+    >>> notifications = pop_questionemailjobs()
+
+Notice also how the 'Re' handling is handled nicely:
+
+    >>> print notifications[0].subject
+    Re: [Question #...]: Installer doesn't work on a Mac
+
+Default notification when the owner reopens the question:
+
+    >>> print notifications[1].body
+    Question #... on Ubuntu changed:
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+        Status: Expired => Open
+    <BLANKLINE>
+    Sample Person is still having a problem:
+    I really need some help. I tried googling a bit but didn't find anything
+    useful.
+    <BLANKLINE>
+    Please provide some help to a newbie.
+
+Notification received by the owner:
+
+    >>> print notifications[0].body
+    Your question #... on Ubuntu changed:
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+        Status: Expired => Open
+    <BLANKLINE>
+    You are still having a problem:
+    I really need some help. I tried googling a bit but didn't find anything
+    useful.
+    <BLANKLINE>
+    Please provide some help to a newbie.
+
+
+Notifications for giveAnswer()
+..............................
+
+    >>> login('no-priv@canonical.com')
+    >>> answer_message = ubuntu_question.giveAnswer(
+    ...     no_priv, "Actually, your model is an OldWorld Mac. It needs "
+    ...     "some configuration on the Mac side to boot the installer. You "
+    ...     "will need to install BootX and some other files in your System "
+    ...     "Folder.\n\nConsult "
+    ...     "https://help.ubuntu.com/community/Installation/OldWorldMacs "
+    ...     "for all the details.")
+
+    >>> notifications = pop_questionemailjobs()
+
+Default notification when an answer is proposed:
+
+    >>> print notifications[1].body
+    Question #... on Ubuntu changed:
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+        Status: Open => Answered
+    <BLANKLINE>
+    No Privileges Person proposed the following answer:
+    Actually, your model is an OldWorld Mac. It needs some configuration on
+    the Mac side to boot the installer. You will need to install BootX and
+    some other files in your System Folder.
+    <BLANKLINE>
+    Consult https://help.ubuntu.com/community/Installation/OldWorldMacs for
+    all the details.
+
+Notification received by the owner:
+
+    >>> print notifications[0].body
+    Your question #... on Ubuntu changed:
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+        Status: Open => Answered
+    <BLANKLINE>
+    No Privileges Person proposed the following answer:
+    Actually, your model is an OldWorld Mac. It needs some configuration on
+    the Mac side to boot the installer. You will need to install BootX and
+    some other files in your System Folder.
+    <BLANKLINE>
+    Consult https://help.ubuntu.com/community/Installation/OldWorldMacs for
+    all the details.
+    <BLANKLINE>
+    --...
+    If this answers your question, please go to the following page to let us
+    know that it is solved:
+    http://.../ubuntu/+question/.../+confirm?answer_id=...
+    <BLANKLINE>
+    If you still need help, you can reply to this email or go to the
+    following page to enter your feedback:
+    http://.../ubuntu/+question/...
+
+
+Notifications for confirm()
+...........................
+
+    >>> login('test@canonical.com')
+    >>> message = ubuntu_question.confirmAnswer(
+    ...     "I've installed BootX and the installer CD is now booting. "
+    ...     "Thanks!", answer=answer_message)
+
+    >>> notifications = pop_questionemailjobs()
+
+Default notification when the owner confirms an answer:
+
+    >>> print notifications[1].body
+    Question #... on Ubuntu changed:
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+        Status: Answered => Solved
+    <BLANKLINE>
+    Sample Person confirmed that the question is solved:
+    I've installed BootX and the installer CD is now booting. Thanks!
+
+Notification received by the owner:
+
+    >>> print notifications[0].body
+    Your question #... on Ubuntu changed:
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+        Status: Answered => Solved
+    <BLANKLINE>
+    You confirmed that the question is solved:
+    I've installed BootX and the installer CD is now booting. Thanks!
+
+
+Notifications for addComment()
+..............................
+
+    >>> login('no-priv@canonical.com')
+    >>> message = ubuntu_question.addComment(
+    ...     no_priv, "Unless you have lots of RAM... and even then, the "
+    ...     "system will probably be very slow.")
+
+    >>> notifications = pop_questionemailjobs()
+
+Default notification when a comment is posted:
+
+    >>> print notifications[1].body
+    Question #... on Ubuntu changed:
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+    No Privileges Person posted a new comment:
+    Unless you have lots of RAM... and even then, the system will probably
+    be very slow.
+
+Notification received by the owner:
+
+    >>> print notifications[0].body
+    Your question #... on Ubuntu changed:
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+    No Privileges Person posted a new comment:
+    Unless you have lots of RAM... and even then, the system will probably
+    be very slow.
+
+
+Notifications for reject()
+..........................
+
+    >>> login('foo.bar@canonical.com')
+    >>> foo_bar = getUtility(ILaunchBag).user
+    >>> message = ubuntu_question.reject(
+    ...     foo_bar, "Yeah! It will be awfully slow.")
+
+    >>> notifications = pop_questionemailjobs()
+
+Default notification when the question is rejected:
+
+    >>> print notifications[1].body
+    Question #... on Ubuntu changed:
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+        Status: Solved => Invalid
+    <BLANKLINE>
+    Foo Bar rejected the question:
+    Yeah! It will be awfully slow.
+    <BLANKLINE>
+
+Notification received by the owner:
+
+    >>> print notifications[0].body
+    Your question #... on Ubuntu changed:
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+        Status: Solved => Invalid
+    <BLANKLINE>
+    Foo Bar rejected the question:
+    Yeah! It will be awfully slow.
+    <BLANKLINE>
+    --...
+    If you think that this rejection was a mistake, you can post a comment
+    explaining your point of view either by replying to this email or at
+    the following page:
+    http://.../ubuntu/+question/...
+
+
+Notifications for setStatus()
+.............................
+
+    >>> from lp.answers.enums import QuestionStatus
+    >>> login('foo.bar@canonical.com')
+    >>> message = ubuntu_question.setStatus(
+    ...     foo_bar, QuestionStatus.SOLVED, "The rejection was a mistake.")
+
+    >>> notifications = pop_questionemailjobs()
+
+Default notification when somebody changes the status:
+
+    >>> print notifications[1].body
+    Question #... on Ubuntu changed:
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+        Status: Invalid => Solved
+    <BLANKLINE>
+    Foo Bar changed the question status:
+    The rejection was a mistake.
+
+Notification received by the owner:
+
+    >>> print notifications[0].body
+    Your question #... on Ubuntu changed:
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+        Status: Invalid => Solved
+    <BLANKLINE>
+    Foo Bar changed the question status:
+    The rejection was a mistake.
+
+
+Notifications for linkFAQ()
+...........................
+
+When a user links a FAQ to a question, the notification includes that
+information before the message.
+
+    >>> login('no-priv@canonical.com')
+    >>> from lp.registry.interfaces.product import IProductSet
+    >>> firefox = getUtility(IProductSet).getByName('firefox')
+    >>> firefox_question = firefox.newQuestion(
+    ...     no_priv, 'How can I play Flash?', 'I want Flash!')
+    >>> ignore = pop_questionemailjobs()
+
+    >>> login('test@canonical.com')
+    >>> firefox_faq = firefox.getFAQ(10)
+    >>> print firefox_faq.title
+    How do I install plugins (Shockwave, QuickTime, etc.)?
+
+    >>> message = firefox_question.linkFAQ(
+    ...     sample_person, firefox_faq, "Read the FAQ.")
+    >>> notifications = pop_questionemailjobs()
+
+    >>> print notifications[0].body
+    Your question #... on Mozilla Firefox changed:
+    http://answers.launchpad.dev/firefox/+question/...
+    <BLANKLINE>
+        Status: Open => Answered
+    <BLANKLINE>
+        Related FAQ set to:
+        How do I install plugins (Shockwave, QuickTime, etc.)?
+        http://answers.launchpad.dev/firefox/+faq/10
+    <BLANKLINE>
+    Sample Person proposed the following answer:
+    Read the FAQ.
+    <BLANKLINE>
+    --...
+
+If the FAQ is unlinked, the notification will look like:
+
+    >>> message = firefox_question.linkFAQ(
+    ...     sample_person, None, "Sorry, this wasn't so useful.")
+    >>> notifications = pop_questionemailjobs()
+
+    >>> print notifications[0].body
+    Your question #... on Mozilla Firefox changed:
+    http://answers.launchpad.dev/firefox/+question/...
+    <BLANKLINE>
+        Related FAQ was removed:
+        How do I install plugins (Shockwave, QuickTime, etc.)?
+        http://answers.launchpad.dev/firefox/+faq/10
+    <BLANKLINE>
+    Sample Person proposed the following answer:
+    Sorry, this wasn't so useful.
+    <BLANKLINE>
+    --...
+
+
+Notifications for convertToQuestion()
+-------------------------------------
+
+Answer contacts and the bug owner is notified when questions are created
+from bugs just like when a question is normally created.
+
+    >>> bug_question = ubuntu.createQuestionFromBug(bug)
+    >>> notifications = pop_questionemailjobs()
+    >>> len(notifications)
+    3
+
+
+Notifications and Localized Questions
+-------------------------------------
+
+In general, only subscribers speaking the language of the question will
+receive notifications related to it.
+
+    # Register salgado as answer contact, this makes the pt_BR language
+    # supported in Ubuntu.
+
+    >>> salgado = getUtility(IPersonSet).getByName('salgado')
+    >>> ubuntu.addAnswerContact(salgado, salgado)
+    True
+
+    >>> sorted([lang.code for lang in ubuntu.getSupportedLanguages()])
+    [u'en', u'pt_BR']
+
+    >>> from lp.services.worlddata.interfaces.language import ILanguageSet
+    >>> login('test@canonical.com')
+    >>> pt_BR_question = ubuntu.newQuestion(
+    ...     sample_person, title=(
+    ...     u"Abrir uma p\xe1gina que requer java quebra o firefox"),
+    ...     description=(
+    ...         u'Eu uso Ubuntu em um AMD64 e instalei o plugin java '
+    ...         u'blackdown. O plugin \xe9 exibido em about:plugins e '
+    ...         u'quando eu abro a pagina '
+    ...         u'http://java.com/en/download/help/testvm.xml, ela carrega '
+    ...         u'corretamente e mostra a minha versao do java. No entanto, '
+    ...         u'mover o mouse na pagina faz com que o firefox quebre.'),
+    ...     language=getUtility(ILanguageSet)['pt_BR'])
+    >>> notifications = pop_questionemailjobs()
+
+    >>> print notifications[0].subject.encode('ASCII', 'backslashreplace')
+    [Question #...]: Abrir uma p\xe1gina que requer java quebra o firefox
+
+Similarly, when a question in a non-English language is modified or its
+status changed, only the subscribers speaking that language will receive
+the notifications.
+
+    >>> pt_BR_question.giveInfo(
+    ...     "Veja o screenshot: http://tinyurl.com/y8jq8z")
+    <QuestionMessage...>
+
+    >>> ignore = pop_questionemailjobs()
+
+The exception to these general rules is that when a question is created
+in language spoken by none of the answer contacts, each one will receive
+an email notifying them that a question was posted in an unsupported
+language.
+
+For example, the French language is not spoken by any Ubuntu answer
+contacts. So after posting a question in French, a notification will be
+sent to the support list about that question:
+
+    >>> french = getUtility(ILanguageSet)['fr']
+    >>> french_question = ubuntu.newQuestion(
+    ...     sample_person, title="Impossible d'installer Ubuntu",
+    ...     description=u"Le CD ne semble pas fonctionn\xe9.",
+    ...     language=french)
+    >>> notifications = pop_questionemailjobs()
+
+    >>> print notifications[1].subject
+    [Question #...]: (French) Impossible d'installer Ubuntu
+
+    # Define a function that will replace non-ascii character with
+    # its unicoded encoded value.
+    # Effectively replace u'\xe9' by '\\e9'.
+
+    >>> def recode_text(notification):
+    ...     return notification.body.encode('ASCII', 'backslashreplace')
+
+    >>> notification_body = recode_text(notifications[1])
+    >>> print notification_body
+    A question was asked in a language (French) spoken by
+    none of the registered Ubuntu answer contacts.
+    <BLANKLINE>
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+    Le CD ne semble pas fonctionn\xe9...
+
+The notification received by the question owner contain a warning that
+the question is in a language spoken by none of the answer contacts:
+
+    >>> print notifications[0].subject
+    [Question #...]: Impossible d'installer Ubuntu
+
+    >>> notification_body = recode_text(notifications[0])
+    >>> print notification_body
+    New question #... on Ubuntu:
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+    Le CD ne semble pas fonctionn\xe9.
+    <BLANKLINE>
+    WARNING: This question is asked in a language (French)
+    spoken by none of the registered Ubuntu answer contacts.
+
+No notification will be sent to the answer contacts when this question
+is modified. Only the owner will receive a modification notification
+with a warning appended to it.
+
+    >>> unmodified_question = Snapshot(
+    ...     french_question, providing=providedBy(french_question))
+    >>> french_question.title = u"CD d'Ubuntu ne d\xe9marre pas"
+    >>> notify(ObjectModifiedEvent(
+    ...     french_question, unmodified_question, ['title']))
+    >>> notifications = pop_questionemailjobs()
+
+    >>> notification_body = recode_text(notifications[0])
+    >>> print notification_body
+    Your question #... on Ubuntu changed:
+    http://.../ubuntu/+question/...
+    <BLANKLINE>
+    Summary changed to:
+    CD d'Ubuntu ne d\xe9marre pas
+    <BLANKLINE>
+    WARNING: This question is asked in a language (French)
+    spoken by none of the registered Ubuntu answer contacts.

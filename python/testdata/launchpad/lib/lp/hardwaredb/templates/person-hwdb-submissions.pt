@@ -1,0 +1,56 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+  <body>
+
+    <div metal:fill-slot="main"
+       tal:define="batchnav view/getAllBatched;
+             batch batchnav/currentBatch;
+             show_private view/userIsOwner">
+      <tal:results condition="batch">
+        <table class="listing">
+          <thead>
+            <tr>
+              <th>System</th>
+              <th>Date submitted</th>
+              <th>Download</th>
+              <th tal:condition="show_private">Private</th>
+              <th>Raw</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr tal:repeat="submission batch">
+              <td>
+                <a tal:attributes="href submission/system_fingerprint/fmt:url"
+                  tal:content="submission/system_fingerprint/fingerprint" />
+              </td>
+              <td tal:content="submission/date_submitted/fmt:datetime" />
+              <td>
+                <a href=""
+                  tal:attributes="href submission/raw_submission/http_url"
+                  tal:content="submission/raw_submission/filename" />
+              </td>
+              <td tal:condition="show_private">
+                <span tal:condition="submission/private">yes</span>
+                <span tal:condition="not:submission/private">no</span>
+              </td>
+              <td>
+                <a tal:attributes="href submission/fmt:url">text</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div tal:replace="structure batchnav/@@+navigation-links-lower" />
+      </tal:results>
+      <p tal:condition="not: batch">
+        <span tal:replace="context/fmt:displayname" />
+        has posted no submissions.
+      </p>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,66 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:tal="http://xml.zope.org/namespaces/tal"
+     xmlns:metal="http://xml.zope.org/namespaces/metal">
+
+  <h3>Recent revisions:</h3>
+  <p tal:condition="not:context/revision_count">
+    <tal:not-mirrored condition="not:context/last_mirrored">
+      <tal:mirror condition="context/url">
+        This branch has not been mirrored yet.
+      </tal:mirror>
+      <tal:no-mirror condition="not:context/url">
+        This branch has not been published yet.
+      </tal:no-mirror>
+    </tal:not-mirrored>
+    <tal:mirrored condition="context/last_mirrored">
+      <tal:not-scanned condition="not:context/last_scanned">
+        This branch has not been scanned yet.
+      </tal:not-scanned>
+      <tal:scanned condition="context/last_scanned">
+        This branch is empty.
+      </tal:scanned>
+    </tal:mirrored>
+  </p>
+
+  <tal:history-available condition="context/revision_count">
+    <div class="revision"
+         tal:repeat="rev_no context/latest_revisions"
+         tal:attributes="id string:rev${rev_no/sequence}">
+      <div>
+        <tal:comment condition="nothing">
+          The end of the anchor and the start of the next tal expression
+          has no whitespace between the elements as we do not want any
+          space between the number and the fullstop.
+        </tal:comment>
+        <a tal:attributes="href string:${context/codebrowse_url}/revision/${rev_no/sequence}"
+           tal:content="rev_no/sequence"
+           tal:condition="context/code_is_browseable">
+          1
+        </a><tal:revno condition="not: context/code_is_browseable"
+                       replace="rev_no/sequence">1</tal:revno>.
+        By
+        <strong>
+          <tal:not-anonymous condition="view/user">
+            <span tal:replace="rev_no/revision/revision_author/name">
+              John Doe &lt;john.doe@example.com&gt;
+            </span>
+          </tal:not-anonymous>
+          <tal:anonymous condition="not:view/user">
+            <span
+               tal:replace="rev_no/revision/revision_author/name_without_email">
+              John Doe
+            </span>
+            &lt;email address hidden&gt;
+          </tal:anonymous>
+        </strong>
+        <span
+            tal:attributes="title rev_no/revision/revision_date/fmt:datetime"
+            tal:content="rev_no/revision/revision_date/fmt:displaydate"
+            >2005-10-05 14:34:22 WST</span>
+      </div>
+      <p tal:replace="structure rev_no/revision/log_body/fmt:text-to-html">
+        The revision commit message.
+      </p>
+    </div>
+  </tal:history-available>
+</div>

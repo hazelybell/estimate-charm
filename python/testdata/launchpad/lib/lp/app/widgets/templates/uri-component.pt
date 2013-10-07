@@ -1,0 +1,16 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+  <tal:base_url replace="view/base_url" /><strong><div
+        tal:condition="view/read_only"
+        tal:replace="view/current_name">foo</div></strong>
+  <input size="30"
+         tal:attributes="id view/name;
+                         name view/name;
+                         value view/current_name;
+                         class view/cssClass;
+                         type view/widget_type"
+         />
+</tal:root>

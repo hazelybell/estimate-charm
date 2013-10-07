@@ -1,0 +1,30 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+  <body>
+    <div metal:fill-slot="main"
+      tal:define="overview_menu context/menu:overview">
+
+      <div metal:use-macro="context/@@launchpad_form/form">
+
+        <metal:other_input fill-slot="extra_bottom">
+          <tal:hidden
+            replace="structure view/i_know_this_is_an_openid_security_issue_input|nothing" />
+        </metal:other_input>
+      </div>
+      <p style="margin-top: 4em;">
+        <a href="/launchpad/+faq/51">Learn about your Launchpad account and
+          password</a>.
+        <br />Never going to use Launchpad again?
+        <a
+        tal:attributes="href string:${context/fmt:url}/+deactivate-account"
+          >Deactivate your account</a>.
+      </p>
+    </div>
+  </body>
+</html>

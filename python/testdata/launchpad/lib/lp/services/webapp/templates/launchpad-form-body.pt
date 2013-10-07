@@ -1,0 +1,13 @@
+<div
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  i18n:domain="launchpad">
+
+  <div metal:use-macro="context/@@launchpad_form/formbody" />
+
+</div>

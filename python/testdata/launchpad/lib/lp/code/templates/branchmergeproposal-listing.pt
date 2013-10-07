@@ -1,0 +1,94 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+>
+  <tal:needs-batch condition="context/has_multiple_pages">
+    <div id="batch-links">
+      <tal:navigation replace="structure context/@@+navigation-links-upper" />
+    </div>
+  </tal:needs-batch>
+
+  <table tal:attributes="class context/table_class" id="proposal-listing">
+    <thead>
+      <tr>
+        <th>Branch Merge Proposal</th>
+        <th>
+          Status
+        </th>
+        <th>Requested By</th>
+        <th tal:condition="context/show_column/date_reviewed|nothing">
+          Date Reviewed
+        </th>
+        <th tal:condition="context/show_column/review|nothing">
+          Review
+        </th>
+        <th tal:condition="context/show_column/vote_summary|nothing">
+          Activity
+        </th>
+        <th tal:condition="context/show_column/preview_diff|nothing">
+          Diff
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr tal:repeat="proposal context/proposals">
+        <td>
+          <a tal:attributes="href proposal/fmt:url">
+            <strong>
+              <tal:source-branch replace="proposal/source_branch/bzr_identity"/>
+            </strong>
+            &rArr;
+            <tal:source-branch replace="proposal/target_branch/bzr_identity"/>
+          </a>
+        </td>
+        <td tal:attributes="class string:mergestatus${proposal/queue_status/name}"
+            tal:content="proposal/queue_status/title" />
+        <td>
+          <tal:registrant replace="structure proposal/registrant/fmt:link" />
+          <tal:date replace="proposal/date_review_requested/fmt:displaydate"/>
+        </td>
+
+        <td tal:condition="context/show_column/date_reviewed|nothing">
+          <span class="sortkey"
+                tal:condition="not:context/has_multiple_pages"
+                tal:content="proposal/date_reviewed/fmt:datetime">
+            2005-02-12 13:45 EST
+          </span>
+          <tal:date replace="proposal/date_reviewed/fmt:approximatedate"/>
+        </td>
+        <td tal:condition="context/show_column/review|nothing">
+          <tal:review-vote define="comment proposal/reviewer_vote/comment|nothing">
+            <tal:voted-already condition="comment">
+
+              <span tal:attributes="class string:vote${comment/vote/name}"
+                    tal:content="comment/vote/title">
+                Approve
+              </span>
+            </tal:voted-already>
+            <tal:vote-pending condition="not: comment">
+              <span class="votePENDING">Pending</span>
+            </tal:vote-pending>
+            <tal:reviewer-not-team
+                define="reviewer context/view/getUserFromContext"
+                condition="not: reviewer/is_team">
+              <tal:vote-tags
+                  define="review_type proposal/reviewer_vote/review_type"
+                  condition="review_type"
+                  replace="review_type"/>
+            </tal:reviewer-not-team>
+          </tal:review-vote>
+        </td>
+        <td tal:condition="context/show_column/vote_summary|nothing">
+          <metal:votes use-macro="proposal/@@+bmp-macros/vote-summary"/>
+        </td>
+        <td tal:condition="context/show_column/preview_diff|nothing">
+          <tal:diff-link condition="proposal/preview_diff"
+                         replace="structure proposal/preview_diff/fmt:link"/>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <tal:navigation replace="structure context/@@+navigation-links-lower" />
+
+</div>

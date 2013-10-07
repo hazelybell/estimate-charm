@@ -1,0 +1,52 @@
+=======================
+Publishing History Page
+=======================
+
+The Publishing History page hangs off a distribution source page and
+shows the complete history of a package in all series.
+
+    >>> from lp.soyuz.tests.test_publishing import SoyuzTestPublisher
+    >>> from lp.soyuz.enums import (
+    ...     PackagePublishingStatus)
+    >>> stp = SoyuzTestPublisher()
+    >>> login('foo.bar@canonical.com')
+    >>> stp.prepareBreezyAutotest()
+    >>> source_pub = stp.getPubSource(
+    ...     "test-history", status=PackagePublishingStatus.PUBLISHED)
+    >>> logout()
+
+    >>> anon_browser.open(
+    ...     'http://launchpad.dev/ubuntutest/+source/test-history/'
+    ...     '+publishinghistory')
+
+    >>> table = find_tag_by_id(anon_browser.contents, 'publishing-summary')
+    >>> print extract_text(table)
+    Date    Status    Target     Pocket   Component Section Version
+    ... UTC Published Breezy ... release  main      base    666
+    Published ... ago
+    >>> print table.findAll("tr")[2].td["colspan"]
+    8
+
+A publishing record will be shown as deleted in the publishing history after a
+request for deletion by a user.
+
+    >>> login('foo.bar@canonical.com')
+    >>> unused = source_pub.requestDeletion(
+    ...     stp.factory.makePerson(), "fix bug 1")
+    >>> logout()
+
+    >>> anon_browser.open(
+    ...     'http://launchpad.dev/ubuntutest/+source/test-history/'
+    ...     '+publishinghistory')
+
+    >>> table = find_tag_by_id(anon_browser.contents, 'publishing-summary')
+    >>> print extract_text(table)
+    Date    Status    Target     Pocket   Component Section Version
+            Deleted   Breezy ... release  main      base    666
+    Deleted ... ago by ... fix bug 1
+    Published ... ago
+
+Links to bug reports are added for bugs mentioned in the removal comment.
+
+    >>> print anon_browser.getLink("bug 1").url
+    http://launchpad.dev/bugs/1

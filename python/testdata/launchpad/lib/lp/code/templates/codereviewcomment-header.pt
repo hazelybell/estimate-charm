@@ -1,0 +1,39 @@
+<tal:root
+   xmlns:tal="http://xml.zope.org/namespaces/tal"
+   xmlns:metal="http://xml.zope.org/namespaces/metal"
+   omit-tag="">
+
+<table>
+  <tbody>
+    <tr>
+    <td>
+      <span
+        itemprop="creator"
+        tal:content="structure context/comment_author/fmt:link-display-name-id"/>
+        <tal:has-body condition="context/has_body">wrote</tal:has-body>
+        <time
+          itemprop="commentTime"
+          tal:attributes="title context/comment_date/fmt:datetime;
+            datetime context/comment_date/fmt:isodate"
+          tal:content="context/comment_date/fmt:displaydate">
+          7 minutes ago
+        </time>:
+        <span
+          tal:condition="context/from_superseded"
+          class="sprite warning-icon"
+          style="float: right">Posted in
+            <a
+              tal:attributes="href context/branch_merge_proposal/fmt:url">a
+              previous version</a>
+            of this proposal</span>
+      </td>
+
+      <td class="bug-comment-index">
+        <a itemprop="url"
+          tal:attributes="href context/fmt:url">#</a>
+      </td>
+
+    </tr>
+  </tbody>
+</table>
+</tal:root>

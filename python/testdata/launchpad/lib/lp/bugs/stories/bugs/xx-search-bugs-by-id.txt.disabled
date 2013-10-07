@@ -1,0 +1,50 @@
+XXX 20060109 mpt: This test is disabled because the Bugs front page
+no longer has a specific field for looking up bug reports by number.
+It should be re-enabled once the Bugs global search field acquires
+this ability.
+
+If we enter a bug ID in the search form on the Bugs front page, we
+get redirected to the bug with the corresponding id.
+
+  >>> browser.open("http://bugs.launchpad.dev/")
+  >>> control = browser.getControl(name="id")
+  >>> control.value = "2"
+  >>> browser.getControl(name="jump_to_bug").click()
+  >>> browser.url
+  'http://launchpad.dev/ubuntu-product/+bug/2'
+
+If we enter an ID that doesn't exist, we stay on the malone front page
+and an error message is displayed:
+
+  >>> browser.open("http://launchpad.dev/bugs")
+  >>> control = browser.getControl(name="id")
+  >>> control.value = "22222"
+  >>> browser.getControl(name="jump_to_bug").click()
+  >>> browser.url
+  'http://launchpad.dev/bugs/+index?id=22222&jump_to_bug=Go'
+  >>> print browser.contents
+  <!DOCTYPE...
+  <BLANKLINE>
+  ...
+    <p class="error message">Bug u'22222' is not registered.</p>
+  ...
+
+If the ID is prefixed by a hash, the hash is ignored and the redirection
+works as expected.
+
+  >>> browser.open("http://launchpad.dev/bugs")
+  >>> control = browser.getControl(name="id")
+  >>> control.value = "#2"
+  >>> browser.getControl(name="jump_to_bug").click()
+  >>> browser.url
+  'http://launchpad.dev/ubuntu-product/+bug/2'
+
+And if it is a bug alias, it also works:
+
+  >>> browser.open("http://launchpad.dev/bugs")
+  >>> control = browser.getControl(name="id")
+  >>> control.value = "blackhole"
+  >>> browser.getControl(name="jump_to_bug").click()
+  >>> browser.url
+  'http://launchpad.dev/ubuntu-product/+bug/2'
+

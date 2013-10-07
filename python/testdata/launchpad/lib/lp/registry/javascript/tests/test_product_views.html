@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+
+<!--
+Copyright 2012 Canonical Ltd.  This software is licensed under the
+GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<html>
+  <head>
+      <title>Product New Tests</title>
+
+      <!-- YUI and test setup -->
+      <script type="text/javascript"
+              src="../../../../../build/js/yui/yui/yui.js">
+      </script>
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/console/assets/console-core.css" />
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/test-console/assets/skins/sam/test-console.css" />
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/test/assets/skins/sam/test.css" />
+
+      <script type="text/javascript"
+              src="../../../../../build/js/lp/app/testing/testrunner.js"></script>
+
+      <link rel="stylesheet" href="../../../app/javascript/testing/test.css" />
+
+      <!-- Dependencies -->
+      <script type="text/javascript" src="../../../../../build/js/lp/app/client.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/choice.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/ellipsis.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/expander.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/errors.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/information_type.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/lp.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/mustache.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/anim/anim.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/extras/extras.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/choiceedit/choiceedit.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/effects/effects.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/formoverlay/formoverlay.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/formwidgets/resizing_textarea.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/inlineedit/editor.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/testing/helpers.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/overlay/overlay.js"></script>
+      <script type="text/javascript" src="../../../../../build/js/lp/app/ui/ui.js"></script>
+
+      <!-- The module under test. -->
+      <script type="text/javascript" src="../product_views.js"></script>
+
+      <!-- The test suite -->
+      <script type="text/javascript" src="test_product_views.js"></script>
+
+    </head>
+    <body class="yui3-skin-sam">
+        <ul id="suites">
+            <li>registry.product-views.test</li>
+        </ul>
+        <div id="testdom"></div>
+
+        <!--
+            This html is to bootstrap the form you fill out and represent the
+            license choices and such.
+
+            The license field is a nested table that needs special JS to
+            show/hide correctly. In order to test this, we've just copied the
+            whole html out of the running site. It's easier than trying to
+            'mock' up the html representation.
+
+            NOTE: There's a <script> tag in the html for setting up the
+            license widget that needs to be removed. Nested script tags won't
+            function correctly as mustache output.
+
+        -->
+
+        <script id="tpl_information_type" type="text/template">
+        <table>
+        <tr>
+            <td>
+                <input type="text" id="field.name" name="field.name" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="text" id="field.displayname" name="field.displayname" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div>
+                    <label for="field.information_type">Information Type:</label>
+                </div>
+                <table class="radio-button-widget">
+                    <tbody>
+                        <tr>
+                            <td rowspan="2">
+                                <input class="radioType" id="field.information_type.0" name="field.information_type" type="radio" value="PUBLIC"/>
+                            </td>
+                            <td>
+                                <label for="field.information_type.0">Public</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="formHelp">Everyone can see this information.</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2">
+                                <input class="radioType" id="field.information_type.4" name="field.information_type" type="radio" value="PROPRIETARY" />
+                            </td>
+                            <td><label for="field.information_type.4">Proprietary</label></td>
+                        </tr>
+                        <tr>
+                            <td class="formHelp">Only shared with users permitted to see proprietary information.</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2">
+                                <input class="radioType" id="field.information_type.5" name="field.information_type" type="radio" value="EMBARGOED" />
+                            </td>
+                            <td><label for="field.information_type.5">Embargoed</label></td>
+                        </tr>
+                        <tr>
+                            <td class="formHelp">Only shared with users permitted to see embargoed information.</td>
+                        </tr>
+                    </tbody>
+                 </table>
+                <input name="field.information_type-empty-marker" type="hidden" value="1" />
+                <p class="formHelp">The type of of data contained in this project.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="text" name="field.driver" id="field.driver" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="text" name="field.bug_supervisor" id="field.bug_supervisor" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <!-- Begin copied html from the license input.
+
+                    To copy right-click on the license node in the project
+                    registration step two and use the dev tools to 'Copy as
+                    HTML'.
+
+                -->
+
+                <div id="yui_3_5_1_1_1348577791671_254">
+                    <label for="field.licenses">Licences:</label>
+                    <div id="yui_3_5_1_1_1348577791671_253">
+                        <div style="color: black" id="yui_3_5_1_1_1348577791671_252">
+                            Select the licence(s) under which you release your project.
+                            <div id="pending-div" style="padding-left: 20px">
+                                <div class="collapsible" id="yui_3_5_1_1_1348577791671_67">
+                                    <legend class="treeExpanded sprite" style=
+                                    "cursor: pointer;"><a class="js-action" href=
+                                    "#">Recommended open source licences</a></legend>
+
+                                    <div id="recommended" class="expanded lazr-closed" style=
+                                    "height: auto; overflow: hidden;">
+                                        <table id="yui_3_5_1_1_1348577791671_251">
+                                            <tbody id="yui_3_5_1_1_1348577791671_250">
+                                                <tr id="yui_3_5_1_1_1348577791671_249">
+                                                    <td id="yui_3_5_1_1_1348577791671_247">
+                                                    <label for="field.licenses.1" style=
+                                                    "font-weight: normal" id=
+                                                    "yui_3_5_1_1_1348577791671_246"><input class="checkboxType"
+                                                    id="field.licenses.1" name=
+                                                    "field.licenses" type="checkbox" value=
+                                                    "APACHE">&nbsp;Apache
+                                                    Licence&nbsp;<a href=
+                                                    "http://www.opensource.org/licenses/apache2.0.php"
+                                                    class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+
+                                                    <td><label for="field.licenses.11" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.11"
+                                                    name="field.licenses" type="checkbox"
+                                                    value="AFFERO">&nbsp;GNU Affero GPL
+                                                    v3&nbsp;<a href=
+                                                    "http://www.opensource.org/licenses/agpl-v3.html"
+                                                    class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+
+                                                    <td><label for="field.licenses.15" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.15"
+                                                    name="field.licenses" type="checkbox"
+                                                    value="GNU_LGPL_V2_1">&nbsp;GNU LGPL
+                                                    v2.1&nbsp;<a href=
+                                                    "http://www.opensource.org/licenses/lgpl-2.1.php"
+                                                    class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+                                                </tr>
+
+
+                                                <tr>
+                                                    <td><label for="field.licenses.4" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.4"
+                                                    name="field.licenses" type="checkbox"
+                                                    value="BSD">&nbsp;Simplified BSD
+                                                    Licence&nbsp;<a href=
+                                                    "http://www.opensource.org/licenses/bsd-license.php"
+                                                    class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+
+                                                    <td><label for="field.licenses.13" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.13"
+                                                    name="field.licenses" type="checkbox"
+                                                    value="GNU_GPL_V2">&nbsp;GNU GPL
+                                                    v2&nbsp;<a href=
+                                                    "http://www.opensource.org/licenses/gpl-2.0.php"
+                                                    class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+
+                                                    <td><label for="field.licenses.16" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.16"
+                                                    name="field.licenses" type="checkbox"
+                                                    value="GNU_LGPL_V3">&nbsp;GNU LGPL
+                                                    v3&nbsp;<a href=
+                                                    "http://www.opensource.org/licenses/lgpl-3.0.html"
+                                                    class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+                                                </tr>
+
+
+                                                <tr>
+                                                    <td><label for="field.licenses.8" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.8"
+                                                    name="field.licenses" type="checkbox"
+                                                    value="CC_0">&nbsp;Creative Commons - No
+                                                    Rights Reserved&nbsp;<a href=
+                                                    "http://creativecommons.org/about/cc0"
+                                                    class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+
+                                                    <td><label for="field.licenses.14" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.14"
+                                                    name="field.licenses" type="checkbox"
+                                                    value="GNU_GPL_V3">&nbsp;GNU GPL
+                                                    v3&nbsp;<a href=
+                                                    "http://www.opensource.org/licenses/gpl-3.0.html"
+                                                    class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+
+                                                    <td><label for="field.licenses.17" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.17"
+                                                    name="field.licenses" type="checkbox"
+                                                    value="MIT">&nbsp;MIT / X / Expat
+                                                    Licence&nbsp;<a href=
+                                                    "http://www.opensource.org/licenses/mit-license.php"
+                                                    class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+
+                                <div class="collapsible" id="yui_3_5_1_1_1348577791671_96">
+                                    <legend class="treeCollapsed sprite" style=
+                                    "cursor: pointer;"><a class="js-action" href="#">More
+                                    open source licences</a></legend>
+
+                                    <div id="more" class="hidden lazr-closed" style=
+                                    "height: 0px; overflow: hidden;">
+                                        <table>
+                                            <tbody>
+                                                <tr>
+                                                    <td><label for="field.licenses.0" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.0"
+                                                    name="field.licenses" type="checkbox"
+                                                    value="ACADEMIC">&nbsp;Academic Free
+                                                    Licence&nbsp;<a href=
+                                                    "http://www.opensource.org/licenses/afl-3.0.php"
+                                                    class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+
+                                                    <td><label for="field.licenses.9" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.9"
+                                                    name="field.licenses" type="checkbox"
+                                                    value="ECLIPSE">&nbsp;Eclipse Public
+                                                    Licence&nbsp;<a href=
+                                                    "http://www.opensource.org/licenses/eclipse-1.0.php"
+                                                    class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+
+                                                    <td><label for="field.licenses.22" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.22"
+                                                    name="field.licenses" type="checkbox"
+                                                    value="PHP">&nbsp;PHP
+                                                    Licence&nbsp;<a href=
+                                                    "http://www.opensource.org/licenses/php.php"
+                                                    class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+                                                </tr>
+
+
+                                                <tr>
+                                                    <td><label for="field.licenses.2" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.2"
+                                                    name="field.licenses" type="checkbox"
+                                                    value="ARTISTIC">&nbsp;Artistic Licence
+                                                    1.0&nbsp;<a href=
+                                                    "http://opensource.org/licenses/artistic-license-1.0.php"
+                                                    class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+
+                                                    <td><label for="field.licenses.10" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.10"
+                                                    name="field.licenses" type="checkbox"
+                                                    value=
+                                                    "EDUCATIONAL_COMMUNITY">&nbsp;Educational
+                                                    Community Licence&nbsp;<a href=
+                                                    "http://www.opensource.org/licenses/ecl2.php"
+                                                    class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+
+                                                    <td><label for="field.licenses.23" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.23"
+                                                    name="field.licenses" type="checkbox"
+                                                    value="PUBLIC_DOMAIN">&nbsp;Public
+                                                    Domain&nbsp;<a href=
+                                                    "https://answers.launchpad.net/launchpad/+faq/564"
+                                                    class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+                                                </tr>
+
+
+                                                <tr>
+                                                    <td><label for="field.licenses.3" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.3"
+                                                    name="field.licenses" type="checkbox"
+                                                    value="ARTISTIC_2_0">&nbsp;Artistic
+                                                    Licence 2.0&nbsp;<a href=
+                                                    "http://www.opensource.org/licenses/artistic-license-2.0.php"
+                                                    class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+
+                                                    <td><label for="field.licenses.12" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.12"
+                                                    name="field.licenses" type="checkbox"
+                                                    value="GNU_FDL_NO_OPTIONS">&nbsp;GNU
+                                                    FDL no options&nbsp;<a href=
+                                                    "http://www.gnu.org/copyleft/fdl.html"
+                                                    class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+
+                                                    <td><label for="field.licenses.24" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.24"
+                                                    name="field.licenses" type="checkbox"
+                                                    value="PYTHON">&nbsp;Python
+                                                    Licence&nbsp;<a href=
+                                                    "http://www.opensource.org/licenses/PythonSoftFoundation.php"
+                                                    class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+                                                </tr>
+
+
+                                                <tr>
+                                                    <td><label for="field.licenses.5" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.5"
+                                                    name="field.licenses" type="checkbox"
+                                                    value="COMMON_PUBLIC">&nbsp;Common Public
+                                                    Licence&nbsp;<a href=
+                                                    "http://www.opensource.org/licenses/cpl1.0.php"
+                                                    class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+
+                                                    <td><label for="field.licenses.18" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.18"
+                                                    name="field.licenses" type="checkbox"
+                                                    value="MPL">&nbsp;Mozilla Public
+                                                    Licence&nbsp;<a href=
+                                                    "http://www.opensource.org/licenses/mozilla1.1.php"
+                                                    class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+
+                                                    <td><label for="field.licenses.25" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.25"
+                                                    name="field.licenses" type="checkbox"
+                                                    value="ZPL">&nbsp;Zope Public
+                                                    Licence&nbsp;<a href=
+                                                    "http://www.opensource.org/licenses/zpl.php"
+                                                    class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+                                                </tr>
+
+
+                                                <tr>
+                                                    <td><label for="field.licenses.6" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.6"
+                                                    name="field.licenses" type="checkbox"
+                                                    value="CC_BY">&nbsp;Creative Commons -
+                                                    Attribution&nbsp;<a href=
+                                                    "http://creativecommons.org/about/licenses"
+                                                    class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+
+                                                    <td><label for="field.licenses.19" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.19"
+                                                    name="field.licenses" type="checkbox"
+                                                    value="OFL">&nbsp;Open Font Licence
+                                                    v1.1&nbsp;<a href=
+                                                    "http://scripts.sil.org/OFL" class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+                                                </tr>
+
+
+                                                <tr>
+                                                    <td><label for="field.licenses.7" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.7"
+                                                    name="field.licenses" type="checkbox"
+                                                    value="CC_BY_SA">&nbsp;Creative Commons -
+                                                    Attribution Share Alike&nbsp;<a href=
+                                                    "http://creativecommons.org/about/licenses"
+                                                    class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+
+                                                    <td><label for="field.licenses.20" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.20"
+                                                    name="field.licenses" type="checkbox"
+                                                    value="OPEN_SOFTWARE">&nbsp;Open Software
+                                                    Licence v 3.0&nbsp;<a href=
+                                                    "http://www.opensource.org/licenses/osl-3.0.php"
+                                                    class=
+                                                    "sprite external-link action-icon">view
+                                                    licence</a></label>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+
+                                <div class="collapsible" id="yui_3_5_1_1_1348577791671_121">
+                                    <legend class="treeCollapsed sprite" style=
+                                    "cursor: pointer;"><a class="js-action" href="#">Other
+                                    choices</a></legend>
+
+                                    <div id="special" class="hidden lazr-closed" style=
+                                    "height: 0px; overflow: hidden;">
+                                        <table>
+                                            <tbody>
+                                                <tr>
+                                                    <td><label for="field.licenses.26" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.26"
+                                                    name="field.licenses" type="checkbox"
+                                                    value="DONT_KNOW">&nbsp;I don't know
+                                                    yet</label>
+                                                    </td>
+                                                </tr>
+
+
+                                                <tr>
+                                                    <td><label for="field.licenses.27" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.27"
+                                                    name="field.licenses" type="checkbox"
+                                                    value=
+                                                    "OTHER_PROPRIETARY">&nbsp;Other/Proprietary</label>
+                                                    </td>
+                                                </tr>
+
+
+                                                <tr>
+                                                    <td><label for="field.licenses.28" style=
+                                                    "font-weight: normal"><input class=
+                                                    "checkboxType" id="field.licenses.28"
+                                                    name="field.licenses" type="checkbox"
+                                                    value=
+                                                    "OTHER_OPEN_SOURCE">&nbsp;Other/Open
+                                                    Source</label>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+
+                                <div id="license-details" class="hide-on-load lazr-closed"
+                                style="margin-top: 10px; overflow: hidden; height: 0px;">
+                                    <label for="field.license_info">Licence details:</label>
+
+                                    <textarea cols="44" id="field.license_info" name=
+                                    "field.license_info" rows="15">
+    </textarea>
+
+                                    <p class="formHelp">Additional licence details are
+                                    required. Please include the URL to the licence, or other
+                                    detailed information.</p>
+                                </div>
+                            </div>
+
+
+                            <p>Launchpad.net is free to use for software projects that share
+                            their source code and comply with these <a href=
+                            "https://help.launchpad.net/Legal/ProjectLicensing">licensing
+                            policies.</a><br></p>
+
+
+                            <div id="proprietary" class="lazr-closed" style=
+                            "overflow: hidden; height: 0px;">
+                                Commercial and proprietary projects do not qualify for free
+                                hosting; therefore a subscription needs to be purchased in
+                                order to host this project on Launchpad.
+
+                                <p>Here are the steps to obtain a commercial
+                                subscription:</p>
+
+
+                                <ol>
+                                    <li>Purchase a Launchpad subscription in the <a href=
+                                    "http://ubuntu.recycledmania.com/product_info.php?products_id=227">
+                                    Canonical Shop</a>.</li>
+
+
+                                    <li>You will receive an email that your order has been
+                                    processed.</li>
+
+
+                                    <li>Then you may apply the purchased subscription to this
+                                    project on your <a href="/~mark/+vouchers">voucher
+                                    management page</a>.</li>
+                                </ol>
+                                <a href="mailto:commercial@launchpad.net">Contact us</a> for
+                                more information regarding commercial subscriptions.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- ending copied html -->
+            </td>
+        </tr>
+        </table>
+        </script>
+    </body>
+</html>

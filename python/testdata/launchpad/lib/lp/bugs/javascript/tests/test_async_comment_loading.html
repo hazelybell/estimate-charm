@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!--
+Copyright 2012 Canonical Ltd.  This software is licensed under the
+GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<html>
+  <head>
+      <title>Test async_comment_loading</title>
+
+      <!-- YUI and test setup -->
+      <script type="text/javascript"
+              src="../../../../../build/js/yui/yui/yui.js">
+      </script>
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/console/assets/console-core.css" />
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/test-console/assets/skins/sam/test-console.css" />
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/test/assets/skins/sam/test.css" />
+
+      <script type="text/javascript"
+              src="../../../../../build/js/lp/app/testing/testrunner.js"></script>
+
+      <link rel="stylesheet" href="../../../app/javascript/testing/test.css" />
+
+      <!-- Dependencies -->
+      <script type="text/javascript" src="../../../../../build/js/lp/app/client.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/expander.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/lp.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/testing/mockio.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/choiceedit/choiceedit.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/overlay/overlay.js"></script>
+
+
+      <!-- The module under test. -->
+      <script type="text/javascript" src="../bugtask_index.js"></script>
+
+      <!-- Placeholder for any css asset for this module. -->
+      <!-- <link rel="stylesheet" href="../assets/async_comment_loading-core.css" /> -->
+
+      <!-- The test suite. -->
+      <script type="text/javascript" src="test_async_comment_loading.js"></script>
+
+      <style type="text/css">
+          /* CSS classes specific to this test */
+          .hidden { display: none; }
+      </style>
+    </head>
+    <body class="yui3-skin-sam">
+        <ul id="suites">
+            <!-- <li>lp.large_indicator.test</li> -->
+            <li>lp.bugs.async_comments.test</li>
+        </ul>
+        <div id="more-comments-spinner" style="display: hidden">
+            Look, I'm a spinner. *spins*
+        </div>
+    </body>
+</html>

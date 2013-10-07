@@ -1,0 +1,20 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+ <ul tal:condition="context/files">
+    <li tal:repeat="file context/files">
+      <tal:file_available condition="not:file/libraryfile/deleted">
+      <a class="sprite download"
+         tal:content="file/libraryfile/filename"
+         tal:attributes="href string:${context/fmt:url}/+files/${file/libraryfile/filename}" />
+      (<span tal:replace="file/libraryfile/content/filesize/fmt:bytes" />)
+      </tal:file_available>
+      <tal:file_unavailable condition="file/libraryfile/deleted">
+         <span tal:replace="file/libraryfile/filename">foo.dsc</span> (deleted)
+      </tal:file_unavailable>
+    </li>
+ </ul>
+ <p tal:condition="not:context/files">No files available for download.</p>
+</tal:root>

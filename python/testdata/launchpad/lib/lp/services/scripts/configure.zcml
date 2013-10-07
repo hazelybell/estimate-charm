@@ -1,0 +1,21 @@
+<!-- Copyright 2009 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <class class="lp.services.scripts.model.scriptactivity.ScriptActivity">
+    <allow interface="lp.services.scripts.interfaces.scriptactivity.IScriptActivity"/>
+  </class>
+
+  <class class="lp.services.scripts.model.scriptactivity.ScriptActivitySet">
+    <allow interface="lp.services.scripts.interfaces.scriptactivity.IScriptActivitySet" />
+  </class>
+
+  <securedutility
+      class="lp.services.scripts.model.scriptactivity.ScriptActivitySet"
+      provides="lp.services.scripts.interfaces.scriptactivity.IScriptActivitySet" >
+    <allow interface="lp.services.scripts.interfaces.scriptactivity.IScriptActivitySet" />
+  </securedutility>
+
+</configure>

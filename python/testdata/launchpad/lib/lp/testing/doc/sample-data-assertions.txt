@@ -1,0 +1,33 @@
+= Sample Data Assertions =
+
+This set of doctests makes a set of assertions about the sample data we have
+in the Launchpad application. This is designed to prevent people from
+changing sample data in ways that will cause unexpected failures in
+pagetests elsewhere.
+
+After you add sample data to Launchpad, or modify existing data, you should
+AT LEAST run this test to see that you haven't broken any assumptions.
+
+== User Accounts and Teams ==
+
+  >>> from zope.component import getUtility
+  >>> from lp.registry.interfaces.person import IPersonSet
+  >>> personset = getUtility(IPersonSet)
+
+Here we make assertions about each of the key user accounts which should be
+used in Launchpad page tests. These should be the ONLY user accounts
+specifically referenced in Launchpad tests.
+
+* No Team Memberships
+  This user is not supposed to be a member of any teams.
+
+  >>> no_team_memberships = personset.getByName('no-team-memberships')
+  >>> no_team_memberships.team_memberships.count()
+  0
+
+* One Team Membership
+  This user is supposed to be a member of only one team, the "Simple Team".
+
+  >>> one_membership = personset.getByName('one-membership')
+  >>> for t in one_membership.team_memberships: print t.team.displayname
+  Simple Team

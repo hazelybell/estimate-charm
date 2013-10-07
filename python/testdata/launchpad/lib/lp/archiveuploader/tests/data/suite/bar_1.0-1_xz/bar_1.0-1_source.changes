@@ -1,0 +1,40 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Format: 1.8
+Date: Thu, 16 Feb 2006 15:34:09 +0000
+Source: bar
+Binary: bar
+Architecture: source
+Version: 1.0-1
+Distribution: breezy
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Daniel Silverstone <daniel.silverstone@canonical.com>
+Description: 
+ bar        - Stuff for testing
+Changes: 
+ bar (1.0-1) breezy; urgency=low
+ .
+   * Initial version
+Checksums-Sha1: 
+ 66508c3d132c973d58ed1f57b1da27a572a499a3 921 bar_1.0-1.dsc
+ 73a04163fee97fd2257ab266bd48f1d3d528e012 164 bar_1.0.orig.tar.gz
+ 376076cca03a5d1518d13b9029899d0582140676 581 bar_1.0-1.diff.gz
+Checksums-Sha256: 
+ 254b1de83cc983217a2b9e4a82dc725c90fca65b4bebed20bc816d1e78471ad8 921 bar_1.0-1.dsc
+ f1ecff929899b567f45d6734b69d59a4f3c04dabce3cc8e6ed6d64073eda360e 164 bar_1.0.orig.tar.gz
+ a602a37f9ed5c5c320887cafddddc4034c10f9853483f21e575726f559f029c9 581 bar_1.0-1.diff.gz
+Files: 
+ c2d6e42a9b5ab8557804696e3574749e 921 devel optional bar_1.0-1.dsc
+ fc1464e5985b962a042d5354452f361d 164 devel optional bar_1.0.orig.tar.gz
+ 2684605b3f4d5626fa66eaf14d4fb817 581 devel optional bar_1.0-1.diff.gz
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Colin Watson <cjwatson@debian.org> -- Debian developer
+
+iD8DBQFOHEQ4jn63CGxkqMURAuW+AJ4mNZ8zRkzLG2EEJQYPkod0Sqbr6QCdEoav
+3ZT5/M1FHHmiSoqyCp81VLY=
+=6RYx
+-----END PGP SIGNATURE-----

@@ -1,0 +1,27 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+    <div id="not-translated-in-launchpad"
+      condition=not:context/translations_usage/enumvalue:LAUNCHPAD>
+      <strong>
+      <tal:lauchpad-unknown
+        condition="context/translations_usage/enumvalue:UNKNOWN">
+        Launchpad does not know where
+        <tal:project replace="context/displayname" /> translates its messages.
+      </tal:lauchpad-unknown>
+      <tal:launchpad-external
+        condition="context/translations_usage/enumvalue:EXTERNAL">
+        <tal:project replace="context/displayname" /> does not use Launchpad
+        to translate its messages.
+      </tal:launchpad-external>
+      <tal:launchpad-not-applicable
+        tal:condition="context/translations_usage/enumvalue:NOT_APPLICABLE">
+        <tal:project replace="context/displayname" /> does not translate its
+        messages.
+      </tal:launchpad-not-applicable>
+      </strong>
+    </div>
+</tal:root>

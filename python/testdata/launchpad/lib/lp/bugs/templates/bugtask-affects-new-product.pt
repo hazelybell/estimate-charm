@@ -1,0 +1,87 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+<body>
+
+  <div metal:fill-slot="main">
+
+    <div metal:use-macro="context/@@launchpad_form/form">
+      <div metal:fill-slot="widgets" tal:define="widgets view/widgets">
+        <tal:has-existing-products condition="view/existing_products">
+
+          <p class="informational message">There are some projects using the
+          bug tracker you specified. One of these may be the one you were
+          trying to register.</p>
+
+          <h2>Use an existing project</h2>
+
+          <table class="form">
+            <tal:existing-product
+                define="widget nocall:widgets/existing_product;
+                        display_label python:False">
+              <metal:block use-macro="context/@@launchpad_form/widget_row" />
+            </tal:existing-product>
+
+          </table>
+          <p>A bug watch will also be created for
+            <a tal:attributes="href request/form/field.bug_url"
+               tal:content="request/form/field.bug_url">http://remotebug</a>
+          </p>
+
+          <div class="actions">
+            <input tal:replace="structure view/use_existing_product_action/render" />
+          </div>
+          <br />
+
+          <h2>Register a new project</h2>
+          <input type="hidden" name="create_new" value="1" />
+
+          <p>If the project you want is not on the list above, then you should
+          proceed and register a new one.</p>
+        </tal:has-existing-products>
+
+        <table class="form">
+          <tal:bug-url define="widget nocall:widgets/bug_url">
+            <metal:block use-macro="context/@@launchpad_form/widget_row" />
+          </tal:bug-url>
+
+          <tal:product-name define="widget nocall:widgets/displayname">
+            <metal:block use-macro="context/@@launchpad_form/widget_row" />
+          </tal:product-name>
+
+          <tal:product-id define="widget nocall:widgets/name">
+            <metal:block use-macro="context/@@launchpad_form/widget_row" />
+          </tal:product-id>
+
+          <tal:product-summary define="widget nocall:widgets/summary">
+            <metal:block use-macro="context/@@launchpad_form/widget_row" />
+          </tal:product-summary>
+
+          <tal:can_link_package condition="view/can_link_package">
+            <tal:add-packaging define="widget nocall:widgets/add_packaging">
+              <metal:block use-macro="context/@@launchpad_form/widget_row" />
+            </tal:add-packaging>
+          </tal:can_link_package>
+        </table>
+
+        <div class="actions">
+          <input tal:replace="structure view/continue_action/render" />
+        </div>
+      </div>
+
+      <div metal:fill-slot="buttons">
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
+

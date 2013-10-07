@@ -1,0 +1,85 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+>
+  <body>
+    <h1 metal:fill-slot="heading">Registered distributions</h1>
+
+    <tal:side metal:fill-slot="side">
+      <tal:menu replace="structure view/@@+global-actions" />
+      <tal:menu replace="structure context/@@+related-pages" />
+    </tal:side>
+
+  <div metal:fill-slot="main">
+    There are currently
+    <strong tal:content="view/count">2</strong>
+    distributions registered in Launchpad.
+
+    <h2>Distributions that use Launchpad</h2>
+    <table class="listing">
+      <thead>
+        <tr>
+          <th>Distribution</th>
+          <th>Web site URL</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr tal:repeat="distribution context">
+          <td tal:condition="distribution/@@+get-involved/has_involvement">
+            <img src="/@@/distribution" />
+            <a tal:content="distribution/title"
+               tal:attributes="href distribution/fmt:url">
+                  distribution title
+            </a>
+          </td>
+          <td tal:condition="distribution/@@+get-involved/has_involvement"
+              tal:content="distribution/domainname">
+            domain.org
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Distributions that do not use Launchpad</h2>
+    <table class="listing">
+      <thead>
+        <tr>
+          <th>Distribution</th>
+          <th>Web site URL</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr tal:repeat="distribution context">
+          <td tal:condition="not:distribution/@@+get-involved/has_involvement">
+            <img src="/@@/distribution" />
+            <a tal:content="distribution/title"
+               tal:attributes="href distribution/fmt:url">
+                  distribution title
+            </a>
+          </td>
+          <td tal:condition="not:distribution/@@+get-involved/has_involvement"
+              tal:content="distribution/domainname">
+            domain.org
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div id="application-summary" class="application-summary">
+      Launchpad manages the source packages, builds, archive publishing, bugs,
+      translations, code, and historical record-keeping necessary to create a
+      distribution.  Some of the distributions described here are fully
+      managed in Launchpad, others are managed elsewhere with Launchpad
+      keeping track of their progress.
+    </div>
+  </div>
+
+</body>
+</html>

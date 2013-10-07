@@ -1,0 +1,71 @@
+Date Handling
+=============
+
+She's really hot, you're really nervous. What are you going to wear? What if
+she doesn't like the restaurant you suggested? What if you get spaghetti sauce
+all over your shirt?
+
+Handling dates can be tricky. This document is about handling dates.
+Thankfully, it's not about handling /those/ kinds of dates.
+
+Date Handling in Launchpad
+==========================
+
+Time differences
+----------------
+
+It's often useful to know how long ago something was created, or how long ago
+something happened. So, let's demonstrate how this functionality can be
+accessed in Launchpad, using the age of a bug task as an example. First, let's
+pretend we're logged in as Sample Person:
+
+    >>> from lp.testing import login
+    >>> login("testing@canonical.com")
+
+Then let's grab one of his bug tasks to work with:
+
+    >>> from zope.component import getUtility
+    >>> from lp.bugs.interfaces.bugtask import IBugTaskSet
+    >>> bugtaskset = getUtility(IBugTaskSet)
+    >>> bt = bugtaskset.get(2)
+
+Then let's create a bunch of sample dates to work with:
+
+    >>> from datetime import datetime, timedelta
+    >>> import pytz
+    >>> right_now = datetime.now(pytz.timezone('UTC'))
+    >>> one_minute_ago = right_now - timedelta(minutes = 1)
+    >>> four_hours_ago = right_now - timedelta(hours = 4)
+    >>> sixteen_days_ago = right_now - timedelta(days = 16)
+    >>> six_months_ago = right_now - timedelta(days = 180)
+    >>> one_year_ago = right_now - timedelta(days = 365)
+
+An IBugTask extends the interface IHasDateCreated. IHasDateCreated can be
+adapted to IAging:
+
+    >>> from lp.app.interfaces.launchpad import IAging
+    >>> bt.datecreated = one_minute_ago
+    >>> aging_bug = IAging(bt)
+
+IAging provides a method, currentApproximateAge, which returns a human-readable
+approximation of the age of a something.
+
+    >>> print aging_bug.currentApproximateAge()
+    1 minute
+
+We're cheating a bit below (swapping in different values for datecreated, which
+you should never do in user code) to demonstrate the various kinds of values
+currentApproximateAge returns.
+
+    >>> aging_bug.context.datecreated = four_hours_ago
+    >>> print aging_bug.currentApproximateAge()
+    4 hours
+    >>> aging_bug.context.datecreated = sixteen_days_ago
+    >>> print aging_bug.currentApproximateAge()
+    2 weeks
+    >>> aging_bug.context.datecreated = six_months_ago
+    >>> print aging_bug.currentApproximateAge()
+    6 months
+    >>> aging_bug.context.datecreated = one_year_ago
+    >>> print aging_bug.currentApproximateAge()
+    1 year

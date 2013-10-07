@@ -1,0 +1,258 @@
+Translation message helper functions
+====================================
+
+For rendering translations in the TranslationMessageView a number of
+helper functions exist. The following sections cover them in detail.
+
+contract_rosetta_escapes
+------------------------
+
+    >>> from lp.translations.browser.browser_helpers import (
+    ...     contract_rosetta_escapes)
+
+Normal strings get passed through unmodified.
+
+    >>> contract_rosetta_escapes('foo')
+    'foo'
+    >>> contract_rosetta_escapes('foo\\nbar')
+    'foo\\nbar'
+
+The string '[tab]' gets converted to a tab character.
+
+    >>> contract_rosetta_escapes('foo[tab]bar')
+    'foo\tbar'
+
+The string '\[tab]' gets converted to a literal '[tab]'.
+
+    >>> contract_rosetta_escapes('foo\\[tab]bar')
+    'foo[tab]bar'
+
+The string '\\[tab]' gets converted to a literal '\[tab]'.
+
+    >>> contract_rosetta_escapes('foo\\\\[tab]bar')
+    'foo\\[tab]bar'
+
+And so on...
+
+    >>> contract_rosetta_escapes('foo\\\\\\[tab]bar')
+    'foo\\\\[tab]bar'
+
+Similarly, string '[nbsp]' gets converted to no-break space character.
+
+    >>> contract_rosetta_escapes('foo[nbsp]bar')
+    u'foo\xa0bar'
+
+The string '\[nbsp]' gets converted to a literal '[nbsp]'.
+
+    >>> contract_rosetta_escapes('foo\\[nbsp]bar')
+    'foo[nbsp]bar'
+
+Similarly, string '[nnbsp]' gets converted to narrow no-break space
+character.
+
+    >>> contract_rosetta_escapes('foo[nnbsp]bar')
+    u'foo\u202fbar'
+
+The string '\[nnbsp]' gets converted to a literal '[nnbsp]'.
+
+    >>> contract_rosetta_escapes('foo\\[nnbsp]bar')
+    'foo[nnbsp]bar'
+
+
+expand_rosetta_escapes
+----------------------
+
+    >>> from lp.translations.browser.browser_helpers import (
+    ...     expand_rosetta_escapes)
+
+Normal strings get passed through unmodified.
+
+    >>> expand_rosetta_escapes(u'foo')
+    u'foo'
+    >>> expand_rosetta_escapes(u'foo\\nbar')
+    u'foo\\nbar'
+
+Tabs get converted to a special constant TranslationConstants.TAB_CHAR
+which renders as below:
+
+    >>> expand_rosetta_escapes(u'foo\tbar')
+    u'foo<code>[tab]</code>bar'
+
+Literal occurrences of u'[tab]' get escaped to a special constant
+TranslationConstants.TAB_CHAR_ESCAPED which renders them as below:
+
+    >>> expand_rosetta_escapes(u'foo[tab]bar')
+    u'foo<code>\\[tab]</code>bar'
+
+Escaped ocurrences themselves get escaped.
+
+    >>> expand_rosetta_escapes(u'foo\\[tab]bar')
+    u'foo\\<code>\\[tab]</code>bar'
+
+And so on...
+
+    >>> expand_rosetta_escapes(u'foo\\\\[tab]bar')
+    u'foo\\\\<code>\\[tab]</code>bar'
+
+Similarly, no-break spaces get converted to a special constant
+TranslationConstants.NO_BREAK_SPACE_CHAR which renders as below:
+
+    >>> expand_rosetta_escapes(u'foo\u00a0bar')
+    u'foo<code>[nbsp]</code>bar'
+
+Literal occurrences of u'[nbsp]' get escaped to a special constant
+TranslationConstants.NO_BREAK_SPACE_CHAR_ESCAPED which renders them
+as below:
+
+    >>> expand_rosetta_escapes(u'foo[nbsp]bar')
+    u'foo<code>\\[nbsp]</code>bar'
+
+Similarly, narrow no-break spaces get converted to a special constant
+TranslationConstants.NARROW_NO_BREAK_SPACE_CHAR which renders as below:
+
+    >>> expand_rosetta_escapes(u'foo\u202fbar')
+    u'foo<code>[nnbsp]</code>bar'
+
+Literal occurrences of u'[nnbsp]' get escaped to a special constant
+TranslationConstants.NARROW_NO_BREAK_SPACE_CHAR_ESCAPED which renders them
+as below:
+
+    >>> expand_rosetta_escapes(u'foo[nnbsp]bar')
+    u'foo<code>\\[nnbsp]</code>bar'
+
+
+parse_cformat_string
+--------------------
+
+    >>> from lp.translations.browser.browser_helpers import (
+    ...     parse_cformat_string)
+    >>> parse_cformat_string('')
+    []
+    >>> parse_cformat_string('foo')
+    [('string', 'foo')]
+    >>> parse_cformat_string('blah %d blah')
+    [('string', 'blah '), ('interpolation', '%d'), ('string', ' blah')]
+    >>> parse_cformat_string('%sfoo%%bar%s')
+    [('interpolation', '%s'), ('string', 'foo%%bar'), ('interpolation', '%s')]
+    >>> parse_cformat_string('%')
+    Traceback (most recent call last):
+    ...
+    UnrecognisedCFormatString: %
+
+
+text_to_html
+------------
+
+    >>> from lp.translations.browser.browser_helpers import (
+    ...     text_to_html)
+
+First, do no harm.
+
+    >>> text_to_html(u'foo bar', [], '<sp>')
+    u'foo bar'
+
+Test replacement of leading and trailing spaces.
+
+    >>> text_to_html(u' foo bar', [], '<sp>')
+    u'<sp>foo bar'
+    >>> text_to_html(u'foo bar ', [], '<sp>')
+    u'foo bar<sp>'
+    >>> text_to_html(u'  foo bar  ', [], '<sp>')
+    u'<sp><sp>foo bar<sp><sp>'
+
+Test replacement of newlines.
+
+    >>> text_to_html(u'foo\nbar', [], newline='<cr>')
+    u'foo<cr>bar'
+
+And both together.
+
+    >>> text_to_html(u'foo \nbar', [], '<sp>', '<cr>')
+    u'foo<sp><cr>bar'
+
+Test treatment of tabs.
+
+    >>> text_to_html(u'foo\tbar', [])
+    u'foo<code>[tab]</code>bar'
+
+Test valid C format strings are formatted.
+
+    >>> text_to_html(u'foo %d bar', ['c-format'])
+    u'foo <code>%d</code> bar'
+
+If we get None, we return None.
+
+    >>> text_to_html(None, []) is None
+    True
+
+Test bad format strings are caught and passed through.
+
+    >>> text = u'foo %z bar'
+    >>> parse_cformat_string(text)
+    Traceback (most recent call last):
+    ...
+    UnrecognisedCFormatString: foo %z bar
+
+    >>> text_to_html(text, ['c-format']) == text
+    True
+
+If we get '\r\n' as the new line mark, we should remove '\r':
+
+    >>> text_to_html(u'foo\r\nbar', [])
+    u'foo<img alt="" src="/@@/translation-newline" /><br/>\nbar'
+
+And '\r' should be also handled:
+
+    >>> text_to_html(u'foo\rbar', [])
+    u'foo<img alt="" src="/@@/translation-newline" /><br/>\nbar'
+
+
+convert_newlines_to_web_form
+----------------------------
+
+    >>> from lp.translations.browser.browser_helpers import (
+    ...     convert_newlines_to_web_form)
+    >>> convert_newlines_to_web_form(u'foo')
+    u'foo'
+    >>> convert_newlines_to_web_form(u'foo\n')
+    u'foo\r\n'
+    >>> convert_newlines_to_web_form(u'foo\nbar\n\nbaz')
+    u'foo\r\nbar\r\n\r\nbaz'
+    >>> convert_newlines_to_web_form(u'foo\r\nbar')
+    u'foo\r\nbar'
+    >>> convert_newlines_to_web_form(u'foo\rbar')
+    u'foo\r\nbar'
+
+
+count_lines
+-----------
+
+    >>> from lp.translations.browser.browser_helpers import count_lines
+    >>> count_lines("foo")
+    1
+    >>> count_lines(
+    ...     "123456789abc123456789abc123456789abc1234566789abc123456789abc")
+    2
+    >>> count_lines(
+    ...     "123456789a123456789a123456789a1234566789a123456789")
+    1
+    >>> count_lines("a\nb")
+    2
+    >>> count_lines("a\nb\n")
+    3
+    >>> count_lines("a\nb\nc")
+    3
+    >>> count_lines(
+    ...     "123456789abc123456789abc123456789abc123456789abc\n"
+    ...     "1234566789a123456789a")
+    2
+    >>> count_lines(
+    ...     "123456789abc123456789abc123456789abc123456789abc123456789abc"
+    ...     "123456\n789a123456789a123456789a")
+    3
+    >>> count_lines(
+    ...     "123456789abc123456789abc123456789abc123456789abc123456789abc"
+    ...     "123456789abc\n1234566789a123456789a123456789a")
+    3
+    >>> count_lines("foo bar\n")
+    2

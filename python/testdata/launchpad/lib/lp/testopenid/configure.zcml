@@ -1,0 +1,28 @@
+<!-- Copyright 2009 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="launchpad">
+
+    <securedutility
+        class="lp.systemhomes.TestOpenIDApplication"
+        provides="lp.testopenid.interfaces.server.ITestOpenIDApplication">
+      <allow interface="lp.testopenid.interfaces.server.ITestOpenIDApplication"/>
+    </securedutility>
+
+    <class class=".adapters.openid.TestOpenIDPersistentIdentity">
+      <allow interface=".interfaces.server.ITestOpenIDPersistentIdentity" />
+    </class>
+
+    <adapter 
+      factory=".adapters.openid.TestOpenIDPersistentIdentity"
+      provides=".interfaces.server.ITestOpenIDPersistentIdentity" />
+      />
+
+    <include package=".browser"/>
+
+</configure>

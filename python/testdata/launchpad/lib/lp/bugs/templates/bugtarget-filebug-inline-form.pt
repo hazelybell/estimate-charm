@@ -1,0 +1,11 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  omit-tag="">
+
+  <tal:filebug-form define="launchpad_form_id string:filebug-form">
+    <metal:display-similar-bugs
+        use-macro="context/@@+filebug-macros/inline-filebug-form" />
+  </tal:filebug-form>
+
+</tal:root>

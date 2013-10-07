@@ -1,0 +1,44 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<body>
+  <metal:heading fill-slot="heading">
+    <h2 tal:content="view/page_title"/>
+  </metal:heading>
+
+<div metal:fill-slot="main">
+
+  <h1 tal:content="context/summary"/>
+
+  <tal:description replace="structure context/description/fmt:text-to-html">
+      Package Description
+  </tal:description>
+
+  <div class="portlet"
+       tal:define="spackage context/last_sourcepackagerelease"
+       tal:condition="spackage">
+    <h2>Source package</h2>
+
+      <div id="source">
+        <ul>
+          <li class="source package">
+            <a
+               tal:content="spackage/title"
+               tal:attributes="href spackage/fmt:url"
+               id="source_package">SOURCEPACKAGE</a>
+          </li>
+        </ul>
+      </div>
+  </div>
+
+  <div tal:replace="structure context/@@+portlet-published" />
+
+</div>
+</body>
+</html>

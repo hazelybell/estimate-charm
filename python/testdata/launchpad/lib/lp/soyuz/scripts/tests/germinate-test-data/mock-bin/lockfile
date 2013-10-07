@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# This is a mock "lockfile" command that is used during the test
+# There is no need to have the real lockfile installed (its part
+# of procmail) because there can be no multiple germinate instances
+# while we run the tests
+
+exit 1

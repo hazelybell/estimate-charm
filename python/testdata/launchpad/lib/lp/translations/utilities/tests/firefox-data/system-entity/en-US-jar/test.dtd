@@ -1,0 +1,9 @@
+<!-- Test SYSTEM handling.  -->
+
+<!ENTITY firststring "First translatable string">
+
+<!ENTITY % includedFile SYSTEM "chrome://includedFile.dtd">
+%includedFile;
+
+<!-- Parser will only get here if that last tag didn't break things. -->
+<!ENTITY secondstring "Second translatable string">

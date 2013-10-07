@@ -1,0 +1,14 @@
+<!-- Copyright 2009 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure xmlns="http://namespaces.zope.org/meta">
+
+  <directive
+      namespace="http://namespaces.canonical.com/lp"
+      name="help-folder"
+      schema="lp.services.inlinehelp.zcml.IHelpFolderDirective"
+      handler="lp.services.inlinehelp.zcml.register_help_folder"
+      />
+
+</configure>

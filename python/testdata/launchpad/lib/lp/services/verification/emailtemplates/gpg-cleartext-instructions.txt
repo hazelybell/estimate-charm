@@ -1,0 +1,16 @@
+This message contains the instructions for confirming registration of an
+OpenPGP key for use in Launchpad.  The confirmation instructions have been
+encrypted with the OpenPGP key you have attempted to register.  If you cannot
+read the unencrypted instructions below, it may be because your mail reader
+does not support automatic decryption of "ASCII armored" encrypted text.
+
+Exact instructions for enabling this depends on the specific mail reader you
+are using.  Please see this support page for more information:
+
+    https://help.launchpad.net/ReadingOpenPgpMail
+
+For more general information on OpenPGP and related tools such as Gnu Privacy
+Guard (GPG), please see:
+
+    https://help.ubuntu.com/community/GnuPrivacyGuardHowto
+

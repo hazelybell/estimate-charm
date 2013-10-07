@@ -1,0 +1,5 @@
+locale mac en-US jar:chrome/en-US.jar!/mac/
+locale unix en-US jar:chrome/en-US.jar!/unix/
+locale win en-US jar:chrome/en-US.jar!/win/
+override chrome://foo/bar/splat.dtd
+locale main en-US jar:chrome/en-US.jar!/

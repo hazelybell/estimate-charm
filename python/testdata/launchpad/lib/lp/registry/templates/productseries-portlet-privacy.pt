@@ -1,0 +1,15 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  id="privacy"
+  tal:attributes="class view/privacy_portlet_css"
+>
+    <span id="information-type-summary"
+      tal:attributes="class view/information_type_css;">This series
+      contains <strong id="information-type" tal:content="view/information_type">
+    </strong> information</span>
+
+    <div id="information-type-description" style="padding-top: 5px" tal:content="view/information_type_description"></div>
+</div>
+

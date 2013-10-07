@@ -1,0 +1,56 @@
+<!-- Copyright 2009-2011 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+  xmlns="http://namespaces.zope.org/zope"
+  xmlns:browser="http://namespaces.zope.org/browser"
+  xmlns:i18n="http://namespaces.zope.org/i18n"
+  xmlns:webservice="http://namespaces.canonical.com/webservice"
+  i18n_domain="launchpad">
+
+  <!-- TemporaryBlobStorage -->
+  <class class="lp.services.temporaryblobstorage.model.TemporaryBlobStorage">
+    <allow
+      interface="lp.services.temporaryblobstorage.interfaces.ITemporaryBlobStorage" />
+  </class>
+
+  <browser:page
+    name="+storeblob"
+    for="lp.services.webapp.interfaces.ILaunchpadRoot"
+    class="lp.services.temporaryblobstorage.browser.TemporaryBlobStorageAddView"
+    permission="zope.Public"
+    template="./templates/temporaryblobstorage-storeblob.pt"
+    >
+  </browser:page>
+
+  <!-- TemporaryStorageManager -->
+  <class class="lp.services.temporaryblobstorage.model.TemporaryStorageManager">
+    <allow
+      interface="lp.services.temporaryblobstorage.interfaces.ITemporaryStorageManager" />
+  </class>
+
+  <securedutility
+      class="lp.services.temporaryblobstorage.model.TemporaryStorageManager"
+      provides="lp.services.temporaryblobstorage.interfaces.ITemporaryStorageManager">
+      <allow
+        interface="lp.services.temporaryblobstorage.interfaces.ITemporaryStorageManager" />
+  </securedutility>
+
+  <browser:navigation
+      module="lp.services.temporaryblobstorage.browser"
+      classes="TemporaryBlobStorageNavigation"
+      />
+
+  <browser:url
+      for="lp.services.temporaryblobstorage.interfaces.ITemporaryBlobStorage"
+      urldata="lp.services.temporaryblobstorage.browser.TemporaryBlobStorageURL"
+      parent_utility="lp.services.webservice.interfaces.IWebServiceApplication"/>
+
+  <browser:url
+      for="lp.services.temporaryblobstorage.interfaces.ITemporaryStorageManager"
+      path_expression="string:temporary-blobs"
+      parent_utility="lp.services.webservice.interfaces.IWebServiceApplication"/>
+
+  <webservice:register module="lp.services.temporaryblobstorage.webservice" />
+</configure>

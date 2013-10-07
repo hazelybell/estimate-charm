@@ -1,0 +1,46 @@
+<div
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  class="portlet" id="portlet-structural-subscribers">
+
+  <h2>Subscribers</h2>
+
+  <div tal:define="subscriptions context/bug_subscriptions;
+                   parent_target context/parent_subscription_target;
+                   target_type context/target_type_display">
+    <b tal:content="view/target_label">To all Foobar bugs</b>:
+    <br />
+    <div tal:condition="subscriptions">
+      <ul>
+        <li tal:repeat="subscription subscriptions">
+          <a tal:replace="structure subscription/subscriber/fmt:link">Ubuntu Team</a>
+        </li>
+      </ul>
+      <br />
+    </div>
+    <div tal:condition="not:subscriptions">
+      <i class="sprite info">No people or teams are
+        subscribed to bugmail for this
+        <tal:target replace="target_type" />.
+      </i>
+      <br /><br />
+    </div>
+    <tal:parent-subscriptions condition="parent_target">
+      <b tal:content="view/parent_target_label">For Ubuntu</b>:
+      <br />
+      <div tal:condition="parent_target/bug_subscriptions">
+        <ul>
+          <li tal:repeat="subscription parent_target/bug_subscriptions">
+            <a tal:replace="structure subscription/subscriber/fmt:link">Ubuntu Team</a>
+          </li>
+        </ul>
+      </div>
+      <div tal:condition="not: parent_target/bug_subscriptions">
+        <a tal:attributes="href string:${parent_target/fmt:url}/+subscribe">
+          (subscribe)
+        </a>
+      </div>
+    </tal:parent-subscriptions>
+  </div>
+</div>

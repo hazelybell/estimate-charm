@@ -1,0 +1,230 @@
+Package: archive-copier
+Binary: archive-copier
+Version: 0.1.5
+Section: misc
+Maintainer: Colin Watson, Hacker Extraordinaire <cjwatson@ubuntu.com>
+Build-Depends: debhelper (>= 4.2)
+Architecture: any
+Standards-Version: 3.6.1
+Format: 1.0
+Directory: pool/main/a/archive-copier
+Files:
+ 41b62efd646e5f010d6e34862503e5a5 510 archive-copier_0.1.5.dsc
+ cc6132eb7b8bc715ddd1690a68d7df89 16600 archive-copier_0.1.5.tar.gz
+
+Package: archive-copier
+Binary: archive-copier
+Version: 0.3.6
+Section: misc
+Maintainer: Colin Watson <cjwatson@ubuntu.com>
+Build-Depends: debhelper (>= 4.2)
+Architecture: any
+Standards-Version: 3.6.2
+Format: 1.0
+Directory: pool/main/a/archive-copier
+Files:
+ 3b6c16962308a4b8b753ec8d5b289506 510 archive-copier_0.3.6.dsc
+ 6ca2e13475a9aa0a694b85330d905dbd 19598 archive-copier_0.3.6.tar.gz
+
+Package: db1-compat
+Binary: libdb1-compat
+Version: 2.1.3-7
+Priority: required
+Maintainer: Colin Watson <cjwatson@ubuntu.com>
+Section: libs
+Build-Depends: debhelper (>= 3.4.4)
+Architecture: any
+Standards-Version: 3.5.6
+Directory: pool/main/d/db1-compat
+Files:
+ f341a9317c3333f14fa170fe97d84b36 640 db1-compat_2.1.3-7.dsc
+ e571c8c34688d272ec376cedb311b7b4 67763 db1-compat_2.1.3.orig.tar.gz
+ 5654414826d07d3a07f7f56137020e92 5500 db1-compat_2.1.3-7.diff.gz
+
+Package: util-linux
+Binary: bsdutils, util-linux, fdisk-udeb, util-linux-locales, mount
+Version: 2.12p-2ubuntu2.2
+Priority: required
+Section: base
+Maintainer: LaMont Jones <lamont@debian.org>
+Build-Depends: libncurses5-dev, slang1-utf8-dev (>=1.4.9), gettext, zlib1g-dev, libblkid-dev, uuid-dev, dpatch
+Architecture: any
+Standards-Version: 3.5.6.0
+Format: 1.0
+Directory: pool/main/u/util-linux
+Files:
+ d3964d818741de394f6758e9b344d176 718 util-linux_2.12p-2ubuntu2.2.dsc
+ d47e820f6880c21c8b4c0c7e8a7376cc 2001658 util-linux_2.12p.orig.tar.gz
+ 09a577be3acfe5951136f6bcb969106b 74592 util-linux_2.12p-2ubuntu2.2.diff.gz
+
+Package: mkvmlinuz
+Binary: mkvmlinuz
+Priority: optional
+Section: devel
+Maintainer: Jens Schmalzing <jensen@debian.org>
+Build-Depends: docbook-to-man, debhelper (>= 4.0.0)
+Architecture: powerpc
+Standards-Version: 3.6.0
+Format: 1.0
+Directory: pool/main/m/mkvmlinuz
+Files:
+ de571e1568da42ecee24d839098cf5fd 1163 mkvmlinuz_12ubuntu1.dsc
+ e206e976f40b16da611b79fb907a8d7d 7775 mkvmlinuz_12ubuntu1.tar.gz
+
+Package: python-pam
+Binary: python-pam, python2.3-pam, python2.4-pam
+Version: 0.4.2-10.1ubuntu3
+Priority: optional
+Section: underworld/python
+Maintainer: Dima Barsky <dima@debian.org>
+Build-Depends: debhelper (>> 4.2.28), python2.4-dev, python2.3-dev, python (>= 2.4), libpam0g-dev
+Architecture: any
+Standards-Version: 3.6.0
+Format: 1.0
+Directory: pool/main/p/python-pam
+Files:
+ 26c077c02e697075b9357d8c0e2a5844 611 python-pam_0.4.2-10.1ubuntu3.dsc
+ 3be1e6c4cd329ee5ac71465e0d32ad27 15103 python-pam_0.4.2-10.1ubuntu3.tar.gz
+
+Package: python-sqlite
+Binary: python2.3-sqlite, python2.4-sqlite, python-sqlite
+Version: 1.0.1-1ubuntu1
+Priority: optional
+Section: python
+Maintainer: Joel Rosdahl <joel@debian.org>
+Build-Depends: debhelper (>> 4.2.18), libsqlite0-dev (>= 2.5.6), python2.3-dev, python2.4-dev, python
+Architecture: any
+Standards-Version: 3.6.1
+Format: 1.0
+Directory: pool/main/p/python-sqlite
+Files:
+ 1f697f6b4e18af840c069d200f2f7d97 697 python-sqlite_1.0.1-1ubuntu1.dsc
+ 4797b5ea7a3d96b87333e6b5af7b9979 41099 python-sqlite_1.0.1.orig.tar.gz
+ af3716b7f9de2dfb654c25a526151611 1596 python-sqlite_1.0.1-1ubuntu1.diff.gz
+
+Package: ubuntu-meta
+Binary: ubuntu-base, ubuntu-desktop, ubuntu-live
+Version: 0.43
+Priority: optional
+Section: base
+Maintainer: Matt Zimmerman <mdz@ubuntu.com>
+Build-Depends: debhelper (>= 4)
+Architecture: any
+Standards-Version: 3.6.1
+Format: 1.0
+Directory: pool/main/u/ubuntu-meta
+Files:
+ 90e9976b8fe280a9926532e8950dbc38 522 ubuntu-meta_0.43.dsc
+ 575f60bc1cb10bdefa73a1e1657a2dbe 9325 ubuntu-meta_0.43.tar.gz
+
+Package: ed
+Binary: ed
+Version: 0.2-20
+Priority: important
+Maintainer: James Troup <james@nocrew.org>
+Build-Depends: dpatch
+Architecture: any
+Standards-Version: 3.5.8.0
+Format: 1.0
+Directory: pool/main/e/ed
+Files:
+ 5963369d8874785077ca0b8773167ad0 530 ed_0.2-20.dsc
+ ddd57463774cae9b50e70cd51221281b 185913 ed_0.2.orig.tar.gz
+ f9e1e5f13725f581919e9bfd62272a05 8506 ed_0.2-20.diff.gz
+
+Package: gcc-defaults
+Binary: gij, chill, gpc, cpp-doc, gcj, gpc-doc, g77-doc, gobjc, cpp, g++, gcc-doc, g77, gcc
+Version: 1.19
+Priority: standard
+Section: devel
+Maintainer: Debian GCC maintainers <debian-gcc@lists.debian.org>
+Build-Depends: m4, debhelper (>= 4)
+Architecture: any
+Standards-Version: 3.5.10
+Format: 1.0
+Directory: pool/main/g/gcc-defaults
+Files:
+ 2d009f70231a70f469fbd23ca031ed32 672 gcc-defaults_1.19.dsc
+ cf50ffe2f2c2d6b9a701fe5056a35951 33615 gcc-defaults_1.19.tar.gz
+Uploaders: Matthias Klose <doko@debian.org>, Ryan Murray <rmurray@debian.org>
+
+Package: libcap
+Binary: libcap-dev, libcap-bin, libcap1
+Version: 1:1.10-14
+Priority: required
+Section: libs
+Maintainer: Michael Vogt <mvo@debian.org>
+Build-Depends: debhelper
+Architecture: any
+Standards-Version: 3.6.1
+Format: 1.0
+Directory: pool/main/libc/libcap
+Files:
+ d2d5b86797f7c046b9d4e1e2e49b2f8a 568 libcap_1.10-14.dsc
+ 291be97b78789f331499a0ab22d9d563 28495 libcap_1.10.orig.tar.gz
+ b867a0c1db9e8ff568415bbcd1fa65dc 12928 libcap_1.10-14.diff.gz
+
+Package: 3dchess
+Binary: 3dchess
+Version: 0.8.1-11
+Priority: optional
+Section: games
+Maintainer: Stephen Stafford <bagpuss@debian.org>
+Build-Depends: debhelper, xaw3dg-dev, xlibs-dev
+Architecture: any
+Standards-Version: 3.5.9.0
+Format: 1.0
+Directory: pool/main/3/3dchess
+Files:
+ ee24555acce059e14a8756cd5635593a 580 3dchess_0.8.1-11.dsc
+ 5390c60953446e541d9455d9c4e38ca1 46371 3dchess_0.8.1.orig.tar.gz
+ 9eac46d2c1664dd09b1e0c9d5e7a72ae 4747 3dchess_0.8.1-11.diff.gz
+
+Package: 9wm
+Binary: 9wm
+Version: 1.2-6
+Priority: optional
+Section: x11
+Maintainer: Decklin Foster <decklin@red-bean.com>
+Build-Depends: debhelper (>= 4.0), xutils, xlibs-dev
+Architecture: any
+Standards-Version: 3.6.1
+Format: 1.0
+Directory: pool/main/9/9wm
+Files:
+ 937b8ab18df6f4f262e1f8eea7e04099 559 9wm_1.2-6.dsc
+ b7e9502f430550ac5fff7507fc9ae8b6 20766 9wm_1.2.orig.tar.gz
+ 3bccc7fd96b584891d336a7afd1dbd04 2533 9wm_1.2-6.diff.gz
+
+Package: rioutil
+Binary: rioutil
+Version: 1.4.4-1
+Priority: optional
+Section: sound
+Maintainer: Jens Schmalzing <jensen@debian.org>
+Build-Depends: debhelper (>> 3.0.0), libusb-dev, zlib1g-dev
+Architecture: any
+Standards-Version: 3.6.1
+Format: 1.0
+Directory: pool/main/r/rioutil
+Files:
+ 7dc0ee63d77e28ef7b14a045fe0a4df0 587 rioutil_1.4.4-1.dsc
+ 65902f2e8a0ae18b71937ee4d1803f8b 408302 rioutil_1.4.4.orig.tar.gz
+ d24420813f9b6911ca0f37dd7d2a2cb1 4222 rioutil_1.4.4-1.diff.gz
+
+Package: clearlooks
+Binary: gtk2-engines-clearlooks
+Version: 0.6.2-1~hoary1
+Priority: optional
+Section: gnome
+Maintainer: Ross Burton <ross@debian.org>
+Build-Depends: debhelper (>= 4.1.0), cdbs, libgtk2.0-dev
+Architecture: any
+Standards-Version: 3.6.1
+Format: 1.0
+Directory: pool/main/c/clearlooks
+Files:
+ 29aef978c913e5596127fa679e3b8f8b 380 clearlooks_0.6.2-1~hoary1.dsc
+ cebb59c051b935391bd8e64947902fc0 394350 clearlooks_0.6.2.orig.tar.gz
+ 5c56d5c2eb52c8750271ff13da17d971 5746 clearlooks_0.6.2-1~hoary1.diff.gz
+

@@ -1,0 +1,23 @@
+<!-- Copyright 2009-2010 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+  xmlns="http://namespaces.zope.org/zope">
+
+  <class
+    class="lp.services.googlesearch.PageMatch">
+    <allow interface="lp.services.googlesearch.interfaces.ISearchResult" />
+  </class>
+
+  <class
+    class="lp.services.googlesearch.PageMatches">
+    <allow interface="lp.services.googlesearch.interfaces.ISearchResults" />
+  </class>
+
+  <securedutility
+    class="lp.services.googlesearch.GoogleSearchService"
+    provides="lp.services.googlesearch.interfaces.ISearchService">
+    <allow interface="lp.services.googlesearch.interfaces.ISearchService" />
+  </securedutility>
+</configure>

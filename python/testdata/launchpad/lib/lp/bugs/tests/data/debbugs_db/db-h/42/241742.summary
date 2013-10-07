@@ -1,0 +1,9 @@
+Format-Version: 2
+Found-In: 1.4.5-3.2 1.4.6-2
+Subject: viewing fax tiffs crashes evolution
+Date: 1080932584
+Submitter: Micheas Herman <micheas@freep.org>
+Merged-With: 237001
+Package: evolution
+Message-Id: <E1B9SuX-0001XW-00@tux>
+Severity: normal

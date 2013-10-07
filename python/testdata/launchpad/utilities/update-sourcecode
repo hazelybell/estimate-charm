@@ -1,0 +1,19 @@
+#!/usr/bin/python -u
+#
+# Copyright 2009 Canonical Ltd.  This software is licensed under the
+# GNU Affero General Public License version 3 (see the file LICENSE).
+
+"""Update the sourcecode managed in sourcecode/."""
+
+import os
+import sys
+
+
+sys.path.insert(0,
+    os.path.join(os.path.dirname(os.path.dirname(__file__)), 'lib'))
+
+from devscripts import sourcecode
+
+
+if __name__ == '__main__':
+    sys.exit(sourcecode.main(sys.argv))

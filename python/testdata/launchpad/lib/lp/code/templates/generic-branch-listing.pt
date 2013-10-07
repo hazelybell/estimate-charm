@@ -1,0 +1,27 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+
+<body>
+
+  <div metal:fill-slot="main">
+
+    <tal:no-branches condition="not: view/branch_count">
+      <div id="branch-summary">
+        There are no branches for <tal:name replace="context/displayname"/>
+        in Launchpad.
+      </div>
+    </tal:no-branches>
+
+    <tal:branchlisting
+        condition="view/branch_count"
+        define="branches view/branches"
+        replace="structure branches/@@+branch-listing" />
+
+  </div>
+</body>
+</html>

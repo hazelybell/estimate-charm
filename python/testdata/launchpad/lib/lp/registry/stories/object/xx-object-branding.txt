@@ -1,0 +1,294 @@
+Branding
+========
+
+Several objects in Launchpad can have aspects of their branding customised.
+Specifically, you can set various combinations of an icon, for listings, a
+logo, for page headings, and a mugshot, which is a large brand for the
+object's homepage.
+
+Most objects allow you to edit all three of these branding items. However,
+for IPerson and ISprint, we do not currently allow the customisation of the
+icon, as we think this will create too much noise in the UI.
+
+    >>> from lp.testing.branding import set_branding
+
+Team branding
+-------------
+
+    >>> browser = setupBrowser(auth='Basic no-priv@canonical.com:test')
+    >>> browser.open('http://launchpad.dev/~ubuntu-team/+branding')
+    Traceback (most recent call last):
+    ...
+    Unauthorized:...
+
+    >>> browser = setupBrowser(auth='Basic mark@example.com:test')
+    >>> browser.open('http://launchpad.dev/~ubuntu-team')
+    >>> browser.url
+    'http://launchpad.dev/~ubuntu-team'
+    >>> browser.getLink('Change details').click()
+    >>> browser.getLink('Change branding').click()
+    >>> browser.url
+    'http://launchpad.dev/~ubuntu-team/+branding'
+
+    >>> browser.getControl(name='field.icon.action').value
+    ['keep']
+    >>> find_tag_by_id(browser.contents, 'field.icon_current_img').get('src')
+    u'/@@/team'
+    >>> browser.getControl(name='field.logo.action').value
+    ['keep']
+    >>> find_tag_by_id(browser.contents, 'field.logo_current_img').get('src')
+    u'/@@/team-logo'
+    >>> browser.getControl(name='field.logo.action').value
+    ['keep']
+    >>> find_tag_by_id(
+    ...     browser.contents, 'field.mugshot_current_img').get('src')
+    u'/@@/team-mugshot'
+
+    >>> set_branding(browser)
+
+    >>> browser.getControl('Change Branding').click()
+
+Here we see the updated values.
+
+    >>> browser.url
+    'http://launchpad.dev/~ubuntu-team'
+    >>> browser.getLink('Change details').click()
+    >>> browser.getLink('Change branding').click()
+
+    >>> browser.getControl(name='field.icon.action').value
+    ['keep']
+    >>> find_tag_by_id(browser.contents, 'field.icon_current_img').get('src')
+    u'.../icon.png'
+    >>> browser.getControl(name='field.logo.action').value
+    ['keep']
+    >>> find_tag_by_id(browser.contents, 'field.logo_current_img').get('src')
+    u'.../logo.png'
+    >>> browser.getControl(name='field.mugshot.action').value
+    ['keep']
+    >>> find_tag_by_id(
+    ...     browser.contents, 'field.mugshot_current_img').get('src')
+    u'.../mugshot.png'
+
+
+Distribution branding
+---------------------
+
+    >>> browser = setupBrowser(auth='Basic no-priv@canonical.com:test')
+    >>> browser.open('http://launchpad.dev/kubuntu/+edit')
+    Traceback (most recent call last):
+    ...
+    Unauthorized:...
+
+    >>> browser = setupBrowser(auth='Basic mark@example.com:test')
+    >>> browser.open('http://launchpad.dev/kubuntu')
+    >>> browser.url
+    'http://launchpad.dev/kubuntu'
+    >>> browser.getLink('Change details').click()
+    >>> browser.url
+    'http://launchpad.dev/kubuntu/+edit'
+
+    >>> browser.getControl(name='field.icon.action').value
+    ['keep']
+    >>> find_tag_by_id(browser.contents, 'field.icon_current_img').get('src')
+    u'/@@/distribution'
+    >>> browser.getControl(name='field.logo.action').value
+    ['keep']
+    >>> find_tag_by_id(browser.contents, 'field.logo_current_img').get('src')
+    u'/@@/distribution-logo'
+    >>> browser.getControl(name='field.logo.action').value
+    ['keep']
+    >>> find_tag_by_id(
+    ...     browser.contents, 'field.mugshot_current_img').get('src')
+    u'/@@/distribution-mugshot'
+
+    >>> set_branding(browser)
+
+    >>> browser.getControl('Change', index=3).click()
+
+Here we see the updated values.
+
+    >>> browser.url
+    'http://launchpad.dev/kubuntu'
+    >>> browser.getLink('Change details').click()
+
+    >>> browser.getControl(name='field.icon.action').value
+    ['keep']
+    >>> find_tag_by_id(browser.contents, 'field.icon_current_img').get('src')
+    u'.../icon.png'
+    >>> browser.getControl(name='field.logo.action').value
+    ['keep']
+    >>> find_tag_by_id(browser.contents, 'field.logo_current_img').get('src')
+    u'.../logo.png'
+    >>> browser.getControl(name='field.mugshot.action').value
+    ['keep']
+    >>> find_tag_by_id(
+    ...     browser.contents, 'field.mugshot_current_img').get('src')
+    u'.../mugshot.png'
+
+
+ProjectGroup branding
+---------------------
+
+    >>> browser = setupBrowser(auth='Basic no-priv@canonical.com:test')
+    >>> browser.open('http://launchpad.dev/mozilla/+branding')
+    Traceback (most recent call last):
+    ...
+    Unauthorized:...
+
+    >>> browser = setupBrowser(auth='Basic mark@example.com:test')
+    >>> browser.open('http://launchpad.dev/mozilla')
+    >>> browser.url
+    'http://launchpad.dev/mozilla'
+    >>> browser.getLink('Change details').click()
+    >>> browser.getLink('Change branding').click()
+    >>> browser.url
+    'http://launchpad.dev/mozilla/+branding'
+
+    >>> browser.getControl(name='field.icon.action').value
+    ['keep']
+    >>> find_tag_by_id(browser.contents, 'field.icon_current_img').get('src')
+    u'/@@/project'
+    >>> browser.getControl(name='field.logo.action').value
+    ['keep']
+    >>> find_tag_by_id(browser.contents, 'field.logo_current_img').get('src')
+    u'/@@/project-logo'
+    >>> browser.getControl(name='field.logo.action').value
+    ['keep']
+    >>> find_tag_by_id(
+    ...     browser.contents, 'field.mugshot_current_img').get('src')
+    u'/@@/project-mugshot'
+
+    >>> set_branding(browser)
+
+    >>> browser.getControl('Change Branding').click()
+
+Here we see the updated values.
+
+    >>> browser.url
+    'http://launchpad.dev/mozilla'
+    >>> browser.getLink('Change details').click()
+    >>> browser.getLink('Change branding').click()
+
+    >>> browser.getControl(name='field.icon.action').value
+    ['keep']
+    >>> find_tag_by_id(browser.contents, 'field.icon_current_img').get('src')
+    u'.../icon.png'
+    >>> browser.getControl(name='field.logo.action').value
+    ['keep']
+    >>> find_tag_by_id(browser.contents, 'field.logo_current_img').get('src')
+    u'.../logo.png'
+    >>> browser.getControl(name='field.mugshot.action').value
+    ['keep']
+    >>> find_tag_by_id(
+    ...     browser.contents, 'field.mugshot_current_img').get('src')
+    u'.../mugshot.png'
+
+
+Product branding
+----------------
+
+    >>> browser = setupBrowser(auth='Basic no-priv@canonical.com:test')
+    >>> browser.open('http://launchpad.dev/jokosher/+branding')
+    Traceback (most recent call last):
+    ...
+    Unauthorized:...
+
+    >>> browser = setupBrowser(auth='Basic mark@example.com:test')
+    >>> browser.open('http://launchpad.dev/jokosher')
+    >>> browser.url
+    'http://launchpad.dev/jokosher'
+    >>> browser.getLink('Change details').click()
+    >>> browser.url
+    'http://launchpad.dev/jokosher/+edit'
+    >>> browser.getLink('Cancel').click()
+    >>> browser.getLink('Change branding').click()
+    >>> browser.url
+    'http://launchpad.dev/jokosher/+branding'
+
+    >>> browser.getControl(name='field.icon.action').value
+    ['keep']
+    >>> find_tag_by_id(browser.contents, 'field.icon_current_img').get('src')
+    u'/@@/product'
+    >>> browser.getControl(name='field.logo.action').value
+    ['keep']
+    >>> find_tag_by_id(browser.contents, 'field.logo_current_img').get('src')
+    u'/@@/product-logo'
+    >>> browser.getControl(name='field.logo.action').value
+    ['keep']
+    >>> find_tag_by_id(
+    ...     browser.contents, 'field.mugshot_current_img').get('src')
+    u'/@@/product-mugshot'
+
+    >>> set_branding(browser)
+
+    >>> browser.getControl('Change Branding').click()
+
+Here we see the updated values.
+
+    >>> browser.url
+    'http://launchpad.dev/jokosher'
+    >>> browser.getLink('Change branding').click()
+
+    >>> browser.getControl(name='field.icon.action').value
+    ['keep']
+    >>> find_tag_by_id(browser.contents, 'field.icon_current_img').get('src')
+    u'.../icon.png'
+    >>> browser.getControl(name='field.logo.action').value
+    ['keep']
+    >>> find_tag_by_id(browser.contents, 'field.logo_current_img').get('src')
+    u'.../logo.png'
+    >>> browser.getControl(name='field.mugshot.action').value
+    ['keep']
+    >>> find_tag_by_id(
+    ...     browser.contents, 'field.mugshot_current_img').get('src')
+    u'.../mugshot.png'
+
+
+Sprint branding
+---------------
+
+Again, for Sprints, we have not exposed icon editing through the UI.
+
+    >>> browser = setupBrowser(auth='Basic no-priv@canonical.com:test')
+    >>> browser.open('http://launchpad.dev/sprints/futurista/+branding')
+    Traceback (most recent call last):
+    ...
+    Unauthorized:...
+
+    >>> browser = setupBrowser(auth='Basic mark@example.com:test')
+    >>> browser.open('http://launchpad.dev/sprints/futurista')
+    >>> browser.url
+    'http://launchpad.dev/sprints/futurista'
+    >>> browser.getLink('Change branding').click()
+    >>> browser.url
+    'http://launchpad.dev/sprints/futurista/+branding'
+
+    >>> browser.getControl(name='field.logo.action').value
+    ['keep']
+    >>> find_tag_by_id(browser.contents, 'field.logo_current_img').get('src')
+    u'/@@/meeting-logo'
+    >>> browser.getControl(name='field.logo.action').value
+    ['keep']
+    >>> find_tag_by_id(
+    ...     browser.contents, 'field.mugshot_current_img').get('src')
+    u'/@@/meeting-mugshot'
+
+    >>> set_branding(browser, icon=False)
+
+    >>> browser.getControl('Change Branding').click()
+
+Here we see the updated values.
+
+    >>> browser.url
+    'http://launchpad.dev/sprints/futurista'
+    >>> browser.getLink('Change branding').click()
+
+    >>> browser.getControl(name='field.logo.action').value
+    ['keep']
+    >>> find_tag_by_id(browser.contents, 'field.logo_current_img').get('src')
+    u'.../logo.png'
+    >>> browser.getControl(name='field.mugshot.action').value
+    ['keep']
+    >>> find_tag_by_id(
+    ...     browser.contents, 'field.mugshot_current_img').get('src')
+    u'.../mugshot.png'

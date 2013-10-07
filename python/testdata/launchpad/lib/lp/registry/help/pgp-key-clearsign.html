@@ -1,0 +1,38 @@
+<html>
+  <head>
+    <title>Importing an OpenPGP key</title>
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssreset/reset.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssfonts/fonts.css" />
+    <link rel="stylesheet" type="text/css"
+          href="/+icing/yui/cssbase/base.css" />
+  </head>
+  <body>
+    <h1>Confirming your OpenPGP key</h1>
+
+    <p>To confirm that you own the OpenPGP key you want to use with Launchpad, you need to use the key to sign some text. Launchpad can then compare the signature on the text against the key you want to import.</p>
+
+    <p><strong>Step 1:</strong> Copy the confirmation text from the Launchpad page, paste it into a text editor and then save the file.</p>
+
+    <p><strong>Step 2:</strong> Open a terminal (you may need to adjust the next few steps if you're not using Ubuntu or another GNU/Linux based system) and enter:</p>
+
+    <p><code>gpg --clearsign FILENAME</code></p>
+
+    <p>Replace <em>FILENAME</em> with the name of the text file you saved in step 1.</p>
+
+    <p><strong>Step 3:</strong> Open the resultant text file (its name will be the same as your original file but with <em>.asc</em> appended) and paste its contents into the text-box on the Launchpad <em>Confirm OpenPGP Key</em> page. The signed text should look something like this:</p>
+
+    <p><code>-----BEGIN PGP SIGNED MESSAGE-----<br />
+             Hash: SHA1<br />
+             Please register ABCDEF... to the Launchpad user joe 2005-04-01 10:30:42 UTC<br />
+             -----BEGIN PGP SIGNATURE-----<br />
+             Version: GnuPG v1.4.9 (GNU/Linux)<br />
+             <br />
+             iEYEARECAAYFAkoueSsACgkQHxW0nUGJ7lrbQgCePRELoPGpEz5YjXcdlWRl/jIx<br />
+             6IsAn0qhfZlGGXSOBo/c2gjAnZym0KGg<br />
+             =o4L8<br />
+             -----END PGP SIGNATURE-----</code></p>
+
+  </body>
+</html>

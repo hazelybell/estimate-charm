@@ -1,0 +1,93 @@
+<!-- Copyright 2009 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure xmlns="http://namespaces.zope.org/meta">
+
+  <directive
+      namespace="http://namespaces.zope.org/browser"
+      name="url"
+      schema="lp.services.webapp.metazcml.IURLDirective"
+      handler="lp.services.webapp.metazcml.url"
+      />
+
+  <directive
+      namespace="http://namespaces.zope.org/browser"
+      name="menus"
+      schema="lp.services.webapp.metazcml.IMenusDirective"
+      handler="lp.services.webapp.metazcml.menus"
+      />
+
+  <directive
+      namespace="http://namespaces.zope.org/browser"
+      name="navigation"
+      schema="lp.services.webapp.metazcml.INavigationDirective"
+      handler="lp.services.webapp.metazcml.navigation"
+      />
+
+  <directive
+      namespace="http://namespaces.zope.org/zope"
+      name="call"
+      schema="lp.services.webapp.metazcml.ICallDirective"
+      handler="lp.services.webapp.metazcml.call"
+      />
+
+  <directive
+      namespace="http://namespaces.zope.org/browser"
+      name="feeds"
+      schema="lp.services.webapp.metazcml.IFeedsDirective"
+      handler="lp.services.webapp.metazcml.feeds"
+      />
+
+  <directive
+      namespace="http://namespaces.zope.org/browser"
+      name="renamed-page"
+      schema="lp.services.webapp.metazcml.IRenamedPageDirective"
+      handler="lp.services.webapp.metazcml.renamed_page"
+      />
+
+  <directive
+      namespace="http://namespaces.zope.org/browser"
+      name="favicon"
+      schema="lp.services.webapp.metazcml.IFaviconDirective"
+      handler="lp.services.webapp.metazcml.favicon"
+      />
+
+  <complexDirective
+      namespace="http://namespaces.zope.org/zope"
+      name="securedutility"
+      schema="lp.services.webapp.metazcml.ISecuredUtilityDirective"
+      handler="lp.services.webapp.metazcml.SecuredUtilityDirective"
+      >
+      <subdirective
+          name="require"
+          schema="zope.security.metadirectives.IRequireSubdirective"
+          />
+      <subdirective
+          name="allow"
+          schema="zope.security.metadirectives.IAllowSubdirective"
+          />
+  </complexDirective>
+
+  <directive
+      namespace="http://namespaces.zope.org/zope"
+      name="authorizations"
+      schema="lp.services.webapp.metazcml.IAuthorizationsDirective"
+      handler="lp.services.webapp.metazcml.authorizations"
+      />
+
+  <directive
+      namespace="http://namespaces.zope.org/zope"
+      name="publisher"
+      schema="zope.app.publication.metadirectives.IRequestPublicationDirective"
+      handler="lp.services.webapp.metazcml.launchpadPublisher"
+      />
+
+  <groupingDirective
+     namespace="http://namespaces.zope.org/zope"
+     name="facet"
+     schema="lp.services.webapp.metazcml.IGroupingFacet"
+     handler="lp.services.webapp.metazcml.GroupingFacet"
+     />
+
+</configure>

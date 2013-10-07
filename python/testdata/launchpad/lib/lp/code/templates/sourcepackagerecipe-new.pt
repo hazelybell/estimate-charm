@@ -1,0 +1,117 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+  <body>
+
+<metal:block fill-slot="head_epilogue">
+  <style type="text/css">
+    .root-choice input[type="radio"] {
+      margin-left: 0;
+    }
+    .root-choice label {
+      font-weight: bold !important;
+    }
+    .subordinate {
+      margin: 0.5em 0 0.5em 2em;
+    }
+  </style>
+</metal:block>
+
+    <div metal:fill-slot="main">
+
+      <div>
+        <p>A "recipe" is a description of the steps bzr-builder should take to
+        construct a source package from the various bzr branches. Its format
+        specifies:</p>
+        <ul class="bulleted">
+          <li>where to use the code from (trunk branch, beta branch, etc.), where to get the packaging from (separate branch? ubuntu branch?)</li>
+          <li>the correct package version (so users will still be able to upgrade to the stable version of the distro once it gets released)</li>
+          <li>what to modify to make the source build properly</li>
+        </ul>
+
+        <p>We strongly recommend that you test your recipe locally first.
+        <a href="https://help.launchpad.net/Packaging/SourceBuilds/GettingStarted">Read more...</a></p>
+
+      </div>
+
+      <div metal:use-macro="context/@@launchpad_form/form">
+
+        <metal:formbody fill-slot="widgets">
+
+          <table class="form">
+
+            <tal:widget define="widget nocall:view/widgets/name">
+              <metal:block use-macro="context/@@launchpad_form/widget_row" />
+            </tal:widget>
+            <tal:widget define="widget nocall:view/widgets/description">
+              <metal:block use-macro="context/@@launchpad_form/widget_row" />
+            </tal:widget>
+            <tal:widget define="widget nocall:view/widgets/owner">
+              <metal:block use-macro="context/@@launchpad_form/widget_row" />
+            </tal:widget>
+            <tal:widget define="widget nocall:view/widgets/build_daily;
+                                widget_help_link string:/+help-code/recipe-build-frequency.html">
+              <metal:block use-macro="context/@@launchpad_form/widget_row" />
+            </tal:widget>
+
+            <tal:show-ppa-choice condition="view/show_ppa_chooser">
+              <tr>
+                <td class='root-choice'>
+                  <label tal:replace="structure view/use_ppa_existing">
+                    Use existing PPA
+                  </label>
+                  <table class="subordinate">
+                    <tal:widget define="widget nocall:view/widgets/daily_build_archive">
+                      <metal:block use-macro="context/@@launchpad_form/widget_row" />
+                    </tal:widget>
+                  </table>
+                </td>
+              </tr>
+
+              <tr>
+                <td class='root-choice'>
+                  <label tal:replace="structure view/use_ppa_new">
+                    Create new PPA
+                  </label>
+                  <table class="subordinate">
+                    <tal:widget define="widget nocall:view/widgets/ppa_name">
+                      <metal:block use-macro="context/@@launchpad_form/widget_row" />
+                    </tal:widget>
+                  </table>
+                </td>
+              </tr>
+
+              <script type="text/javascript">
+                LPJS.use('lp.code.sourcepackagerecipe.new', function(Y) {
+                  Y.on('domready', Y.lp.code.sourcepackagerecipe.new.setup);
+                });
+              </script>
+            </tal:show-ppa-choice>
+
+            <tal:create-ppa condition="not: view/show_ppa_chooser">
+              <input name="field.use_ppa" value="create-new" type="hidden"/>
+              <tal:widget define="widget nocall:view/widgets/ppa_name">
+                <metal:block use-macro="context/@@launchpad_form/widget_row" />
+              </tal:widget>
+            </tal:create-ppa>
+
+            <tal:widget define="widget nocall:view/widgets/distroseries">
+              <metal:block use-macro="context/@@launchpad_form/widget_row" />
+            </tal:widget>
+            <tal:widget define="widget nocall:view/widgets/recipe_text">
+              <metal:block use-macro="context/@@launchpad_form/widget_row" />
+            </tal:widget>
+            <tal:widget define="widget nocall:view/widgets/related-branches">
+              <metal:block use-macro="context/@@launchpad_form/widget_row" />
+            </tal:widget>
+
+          </table>
+        </metal:formbody>
+      </div>
+    </div>
+  </body>
+</html>

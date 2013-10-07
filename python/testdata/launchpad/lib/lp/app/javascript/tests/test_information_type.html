@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<!--
+Copyright 2012 Canonical Ltd.  This software is licensed under the
+GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<html>
+  <head>
+      <title>lp.app.information_type Tests</title>
+
+      <!-- YUI and test setup -->
+      <script type="text/javascript"
+              src="../../../../../build/js/yui/yui/yui.js">
+      </script>
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/console/assets/console-core.css" />
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/test-console/assets/skins/sam/test-console.css" />
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/test/assets/skins/sam/test.css" />
+
+      <script type="text/javascript"
+              src="../../../../../build/js/lp/app/testing/testrunner.js"></script>
+
+      <link rel="stylesheet" href="../../../app/javascript/testing/test.css" />
+
+      <!-- Dependencies -->
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/lp.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/choice.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/testing/mockio.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/client.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/extras/extras.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/activator/activator.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/anim/anim.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/effects/effects.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/indicator/indicator.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/inlineedit/editor.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/ui/ui.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/mustache.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/choiceedit/choiceedit.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/confirmationoverlay/confirmationoverlay.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/formoverlay/formoverlay.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/overlay/overlay.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/picker/picker.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/expander.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/errors.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/banners/banner.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/banners/privacy.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/bugs/bug_subscription_portlet.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/bugs/subscribers.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/subscribers/subscribers_list.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/bugs/bugtask_index.js"></script>
+
+      <!-- The module under test. -->
+      <script type="text/javascript" src="../information_type.js"></script>
+
+      <!-- Placeholder for any css asset for this module. -->
+      <!-- <link rel="stylesheet" href="../assets/bugs.information_type_choice-core.css" /> -->
+
+      <!-- The test suite -->
+      <script type="text/javascript" src="test_information_type.js"></script>
+
+    </head>
+    <body class="yui3-skin-sam">
+        <ul id="suites">
+            <li>lp.app.information_type.test</li>
+        </ul>
+        <div id="fixture"></div>
+        <script type="text/x-template" id="portlet-template">
+            <div id="privacy">
+                <div id="privacy-text">
+                    <span id="information-type-summary" class="sprite public">
+                        This report contains
+                        <strong id="information-type">Public</strong>
+                        information
+                    </span>
+                    <a class="sprite edit" id="privacy-link" href="#">edit</a>
+                    <div id="information-type-description">Everyone can see this information.</div>
+                </div>
+            </div>
+            <span id="also-affects-product"></span>
+            <span id="also-affects-package" class="private-disallow"></span>
+            <div id="current_user_subscription">
+                <span></span>
+                <a href="#" text="" class="menu-link-mute_subscription unmute"></a>
+                <a href="#" text="" class="menu-link-mute_subscription mute"></a>
+            </div>
+            <div id="other-bug-subscribers"></div>
+        </script>
+    </body>
+</html>

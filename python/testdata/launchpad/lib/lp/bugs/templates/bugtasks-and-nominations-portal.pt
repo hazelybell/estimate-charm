@@ -1,0 +1,100 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  omit-tag="">
+
+<tal:affects-me-too
+    tal:condition="view/displayAlsoAffectsLinks">
+  <tal:editable
+      condition="context/menu:context/affectsmetoo/enabled">
+    <div class="actions">
+      <span id="affectsmetoo" style="display: inline"
+            tal:define="affected view/current_user_affected_status">
+        <tal:comment condition="nothing">
+          This .static section is shown in browsers with javascript
+          enabled, and before setup_me_too is run.
+        </tal:comment>
+        <span class="static">
+          <tal:affected condition="affected">
+            <tal:statement replace="view/affected_statement" />
+          </tal:affected>
+          <tal:not-affected condition="not:affected">
+            <tal:statement replace="view/affected_statement" />
+          </tal:not-affected>
+          <a href="+affectsmetoo">
+            <img class="editicon" src="/@@/edit" alt="Edit" />
+          </a>
+        </span>
+        <tal:comment condition="nothing">
+          This .dynamic section is used by setup_me_too to display
+          controls and information in the correct places.
+        </tal:comment>
+        <span class="dynamic hidden">
+          <a href="+affectsmetoo" class="js-action"
+             ><span class="value" tal:content="view/affected_statement" /></a>
+          <a href="+affectsmetoo">
+            <img class="editicon" src="/@@/edit" alt="Edit" />
+          </a>
+        </span>
+      </span>
+      <script type="text/javascript" tal:content="string:
+          LPJS.use('event', 'lp.bugs.bugtask_index', function(Y) {
+              Y.on('domready', function(e) {
+                  Y.lp.bugs.bugtask_index.setup_me_too(
+                      ${view/current_user_affected_js_status},
+                      ${view/other_users_affected_count});
+              }, window);
+          });
+          ">
+      </script>
+    </div>
+  </tal:editable>
+  <tal:not-editable
+      condition="not:context/menu:context/affectsmetoo/enabled">
+    <div class="actions"
+         tal:define="statement view/anon_affected_statement"
+         tal:condition="statement">
+      <span id="affectsmetoo" style="display: inline" tal:content="statement" />
+    </div>
+  </tal:not-editable>
+</tal:affects-me-too>
+
+<tal:bugtask_table replace="structure context/@@+bugtasks-and-nominations-table" />
+
+<div class="actions"
+     tal:define="current_bugtask view/current_bugtask"
+     tal:condition="view/displayAlsoAffectsLinks">
+  <tal:also-affects-links
+      define="context_menu context/menu:context">
+    <span id="also-affects-product"
+          tal:attributes="class python:not view.canAddProjectTask() and 'private-disallow' or ''"
+    >
+    <tal:addupstream
+        define="link context_menu/addupstream"
+        condition="link/enabled"
+        replace="structure link/render" />
+        <a href="/+help-bugs/also-affects-project-help.html"
+           target="help"
+           class="sprite maybe action-icon">(?)</a>
+    </span>
+    <span id="also-affects-package"
+          tal:attributes="class python:not view.canAddPackageTask() and 'private-disallow' or ''"
+    >
+    <tal:adddistro
+        define="link context_menu/adddistro"
+        condition="link/enabled"
+        replace="structure link/render" />
+    </span>
+    <tal:nominate
+        define="link context_menu/nominate"
+        condition="link/enabled"
+        replace="structure link/render" />
+    <div class="private-only formHelp"
+        tal:condition="python:not view.canAddPackageTask() or not view.canAddProjectTask()">
+        Proprietary bugs cannot affect multiple projects.
+    </div>
+  </tal:also-affects-links>
+
+</div>
+
+</tal:root>

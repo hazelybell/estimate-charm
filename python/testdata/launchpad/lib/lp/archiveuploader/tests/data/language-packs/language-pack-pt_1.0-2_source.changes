@@ -1,0 +1,19 @@
+Format: 1.7
+Date: Thu, 15 Feb 2006 14:11:09 -0200
+Source: language-pack-pt
+Binary: language-pack-pt
+Architecture: source
+Version: 1.0-2
+Distribution: breezy
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Celso Providelo <cprov@canonical.com>
+Description: 
+ language-pack-pt - Stuff for testing
+Changes: 
+ language-pack-pt (1.0-2) breezy; urgency=low
+ .
+   * bump version to check acceptance message.
+Files: 
+ 61fd0d06b8c93c054671091e001faf09 255 translations optional language-pack-pt_1.0-2.dsc
+ 938dc6436c428cbed46f39e3b1f7f739 772 translations optional language-pack-pt_1.0-2.tar.gz

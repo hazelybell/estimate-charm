@@ -1,0 +1,18 @@
+<!-- Copyright 2011 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="launchpad">
+  <utility
+      provides=".interfaces.IMessageSession"
+      component=".rabbit.unreliable_session" />
+  <subscriber
+      for="lp.services.webapp.interfaces.IFinishReadOnlyRequestEvent"
+      handler=".rabbit.session_finish_handler" />
+  <subscriber
+      for="lp.services.webapp.interfaces.IFinishReadOnlyRequestEvent"
+      handler=".rabbit.unreliable_session_finish_handler" />
+</configure>

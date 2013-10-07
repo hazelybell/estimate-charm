@@ -1,0 +1,59 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<div id="mailing-lists" class="portlet">
+  <h2>Mailing list</h2>
+
+    <div
+      tal:define="archive_url view/archive_url"
+      tal:condition="archive_url">
+      <img src="/@@/mail" alt="mail" />
+      <a id="mailing-list-posting-address"
+        tal:attributes="href string:mailto:${context/mailing_list/address}"
+        tal:content="context/mailing_list/address">team@example.com</a>
+      <br />
+      <strong>Policy:</strong>
+      You must be a team member to subscribe to the team mailing list.
+      <br/>
+      <tal:member condition="view/userIsParticipant">
+        <tal:can-subscribe-to-list
+            condition="view/user_can_subscribe_to_list">
+          <a id="link-list-subscribe" class="sprite add"
+              href="/people/+me/+editemails">Subscribe to mailing list</a>
+          <br />
+        </tal:can-subscribe-to-list>
+        <tal:subscribed-to-list
+            condition="view/user_is_subscribed_to_list">
+          <form id="form-list-unsubscribe" name="unsubscribe"
+            action="" method="post">
+            <input type="submit" name="unsubscribe" value="Unsubscribe" />
+          </form>
+          </tal:subscribed-to-list>
+      </tal:member>
+      <img src="/@@/mail" alt="email" />
+      <a id="mailing-list-archive"
+        tal:attributes="href archive_url">View <tal:visibility
+          replace="context/visibility/title/fmt:lower" /> archive</a>
+      <br /><img src="/@@/team" alt="team" /> <a id="mailing-list-subscribers"
+              tal:attributes="href context/fmt:url/+mailing-list-subscribers"
+              >View subscribers</a>
+    </div>
+    <div tal:condition="not: view/archive_url">
+      This team does not use Launchpad to host a mailing list.
+    </div>
+    <ul class="horizontal"
+      tal:condition="context/menu:overview/configure_mailing_list/enabled">
+      <li>
+        <tal:configure_mailing_list
+          replace="structure context/menu:overview/configure_mailing_list/fmt:link-icon" />
+      </li>
+      <li>
+        <tal:moderate_mailing_list
+          replace="structure context/menu:overview/moderate_mailing_list/fmt:link-icon" />
+      </li>
+    </ul>
+</div>
+</tal:root>

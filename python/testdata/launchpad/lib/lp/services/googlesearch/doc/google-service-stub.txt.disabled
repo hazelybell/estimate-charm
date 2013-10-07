@@ -1,0 +1,81 @@
+= The Google stub webservice =
+
+The Google stub web service is a stand-alone process that returns
+XML documents for a pre-determined set of URLs.
+
+The service is available at a URL pulled from the service config:
+
+    >>> from lp.services.config import config
+    >>> test_url = config.google.site
+    >>> print test_url
+    http://launchpad.dev.../cse
+
+The URL-to-XML mapping is loaded from a text file.  The mapping
+determines which XML files will be returned when a specific URL is
+accessed.
+
+    >>> from lp.services.googlesearch.googletestservice import (
+    ...     url_to_xml_map)
+    >>> routes = url_to_xml_map()
+
+    >>> for key in sorted(routes.keys()):
+    ...     print key, routes[key]
+    * ...
+    /cse?... googlesearchservice...xml
+    /cse?... googlesearchservice...xml
+
+The URL-to-XML mapping has a default route, '*'.  This is a catch-all:
+requests that are not specific to any other service URL will return
+the default route's XML.
+
+    >>> from os.path import join
+    >>> response_dir = config.google_test_service.canned_response_directory
+
+    >>> def get_xml_for_url(url):
+    ...     fname = routes[url]
+    ...     fullname = join(response_dir, fname)
+    ...     return file(fullname).read()
+
+    >>> default_xml = get_xml_for_url('*')
+    >>> default_xml == ''
+    False
+
+    # Grab a Zope testbrowser that talks across a network socket
+    # (rather than talking directly to the publisher).
+    >>> from zope.testbrowser.browser import Browser
+    >>> browser = Browser()
+    >>> browser.open(join(test_url, 'something'))
+
+    >>> response = browser.contents
+    >>> len(response) is not 0
+    True
+    >>> response == default_xml
+    True
+
+The returned content-type should be UTF-8 encoded XML.
+
+    >>> browser.headers['content-type']
+    'text/xml; charset=UTF-8'
+
+Accessing a key in the URL-to-XML map that is *not* the default route
+returns the specific XML file:
+
+    # Find any key that is *not* the default route.
+    >>> path = [url for url in routes.keys() if url != '*'].pop()
+
+    >>> xml_for_specific_path = get_xml_for_url(path)
+    >>> browser.open(join(test_url, path))
+
+    >>> browser.headers['content-type']
+    'text/xml; charset=UTF-8'
+    >>> browser.contents == xml_for_specific_path
+    True
+    >>> browser.contents == default_xml
+    False
+
+
+== Clean up ==
+
+Clean up the browser so it won't leave socket garbage behind.
+
+    >>> browser.mech_browser.close()

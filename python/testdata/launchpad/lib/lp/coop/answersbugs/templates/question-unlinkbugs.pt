@@ -1,0 +1,52 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+
+<body>
+
+<tal:comment condition="nothing">
+  XXX: rockstar - This template SHOULD use the macro
+  context/unlinkbugs_template/master, but doesn't currently so as not to
+  break the bugs templates while they also transition to 3.0.  This should go
+  back to using that template when it's done.
+</tal:comment>
+
+<div metal:fill-slot="main">
+  <tal:nobugs condition="not:context/bugs">
+    <p class="informational message">
+      There are no links to bug reports to remove.
+    </p>
+  </tal:nobugs>
+
+  <tal:somebugs condition="context/bugs">
+    <tal:nopermission condition="not:view/bugsWithPermission">
+      <p class="informational message">
+        There are no links that you are allowed to remove.
+      </p>
+    </tal:nopermission>
+
+    <tal:form condition="view/bugsWithPermission">
+      <div metal:use-macro="context/@@launchpad_form/form">
+        <metal:heading fill-slot="heading">
+          <h1 tal:condition="view/label"
+            tal:content="view/label">Heading from ZCML label="xxx"</h1>
+        </metal:heading>
+
+        <metal:description fill-slot="extra_info">
+          This will <em>remove</em> the link between this question
+          and the selected bug reports.
+        </metal:description>
+      </div>
+    </tal:form>
+  </tal:somebugs>
+
+</div>
+
+</body>
+</html>
+
+

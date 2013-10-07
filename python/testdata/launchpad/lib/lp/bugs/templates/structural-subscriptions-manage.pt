@@ -1,0 +1,43 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+>
+<body>
+  <div metal:fill-slot="main">
+    <tal:no_permissions condition="not: view/userCanAlter|nothing">
+    <p>
+      You are unable to subscribe to bug reports about <span
+        tal:replace="context/title">this item</span> as it generates
+      a high amount of bug activity which results in more e-mails than
+      most users can handle.
+    </p>
+    <p>
+      If you really want to subscribe to <span
+        tal:replace="context/title">this item</span> bug mail than
+      please contact its bug supervisor.
+    </p>
+    </tal:no_permissions>
+    <tal:has_permissions condition="view/userCanAlter|nothing">
+    <p>
+      You can choose to receive an e-mail every time someone reports or
+      changes a public bug associated with 
+      <span tal:replace="context/title">this item</span>.
+    </p>
+    <p>
+      <strong>Important:</strong> subscribing here may mean you receive a
+      great deal of e-mail. You can return here to unsubscribe at any 
+      time.
+    </p>
+    <div metal:use-macro="context/@@launchpad_form/form" />
+  </tal:has_permissions>
+  </div>
+  <div metal:fill-slot="side">
+    <div tal:replace="structure context/@@+portlet-malone-bugmail-filtering-faq"/>
+    <div tal:replace="structure context/@@+portlet-structural-subscribers" />
+  </div>
+</body>
+</html>

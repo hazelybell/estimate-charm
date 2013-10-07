@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <meta content="Canonical Launchpad Tour - Sharing code means sharing bugs: issues found in free software may originate in code upstream or downstream in a distribution&rsquo;s packaging. Launchpad tracks how each bug affects different communities and helps you work across project boundaries to find a fix" name="description"/>
+    <meta content="canonical, launchpad, tour" name="keywords"/>
+    <meta content="en-US" name="language"/>
+    <title>Bug tracker for open source and other software projects &mdash; Launchpad tour</title>
+    <style media="all" type="text/css">
+        @import "launchpad-tour.css";
+    </style>
+    <script type="text/javascript" src="jquery-1.2.6.pack.js"></script>
+    <script type="text/javascript" src="launchpad-tour.js"></script>
+    <script type="text/javascript" src="selector.js"></script>
+</head>
+<body>
+    <div id="container">
+        <p class="page-number">2 of 11</p>
+
+        <ul id="navigation-drop-down">
+            <li class="button-next"><a id="btnNext" href="branch-hosting-tracking" tabindex="1" accesskey="1" title="Read about code hosting and review in Launchpad">Next</a></li>
+            <li class="home"><a href="index" accesskey="2">Launchpad tour home</a></li>
+            <li class="current"><a href="bugs" accesskey="3">Cross-project bug tracking</a></li>
+            <li><a href="branch-hosting-tracking" accesskey="4">Code hosting and tracking</a></li>
+            <li><a href="translation" accesskey="5">Web-based translation</a></li>
+            <li><a href="community" accesskey="6">Mailing lists and teams</a></li>
+            <li><a href="ppa" accesskey="7">Software distribution</a></li>
+            <li><a href="community-support" accesskey="8">Community support</a></li>
+            <li><a href="api" accesskey="9">Beta: web services API</a></li>
+            <li><a href="feature-tracking" accesskey="a">Lightweight specifications</a></li>
+            <li><a href="release-management" accesskey="b">Release management</a></li>
+            <li><a href="join-launchpad" accesskey="c">Join Launchpad!</a></li>
+        </ul>
+
+        <div id="page-intro-top"></div>
+        <div id="page-intro">
+            <h1>One place to track bugs<br />across project boundaries and tools</h1>
+            <p>
+                <img src="images/bugs/main-image.jpg" alt="Collaborate with free software communities." /></p>
+                <p class="intro-text">
+<strong>When projects share free software code they share its bugs</strong>. The discussion about how to fix one bug can become fragmented across different reports in multiple trackers.<br /><br />
+<strong>Launchpad brings the discussion to you</strong>. At a glance you can see how the bug affects different communities, whether they're tracking it in Launchpad or external tools such as Bugzilla, Trac, Sourceforge or elsewhere.<br /><br />
+You can even share a comment history across project boundaries and tools, and use Launchpad's API and email interfaces for easy integration with your project workflow.</p>
+             <div id="left-link-holder"><strong>Need bug tracking for a closed source project?</strong><br /><a href="join-launchpad#commercial">Read about commercial subscriptions &gt;</a></div>
+            <div id="link-holder"><a href="https://bugs.launchpad.net/">Visit Launchpad Bugs &gt;</a><br /><a href="https://launchpad.net/projects/+new">Add your project to Launchpad &gt;</a></div>
+        </div>
+        <div id="page-intro-bottom"></div>
+        <ul id="secondary-navigation">
+            <li class="button-prev">
+                <a href="index" accesskey="d" tabindex="2" title="Return to the start of the Launchpad tour">Back</a>
+            </li>
+            <li class="button-next">
+                <a href="branch-hosting-tracking" accesskey="e" tabindex="3" title="Read about code hosting and review in Launchpad">Next</a>
+            </li>
+        </ul>
+        <div id="further-information">
+            <div class="furthur-information-block">
+                <div class="furthur-information-block-top"></div>
+                <div class="furthur-information-block-mid">
+                    <div class="block">
+                        <h3>Share bug reports across projects and tools</h3>
+                        <h4>Bug reports used to exist in isolation. With Launchpad they can join together across project and tool boundaries.</h4>
+                        <p class="screen-holder">
+                            <img src="images/bugs/1.png" alt="Shared bug reports, independent statuses" />                        </p>
+                        <p>
+                        In Launchpad, you can share a bug report and its comment history with other communities interested in finding a fix.
+                        Each project &mdash; or even different releases within a project &mdash; can track its own status, importance and assignee for that same bug report.
+                        <br /><br />
+                        Even if the bug is tracked elsewhere &mdash; such as in Trac, Sourceforge or Bugzilla &mdash; Launchpad can monitor its status. Using our <a href="https://help.launchpad.net/Bugs/PluginAPISpec">bug tracker plugins</a> for Bugzilla and Trac you can share a comment history for the same bug tracked both in Launchpad and an external tracker.<br /><br />
+And to help find low-hanging fruit, there&rsquo;s a &ldquo;Bugs fixed elsewhere&rdquo; report that shows which of your bugs are marked fixed in other communities.
+
+                        </p>
+                    </div>
+                    <div class="block odd">
+                        <h3>Turn patches into fixes</h3>
+                        <h4>Direct links from bug reports to the patches and branches that contain the fix.</h4>
+                        <p class="screen-holder">
+                            <img src="images/bugs/5.png" alt="Found a fix? Publish a branch!" />                        </p>
+                        <p>
+                          Launchpad helps you bring bugs and fixes together. You can easily see any patches attached to a bug report and you can jump straight to a list of all the bug reports, associated with your project, that have patches.
+                        <br /><br />
+                          For fixes that require more than a simple patch, you can link directly to the Bazaar branch (including imports from Git, Subversion and CVS) you're working in, allowing everyone interested in the bug to watch your solution evolve or even download your branch, make their own changes and then upload them back to Launchpad for everyone to see.<br /><br />
+                          A single URL points to the latest version of the fix and a single command merges it into the project's trunk branch.
+                        </p>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="furthur-information-block-bot"></div>
+            </div>
+            <div class="furthur-information-block">
+                <div class="furthur-information-block-top"></div>
+                <div class="furthur-information-block-mid">
+                    <div class="block">
+                        <h3>Bugs by email</h3>
+                        <h4>File and manage bug reports by email.</h4>
+                        <p class="screen-holder">
+                            <img src="images/bugs/3.png" alt="Bug tracker email interface"  />                        </p>
+                        <p>
+                        Manage bug reports entirely through your email client.
+<br /><br />
+						You can use email to report, subscribe, comment on, assign, prioritise and make just about any other update to bugs tracked in Launchpad. Launchpad will also mail you with updates on any bug you're interested in, whether an individual bug or all the bugs associated with a particular project or package. Read more about <a href="https://help.launchpad.net/Bugs/EmailInterface">the bug tracker's e-mail interface &gt;</a><br /><br />
+						And, if you prefer, you can also subscribe to bug information in your feed reader with our Atom feeds. <img src="https://launchpad.net/@@/rss" alt="Feed logo" />
+                        </p>
+                    </div>
+                    <div class="block odd">
+                        <h3>Web services API</h3>
+                        <h4>Manage bug reports programmatically from your own applications, through our web services API and Python library.</h4>
+                        <p class="screen-holder">
+                            <img src="images/api/3.png" alt="Web services API and Python library" />
+                        </p>
+                        <p>
+                          With Launchpad's <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">restful</a> API you can develop your own tools to access and manipulate bug reports in Launchpad.<br /><br />
+                          If you're a Python developer, you can use our Python library &mdash; launchpadlib &mdash; to handle bug reports just like any other Python object.<br /><br />
+                           <ul>
+                            <li>Report new bugs</li>
+                            <li>Search for and retrieve existing reports</li>
+                            <li>Comment on and edit bugs reports</li>
+                          </ul>
+                          <br />
+                          You can also take advantage of the API's access to other major Launchpad applications. Read more about <a href="api">Launchpad's API and our Python library &gt;</a>
+                        </p>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="furthur-information-block-bot"></div>
+            </div>
+
+        </div>
+        <ul id="footer-navigation">
+            <li class="button-prev">
+                <a href="index" accesskey="f" tabindex="4" title="Return to the start of the Launchpad tour">Back</a>
+            </li>
+            <li class="button-next">
+                <a href="branch-hosting-tracking" accesskey="g" tabindex="5" title="Read about code hosting and review in Launchpad">Next</a>
+            </li>
+            <li class="copyright">
+                &copy; 2004-2013 Canonical Ltd. <a href="https://help.launchpad.net/Legal" accesskey="i" tabindex="7">Terms of Use</a> &#124; <a href="https://help.launchpad.net/Feedback" accesskey="j" tabindex="8">Feedback</a> &#124; <a href="https://answers.launchpad.net/launchpad-project/+faqs" accesskey="k" tabindex="9">FAQ</a>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

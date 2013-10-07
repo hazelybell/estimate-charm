@@ -1,0 +1,66 @@
+.yui3-lazr-formoverlay-hidden {
+    visibility: hidden;
+    }
+
+.yui3-lazr-formoverlay-hidden input {
+/* msie 8 and below do not support visibility:hidden for <input> */
+    display: none;
+    }
+
+.yui3-lazr-formoverlay-form th,
+.yui3-lazr-formoverlay-form td {
+/* The same as the Launchpad style, so the example represents
+ * how it will look.
+ */
+    padding-bottom: 1em;
+    }
+
+.yui3-lazr-formoverlay-form div.yui3-lazr-formoverlay-actions {
+    padding-top: 0;
+    padding-bottom: 0;
+    text-align: right;
+    }
+
+.yui3-lazr-formoverlay-form div.yui3-lazr-formoverlay-actions:not(lazr-btn) {
+    text-align: left;
+    }
+
+.yui3-lazr-formoverlay-form div.yui3-lazr-formoverlay-actions button {
+    margin-right: 0.7em;
+    }
+
+.yui3-lazr-formoverlay-form .yui3-lazr-formoverlay-errors {
+    padding-top: 0;
+    padding-bottom: 0;
+    color: red;
+    }
+
+.yui3-lazr-formoverlay-form .yui3-lazr-formoverlay-errors:not(:empty) {
+    min-width: 250px;
+    margin-left: auto;
+    margin-right: auto;
+    }
+
+.yui3-lazr-formoverlay-form table {
+/* This gets rid of the 12px margin-bottom that yui specifies
+ * in its base.css.
+ */
+    margin-bottom: 0;
+    }
+
+.yui3-lazr-formoverlay-form {
+/* The display:table is necessary to make the div's width
+ * shrink to fit its contents as opposed to expanding to
+ * fill its container. It is also easier to center without
+ * affecting the form_header than display:inline-block.
+ */
+    display: table;
+    margin-bottom: 2em;
+    /* Center the table in the widget. */
+    margin-left: auto;
+    margin-right: auto;
+    }
+
+.yui3-lazr-formoverlay-form-header {
+    margin-top: 1em;
+    }

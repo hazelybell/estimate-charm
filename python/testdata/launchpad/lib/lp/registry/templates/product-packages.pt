@@ -1,0 +1,156 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+
+<body>
+
+<div metal:fill-slot="main">
+  <div class="top-portlet"
+       tal:define="batch_nav view/series_batch">
+    <h2>Packages by project series</h2>
+
+  <tal:multipage tal:condition="batch_nav/has_multiple_pages">
+    <tal:navigation
+        replace="structure batch_nav/@@+navigation-links-upper"/>
+  </tal:multipage>
+  <table class="listing">
+  <tr tal:repeat="series batch_nav/batch">
+  <td tal:define="packagings series/packagings">
+    <table style="width: 100%; margin: 0.5em 0 0 0">
+    <tr>
+    <td style="width: 33%">
+    <h3>
+      <a tal:attributes="href series/name">
+        <span tal:replace="series/name">main</span> series
+      </a>
+    </h3>
+    </td>
+
+    <tal:no-packages condition="not: packagings">
+      <td style="width: 33%; text-align: center">
+      No packages linked to this series.
+      </td>
+      <td style="width: 33%; padding: 0 1.5em 0 0; text-align: right">
+        <a tal:condition="series/menu:overview/ubuntupkg/linked"
+           tal:replace="structure series/menu:overview/ubuntupkg/fmt:link" />
+      </td>
+    </tal:no-packages>
+    </tr>
+    </table>
+
+    <tal:comment condition="nothing">
+      This DIV is necessary for the table-actions:nth-child stylesheet.
+    </tal:comment>
+    <div>
+      <table class="listing" style="border: 0"
+        tal:condition="packagings"
+        tal:attributes="id series/name/fmt:css-id/packages-">
+        <thead>
+          <tr>
+            <th>Distribution</th>
+            <th>Distribution series</th>
+            <th>Source package</th>
+            <th>Version</th>
+            <th>&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr tal:repeat="packaging packagings">
+            <td>
+              <a tal:replace="structure packaging/distroseries/distribution/fmt:link" />
+            </td>
+
+            <td>
+              <a tal:attributes="href packaging/distroseries/fmt:url"
+                tal:content="packaging/distroseries/named_version" />
+            </td>
+
+            <td>
+              <a
+                tal:attributes="href string:${packaging/distroseries/fmt:url}/+source/${packaging/sourcepackagename/name}"
+                tal:content="packaging/sourcepackagename/name">Apache</a>
+            </td>
+
+            <td>
+              <tal:currentrelease
+                replace="packaging/sourcepackage/currentrelease/version|nothing">
+                  2.3.4-1
+              </tal:currentrelease>
+            </td>
+            <td>
+              <a tal:replace="structure packaging/sourcepackage/menu:overview/remove_packaging/fmt:icon" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <ul class="table-actions" tal:condition="packagings">
+        <li tal:condition="series/menu:overview/ubuntupkg/linked">
+          <a tal:replace="structure series/menu:overview/ubuntupkg/fmt:link" />
+        </li>
+      </ul>
+    </div>
+  </td>
+  </tr>
+  </table>
+  <tal:multipage condition="batch_nav/has_multiple_pages">
+    <tal:navigation
+        replace="structure batch_nav/@@+navigation-links-lower"/>
+  </tal:multipage>
+  </div>
+
+  <div class="portlet">
+    <h2>Packages by distribution</h2>
+
+  <tal:distribution repeat="distro view/distro_packaging">
+
+    <h3>
+      <a tal:attributes="href distro/distribution/fmt:url"
+        tal:content="distro/distribution/title">Ubuntu Linux</a>
+    </h3>
+
+    <table id="distribution-series" class="listing">
+      <thead>
+        <tr>
+          <th>Distribution series</th>
+          <th>Source package</th>
+          <th>Version</th>
+          <th>Project series</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr tal:repeat="pkging distro/packagings">
+          <td>
+            <a tal:attributes="href pkging/distroseries/fmt:url"
+                tal:content="pkging/distroseries/named_version" />
+          </td>
+          <td>
+            <a
+               tal:attributes="href string:${pkging/distroseries/fmt:url}/+source/${pkging/sourcepackagename/name}"
+               tal:content="pkging/sourcepackagename/name"
+              >Apache</a>
+          </td>
+          <td>
+            <span
+                tal:define="currentrelease pkging/sourcepackage/currentrelease"
+                tal:condition="currentrelease"
+                tal:replace="currentrelease/version"
+                >2.3.4-1</span>
+          </td>
+          <td>
+            <a tal:replace="structure pkging/productseries/fmt:link" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </tal:distribution>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+  <body>
+    <div metal:fill-slot="main">
+      <h1>Administer code of conduct signatures</h1>
+      <p>
+        As an admin, you can
+        approve or reject code of conduct signatures,
+        and also
+        <a tal:attributes="href context/menu:overview/register/url">register
+          signatures</a> that were not submitted digitally.
+      </p>
+
+      <form name="search" action="." method="POST">
+        <table>
+      <tr>
+            <th><label for="searchfor">Show:</label></th>
+      <td>
+        <select name="searchfor">
+          <tal:block tal:define="searchfor request/searchfor|nothing">
+          <option tal:condition="python: searchfor == 'all'"
+                  value="all" selected="selected">all</option>
+          <option tal:condition="python: searchfor != 'all'"
+                  value="all">all</option>
+          <option tal:condition="python: searchfor == 'activeonly'"
+                  value="activeonly" selected="selected">active</option>
+          <option tal:condition="python: searchfor != 'activeonly'"
+                  value="activeonly">active</option>
+          <option tal:condition="python: searchfor == 'inactiveonly'"
+                  value="inactiveonly" selected="selected">inactive</option>
+          <option tal:condition="python: searchfor != 'inactiveonly'"
+                  value="inactiveonly">inactive</option>
+          </tal:block>
+        </select>
+              signatures
+            </td>
+          </tr>
+          <tr>
+            <th>
+              <label for="name">from names or <abbr>ID</abbr>s matching:</label>
+            </th>
+            <td>
+              <div>
+                <input
+                  type="text"
+                  name="name"
+                  tal:attributes="value request/name|nothing"
+                />
+              </div>
+              <div class="formHelp">
+                Leave blank for a complete list.
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <th></th>
+            <td>
+              <input name="search" type="submit" value="Search"/>
+            </td>
+          </tr>
+        </table>
+      </form>
+
+      <tal:results condition="view/search">
+        <h2>Results</h2>
+
+     <ul id="matches" tal:condition="view/results">
+       <li tal:repeat="code view/results">
+           <a tal:replace="structure code/owner/fmt:link">OWNER</a>
+           <a tal:attributes="href code/id"
+              tal:content="code/displayname">CoC</a>
+           <span tal:omit-tag="" tal:condition="code/active">[ACTIVE]</span>
+           <span tal:omit-tag="" tal:condition="not:code/active">[INACTIVE]</span>
+       </li>
+     </ul>
+
+        <p tal:condition="not:view/results">
+          No signatures found.
+        </p>
+      </tal:results>
+
+    </div>
+  </body>
+</html>

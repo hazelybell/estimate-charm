@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!--
+Copyright 2012 Canonical Ltd.  This software is licensed under the
+GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<html>
+  <head>
+      <title>Test bugtarget_portlet_bugtags</title>
+
+      <!-- YUI and test setup -->
+      <script type="text/javascript"
+              src="../../../../../build/js/yui/yui/yui.js">
+      </script>
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/console/assets/console-core.css" />
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/test-console/assets/skins/sam/test-console.css" />
+      <link rel="stylesheet"
+      href="../../../../../build/js/yui/test/assets/skins/sam/test.css" />
+
+      <script type="text/javascript"
+              src="../../../../../build/js/lp/app/testing/testrunner.js"></script>
+
+      <link rel="stylesheet" href="../../../app/javascript/testing/test.css" />
+
+      <!-- Dependencies -->
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/client.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/lp.js"></script>
+      <script type="text/javascript"
+          src="../../../../../build/js/lp/app/testing/mockio.js"></script>
+
+      <!-- The module under test. -->
+      <script type="text/javascript" src="../bugtarget_portlet_bugtags.js"></script>
+
+      <!-- Any css assert for this module. -->
+      <!-- <link rel="stylesheet" href="../assets/bugtarget_portlet_bugtags-core.css" /> -->
+
+      <!-- The test suite. -->
+      <script type="text/javascript" src="test_bugtarget_portlet_bugtags.js"></script>
+
+    </head>
+    <body class="yui3-skin-sam">
+        <ul id="suites">
+            <!-- <li>lp.large_indicator.test</li> -->
+            <li>lp.bugtarget_portlet_bugtags.test</li>
+        </ul>
+
+        <div class="portlet" id="portlet-tags">
+          <div id="tags-portlet-spinner" class="hidden centered">
+            <img src="/@@/spinner" />
+          </div>
+
+          <a id="tags-content-link" href="/launchpad/+bugtarget-portlet-tags-content"></a>
+          <a href="" id="show-more-tags-link" class="js-action hidden">Show more tags&hellip;</a>
+          <a href="" id="show-fewer-tags-link" class="js-action hidden">Show fewer tags&hellip;</a>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,134 @@
+= Feeds Navigation =
+
+Feeds are served over HTTP, and are heavily cached. Pages which are not
+registered on the Feeds layer should not be served from the feeds.lp.net
+subdomain.
+
+
+== Index of a product ==
+
+Trying to view a page which is not registered on the Feeds layer
+returns a 404.
+
+    >>> browser.open('http://feeds.launchpad.dev/jokosher')
+    Traceback (most recent call last):
+    ...
+    NotFound: ...
+    >>> browser.open('http://feeds.launchpad.dev/bugs')
+    Traceback (most recent call last):
+    ...
+    NotFound: ...
+    >>> browser.open('http://feeds.launchpad.dev/+dims')
+    Traceback (most recent call last):
+    ...
+    NotFound: ...
+    >>> browser.open('http://feeds.launchpad.dev/announcements.atom/foo')
+    Traceback (most recent call last):
+    ...
+    NotFound: ...
+
+
+== Redirection ==
+
+We expect that people may manually enter feed URLs, since they follow
+a predictable pattern. If someone enters a feed URL and it has
+uppercase letters in it, we redirect to the canonical form of the URL
+before serving the page.
+
+   >>> browser.open('http://feeds.launchpad.dev/jOkOshEr/latest-bugs.html')
+   >>> browser.url
+   'http://feeds.launchpad.dev/jokosher/latest-bugs.html'
+
+The +index view should redirect to https://help.launchpad.net/Feeds
+
+XXX Edwin Grubbs 2007-12-10 bug=98482: zope.testbrowser does not handle
+redirects to remote sites, but http() can be used instead.
+
+   >>> response = http(r"""
+   ... GET / HTTP/1.0
+   ... Host: feeds.launchpad.dev
+   ... """)
+   >>> print response.getOutput()
+   HTTP/1.0 301 Moved Permanently
+   ...
+   Location: https://help.launchpad.net/Feeds
+   ...
+
+
+== Query String Normalization ==
+
+If multiple urls contain the same query string with the same arguments
+in a different order, we want to redirect the user to the url with
+the normalized query string, so that there is only one cached copy that
+has to be refreshed.
+XXX: statik 2007-10-18 bug=154114: We don't yet normalize case in
+query strings.
+
+    >>> from lp.services.config import config
+    >>> bug_search_feed_data = """
+    ...     [launchpad]
+    ...     is_bug_search_feed_active: True
+    ...     """
+    >>> config.push('bug_search_feed_data', bug_search_feed_data)
+    >>> browser.open('http://feeds.launchpad.dev/bugs/+bugs.atom?'
+    ...     'field.scope=all&search=Search+Bug+Reports&aaa=foo')
+    >>> browser.url
+    '...+bugs.atom?aaa=foo&field.scope=all&search=Search+Bug+Reports'
+
+
+== Feeds only available on feeds.launchpad.net ==
+
+It should not be possible to get any feeds through http://launchpad.net,
+http://bugs.launchpad.net, etc.
+
+Use the verify_feed_host() function to verify that the feed does work
+on feeds.launchpad.dev and does not work on all the other vhosts.
+
+    >>> from zope.publisher.interfaces import NotFound
+    >>> def verify_feed_host(path):
+    ...     url = 'http://feeds.launchpad.dev' + path
+    ...     try:
+    ...         browser.open(url)
+    ...     except:
+    ...         print "Error accessing:", url
+    ...         raise
+    ...     prefixes = ('', 'answers.', 'blueprints.', 'bugs.',
+    ...         'code.', 'translations.')
+    ...     for prefix in prefixes:
+    ...         try:
+    ...             url = 'http://%slaunchpad.dev%s' % (prefix, path)
+    ...             browser.open(url)
+    ...         except NotFound:
+    ...             pass
+    ...         except:
+    ...             print "Error accessing:", url
+    ...             raise
+    ...         else:
+    ...             raise AssertionError, "Page should not exist: %s" % url
+
+These atom feeds should only exist on feeds.launchpad.dev:
+
+    >>> verify_feed_host('/jokosher/latest-bugs.atom')
+    >>> verify_feed_host('/mozilla/latest-bugs.atom')
+    >>> verify_feed_host('/~name16/latest-bugs.atom')
+    >>> verify_feed_host('/~admins/latest-bugs.atom')
+    >>> verify_feed_host('/~simple-team/latest-bugs.atom')
+    >>> verify_feed_host('/bugs/1/bug.atom')
+    >>> verify_feed_host('/bugs/+bugs.atom?'
+    ...        'field.searchtext=&search=Search+Bug+Reports&'
+    ...        'field.scope=all&field.scope.target=')
+
+These html feeds should only exist on feeds.launchpad.dev:
+
+    >>> verify_feed_host('/jokosher/latest-bugs.html')
+    >>> verify_feed_host('/mozilla/latest-bugs.html')
+    >>> verify_feed_host('/~name16/latest-bugs.html')
+    >>> verify_feed_host('/~simple-team/latest-bugs.html')
+    >>> verify_feed_host('/bugs/1/bug.html')
+    >>> verify_feed_host('/bugs/+bugs.html?'
+    ...        'field.searchtext=&search=Search+Bug+Reports&'
+    ...        'field.scope=all&field.scope.target=')
+
+Revert configuration change after tests are finished.
+
+    >>> config_data = config.pop('bug_search_feed_data')

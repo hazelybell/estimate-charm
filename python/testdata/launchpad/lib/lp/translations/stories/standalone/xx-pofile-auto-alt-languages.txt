@@ -1,0 +1,44 @@
+
+The system should automatically select an alternative language for you if
+you are translating in a language where there is an obvious common
+alternative language. In general, if your language code is of the form xx_YY
+then you will get 'xx' as your default alternate language.
+
+We'll start by showing the translation page for Spanish (Mexican), which
+should have the Spanish language selected as its alternate, by default.
+
+  >>> browser = setupBrowser(auth='Basic carlos@canonical.com:test')
+  >>> browser.open(
+  ...     'http://translations.launchpad.dev/evolution/trunk/+pots/'
+  ...     'evolution-2.2/es_MX/+translate')
+  >>> print browser.url
+  http://translations.launchpad.dev/evolution/trunk/+pots/evolution-2.2/es_MX/+translate
+
+  >>> browser.getControl(name='field.alternative_language', index=0).value
+  ['es']
+
+There are some exceptions. pt_BR is quite independent of pt, so we should
+not show pt by default for pt_BR translators:
+
+  >>> browser.open(
+  ...     'http://translations.launchpad.dev/evolution/trunk/+pots/'
+  ...     'evolution-2.2/pt_BR/+translate')
+  >>> print browser.url
+  http://translations.launchpad.dev/evolution/trunk/+pots/evolution-2.2/pt_BR/+translate
+
+  >>> browser.getControl(name='field.alternative_language', index=0).value
+  ['']
+
+And of course, we also would not show an alternate language for something like
+French!
+
+  >>> browser.open(
+  ...     'http://translations.launchpad.dev/evolution/trunk/+pots/'
+  ...     'evolution-2.2/fr/+translate')
+  >>> print browser.url
+  http://translations.launchpad.dev/evolution/trunk/+pots/evolution-2.2/fr/+translate
+
+  >>> browser.getControl(name='field.alternative_language', index=0).value
+  ['']
+
+

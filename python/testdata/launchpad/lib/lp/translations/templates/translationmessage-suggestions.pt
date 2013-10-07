@@ -1,0 +1,20 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+<tal:block condition="context/submissions">
+  <tal:submission repeat="submission context/submissions">
+    <tal:variables
+      define="
+        section_title string:;
+        dismissable submission/suggestion_dismissable_class;
+        form_is_writeable context/form_is_writeable;
+        user_is_official_translator context/user_is_official_translator;
+        ">
+      <metal:suggestion
+         use-macro="context/@@+translations-macros/render-suggestion" />
+    </tal:variables>
+  </tal:submission>
+</tal:block>
+</tal:root>

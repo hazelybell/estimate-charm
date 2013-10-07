@@ -1,0 +1,38 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+  <span tal:attributes="id view/content_box_id">
+    <span class="yui3-activator-data-box">
+      <tal:attribute replace="structure view/default_html"/>
+    </span>
+    <span tal:condition="view/can_write">
+      <a tal:attributes="href view/edit_url;
+                         title view/edit_title"
+         class="sprite edit action-icon lazr-btn yui3-activator-act"
+         >Edit</a>
+
+      <a tal:condition="view/help_link"
+         tal:attributes="href view/help_link"
+         target="help"
+         class="sprite maybe action-icon">Driver help</a>
+      <div class="yui3-activator-message-box yui3-activator-hidden"></div>
+    </span>
+  </span>
+
+  <script tal:condition="view/can_write"
+        tal:content="structure string:
+LPJS.use('lp.app.picker', 'lp.client', function(Y) {
+    var picker_config = ${view/json_config};
+    picker_config.validate_callback = Y.lp.app.picker.public_private_warning;
+    Y.on('load', function(e) {
+      Y.lp.app.picker.addPickerPatcher(
+        ${view/json_vocabulary_name},
+        ${view/json_resource_uri},
+        ${view/json_attribute},
+        ${view/json_content_box_id},
+        picker_config);
+      }, window);
+});
+  "/>
+</tal:root>

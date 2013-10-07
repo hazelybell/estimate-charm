@@ -1,0 +1,42 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  omit-tag="">
+
+  <metal:form-picker define-macro="form-picker">
+    <tal:input replace="structure view/inputField" />
+
+    <tal:search_results condition="not: view/hasValidInput"
+      define="suggestion_id string:${view/name}-suggestions">
+      <select tal:condition="view/matches"
+        tal:attributes="id string:${suggestion_id}">
+        <option value="">Did you mean...</option>
+        <option
+            tal:repeat="match view/matches"
+            tal:attributes="value match/token;
+                selected python:path('match/token') == path('view/formToken');"
+            tal:content="string:${match/title} (${match/token})"
+            />
+      </select>
+      <script type="text/javascript" tal:content="string:
+          LPJS.use('node', 'lp.app.picker', function(Y) {
+              var text_input = Y.DOM.byId('${view/name}');
+              var select_menu = Y.DOM.byId('${suggestion_id}');
+              Y.lp.app.picker.connect_select_menu(
+                  select_menu, text_input);
+          });">
+      </script>
+    </tal:search_results>
+
+    <tal:chooseLink replace="structure view/chooseLink" />
+    <script tal:content="structure string:
+    LPJS.use('node', 'lp.app.picker', function(Y) {
+        var config = ${view/json_config};
+        var show_widget_id = '${view/show_widget_id}';
+        Y.on('domready', function(e) {
+            Y.lp.app.picker.addPicker(config, show_widget_id);
+        });
+    });
+    "/>
+  </metal:form-picker>
+</tal:root>

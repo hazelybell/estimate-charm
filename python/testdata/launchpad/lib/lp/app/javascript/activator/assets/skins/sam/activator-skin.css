@@ -1,0 +1,75 @@
+/* Copyright (c) 2009, Canonical Ltd. All rights reserved. */
+
+.yui3-skin-sam button.yui3-activator-act {
+    background: url('edit.png') 0 0 no-repeat;
+    vertical-align: middle;
+}
+
+.yui3-skin-sam .yui3-activator-processing button.yui3-activator-act {
+    background: url('../../../../ui/assets/skins/sam/spinner.gif')
+                0 0 no-repeat;
+}
+
+.yui3-activator-data-box {
+}
+
+.yui3-activator-message-box {
+    position: absolute;
+    background-color: #eeeeee;
+    border: 2px solid #000000;
+    /* Center horizontally in the page. No change is made to its
+     * vertical position, which is just below the activator button.
+     */
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    width: 30em;
+
+    /* Center the message box on IE7. */
+    *left: 30%;
+    *width: 40%;
+}
+
+.yui3-skin-sam button.yui3-activator-message-close {
+    background: url('../../../../overlay/assets/skins/sam/images/close.gif')
+                0 0 no-repeat;
+    height: 15px;
+    float: right;
+    margin-top: 1px;
+    margin-right: 1px;
+}
+
+.yui3-activator-message-header {
+    color: white;
+    background-color: #000000;
+    font-style: bold;
+    font-size: medium;
+    padding-left: 0.3em;
+    min-height: 19px;
+}
+
+.yui3-activator-message-body {
+    padding: 0;
+    overflow: auto;
+    /* Necessary for IE7. */
+    width: 100%;
+}
+
+.yui3-activator-failure .yui3-activator-message-box {
+    background-color: #ffdddd;
+    border: 2px solid #ff0000;
+}
+
+.yui3-activator-failure .yui3-activator-message-header {
+    background-color: #ff0000;
+}
+
+.yui3-activator-success .yui3-activator-message-box {
+    background-color: #ddffdd;
+    border: 2px solid #008000;
+}
+
+.yui3-activator-success .yui3-activator-message-header {
+    background-color: #008000;
+}

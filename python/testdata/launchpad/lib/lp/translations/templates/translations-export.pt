@@ -1,0 +1,64 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+<body>
+
+<div metal:fill-slot="main">
+  <div tal:condition="view/uses_translations"
+       class="main-portlet">
+    <p>
+      This will export <em>all</em> translations for
+      <tal:what replace="view/download_description">evolution</tal:what>.
+      They will be made available for download as a single tarball.
+    </p>
+
+    <h3>Choose your file format</h3>
+
+    <form action="" method="post" class="translations">
+      <div class="fields">
+        <label for="export-format">
+          Format:
+        </label>
+        <select id="export-format" name="format">
+          <option
+             tal:repeat="format view/formats"
+             tal:content="format/title"
+             tal:attributes="value format/value">PO format</option>
+        </select>
+      </div>
+
+      <p>
+        When these translations have been exported, a message will be sent to
+        <code tal:content="view/user/preferredemail/email">user@domain</code>.
+        This message will tell you where you can download your file.
+      </p>
+
+      <p tal:content="view/export_queue_status">
+        There are 201 file reequests on the export queue.  The backlog is
+        approximately 25 minutes.
+      </p>
+
+      <div class="actions">
+        <p>
+         <input type="submit" value="Request Download" />
+         or <a tal:attributes="href view/cancel_url">Cancel</a>
+        </p>
+      </div>
+    </form>
+  </div>
+
+  <p tal:condition="not: view/uses_translations" class="informational message">
+    There are no translations to download in
+    <tal:what replace="view/download_description">evolution</tal:what>.
+  </p>
+
+</div>
+
+</body>
+</html>
+

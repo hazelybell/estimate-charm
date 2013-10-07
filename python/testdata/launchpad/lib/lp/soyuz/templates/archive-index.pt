@@ -1,0 +1,308 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_side"
+  i18n:domain="launchpad"
+  >
+<body>
+  <tal:heading metal:fill-slot="heading">
+    <meta itemprop="name"
+      tal:attributes="content context/displayname" />
+    <h1 tal:condition="context/enabled"
+        tal:replace="structure view/displayname_edit_widget">
+      PPA for user
+    </h1>
+    <h1 tal:condition="not: context/enabled"
+        tal:content="context/displayname"
+        class="disabled">
+      PPA for user
+    </h1>
+  </tal:heading>
+
+  <tal:main metal:fill-slot="main"
+       tal:define="archive_active view/has_sources;
+                   archive_label  view/archive_label;"
+       tal:attributes="class string:archive">
+
+    <div class="top-portlet" style="padding-top:0.5em;">
+      <p tal:condition="not: context/enabled"
+         style="clear: right;" class="warning message"
+         tal:content="view/disabled_warning_message">
+        This archive has been disabled.
+      </p>
+
+      <tal:widget replace="structure view/archive_description_html"/>
+    </div>
+
+    <tal:ppa-upload-hint condition="context/is_ppa">
+      <metal:ppa-upload-hint
+        use-macro="template/macros/ppa-upload-hint-portlet" />
+    </tal:ppa-upload-hint>
+
+    <div class="yui-gc" tal:omit-tag="context/is_copy">
+
+      <div class="yui-u first">
+        <tal:ppa-install condition="context/is_ppa">
+          <metal:ppa-install
+            use-macro="template/macros/ppa-install-portlet" />
+        </tal:ppa-install>
+        <tal:package-copy-request-list tal:condition="context/is_copy">
+          <metal:package-copy-request-list
+            use-macro="context/@@+macros/package-copy-request-list" />
+        </tal:package-copy-request-list>
+      </div>
+
+      <div class="yui-u">
+        <metal:ppa-statistics-portlet
+          use-macro="template/macros/ppa-statistics-portlet" />
+      </div>
+    </div><!-- yui-gc -->
+
+    <metal:ppa-simplified-packages-portlet
+      use-macro="template/macros/ppa-simplified-packages-portlet" />
+ </tal:main>
+
+  <tal:side metal:fill-slot="side">
+    <tal:menu replace="structure view/@@+global-actions" />
+    <metal:build-status-summary
+      use-macro="context/@@+macros/latest-updates-portlet" />
+  </tal:side>
+
+<metal:macros fill-slot="bogus">
+
+  <metal:ppa-install-portlet define-macro="ppa-install-portlet">
+    <tal:comment replace="nothing">
+      Present the installation instructions for a PPA in a portlet.
+    </tal:comment>
+
+    <div id="ppa-install" class="portlet">
+      <h2>Adding this PPA to your system</h2>
+
+      <tal:is-active condition="archive_active">
+
+        <tal:comment replace="nothing">
+          XXX Michael Nelson 2010-02-25 bug=440512: Until we have
+          apt-add-repository backported, we can't simply state one
+          explicit solution here. Until then we just state a general
+          solution with the details in the linked help.
+        </tal:comment>
+
+        <p>You can update your system with unsupported packages from
+          this untrusted PPA by adding <strong
+          tal:content="context/fmt:reference">ppa:cprov/ppa</strong>
+          to your system's Software Sources.
+          (<a href="/+help-soyuz/ppa-sources-list.html"
+              target="help">Read about installing</a>)
+        </p>
+
+        <div class="widget-header">
+          Technical details about this PPA
+        </div>
+
+        <div class="widget-body">
+          <p>This PPA can be added to your system manually by copying
+             the lines below and adding them to your system's software
+             sources. </p>
+          <tal:entries replace="structure view/sources_list_entries" />
+          <dl id="signing-key"
+              tal:define="signing_key context/signing_key"
+              tal:condition="signing_key">
+            <dt>Signing key:</dt>
+            <dd>
+              <a tal:attributes="href signing_key/keyserverURL">
+                <code tal:content="signing_key/displayname"
+                  >1024R/23456789</code>
+              </a>
+              (<a href="/+help-soyuz/ppa-sources-list.html"
+                  target="help">What is this?</a>)
+            </dd>
+            <dt>Fingerprint:</dt>
+            <dd tal:content="signing_key/fingerprint"/>
+          </dl>
+          <div id="archive-dependencies"
+               tal:condition="context/dependencies">
+            <h3>Dependencies:</h3>
+            <ul>
+              <li tal:repeat="dependency context/dependencies">
+                <a tal:attributes="href dependency/dependency/fmt:url"
+                   tal:condition="
+                   dependency/dependency/required:launchpad.View"
+                   tal:content="dependency/title" />
+                <span tal:replace="dependency/title"
+                      tal:condition="
+                      not: dependency/dependency/required:launchpad.View" />
+                <span style="color: red"
+                      tal:condition="not: dependency/dependency/enabled"
+                 >[disabled]</span>
+                (included <span
+                 tal:replace="dependency/date_created/fmt:displaydate" />)
+              </li>
+            </ul>
+          </div> <!--archive-dependencies -->
+        </div> <!-- widget-body -->
+
+        <p>For questions and bugs with software in this PPA please contact
+          <a tal:replace="structure context/owner/fmt:link"
+            >Celso Providelo</a>.</p>
+
+        <script type="text/javascript">
+          LPJS.use('lp.app.widgets.expander', function(Y) {
+              var widget_header = Y.one('#ppa-install .widget-header');
+              var content = Y.one('.widget-body');
+              var expander = new Y.lp.app.widgets.expander.Expander(
+                  widget_header, content);
+              expander.setUp(true);
+          });
+        </script>
+      </tal:is-active>
+
+      <p tal:condition="not: archive_active">
+        This PPA does not contain any packages yet. Find more
+        information about how to upload packages in the
+        <a href="https://help.launchpad.net/Packaging/PPA"
+           target="help">PPA help page</a>.</p>
+
+    </div> <!-- ppa-install -->
+  </metal:ppa-install-portlet>
+
+  <metal:ppa-statistics-portlet define-macro="ppa-statistics-portlet">
+    <tal:comment replace="nothing">
+      Present the statistics for a PPA in a portlet.
+    </tal:comment>
+    <div class="portlet">
+      <h2><tal:archive_label replace="archive_label" /> statistics</h2>
+      <dl tal:define="num_updates view/num_updates_over_last_days;
+                      pkg_build_counts view/num_pkgs_building">
+        <dt>Activity</dt>
+        <dd><span tal:replace="num_updates">10</span>
+          update<tal:plural content="string:s"
+                            condition="python:num_updates!=1"/>
+          added during the past month.</dd>
+        <dd tal:condition="pkg_build_counts/total">
+          Currently
+          <a tal:attributes="href context/menu:overview/builds_building/fmt:url"
+             tal:omit-tag="not:pkg_build_counts/building">
+          <span tal:replace="pkg_build_counts/building">2</span>
+          package<tal:plural content="string:s"
+                             condition="python:pkg_build_counts['building']!=1"
+                  /> building</a> and
+          <a tal:attributes="href context/menu:overview/builds_pending/fmt:url"
+             tal:omit-tag="not:pkg_build_counts/waiting">
+           <span tal:replace="pkg_build_counts/waiting">2</span>
+          package<tal:plural content="string:s"
+                             condition="python:pkg_build_counts['waiting']!=1"
+                  />
+          waiting to build</a>.</dd>
+      </dl>
+    </div>
+  </metal:ppa-statistics-portlet>
+
+  <metal:ppa-simplified-packages-portlet
+    define-macro="ppa-simplified-packages-portlet">
+    <tal:comment replace="nothing">
+      Present the simplified packages listing for the PPA index page.
+    </tal:comment>
+    <div class="portlet" tal:condition="archive_active" id="packages">
+      <span class="see-all"
+            tal:content="structure view/menu:overview/packages/fmt:link">
+        View package details</span>
+      <h2>Overview of published packages</h2>
+
+      <form class="package-search-filter" action="" method="GET">
+        <label for="field.series_filter">Published in:</label>
+        <tal:series_filter
+          replace="structure view/plain_series_filter_widget" />
+        <input type="submit" value="Filter" />
+      </form>
+
+      <div tal:define="batch view/batched_sources">
+
+        <tal:navigation_top
+          replace="structure view/batchnav/@@+navigation-links-upper" />
+
+        <table class="listing sortable" id="packages_list"
+               tal:condition="batch">
+          <thead>
+            <tr>
+              <th>Package</th>
+              <th>Version</th>
+              <th>Uploaded by</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tal:publishing repeat="publishing batch">
+            <tr tal:define="newer_version publishing/newer_distroseries_version"
+                tal:attributes="class python: newer_version and
+                                              'superseded' or ''">
+              <td>
+                <img src="/@@/package-source" />
+                <tal:source_name replace="publishing/sourcepackagerelease/name">
+                  foo
+                </tal:source_name>
+              </td>
+              <td>
+                <tal:version define="
+                version_name publishing/meta_distroseriessourcepackagerelease/version;"
+                    content="version_name">
+                  2.0.39
+                </tal:version>
+                <tal:newer_version condition="newer_version">
+                  (<a tal:attributes="href newer_version/fmt:url">Newer version</a>
+                  available)
+                </tal:newer_version>
+              </td>
+              <td tal:define="spr publishing/sourcepackagerelease;
+                              signer spr/uploader/fmt:link::no signer">
+                  <span tal:replace="structure signer">Joe Bloggs</span>
+                  <tal:date_published
+                    condition="publishing/datepublished">
+                  (<span
+                    tal:replace="publishing/datepublished/fmt:approximatedate">
+                     2007-08-01</span>)
+                  </tal:date_published>
+              </td>
+            </tr>
+            </tal:publishing>
+          </tbody>
+        </table>
+
+        <tal:navigation_bottom
+          replace="structure view/batchnav/@@+navigation-links-lower" />
+
+        <div id="empty-result"
+             tal:define="name_filter view/specified_name_filter|nothing"
+             tal:condition="not: batch">
+          No matching package for '<tal:name_filter replace="name_filter" />'.
+        </div>
+
+      </div>
+    </div>
+  </metal:ppa-simplified-packages-portlet>
+
+  <metal:ppa-upload-hint-portlet
+    define-macro="ppa-upload-hint-portlet">
+    <tal:comment replace="nothing">
+      Present the upload hints for the PPA index page.
+    </tal:comment>
+    <div class="portlet" id="upload-hint"
+         tal:condition="context/required:launchpad.Append">
+      <h2>Uploading packages to this PPA</h2>
+      <p tal:condition="view/has_disabled_dependencies"
+         class="message warning">
+         This PPA depends on disabled archives. it may cause
+         spurious build failures or binaries with unexpected
+         contents.</p>
+      <p>You can upload packages to this PPA using:</p>
+      <p><tt>dput <tal:ppa-ref replace="context/fmt:reference"
+                    >ppa:cprov/ppa</tal:ppa-ref> &lt;source.changes&gt;</tt>
+            (<a href="https://help.launchpad.net/Packaging/PPA/Uploading"
+               >Read about uploading</a>)</p>
+    </div>
+  </metal:ppa-upload-hint-portlet>
+
+</metal:macros>
+
+  </body>
+</html>

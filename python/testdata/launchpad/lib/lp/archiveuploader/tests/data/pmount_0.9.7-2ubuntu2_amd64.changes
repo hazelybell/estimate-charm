@@ -1,0 +1,31 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Format: 1.7
+Date: Wed,  1 Feb 2006 10:23:52 +0000
+Source: pmount
+Binary: pmount
+Architecture: amd64_translations amd64
+Version: 0.9.7-2ubuntu2
+Distribution: dapper
+Urgency: low
+Maintainer: Martin Pitt <mpitt@debian.org>
+Changed-By: Matthew Garrett <mjg59@srcf.ucam.org>
+Description: 
+ pmount     - mount removable devices as normal user
+Changes: 
+ pmount (0.9.7-2ubuntu2) dapper; urgency=low
+ .
+   * Add support for automounting mmc devices (Closes a bug, but Malone
+     doesn't want to talk to me at the moment)
+Files: 
+ 3201fc523512bc464768ba003dcb18c9 44054 utils optional pmount_0.9.7-2ubuntu2_amd64.deb
+ 00be5670a63b9df283ffb951dec5d20e 36104 raw-translations - pmount_0.9.7-2ubuntu2_amd64_translations.tar.gz
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.3 (GNU/Linux)
+
+iD8DBQFFt5wH2yWXVgK6XvYRAkh3AJsHi7pJmO7/nJKksLdmhF2lcBnwLwCgnWgq
+vCprFMmAU7lKWN0eGfZo+pA=
+=YXOi
+-----END PGP SIGNATURE-----

@@ -1,0 +1,34 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+<body>
+
+  <div metal:fill-slot="main"
+       tal:define="message view/retry_build; error view/error|nothing">
+
+    <div class="top-portlet"
+         tal:condition="context/can_be_retried">
+      <p>The status of <dfn tal:content="context/title">BUILD</dfn> is
+         <span tal:replace="context/status/title"/>.</p>
+      <p>Retrying this build will destroy its history and logs.</p>
+      <p>By default, this build will be retried only after other pending
+         builds; please contact a build daemon administrator if you need
+         special treatment.</p>
+      <p>Are you sure ?</p>
+
+      <form name="RETRY" action="" method="POST">
+        <input name="RETRY" type="hidden" value="1"/>
+        <input type="submit" value="Retry Build"/>
+        or <a tal:attributes="href context/fmt:url">Cancel</a>
+      </form>
+    </div>
+
+  </div> <!-- main -->
+
+</body>
+</html>

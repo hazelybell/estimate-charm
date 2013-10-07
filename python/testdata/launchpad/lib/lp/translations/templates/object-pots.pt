@@ -1,0 +1,101 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  omit-tag="">
+
+<tal:comment condition="nothing">
+  Indicates if no templates are registered for this object, and
+  redirects to the mailing lists in case that is incorrect.
+</tal:comment>
+
+<tal:content define="potemplates view/potemplates">
+
+  <tal:block condition="not: potemplates">
+    <h2>No translatable templates available</h2>
+
+    <p>
+      Either this project has not been set up to use Launchpad for
+      translation, or <tal:displayname tal:replace="context/displayname" />
+      does not have any strings to be translated through Launchpad.  If
+      you think this is incorrect, please see if the subject has already
+      come up under
+      <a tal:attributes="href view/answers_url">Answers</a>.
+      If it hasn't, file a new question there.  Thank you.
+    </p>
+  </tal:block>
+
+  <tal:block condition="potemplates">
+
+    <tal:block tal:condition="python:len(potemplates) &gt; 5">
+      <!-- Listing of MANY templates -->
+
+      <p>
+        These templates can be translated using Launchpad.
+      </p>
+
+      <table class="listing">
+        <thead>
+          <tr>
+            <th>template name and title</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr tal:repeat="potemplate potemplates"
+              tal:attributes="onclick
+                 string:window.location='${potemplate/fmt:url}'">
+            <td><a tal:attributes="href potemplate/fmt:url"
+                   tal:content="potemplate/name">name</a>: 
+                <span tal:replace="potemplate/title">title</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </tal:block>
+
+    <tal:listing tal:condition="python:len(potemplates) &lt;= 5">
+      <!-- Listing of FEW templates -->
+
+      <div tal:condition="not: view/translatable_languages">
+        <ul>
+          <li tal:repeat="potemplate potemplates">
+            <a tal:attributes="href potemplate/fmt:url"
+              tal:content="potemplate/title">template</a>
+          </li>
+        </ul>
+      </div>
+
+      <div tal:condition="view/translatable_languages"
+           tal:repeat="potemplate potemplates"
+           tal:omit-tag=""> <!-- PO Template Details -->
+
+        <h2><span tal:replace="potemplate/title">Template Title</span></h2>
+
+        <p tal:condition="potemplate/description">
+          <tal:description
+            content="structure potemplate/description/fmt:text-to-html">
+              Description of this template.
+          </tal:description>
+        </p>
+
+        <div tal:replace="structure potemplate/@@+preferred-chart" />
+
+        <div align="right">
+          [ <a href="/+editmylanguages">Change your preferred languages...</a> 
+            &mdash;
+            <a tal:attributes="href potemplate/fmt:url">
+              View template &amp; all languages...</a> 
+          ]
+        </div>
+
+      </div>
+
+      <div tal:condition="view/translatable_languages"
+      	   tal:replace="structure context/@@+rosetta-status-legend" />
+
+    </tal:listing>
+
+  </tal:block>
+
+</tal:content>
+</tal:root>

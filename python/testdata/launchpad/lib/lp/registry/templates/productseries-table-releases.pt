@@ -1,0 +1,27 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+
+<tal:navigation_top
+      replace="structure view/milestone_batch_navigator/@@+navigation-links-upper" />
+<table class="listing"
+  tal:attributes="id context/name/fmt:css-id/series-;
+                  class view/milestone_table_class">
+  <thead>
+    <tr>
+      <th>Version</th>
+      <th>Expected</th>
+      <th tal:condition="view/milestone_can_release">Released</th>
+      <th>Summary</th>
+    </tr>
+  </thead>
+  <tbody id="milestone-rows">
+    <tal:row repeat="milestone view/milestone_batch_navigator/currentBatch">
+      <tal:milestone replace="structure milestone/@@+productseries-table-row" />
+    </tal:row>
+  </tbody>
+</table>
+<tal:navigation_bottom
+      replace="structure view/milestone_batch_navigator/@@+navigation-links-lower" />
+</tal:root>

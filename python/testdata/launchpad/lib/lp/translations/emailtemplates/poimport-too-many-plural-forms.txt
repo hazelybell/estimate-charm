@@ -1,0 +1,22 @@
+Hello %(importer)s,
+
+On %(dateimport)s (%(elapsedtime)s), you uploaded a file with %(language)s translations for %(template)s to Launchpad.
+
+We were unable to import it because it declares more plural forms than
+Launchpad can currently handle.  The maximum supported is %(max_plural_forms)d.
+
+Please see if you can get by with fewer plural forms.  You can find Launchpad's default plural-forms information for %(language)s here:
+
+https://translations.launchpad.net/+languages/%(language_code)s
+
+If you believe the information listed there is incorrect, please file a question here:
+
+https://answers.launchpad.net/rosetta/+addquestion
+
+For your convenience, you can get the file you uploaded at:
+%(file_link)s
+
+
+Thank you,
+
+The Launchpad team

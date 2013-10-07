@@ -1,0 +1,34 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<div class="portlet" id="portlet-details">
+  <h2><span tal:replace="context/name" /></h2>
+	
+    <b>Title:</b>
+    <span tal:replace="context/title" /><br />
+
+    <b>Voting team:</b>
+    <a tal:attributes="href context/team/fmt:url"
+       tal:content="context/team/displayname" /><br />
+
+    <b>Opens:</b>
+    <span
+      tal:attributes="title context/dateopens/fmt:datetime"
+      tal:content="context/dateopens/fmt:approximatedate" /><br />
+
+    <b>Closes:</b>
+    <span
+      tal:attributes="title context/datecloses/fmt:datetime"
+      tal:content="context/datecloses/fmt:approximatedate" /><br />
+
+    <b>Type:</b>
+    <span tal:replace="context/type/title" /><br />
+
+    <b>Secrecy:</b>
+    <span tal:replace="context/secrecy/title" /><br />
+
+</div>
+</tal:root>

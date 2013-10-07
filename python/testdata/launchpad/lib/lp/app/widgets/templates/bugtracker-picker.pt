@@ -1,0 +1,38 @@
+<tal:root
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    omit-tag="">
+
+<metal:form-picker use-macro="context/@@form-picker-macros/form-picker"/>
+<script tal:content="structure string:
+LPJS.use('lp.bugs.bugtracker_overlay', function(Y) {
+    Y.on('domready', function () {
+        // After the success handler finishes, it calls the
+        // next_step function.
+        var next_step = function(bug_tracker) {
+            // Fill in the text field with either the name of
+            // the newly created bug tracker or the name of an
+            // existing bug tracker whose base_url matches.
+            var bugtracker_text_box = Y.one(
+                Y.DOM.byId('field.bugtracker.bugtracker'));
+            if (bugtracker_text_box !== null) {
+                bugtracker_text_box.set(
+                    'value', bug_tracker.get('name'));
+                // It doesn't appear possible to use onChange
+                // event, so the onKeyPress event is explicitly
+                // fired here.
+                if (bugtracker_text_box.get('onkeypress')) {
+                    bugtracker_text_box.get('onkeypress')();
+                }
+                bugtracker_text_box.scrollIntoView();
+            }
+        }
+        Y.lp.bugs.bugtracker_overlay.attach_widget({
+            activate_node: Y.one('#create-bugtracker-link'),
+            next_step: next_step
+            });
+        });
+});
+"/>
+
+</tal:root>

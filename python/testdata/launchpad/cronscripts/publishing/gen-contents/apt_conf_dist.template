@@ -1,0 +1,15 @@
+
+tree "dists/%(suite)s"
+{
+   FileList "%(content_archive)s/%(distribution)s-overrides/%(suite)s_$(SECTION)_binary-$(ARCH)";
+   SourceFileList "%(content_archive)s/%(distribution)s-overrides/%(suite)s_$(SECTION)_source";
+   Sections "main restricted universe multiverse";
+   Architectures "%(architectures)s source";
+   BinOverride "override.%(suite)s.$(SECTION)";
+   SrcOverride "override.%(suite)s.$(SECTION).src";
+   ExtraOverride "override.%(suite)s.extra.$(SECTION)";
+   // we need the plain text content to compare before copy to the real tree
+   Packages::Compress ". gzip";
+   Sources::Compress ". gzip";
+   Contents::Compress ". gzip";
+};

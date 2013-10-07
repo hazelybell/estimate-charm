@@ -1,0 +1,44 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad">
+
+<body>
+
+<div metal:fill-slot="main">
+
+  <div metal:use-macro="context/@@launchpad_form/form">
+    <div metal:fill-slot="extra_info">
+      <p>
+        Resubmitting this proposal to merge will cause this proposal to be
+        marked as <strong>superseded</strong>.  A new proposal will
+        be created.
+      </p>
+      <p>
+        Everyone who has reviewed this proposal or was requested to review this
+        proposal will be requested to review the new proposal.
+      </p>
+    </div>
+  </div>
+
+  <div id="source-revisions">
+    <tal:history-available condition="context/source_branch/revision_count"
+                           define="branch context/source_branch;
+                                   revisions view/unlanded_revisions">
+      <h2>Unmerged revisions</h2>
+      <metal:landing-target use-macro="branch/@@+macros/branch-revisions"/>
+    </tal:history-available>
+
+    <tal:remote-branch condition="context/source_branch/branch_type/enumvalue:REMOTE">
+      <h2>Unmerged revisions</h2>
+      <p>Recent revisions are not available due to the source branch being remote.</p>
+    </tal:remote-branch>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+      <li>
+
+        <bz:bug rdf:about="http://bugzilla.gnome.org/show_bug.cgi?id=%(bug_id)s">
+
+          <bz:id nc:parseType="Integer">%(bug_id)s</bz:id>
+          <bz:bug_status>%(status)s</bz:bug_status>
+          <bz:resolution>%(resolution)s</bz:resolution>
+
+        </bz:bug>
+
+      </li>

@@ -1,0 +1,37 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  omit-tag="">
+
+  <tal:comments>
+    <div
+      class="hidden"
+      id="next-batch-url"
+      tal:condition="view/has_more_comments_and_activity"
+      tal:content="view/next_batch_url"></div>
+    <tal:comment
+        repeat="comment_or_activity view/activity_and_comments">
+      <tal:is-comment
+          define="comment comment_or_activity/comment|nothing"
+          condition="comment">
+        <tal:comment-box replace="structure comment/@@+box" />
+      </tal:is-comment>
+
+      <tal:is-activity
+          define="activity_list comment_or_activity/activity|nothing;
+                  activity_date comment_or_activity/date|nothing;
+                  activity_person comment_or_activity/person|nothing"
+          condition="activity_list">
+          <metal:comment-box
+              metal:use-macro="context/@@bugcomment-macros/activity-box" />
+      </tal:is-activity>
+
+      <tal:is-break
+         define="num_hidden comment_or_activity/num_hidden|nothing"
+         condition="num_hidden">
+          <metal:comment-box
+              metal:use-macro="context/@@bugcomment-macros/break" />
+      </tal:is-break>
+    </tal:comment>
+  </tal:comments>
+</tal:root>

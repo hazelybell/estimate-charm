@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<!--
+Copyright 2012 Canonical Ltd.  This software is licensed under the
+GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<html>
+  <head>
+      <title>resizing_textarea tests</title>
+
+      <!-- YUI and test setup -->
+      <script type="text/javascript"
+              src="../../../../../../build/js/yui/yui/yui.js">
+      </script>
+      <link rel="stylesheet"
+      href="../../../../../../build/js/yui/console/assets/console-core.css" />
+      <link rel="stylesheet"
+      href="../../../../../../build/js/yui/test-console/assets/skins/sam/test-console.css" />
+      <link rel="stylesheet"
+      href="../../../../../../build/js/yui/test/assets/skins/sam/test.css" />
+
+      <script type="text/javascript"
+              src="../../../../../../build/js/lp/app/testing/testrunner.js"></script>
+
+      <link rel="stylesheet" href="../../../../app/javascript/testing/test.css" />
+
+      <!-- Dependencies -->
+      <!-- <script type="text/javascript" src="../../../../../../build/js/lp/..."></script> -->
+
+      <!-- The module under test. -->
+      <script type="text/javascript" src="../resizing_textarea.js"></script>
+
+      <!-- Placeholder for any css asset for this module. -->
+      <!-- <link rel="stylesheet" href="../assets/resizing_textarea-core.css" /> -->
+
+      <!-- The test suite. -->
+      <script type="text/javascript" src="test_resizing_textarea.js"></script>
+
+    </head>
+    <body class="yui3-skin-sam">
+        <ul id="suites">
+            <!-- <li>lp.large_indicator.test</li> -->
+            <li>lp.resizing_textarea.test</li>
+        </ul>
+
+        <!-- We're going to test interacting with dom elements, so let's have some -->
+        <textarea id="init" style="width: auto;">Initial text</textarea>
+        <textarea id="with_defaults" style="width: auto;">has defaults</textarea>
+        <textarea id="shrinkage" style="width: auto;"></textarea>
+        <textarea id="multiple1" class="test_multiple first" style="width: auto;"></textarea>
+        <textarea id="multiple2" class="test_multiple second" style="width: auto;"></textarea>
+        <textarea id="css_height" style="height: 120px; width: auto;"></textarea>
+        <div style="display: none;">
+            <textarea id="config_height" rows="15" name="field.comment"
+                style="max-width: 60em; width: 90%; display: block;" cols="44">
+            </textarea>
+        </div>
+        <textarea id="no_change" style="width: auto;"></textarea>
+        <textarea id="one_line_sample" style="height: 1em; overflow: hidden; resize: none; width: auto;"></textarea>
+        <textarea id="one_line" style="height: 1em; width: auto;"></textarea>
+    </body>
+</html>

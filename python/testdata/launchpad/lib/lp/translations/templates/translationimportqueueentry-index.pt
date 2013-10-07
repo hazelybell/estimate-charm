@@ -1,0 +1,52 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+  <body>
+  <metal:script fill-slot="head_epilogue">
+    <style type="text/css">
+    .dont_show_fields {
+        display: none;
+    }
+    </style>
+
+    <script type="text/javascript"
+            tal:content="view/js_domain_mapping">
+      var template_domains = {'name1': 'domain1', 'name2': 'domain2'};
+    </script>
+    <script type="text/javascript">
+      LPJS.use('node', 'lp.translations.importqueueentry',
+      function (Y) {
+        Y.on('domready', Y.lp.translations.importqueueentry.setup_page);
+      });
+    </script>
+  </metal:script>
+
+  <div metal:fill-slot="main">
+    <div metal:use-macro="context/@@launchpad_form/form">
+      <div metal:fill-slot="extra_info">
+        <input type="hidden" name="next_url"
+               tal:attributes="value view/referrer_url" />
+      </div>
+    </div>
+
+    <tal:details replace="structure context/@@+portlet-details" />
+
+    <div tal:condition="context/error_output"
+         class="portlet"
+         id="error-output">
+      Error output for this entry:
+      <br />
+      <tt tal:content="context/error_output">
+        Horrible syntax error near line 192.
+      </tt>
+    </div>
+
+  </div>
+
+  </body>
+</html>

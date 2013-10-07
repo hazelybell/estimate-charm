@@ -1,0 +1,35 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_side">
+
+  <head>
+    <tal:epilogue metal:fill-slot="head_epilogue">
+    <!-- Extra head content -->
+    </tal:epilogue>
+  </head>
+
+  <body>
+    <tal:heading metal:fill-slot="heading"><h2>Heading</h2></tal:heading>
+
+    <tal:registering metal:fill-slot="registering">
+      Registered on 2005-09-16 by Illuminati
+    </tal:registering>
+
+    <tal:main metal:fill-slot="main">
+      <div class="top-portlet">
+        <p>
+          Main content of the page.
+        </p>
+      </div>
+    </tal:main>
+
+    <tal:side metal:fill-slot="side">
+      <div id="object-actions" class="top-portlet">
+        <h2>Important actions</h2>
+      </div>
+    </tal:side>
+  </body>
+</html>

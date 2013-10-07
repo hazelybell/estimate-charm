@@ -1,0 +1,101 @@
+= Exporting ProductSeries Translations Through the Web =
+
+Launchpad supports export of entire productseries translations in a single
+tarball.  Meant primarily for upstream maintainers, the tarball will contain
+all templates for the product series as well as all their translations.
+
+
+== Where to request ==
+
+Any authenticated user can request a tarball export for a productseries.  The
+option is presented in the sidebar as "Download translations" on the
+productseries' translations page.
+
+    >>> user_browser.open('http://translations.launchpad.dev/evolution/trunk/')
+    >>> user_browser.getLink('download').click()
+    >>> print user_browser.url
+    http://translations.launchpad.dev/evolution/trunk/+export
+
+Another way of getting there is by going to the product's +translate page.
+It will select a series of the product as its primary translation target, and
+offer a download link for that series.
+
+    >>> user_browser.open(
+    ...     'http://translations.launchpad.dev/evolution/+translations')
+    >>> user_browser.getLink('download').click()
+    >>> print user_browser.url
+    http://translations.launchpad.dev/evolution/trunk/+export
+
+
+== Anonymous access ==
+
+To prevent spambot activity from becoming a problem, the download option is
+not available to anonymous visitors.
+
+    >>> anon_browser.open('http://translations.launchpad.dev/evolution/trunk/')
+    >>> anon_browser.getLink('download')
+    Traceback (most recent call last):
+    ...
+    LinkNotFoundError
+
+
+== Making the request ==
+
+The logged-in user sees a page that lets them select an export format, and
+request the download.
+
+    >>> print user_browser.title
+    Download : Translations...
+
+
+=== File format ===
+
+The request must specify a file format.
+
+    >>> user_browser.getControl('Format:').clear() 
+    >>> user_browser.getControl('Request Download').click()
+
+    >>> print_feedback_messages(user_browser.contents)
+    Please select a valid format for download.
+
+The most usual and most well-supported format is PO.
+
+    >>> user_browser.getControl('Format:').value = ['PO']
+    >>> user_browser.getControl('Request Download').click()
+
+    >>> print user_browser.url
+    http://translations.launchpad.dev/evolution/trunk
+
+    >>> print_feedback_messages(user_browser.contents)
+    Your request has been received. Expect to receive an email shortly.
+
+An alternative is MO.
+
+    >>> user_browser.getLink('download').click()
+    >>> user_browser.getControl('Format:').value = ['PO']
+    >>> user_browser.getControl('Request Download').click()
+    >>> print user_browser.url
+    http://translations.launchpad.dev/evolution/trunk
+
+    >>> print_feedback_messages(user_browser.contents)
+    Your request has been received. Expect to receive an email shortly.
+
+
+=== Nothing to export ===
+
+Where there are no translation files to be exported, the user is not offered
+the option to download any.
+
+    >>> user_browser.open('http://translations.launchpad.dev/bzr/trunk/+export')
+    >>> print_feedback_messages(user_browser.contents)
+    There are no translations to download in Bazaar trunk series.
+
+On +translate pages for products that do not have any translations, the action
+link for "Download translations" is hidden.
+
+    >>> user_browser.open('http://translations.launchpad.dev/bzr/')
+    >>> user_browser.getLink('download')
+    Traceback (most recent call last):
+    ...
+    LinkNotFoundError
+

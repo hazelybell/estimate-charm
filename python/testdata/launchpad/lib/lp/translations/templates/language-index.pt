@@ -1,0 +1,126 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  i18n:domain="launchpad"
+  metal:use-macro="view/macro:page/main_side"
+>
+<body>
+  <tal:side metal:fill-slot="side">
+    <div tal:replace="structure context/@@+global-actions" />
+    <div tal:replace="structure context/@@+portlet-details" />
+  </tal:side>
+
+
+  <tal:main metal:fill-slot="main">
+    <div class="yui-g">
+      <div class="yui-u first">
+        <div class="portlet">
+          <h2>Plural forms</h2>
+          <tal:has_pluralforms condition="context/pluralexpression">
+            <p>
+              <tal:language replace="view/language_name">Espa&ntilde;ol</tal:language> has
+              <tal:pluralforms replace="context/pluralforms">2</tal:pluralforms> plural forms:
+            </p>
+            <div tal:repeat="pluralform view/friendly_plural_forms">
+              <p>
+                Form <tal:index replace="pluralform/form">0</tal:index> for
+                <tal:examples replace="pluralform/examples">1, 2, 3...</tal:examples>
+              </p>
+            </div>
+            <p>
+              When translating into this language, you need to be able to
+              express plural forms effectively. The plural form expression tells
+              the translation system when to use each plural form. For example,
+              some languages express the idea of "zero objects" differently to
+              "one object" or "more than ten objects". In these cases, the
+              plural form expression captures the information needed to know
+              which form to use based on the number in question.
+            </p>
+          </tal:has_pluralforms>
+          <tal:has_not_pluralforms condition="not:context/pluralexpression">
+            <p class="helpwanted">
+              Unfortunately, Launchpad doesn't know the plural form
+              information for this language. If you know it, please open a
+              <a id='plural_question'
+                 tal:attributes="href view/add_question_url"
+                 >question</a>
+              with that information, so we can add it to Launchpad.
+            </p>
+          </tal:has_not_pluralforms>
+        </div>
+      </div>
+
+      <div class="yui-u">
+        <div tal:content="structure context/@@+portlet-top-contributors" />  
+      </div>
+    </div>
+
+    <div class="yui-g">
+      <div class="first yui-u">
+        <div class="portlet">
+          <h2>Translation teams</h2>
+          <p tal:condition="view/translation_teams">
+            The following people and teams are specifically identified as
+            being experts in
+            <tal:language replace="view/language_name">
+              Espa&ntilde;ol
+            </tal:language>:
+          </p>
+          <div tal:repeat="expert_info view/translation_teams">
+            <a tal:replace="structure expert_info/expert/fmt:link">Person</a>
+            (<tal:groups repeat="group expert_info/groups"
+               ><a tal:replace="structure group/fmt:link"
+                   >Translation group title</a
+                ><tal:comma
+                    condition="not:repeat/group/end">, </tal:comma
+                  ></tal:groups>)
+          </div>
+          <p tal:condition="not:view/translation_teams">
+            <tal:language replace="view/language_name">
+              Espa&ntilde;ol
+            </tal:language>
+            has no team or person registered as an expert.
+          </p>
+        </div>
+      </div>
+      <div class="yui-u">
+        <div class="portlet">
+          <h2>Countries</h2>
+          <tal:has_countries condition="context/countries">
+            <p>
+              <tal:language replace="view/language_name">
+                Espa&ntilde;ol
+              </tal:language>
+              is registered as being spoken in the following countries:
+            </p>
+            <ul>
+              <li tal:repeat="country context/countries"
+                tal:content="country/name">Spain</li>
+            </ul>
+          </tal:has_countries>
+          <tal:has_not_countries condition="not:context/countries">
+            <p class="helpwanted">
+              <tal:language replace="view/language_name">
+                Espa&ntilde;ol
+              </tal:language>
+              is not registered as being spoken in any country. If you know
+              about a country that officially speaks this language, please
+              open a
+              <a id='country_question' 
+                 tal:attributes="href view/add_question_url"
+                 >question</a>
+              with that information, so we can add it to Launchpad.
+            </p>
+          </tal:has_not_countries>
+        </div>
+      </div>
+
+    </div>
+
+  </tal:main>
+
+
+</body>
+</html>

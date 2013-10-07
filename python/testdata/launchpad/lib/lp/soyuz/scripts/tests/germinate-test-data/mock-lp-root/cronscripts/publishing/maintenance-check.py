@@ -1,0 +1,1 @@
+../../../../../../../../../cronscripts/publishing/maintenance-check.py

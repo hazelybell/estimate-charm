@@ -1,0 +1,22 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+<input size="19" type="text" class="yui2-calendar withtime"
+   tal:attributes="name view/name; id view/name;
+                   value view/formvalue;
+                   disabled view/disabled_flag" />
+<tal:display_zone condition="view/display_zone">
+  <span> in time zone: <tal:tz replace="view/time_zone_name" />
+  <a tal:condition="not: view/required_time_zone"
+     href="/people/+me/+editlocation">
+    <img src="/@@/edit"/>
+  </a></span>
+</tal:display_zone>
+<tal:daterange condition="view/daterange">
+  <span class="hidden"
+        tal:attributes="id string:${view/name}-daterange"
+        tal:content="view/daterange" />
+</tal:daterange>
+</tal:root>

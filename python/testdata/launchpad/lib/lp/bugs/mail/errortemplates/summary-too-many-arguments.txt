@@ -1,0 +1,5 @@
+Please enclose the new summary within quotes.
+
+For example:
+
+    summary "This is a new summary"

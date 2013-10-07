@@ -1,0 +1,13 @@
+Check that we can get a potlist for a source pacakge that has potemplates:
+
+  >>> print http(r"""
+  ... GET /ubuntu/hoary/+source/evolution/+potlist HTTP/1.1
+  ... Host: translations.launchpad.dev
+  ... """)
+  HTTP/1.1 200 Ok
+  Content-Length: ...
+  Content-Type: text/html;charset=utf-8
+  <BLANKLINE>
+  ...
+  ...Listing of FEW templates...
+  ...

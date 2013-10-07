@@ -1,0 +1,8 @@
+
+The Launchpad team named '%(dupename)s' was merged into the team
+named '%(person)s'. You can review the changes at:
+
+    https://launchpad.net/~%(person)s
+
+Regards,
+Launchpad

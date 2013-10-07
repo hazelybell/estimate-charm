@@ -1,0 +1,166 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<div id="membership" class="portlet">
+  <h2>
+    <span class="see-all">
+      <a tal:attributes="href context/menu:overview/members/fmt:url">
+        All members
+      </a>
+    </span>
+  </h2>
+
+  <div id="membership-summary"
+    style="margin-bottom: 1.5em;">
+    <div>
+      <div id="membership-counts"
+        tal:define="singular string:member; plural string:members">
+        <strong class="sprite team" id="approved-member-count">
+          <tal:active content="context/all_member_count" />
+        </strong>
+        <a tal:attributes="href string:${context/fmt:url/+members}#active"
+          tal:define="count context/all_member_count">active
+          <tal:plural
+            metal:use-macro="context/@@+base-layout-macros/plural-message"
+            /></a><tal:invited
+          define="count context/invited_member_count" condition="count">,
+            <strong id="invited-member-count">
+              <tal:invited_count content="count" />
+            </strong>
+            <a tal:attributes="href string:${context/fmt:url/+members}#invited"
+              >invited
+              <tal:plural
+                metal:use-macro="context/@@+base-layout-macros/plural-message"
+              /></a></tal:invited><tal:proposed
+          define="count context/proposed_member_count" condition="count">,
+            <strong id="proposed-member-count">
+              <tal:proposed_count content="count" />
+            </strong>
+            <a tal:attributes="href string:${context/fmt:url/+members}#proposed"
+              >proposed
+              <tal:plural
+                metal:use-macro="context/@@+base-layout-macros/plural-message"/></a>
+        </tal:proposed>
+      </div>
+    </div>
+
+    <p id="your-involvement" tal:condition="not: request/lp:person">
+      You must <a href="+login">log in</a>
+      to join or leave this team.
+    </p>
+
+    <div id="your-involvement" tal:condition="request/lp:person">
+      <tal:is-owner condition="view/userIsOwner">
+          <tal:team condition="context/teamowner/is_team">
+            You are a member of the team that owns this team.
+          </tal:team>
+          <tal:user condition="not: context/teamowner/is_team">
+            You are the owner of this team.
+          </tal:user>
+          <tal:absentee-owner condition="not: view/user_is_active_member">
+            You are not currently an active member.
+          </tal:absentee-owner>
+      </tal:is-owner>
+
+      <tal:not-owner condition="not: view/userIsOwner">
+        <tal:active-member tal:condition="view/user_is_active_member">
+          <tal:can-leave condition="view/user_can_request_to_leave">
+            You are a member of this team.
+          </tal:can-leave>
+        </tal:active-member>
+        <tal:not-active-member tal:condition="not: view/user_is_active_member">
+          <div tal:condition="not: view/userIsParticipant"
+               style="margin-top: 1.5em">
+            <a tal:define="link context/menu:overview/join"
+               tal:condition="link/enabled"
+               tal:replace="structure link/fmt:link"></a>
+            <br/>
+            You are not a member of this team.
+          </div>
+          <tal:participant condition="view/userIsParticipant">
+            You are an indirect member of this team:
+            <br />
+            <a tal:replace="structure view/user/fmt:link"
+              >Guilherme Salgado</a>
+            <tal:path repeat="team view/findUserPathToTeam">
+              &rarr;
+              <a tal:replace="structure team/fmt:link"
+                >Launchpad Developers</a>
+            </tal:path>
+          </tal:participant>
+        </tal:not-active-member>
+      </tal:not-owner>
+    </div>
+  </div>
+  <tal:can-view
+    condition="context/@@+restricted-membership/userCanViewMembership"
+    define="overview_menu context/menu:overview">
+  <ul class="horizontal">
+      <li
+          tal:define="link context/menu:overview/add_member;
+                      step_title view/add_member_step_title;"
+          tal:condition="link/enabled">
+        <script type="text/javascript"
+                tal:content="string:
+          LPJS.use('lp.registry.team', function(Y) {
+              Y.on('load',
+                  function(e) {
+                      Y.lp.registry.team.setup_add_member_handler(
+                          '${step_title}');
+                  },
+                  window);
+          });
+        "></script>
+        <span id="add-member-spinner"
+              class="hidden update-in-progress-message">
+          Saving...
+        </span>
+        <tal:add-member replace="structure link/fmt:link-icon" />
+      </li>
+      <li tal:define="link context/menu:overview/mugshots">
+        <tal:mugshots replace="structure link/fmt:link-icon" />
+      </li>
+  </ul>
+  <table>
+    <tr>
+      <td id="recently-approved"
+          style="padding-right: 1em"
+          tal:attributes="class view/recently_approved_hidden">
+        <h3>Latest members</h3>
+
+        <ul id="recently-approved-ul">
+          <li tal:repeat="person view/recently_approved_members"
+              tal:content="structure person/fmt:link" />
+        </ul>
+      </td>
+      <td id="recently-proposed"
+          tal:attributes="class view/recently_proposed_hidden">
+        <h3>Pending approval</h3>
+
+        <ul id="recently-proposed-ul">
+          <li tal:repeat="person view/recently_proposed_members"
+              tal:content="structure person/fmt:link" />
+        </ul>
+        <div style="margin-top: 3px;"
+          tal:condition="overview_menu/proposed_members/enabled"
+          tal:content="structure overview_menu/proposed_members/fmt:icon-link">
+        </div>
+      </td>
+    </tr>
+  </table>
+
+  <div id="recently-invited"
+        tal:attributes="class view/recently_invited_hidden">
+    <h3>Latest invited</h3>
+
+    <ul id="recently-invited-ul">
+      <li tal:repeat="person view/recently_invited_members"
+          tal:content="structure person/fmt:link" />
+    </ul>
+  </div>
+  </tal:can-view>
+</div>
+</tal:root>

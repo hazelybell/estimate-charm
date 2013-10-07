@@ -1,0 +1,4 @@
+Uses snakefood to generate dependency graphs of Launchpad, i.e. which packages
+use which other packages.
+
+To make the picture, run 'make', which will generate a nice SVG.

@@ -1,0 +1,14 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+<tr>
+  <td colspan="2">
+    <a
+      tal:replace="structure context/fmt:link"
+    >Team name</a>
+  </td>
+</tr>
+</tal:root>

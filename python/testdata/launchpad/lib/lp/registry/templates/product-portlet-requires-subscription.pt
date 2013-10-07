@@ -1,0 +1,58 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+<div id="portlet-requires-subscription"
+  style=""
+  tal:condition="context/commercial_subscription_is_due">
+  <h2>
+    Purchasing a commercial subscription is required
+  </h2>
+
+  <img style="float:left;" alt="Expiration warning"
+    src="/@@/expiration-large" />
+
+  <p tal:condition="context/commercial_subscription/date_expires | nothing">
+    <strong>Current subscription expires
+    <tal:date_expire
+     tal:replace="context/commercial_subscription/date_expires/fmt:displaydate"
+     />.</strong>
+    <span
+      tal:define="user_menu view/user/menu:overview"
+      tal:condition="context/qualifies_for_free_hosting">
+      <br />Purchase a commercial subscription from your
+      <a tal:replace="structure user_menu/manage_vouchers/fmt:link" />
+      page.
+    </span>
+  </p>
+
+  <tal:proprietary condition="not: context/qualifies_for_free_hosting">
+    <p>
+      The licensing of your project does not qualify for free
+      hosting You have two options to continue using Launchpad
+      for this project.
+    </p>
+
+    <ul class="bulleted" style="clear:left;">
+      <li tal:define="user_menu view/user/menu:overview">
+        Purchase a commercial subscription from your
+        <a tal:replace="structure user_menu/manage_vouchers/fmt:link" />
+        page.
+      </li>
+      <li>
+        Change the project's license to conform to
+        <a class="sprite maybe"
+          tal:define="config modules/lp.services.config/config"
+          tal:attributes="href config/commercial/licensing_policy_url"
+          >Launchpad's licensing policies</a>.
+      </li>
+    </ul>
+  </tal:proprietary>
+
+  <p>
+    <a href="mailto:commercial@launchpad.net">Contact us</a> if you
+    have any questions about licensing or commercial hosting.
+  </p>
+</div>
+</tal:root>

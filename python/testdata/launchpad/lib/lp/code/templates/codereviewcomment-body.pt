@@ -1,0 +1,24 @@
+<tal:root
+   xmlns:tal="http://xml.zope.org/namespaces/tal"
+   xmlns:metal="http://xml.zope.org/namespaces/metal"
+   omit-tag="">
+
+  <div tal:content="structure context/@@+comment-body-text" />
+  <tal:good-attachments repeat="attachment view/comment/display_attachments">
+    <div class="boardComment attachment">
+      <div class="boardCommentDetails filename"><a tal:content="attachment/filename" tal:attributes="href attachment/getURL"/></div>
+      <div class="boardCommentBody attachmentBody" tal:content="structure attachment/diff_text/fmt:diff"/>
+    </div>
+  </tal:good-attachments>
+
+  <div class="replyLink" itemprop="replyToUrl"
+    tal:define="link context/menu:context/reply"
+    tal:condition="link/enabled"
+    tal:attributes="url link/fmt:url">
+    <tal:reply
+      tal:replace="structure link/render">
+      Reply
+    </tal:reply>
+  </div>
+
+</tal:root>

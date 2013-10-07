@@ -1,0 +1,166 @@
+= Atom Feeds For Revisions =
+
+Atom feeds produce XML not HTML.  Therefore we must parse the output as XML
+using BeautifulStoneSoup instead of BeautifulSoup or the helper functions.
+
+    >>> from BeautifulSoup import BeautifulStoneSoup as BSS
+    >>> from lp.services.feeds.tests.helper import (
+    ...     parse_ids, parse_links, validate_feed)
+
+== Create some specific branches to use for this test ==
+
+    >>> login(ANONYMOUS)
+    >>> from lp.testing import time_counter
+    >>> from datetime import datetime, timedelta
+    >>> import pytz
+    >>> # Since the feed only shows revisions from the last 30 days, we
+    >>> # need recent revisions.
+    >>> initial_revision_date = datetime.now(pytz.UTC) - timedelta(days=10)
+    >>> date_generator = time_counter(
+    ...     initial_revision_date, timedelta(days=1))
+    >>> mike = factory.makePerson(
+    ...    name='mike', displayname='Mike Murphy', email='mike@example.com')
+    >>> mary = factory.makePerson(
+    ...    name='mary', displayname='Mary Murphy', email='mary@example.com')
+    >>> fubar = factory.makeProject(name='fubar', displayname="Fubar")
+    >>> fooix = factory.makeProduct(
+    ...     name='fooix', displayname="Fooix", project=fubar)
+    >>> fooey = factory.makeProduct(
+    ...     name='fooey', displayname="Fooey", project=fubar)
+    >>> fooix_branch = factory.makeProductBranch(
+    ...     name='feature-x', product=fooix, owner=mike)
+    >>> fooey_branch = factory.makeProductBranch(
+    ...     name='feature-x', product=fooey, owner=mike)
+
+    >>> from zope.security.proxy import removeSecurityProxy
+    >>> def makeRevision(author, rev_id, log_body):
+    ...     global factory, date_generator
+    ...     return factory.makeRevision(
+    ...         author=removeSecurityProxy(author).preferredemail.email,
+    ...         revision_date=date_generator.next(),
+    ...         rev_id=rev_id, log_body=log_body)
+    >>> ignored = fooey_branch.createBranchRevision(
+    ...     1, makeRevision(
+    ...         mike, 'rev1', 'This is a short log message'))
+    >>> ignored = fooix_branch.createBranchRevision(
+    ...     2, makeRevision(
+    ...         mike, 'rev2', 'This is a much longer log message that will'
+    ...         ' be truncated due to length of a single line.'))
+    >>> ignored = fooix_branch.createBranchRevision(
+    ...     None, makeRevision(
+    ...         mike, 'rev2.1', 'This is a two\nline log message.'))
+    >>> ignored = fooey_branch.createBranchRevision(
+    ...     3, makeRevision(
+    ...         mary, 'rev3', "Mary's revision"))
+
+    >>> ignored = login_person(mike)
+    >>> team = factory.makeTeam(mike, 'The M Team', name='m-team')
+    >>> ignored = team.addMember(mary, mike)
+    >>> from zope.component import getUtility
+    >>> from lp.code.interfaces.revision import IRevisionSet
+    >>> revision_set = getUtility(IRevisionSet)
+    >>> revision_set.updateRevisionCacheForBranch(fooey_branch)
+    >>> revision_set.updateRevisionCacheForBranch(fooix_branch)
+    >>> logout()
+
+
+== Feed for a person's revisions ==
+
+The feed for a person's revisions will show the most recent 25 revisions
+that have been committed by that person (or attributed to that person).
+
+    >>> anon_browser.open('http://feeds.launchpad.dev/~mike/revisions.atom')
+    >>> def validate_browser_feed(browser):
+    ...     validate_feed(
+    ...         browser.contents, browser.headers['content-type'], browser.url)
+    >>> validate_browser_feed(anon_browser)
+    No Errors
+    >>> BSS(anon_browser.contents).title.contents
+    [u'Latest Revisions by Mike Murphy']
+    >>> def print_parse_ids(browser):
+    ...     for id in parse_ids(browser.contents):
+    ...         print id
+
+Ignore the date associated with the id of 'mike' as this is the date created
+of the person, which will be different each time the test is run.
+
+    >>> print_parse_ids(anon_browser)
+    <id>tag:launchpad.net,...:/code/~mike</id>
+    <id>tag:launchpad.net,...:/revision/rev2.1</id>
+    <id>tag:launchpad.net,...:/revision/rev2</id>
+    <id>tag:launchpad.net,...:/revision/rev1</id>
+
+Ensure the self link is correct and there is only one.
+
+    >>> def print_parse_links(browser):
+    ...     for link in parse_links(browser.contents, rel="self"):
+    ...         print link
+    >>> print_parse_links(anon_browser)
+    <link rel="self" href="http://feeds.launchpad.dev/~mike/revisions.atom" />
+
+If we look at the feed for a team, we get revisions created by any member
+of that team.
+
+    >>> browser.open('http://feeds.launchpad.dev/~m-team/revisions.atom')
+    >>> validate_browser_feed(browser)
+    No Errors
+    >>> BSS(browser.contents).title.contents
+    [u'Latest Revisions by members of The M Team']
+    >>> print_parse_ids(browser)
+    <id>tag:launchpad.net,...:/code/~m-team</id>
+    <id>tag:launchpad.net,...:/revision/rev3</id>
+    <id>tag:launchpad.net,...:/revision/rev2.1</id>
+    <id>tag:launchpad.net,...:/revision/rev2</id>
+    <id>tag:launchpad.net,...:/revision/rev1</id>
+
+
+== Feed for a product's revisions ==
+
+The feed for a product's revisions will show the most recent 25 revisions
+that have been committed on branches for the product.
+
+    >>> anon_browser.open('http://feeds.launchpad.dev/fooix/revisions.atom')
+    >>> validate_browser_feed(anon_browser)
+    No Errors
+    >>> BSS(anon_browser.contents).title.contents
+    [u'Latest Revisions for Fooix']
+
+Ignore the date associated with the id of 'fooix' as this is the date created
+for the product, which will be different each time the test is run.
+
+    >>> print_parse_ids(anon_browser)
+    <id>tag:launchpad.net,...:/code/fooix</id>
+    <id>tag:launchpad.net,...:/revision/rev2.1</id>
+    <id>tag:launchpad.net,...:/revision/rev2</id>
+
+Ensure the self link points to the feed location and there is only one.
+
+    >>> print_parse_links(anon_browser)
+    <link rel="self" href="http://feeds.launchpad.dev/fooix/revisions.atom" />
+
+
+== Feed for a project's revisions ==
+
+A feed for a project will show the most recent 25 revisions across any
+branch for any product that is associated with the project.
+
+    >>> anon_browser.open('http://feeds.launchpad.dev/fubar/revisions.atom')
+    >>> validate_browser_feed(anon_browser)
+    No Errors
+    >>> BSS(anon_browser.contents).title.contents
+    [u'Latest Revisions for Fubar']
+
+Ignore the date associated with the id of 'fubar' as this is the date created
+of the project, which will be different each time the test is run.
+
+    >>> print_parse_ids(anon_browser)
+    <id>tag:launchpad.net,...:/code/fubar</id>
+    <id>tag:launchpad.net,...:/revision/rev3</id>
+    <id>tag:launchpad.net,...:/revision/rev2.1</id>
+    <id>tag:launchpad.net,...:/revision/rev2</id>
+    <id>tag:launchpad.net,...:/revision/rev1</id>
+
+Ensure the self link points to the feed location and there is only one.
+
+    >>> print_parse_links(anon_browser)
+    <link rel="self" href="http://feeds.launchpad.dev/fubar/revisions.atom" />

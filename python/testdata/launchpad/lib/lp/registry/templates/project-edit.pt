@@ -1,0 +1,40 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+  <head>
+    <tal:head-epilogue metal:fill-slot="head_epilogue">
+      <script type="text/javascript">
+          LPJS.use('registry.product-views',  function(Y) {
+              Y.on('domready', function() {
+                  var view = new Y.registry.views.EditProduct();
+                  view.render();
+              });
+          });
+      </script>
+    </tal:head-epilogue>
+  </head>
+  <body>
+    <div metal:fill-slot="main">
+      <div class="top-portlet"
+           metal:use-macro="context/@@launchpad_form/form">
+
+          <p metal:fill-slot="extra_info">
+            Avoid changing the Name,
+            because that will change the project group&#8217;s <abbr>URL</abbr>,
+            which will break all links from outside Launchpad.
+            Take care with your changes,
+            because they will be visible to other users after you submit them.
+          </p>
+
+      </div>
+
+      <tal:menu replace="structure view/@@+related-pages" />
+    </div>
+
+  </body>
+</html>

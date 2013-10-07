@@ -1,0 +1,54 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+<body>
+
+
+<div metal:fill-slot="main">
+
+      <h1>Signed code of conduct entry</h1>
+
+      <p>Signed <tal:date replace="context/datecreated/fmt:date" />
+      by <a tal:replace="structure context/owner/fmt:link" />.
+      </p>
+
+      <p><dfn>Status:</dfn>
+       <span tal:omit-tag="" tal:condition="context/active">Active</span>
+       <span tal:omit-tag="" tal:condition="not:context/active">Inactive</span>
+       <a tal:replace="structure context/menu:overview/activation/fmt:icon" />
+      </p>
+
+      <p><dfn>Created:</dfn>
+         <span
+           tal:attributes="title context/datecreated/fmt:datetime"
+           tal:content="context/datecreated/fmt:approximatedate">DATE</span></p>
+
+      <tal:block condition="context/recipient">
+         <p><dfn>Recipient:</dfn>
+         <span tal:replace="context/recipient/displayname">RECIPIENT</span></p>
+      </tal:block>
+
+      <tal:block condition="context/admincomment">
+          <p><dfn>Admin comment:</dfn></p>
+          <pre tal:content="context/admincomment">COMMENT</pre>
+      </tal:block>
+
+      <tal:block condition="context/signedcode">
+          <p><dfn>Signed code:</dfn></p>
+          <pre tal:content="context/signedcode">SIGNEDCODE</pre>
+      </tal:block>
+
+      <br />
+      <p>
+        <a tal:attributes="href context/menu:overview/adminconsole/url">Go
+          back to the admin console</a>.
+      </p>
+</div>
+
+</body>
+</html>

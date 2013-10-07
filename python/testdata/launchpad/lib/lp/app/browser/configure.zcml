@@ -1,0 +1,1138 @@
+<!-- Copyright 2009-2013 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:xmlrpc="http://namespaces.zope.org/xmlrpc"
+    xmlns:lp="http://namespaces.canonical.com/lp"
+    i18n_domain="launchpad">
+    <browser:navigation
+        module="lp.app.browser.launchpad"
+        classes="LaunchpadRootNavigation"
+        />
+    <browser:navigation
+        module="lp.app.browser.launchpad"
+        classes="LaunchpadRootNavigation"
+        layer="zope.publisher.interfaces.xmlrpc.IXMLRPCRequest"
+        />
+    <browser:page
+        for="*"
+        name="+base-layout-macros"
+        template="../templates/base-layout-macros.pt"
+        permission="zope.Public"
+        class="lp.app.browser.launchpad.Macro"
+        />
+    <browser:page
+        for="*"
+        name="+main-template-macros"
+        template="../templates/base-layout-macros.pt"
+        permission="zope.Public"
+        class="lp.app.browser.launchpad.Macro"
+        />
+    <browser:page
+        for="*"
+        name="launchpad_form"
+        layer="lp.layers.LaunchpadLayer"
+        permission="zope.Public"
+        template="../templates/launchpad-form.pt"
+        class="lp.app.browser.launchpad.Macro"
+        />
+    <browser:page
+        for="*"
+        name="launchpad_widget_macros"
+        layer="lp.layers.LaunchpadLayer"
+        permission="zope.Public"
+        template="../templates/launchpad-widget-macros.pt"
+        class="lp.app.browser.launchpad.Macro"
+        />
+    <browser:page
+        for="*"
+        name="+related-pages"
+        class="lp.app.browser.launchpad.NavigationMenuTabs"
+        template="../templates/navigationmenu-related-pages.pt"
+        permission="zope.Public"
+        />
+    <browser:page
+        for="*"
+        name="+global-actions"
+        class="lp.app.browser.launchpad.NavigationMenuTabs"
+        template="../templates/navigationmenu-actions.pt"
+        permission="zope.Public"
+        />
+
+    <!-- Hierarchy -->
+    <browser:page
+        for="zope.interface.Interface"
+        name="+hierarchy"
+        class="lp.app.browser.launchpad.Hierarchy"
+        template="../templates/launchpad-hierarchy.pt"
+        permission="zope.Public"
+        />
+
+    <browser:page
+        for="Exception"
+        name="+hierarchy"
+        class="lp.app.browser.launchpad.ExceptionHierarchy"
+        template="../templates/launchpad-hierarchy.pt"
+        permission="zope.Public"
+        />
+
+    <!-- batching -->
+    <browser:page
+        for="lp.services.webapp.interfaces.IBatchNavigator"
+        class="lp.services.webapp.batching.UpperBatchNavigationView"
+        name="+navigation-links-upper"
+        template="../templates/batchnavigator-navigation-links.pt"
+        permission="zope.Public" />
+
+    <browser:page
+        for="lp.services.webapp.interfaces.IBatchNavigator"
+        class="lp.services.webapp.batching.LowerBatchNavigationView"
+        name="+navigation-links-lower"
+        template="../templates/batchnavigator-navigation-links.pt"
+        permission="zope.Public" />
+
+    <!-- This is an index.html view on the root object.
+        The root object is not ever published itself.  Only its views are.
+        -->
+    <browser:page
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        class="lp.app.browser.root.LaunchpadRootIndexView"
+        name="index.html"
+        template="../templates/root-index.pt"
+        permission="zope.Public"
+        />
+
+    <browser:page
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        class="lp.registry.browser.featuredproject.FeaturedProjectsView"
+        name="+featuredprojects"
+        template="../templates/root-featuredprojects.pt"
+        permission="launchpad.Edit"
+        />
+
+    <browser:page
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        name="+search"
+        class="lp.app.browser.root.LaunchpadSearchView"
+        template="../templates/launchpad-search.pt"
+        permission="zope.Public" />
+
+    <browser:page
+        for="lp.app.browser.root.LaunchpadSearchView"
+        name="+search-form"
+        class="lp.app.browser.root.LaunchpadSearchFormView"
+        template="../templates/launchpad-search-form.pt"
+        permission="zope.Public" />
+
+    <browser:page
+        for="lp.app.browser.root.LaunchpadSearchView"
+        name="+primary-search-form"
+        class="lp.app.browser.root.LaunchpadPrimarySearchFormView"
+        template="../templates/launchpad-search-form.pt"
+        permission="zope.Public" />
+
+    <browser:page
+        for="*"
+        name="+check-links"
+        class="lp.app.browser.linkchecker.LinkCheckerAPI"
+        permission="zope.Public"/>
+
+    <!-- icing resources -->
+
+    <browser:page
+      for="lp.services.webapp.interfaces.ILaunchpadApplication"
+      name="+icing"
+      class="lp.app.browser.launchpad.IcingFolder"
+      attribute="__call__"
+      permission="zope.Public"
+      />
+
+    <facet facet="overview">
+      <!-- Common menus -->
+      <browser:menus
+          module="lp.app.browser.launchpad"
+          classes="LaunchpadRootFacets"
+          />
+
+      <browser:defaultView
+          for="lp.services.webapp.interfaces.ILink"
+          name="+link"
+          />
+
+      <browser:page
+          for="lp.services.webapp.interfaces.ILink"
+          name="+link"
+          class="lp.app.browser.launchpad.LinkView"
+          template="../templates/launchpad-link.pt"
+          permission="zope.Public"
+          />
+
+      <browser:page
+          for="lp.services.webapp.interfaces.ILink"
+          name="+inline"
+          class="lp.app.browser.launchpad.LinkView"
+          template="../templates/launchpad-inline-link.pt"
+          permission="zope.Public"
+          />
+
+      <browser:page
+          for="lp.services.webapp.interfaces.ILink"
+          name="+inline-icon"
+          class="lp.app.browser.launchpad.LinkView"
+          template="../templates/launchpad-inline-icon-link.pt"
+          permission="zope.Public"
+          />
+
+      <!-- Test page for soft timeouts. The permission checking is done in
+           the view class, only Launchpad developers have access to the
+           page -->
+      <browser:page
+          for="lp.services.webapp.interfaces.ILaunchpadRoot"
+          name="+soft-timeout"
+          class="lp.app.browser.launchpad.SoftTimeoutView"
+          attribute="__call__"
+          permission="zope.Public"
+          />
+
+      <browser:page
+          for="*"
+          name="+maintenancemessage"
+          template="../templates/launchpad-maintenance.pt"
+          class="lp.app.browser.launchpad.MaintenanceMessage"
+          permission="zope.Public"
+          />
+
+      <!-- Macros for the forbidden pages; used by launchpad-forbidden.pt,
+      initially. -->
+      <browser:page
+          for="*"
+          name="+forbidden-page-macros"
+          template="../templates/launchpad-forbidden-macros.pt"
+          permission="zope.Public"
+          class="lp.app.browser.launchpad.Macro"
+          />
+
+
+      <!-- The +basiclogin view is registered using Python code so that we can do
+           it only for development and tests. Below is what its declaration would
+           look like, and it's here so that someone grepping zcml files for its
+           name will find it.
+      <browser:page
+          for="lp.services.webapp.interfaces.ILaunchpadApplication"
+          class="lp.services.webapp.login.BasicLoginPage"
+          name="+basiclogin"
+          permission="zope.Public" />
+      -->
+
+      <class class="lp.services.webapp.login.BasicLoginPage">
+        <allow attributes="__call__" />
+        <allow interface="zope.publisher.interfaces.browser.IBrowserPublisher" />
+      </class>
+
+      <subscriber
+          for="zope.processlifetime.ProcessStarting"
+          handler="lp.services.webapp.login.register_basiclogin"
+          />
+
+      <!-- OpenID RP views -->
+      <browser:page
+          for="lp.services.webapp.interfaces.ILaunchpadApplication"
+          class="lp.services.webapp.login.OpenIDLogin"
+          permission="zope.Public"
+          name="+login"
+          />
+      <browser:page
+          for="lp.services.webapp.interfaces.ILaunchpadApplication"
+          class="lp.services.webapp.login.OpenIDCallbackView"
+          permission="zope.Public"
+          name="+openid-callback"
+          />
+
+      <browser:page
+          for="*"
+          attribute="logout"
+          class="lp.services.webapp.login.CookieLogoutPage"
+          permission="zope.Public"
+          name="+logout"
+          />
+
+      <browser:page
+          for="*"
+          name="login_status"
+          template="../templates/launchpad-loginstatus.pt"
+          class="lp.app.browser.launchpad.LoginStatus"
+          permission="zope.Public"
+          />
+    </facet>
+
+  <!-- Error pages -->
+  <!-- System Errors -->
+  <browser:page
+      for="zope.interface.common.interfaces.IException"
+      name="index.html"
+      template="../templates/oops.pt"
+      permission="zope.Public"
+      class="lp.services.webapp.error.SystemErrorView"
+      />
+
+  <!-- Protocol errors (eg. HTTP 405 or 415 errors) should be published
+       with a minimalist template. -->
+  <browser:page
+      for="lp.services.webapp.interfaces.ILaunchpadProtocolError"
+      class="lp.services.webapp.error.ProtocolErrorView"
+      template="../templates/protocol-error.pt"
+      name="index.html"
+      permission="zope.Public"
+      />
+
+  <!-- Unauthorized -->
+  <browser:page
+      for="zope.exceptions.IUnauthorized"
+      name="index.html"
+      permission="zope.Public"
+      class="lp.services.webapp.login.UnauthorizedView"
+      template="../templates/launchpad-forbidden.pt"
+      attribute="__call__"
+      />
+
+  <!-- NotFound -->
+  <browser:page
+      for="zope.publisher.interfaces.NotFound"
+      name="index.html"
+      permission="zope.Public"
+      template="../templates/launchpad-notfound.pt"
+      class="lp.services.webapp.error.NotFoundView"
+      />
+
+  <!-- Gone -->
+  <browser:page
+      for="lp.app.errors.GoneError"
+      name="index.html"
+      permission="zope.Public"
+      template="../templates/launchpad-gone.pt"
+      class="lp.services.webapp.error.GoneView"
+      />
+
+  <!-- RequestExpired -->
+  <browser:page
+      for="lp.services.database.interfaces.IRequestExpired"
+      name="index.html"
+      permission="zope.Public"
+      template="../templates/launchpad-requestexpired.pt"
+      class="lp.services.webapp.error.RequestExpiredView"
+      />
+
+  <!-- TimeoutError -->
+  <browser:page
+      for="lp.services.timeout.TimeoutError"
+      name="index.html"
+      permission="zope.Public"
+      template="../templates/launchpad-requestexpired.pt"
+      class="lp.services.webapp.error.RequestExpiredView"
+      />
+
+  <!-- UnexpectedFormData -->
+  <browser:page
+      for="lp.app.errors.UnexpectedFormData"
+      name="index.html"
+      permission="zope.Public"
+      template="../templates/launchpad-unexpectedformdata.pt"
+      class="lp.services.webapp.error.UnexpectedFormDataView"
+      />
+
+  <!-- OffsiteFormPostError -->
+  <browser:page
+      for="lp.services.webapp.interfaces.OffsiteFormPostError"
+      name="index.html"
+      permission="zope.Public"
+      template="../templates/launchpad-unexpectedformdata.pt"
+      class="lp.services.webapp.error.UnexpectedFormDataView"
+      />
+
+  <!-- NoReferrerError -->
+  <browser:page
+      for="lp.services.webapp.interfaces.NoReferrerError"
+      name="index.html"
+      permission="zope.Public"
+      template="../templates/launchpad-noreferrer.pt"
+      class="lp.services.webapp.error.NoReferrerErrorView"
+      />
+
+  <!-- DeliveryFailure -->
+  <browser:page
+      for="openid.yadis.discover.DiscoveryFailure"
+      name="index.html"
+      permission="zope.Public"
+      template="../templates/launchpad-discoveryfailure.pt"
+      class="lp.services.webapp.error.OpenIdDiscoveryFailureView"
+      />
+
+  <!-- DisconnectionError -->
+  <browser:page
+      for="storm.exceptions.DisconnectionError"
+      name="index.html"
+      permission="zope.Public"
+      template="../templates/launchpad-databaseunavailable.pt"
+      class="lp.services.webapp.error.DisconnectionErrorView"
+      />
+
+  <!-- OperationalError -->
+  <browser:page
+      for="storm.exceptions.OperationalError"
+      name="index.html"
+      permission="zope.Public"
+      template="../templates/launchpad-databaseunavailable.pt"
+      class="lp.services.webapp.error.OperationalErrorView"
+      />
+
+  <!-- UnsafeFormGetSubmissionError -->
+  <browser:page
+      for="lp.services.webapp.interfaces.UnsafeFormGetSubmissionError"
+      name="index.html"
+      permission="zope.Public"
+      template="../templates/launchpad-unexpectedformdata.pt"
+      class="lp.services.webapp.error.UnexpectedFormDataView"
+      />
+
+  <!-- InvalidBatchSizeError -->
+  <browser:page
+      for="lazr.batchnavigator.interfaces.InvalidBatchSizeError"
+      name="index.html"
+      permission="zope.Public"
+      template="../templates/launchpad-invalidbatchsize.pt"
+      class="lp.services.webapp.error.InvalidBatchSizeView"
+      />
+
+  <!-- TranslationUnavailable -->
+  <browser:page
+      for="lp.app.errors.TranslationUnavailable"
+      name="index.html"
+      permission="zope.Public"
+      template="../templates/launchpad-translationunavailable.pt"
+      class="lp.services.webapp.error.TranslationUnavailableView"
+      />
+
+  <!-- Vocabularies -->
+  <browser:page
+    for="*"
+    permission="zope.Public"
+    class="lp.app.browser.vocabulary.HugeVocabularyJSONView"
+    name="+huge-vocabulary"
+    />
+
+  <adapter
+    factory="lp.app.browser.vocabulary.DefaultPickerEntrySourceAdapter"
+    />
+
+  <adapter
+    factory="lp.app.browser.vocabulary.PersonPickerEntrySourceAdapter"
+    />
+
+  <adapter
+    factory="lp.app.browser.vocabulary.BranchPickerEntrySourceAdapter"
+    />
+
+  <adapter
+    factory="lp.app.browser.vocabulary.SourcePackageNamePickerEntrySourceAdapter"
+    />
+
+  <adapter
+    factory="lp.app.browser.vocabulary.DistributionSourcePackagePickerEntrySourceAdapter"
+    />
+
+  <adapter
+    factory="lp.app.browser.vocabulary.ProductPickerEntrySourceAdapter"
+    />
+
+  <adapter
+    factory="lp.app.browser.vocabulary.ProjectGroupPickerEntrySourceAdapter"
+    />
+
+  <adapter
+    factory="lp.app.browser.vocabulary.DistributionPickerEntrySourceAdapter"
+    />
+
+  <adapter
+    factory="lp.app.browser.vocabulary.ArchivePickerEntrySourceAdapter"
+    />
+
+  <!-- TALES namespaces. -->
+
+  <!-- TALES lp: namespace (should be deprecated) -->
+  <adapter
+      for="zope.publisher.interfaces.IApplicationRequest"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.RequestAPI"
+      name="lp"
+      />
+
+  <!-- TALES enum-value: namespace -->
+  <adapter
+      for="lazr.enum.BaseItem"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.EnumValueAPI"
+      name="enumvalue"
+      />
+
+  <!-- TALES menu: namespace -->
+  <adapter
+      for="*"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.MenuAPI"
+      name="menu"
+      />
+
+  <!-- TALES count: namespace -->
+  <adapter
+      for="*"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.CountAPI"
+      name="count"
+      />
+
+  <!-- TALES macro: namespace -->
+  <adapter
+      for="*"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.PageMacroDispatcher"
+      name="macro"
+      />
+
+  <!-- TALES htmlform: namespace -->
+  <adapter
+      for="zope.publisher.interfaces.browser.IBrowserApplicationRequest"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.HTMLFormAPI"
+      name="htmlform"
+      />
+
+  <!-- TALES image: namespace -->
+  <adapter
+      for="*"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.ObjectImageDisplayAPI"
+      name="image"
+      />
+
+  <adapter
+      for="lp.registry.interfaces.karma.IKarmaCategory"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.KarmaCategoryImageDisplayAPI"
+      name="image"
+      />
+
+  <adapter
+      for="lp.answers.interfaces.question.IQuestion"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.QuestionImageDisplayAPI"
+      name="image"
+      />
+
+  <adapter
+      for="lp.bugs.interfaces.bugtask.IBugTask"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.BugTaskImageDisplayAPI"
+      name="image"
+      />
+
+  <adapter
+      for="lp.bugs.browser.bugtask.BugTaskListingItem"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.BugTaskListingItemImageDisplayAPI"
+      name="image"
+      />
+
+  <adapter
+      for="lp.registry.interfaces.milestone.IMilestone"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.MilestoneImageDisplayAPI"
+      name="image"
+      />
+
+  <adapter
+      for="lp.soyuz.interfaces.binarypackagebuild.IBinaryPackageBuild"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.BuildImageDisplayAPI"
+      name="image"
+      />
+  <adapter
+      for="lp.code.interfaces.sourcepackagerecipebuild.ISourcePackageRecipeBuild"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.BuildImageDisplayAPI"
+      name="image"
+      />
+
+  <adapter
+      for="lp.soyuz.interfaces.archive.IArchive"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.ArchiveImageDisplayAPI"
+      name="image"
+      />
+
+  <adapter
+      for="lp.blueprints.interfaces.specification.ISpecification"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.SpecificationImageDisplayAPI"
+      name="image"
+      />
+
+  <!-- TALES badges: namespace -->
+
+  <adapter
+      for="*"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.BadgeDisplayAPI"
+      name="badges"
+      />
+
+  <adapter
+      for="*"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.CSSFormatter"
+      name="css"
+      />
+  <!-- TALES fmt: namespace -->
+
+  <adapter
+      for="lp.soyuz.interfaces.archive.IArchive"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.ArchiveFormatterAPI"
+      name="fmt"
+      />
+
+  <adapter
+      for="int"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.DBSchemaAPI"
+      name="lp"
+      />
+
+  <adapter
+      for="datetime.datetime"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.DateTimeFormatterAPI"
+      name="fmt"
+      />
+
+  <adapter
+      for="lp.registry.interfaces.irc.IIrcID"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.IRCNicknameFormatterAPI"
+      name="fmt"
+      />
+
+  <adapter
+      for="datetime.timedelta"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.DurationFormatterAPI"
+      name="fmt"
+      />
+
+  <adapter
+      for="int"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.NumberFormatterAPI"
+      name="fmt"
+      />
+
+  <adapter
+      for="long"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.NumberFormatterAPI"
+      name="fmt"
+      />
+
+  <adapter
+      for="float"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.NumberFormatterAPI"
+      name="fmt"
+      />
+
+  <adapter
+      for="types.NoneType"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.NoneFormatter"
+      name="fmt"
+      />
+
+  <adapter
+      for="*"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.ObjectFormatterAPI"
+      name="fmt"
+      />
+
+  <adapter
+      for="lp.registry.interfaces.person.IPerson"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.PersonFormatterAPI"
+      name="fmt"
+      />
+
+  <adapter
+      for="lp.registry.interfaces.person.ITeam"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.TeamFormatterAPI"
+      name="fmt"
+      />
+
+  <adapter
+      for="lp.registry.interfaces.product.IProduct"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.PillarFormatterAPI"
+      name="fmt"
+      />
+
+  <adapter
+      for="lp.registry.interfaces.projectgroup.IProjectGroup"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.PillarFormatterAPI"
+      name="fmt"
+      />
+
+  <adapter
+      for="lp.registry.interfaces.distribution.IDistribution"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.PillarFormatterAPI"
+      name="fmt"
+      />
+
+  <adapter
+      for="lp.registry.interfaces.distroseries.IDistroSeries"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.DistroSeriesFormatterAPI"
+      name="fmt"
+      />
+
+  <adapter
+      for="lp.bugs.interfaces.bug.IBug"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.BugFormatterAPI"
+      name="fmt"
+      />
+
+  <adapter
+      for="lp.code.interfaces.branch.IBranch"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.BranchFormatterAPI"
+      name="fmt"
+      />
+
+  <adapter
+      for="lp.bugs.interfaces.bugbranch.IBugBranch"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.BugBranchFormatterAPI"
+      name="fmt"
+      />
+
+  <adapter
+      for="lp.bugs.interfaces.bugtask.IBugTask"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.BugTaskFormatterAPI"
+      name="fmt"
+      />
+
+  <adapter
+      for="lp.code.interfaces.branchsubscription.IBranchSubscription"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.BranchSubscriptionFormatterAPI"
+      name="fmt"
+      />
+
+  <adapter
+      for="lp.code.interfaces.branchmergeproposal.IBranchMergeProposal"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.BranchMergeProposalFormatterAPI"
+      name="fmt"
+      />
+
+  <adapter
+      for="lp.code.interfaces.seriessourcepackagebranch.ISeriesSourcePackageBranch"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.SeriesSourcePackageBranchFormatter"
+      name="fmt"
+      />
+
+  <adapter
+      for="lp.code.interfaces.codeimport.ICodeImport"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.CodeImportFormatterAPI"
+      name="fmt"
+      />
+
+  <adapter
+      for="lp.buildmaster.interfaces.packagebuild.IPackageBuild"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.PackageBuildFormatterAPI"
+      name="fmt"
+      />
+
+  <adapter
+      for="lp.code.interfaces.codeimportmachine.ICodeImportMachine"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.CodeImportMachineFormatterAPI"
+      name="fmt"
+      />
+
+  <adapter
+      for="lp.registry.interfaces.milestone.IMilestone"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.MilestoneFormatterAPI"
+      name="fmt"
+      />
+  <adapter
+      for="lp.registry.interfaces.productrelease.IProductRelease"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.ProductReleaseFormatterAPI"
+      name="fmt"
+      />
+  <adapter
+      for="lp.registry.interfaces.productrelease.IProductReleaseFile"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.ProductReleaseFileFormatterAPI"
+      name="fmt"
+      />
+  <adapter
+      for="lp.registry.interfaces.productseries.IProductSeries"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.ProductSeriesFormatterAPI"
+      name="fmt"
+      />
+  <adapter
+      for="lp.answers.interfaces.question.IQuestion"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.QuestionFormatterAPI"
+      name="fmt"
+      />
+  <adapter
+      for="lp.code.interfaces.sourcepackagerecipe.ISourcePackageRecipe"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.SourcePackageRecipeFormatterAPI"
+      name="fmt"
+      />
+  <adapter
+      for="lp.blueprints.interfaces.specification.ISpecification"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.SpecificationFormatterAPI"
+      name="fmt"
+      />
+  <adapter
+      for="lp.blueprints.interfaces.specificationbranch.ISpecificationBranch"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.SpecificationBranchFormatterAPI"
+      name="fmt"
+      />
+  <adapter
+      for="lp.code.interfaces.codereviewcomment.ICodeReviewComment"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.CodeReviewCommentFormatterAPI"
+      name="fmt"
+      />
+  <adapter
+      for="lp.soyuz.interfaces.sourcepackagerelease.ISourcePackageRelease"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.SourcePackageReleaseFormatterAPI"
+      name="fmt"
+      />
+  <adapter
+      for="lp.bugs.interfaces.bugtracker.IBugTracker"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.BugTrackerFormatterAPI"
+      name="fmt"
+      />
+  <adapter
+      for="lp.bugs.interfaces.bugwatch.IBugWatch"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.BugWatchFormatterAPI"
+      name="fmt"
+      />
+  <adapter
+      for="lp.services.webapp.interfaces.ILink"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.LinkFormatterAPI"
+      name="fmt"
+      />
+  <adapter
+      for="lp.code.interfaces.revision.IRevisionAuthor"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.RevisionAuthorFormatterAPI"
+      name="fmt"
+      />
+  <adapter
+      for="lp.translations.interfaces.translationgroup.ITranslationGroup"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.TranslationGroupFormatterAPI"
+      name="fmt"
+      />
+  <adapter
+      for="lp.services.worlddata.interfaces.language.ILanguage"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.LanguageFormatterAPI"
+      name="fmt"
+      />
+  <adapter
+      for="lp.translations.interfaces.pofile.IPOFile"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.POFileFormatterAPI"
+      name="fmt"
+      />
+  <adapter
+      for="lp.soyuz.interfaces.packagediff.IPackageDiff"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.PackageDiffFormatterAPI"
+      name="fmt"
+      />
+  <adapter
+      for="*"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.tales.PermissionRequiredQuery"
+      name="required"
+      />
+
+  <!-- TALES watermark: namespace -->
+  <adapter
+      for="*"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.watermark.WatermarkTalesAdapter"
+      name="watermark"
+      />
+
+  <!-- TALES fmt: namespace for strings -->
+  <adapter
+      for="basestring"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.stringformatter.FormattersAPI"
+      name="fmt"
+      />
+
+  <!-- TALES query: namespace -->
+  <adapter
+      for="zope.formlib.interfaces.IWidget"
+      provides="zope.traversing.interfaces.IPathAdapter"
+      factory="lp.app.browser.launchpadform.WidgetHasStructuredDoc"
+      name="query"
+      />
+
+  <!-- Marketing Microsite Home Page -->
+  <browser:page
+      name="+tour"
+      for="lp.services.webapp.interfaces.ILaunchpadApplication"
+      class="lp.app.browser.launchpad.LaunchpadTourFolder"
+      attribute="__call__"
+      permission="zope.Public"
+      />
+  <browser:renamed-page
+      for="lp.services.webapp.interfaces.ILaunchpadApplication"
+      name="+about"
+      new_name="+tour/index"
+      rootsite="mainsite"
+      />
+
+  <!-- Marketing material for Answers. -->
+  <browser:renamed-page
+      for="lp.services.webapp.interfaces.ILaunchpadApplication"
+      layer="lp.answers.publisher.AnswersLayer"
+      name="+about"
+      new_name="+tour/community-support"
+      rootsite="mainsite"
+      />
+  <browser:renamed-page
+      for="lp.services.webapp.interfaces.ILaunchpadApplication"
+      layer="lp.answers.publisher.AnswersLayer"
+      name="+faq"
+      new_name="+tour/community-support"
+      rootsite="mainsite"
+      />
+  <browser:renamed-page
+      name="+tour"
+      new_name="+tour/community-support"
+      rootsite="mainsite"
+      for="lp.services.webapp.interfaces.ILaunchpadApplication"
+      layer="lp.answers.publisher.AnswersLayer"
+      />
+
+  <!-- Marketing material for Blueprints. -->
+  <browser:renamed-page
+      for="lp.services.webapp.interfaces.ILaunchpadApplication"
+      layer="lp.blueprints.publisher.BlueprintsLayer"
+      name="+about"
+      new_name="+tour/feature-tracking"
+      rootsite="mainsite"
+      />
+  <browser:renamed-page
+      for="lp.services.webapp.interfaces.ILaunchpadApplication"
+      layer="lp.blueprints.publisher.BlueprintsLayer"
+      name="+faq"
+      new_name="+tour/feature-tracking"
+      rootsite="mainsite"
+      />
+  <browser:renamed-page
+      name="+tour"
+      for="lp.services.webapp.interfaces.ILaunchpadApplication"
+      layer="lp.blueprints.publisher.BlueprintsLayer"
+      new_name="+tour/feature-tracking"
+      rootsite="mainsite"
+      />
+
+  <!-- Marketing material for Bugs. -->
+  <browser:renamed-page
+      for="lp.services.webapp.interfaces.ILaunchpadApplication"
+      layer="lp.bugs.publisher.BugsLayer"
+      name="+about"
+      new_name="+tour/bugs"
+      rootsite="mainsite"
+      />
+  <browser:renamed-page
+      for="lp.services.webapp.interfaces.ILaunchpadApplication"
+      layer="lp.bugs.publisher.BugsLayer"
+      name="+faq"
+      new_name="+tour/bugs"
+      rootsite="mainsite"
+      />
+  <browser:renamed-page
+      name="+tour"
+      for="lp.services.webapp.interfaces.ILaunchpadApplication"
+      layer="lp.bugs.publisher.BugsLayer"
+      new_name="+tour/bugs"
+      rootsite="mainsite"
+      />
+
+  <!-- Marketing material for Code. -->
+  <browser:renamed-page
+      for="lp.services.webapp.interfaces.ILaunchpadApplication"
+      layer="lp.code.publisher.CodeLayer"
+      name="+about"
+      new_name="+tour/branch-hosting-tracking"
+      rootsite="mainsite"
+      />
+  <browser:renamed-page
+      for="lp.services.webapp.interfaces.ILaunchpadApplication"
+      layer="lp.code.publisher.CodeLayer"
+      name="+faq"
+      new_name="+tour/branch-hosting-tracking"
+      rootsite="mainsite"
+      />
+  <browser:renamed-page
+      name="+tour"
+      for="lp.services.webapp.interfaces.ILaunchpadApplication"
+      layer="lp.code.publisher.CodeLayer"
+      new_name="+tour/branch-hosting-tracking"
+      rootsite="mainsite"
+      />
+
+
+  <!-- Marketing material for Translations. -->
+  <browser:renamed-page
+      for="lp.services.webapp.interfaces.ILaunchpadApplication"
+      layer="lp.translations.publisher.TranslationsLayer"
+      name="+about"
+      new_name="+tour/translation"
+      rootsite="mainsite"
+      />
+  <browser:renamed-page
+      for="lp.services.webapp.interfaces.ILaunchpadApplication"
+      layer="lp.translations.publisher.TranslationsLayer"
+      name="+faq"
+      new_name="+tour/translation"
+      rootsite="mainsite"
+      />
+  <browser:renamed-page
+      name="+tour"
+      for="lp.services.webapp.interfaces.ILaunchpadApplication"
+      layer="lp.translations.publisher.TranslationsLayer"
+      new_name="+tour/translation"
+      rootsite="mainsite"
+      />
+
+  <adapter
+      factory="lp.app.browser.tales.LaunchpadLayerToMainTemplateAdapter"
+      />
+
+  <adapter
+      factory="lp.app.browser.webservice.reference_xhtml_representation"/>
+  <adapter
+      factory="lp.app.browser.webservice.text_xhtml_representation"/>
+
+    <!-- The following directives set up root front pages for the different
+         virtual host layers.  The directives come in pairs.
+         The separate registration for the resources namespace (@@) is needed
+         because otherwise the lookup for /@@/ will fail because the
+         layer-specific defaultView directive also registers the
+         default view name as an unnamed adapter.
+         -->
+      -->
+    <!-- virtual host: blueprints -->
+    <browser:defaultView
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        name="specs"
+        layer="lp.blueprints.publisher.BlueprintsLayer"
+        />
+    <browser:page
+        name=""
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        class="lp.app.browser.launchpad.LaunchpadImageFolder"
+        permission="zope.Public"
+        layer="lp.blueprints.publisher.BlueprintsLayer"
+        />
+
+    <!-- virtual host: code -->
+    <browser:defaultView
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        name="+code"
+        layer="lp.code.publisher.CodeLayer"
+        />
+    <browser:page
+        name=""
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        class="lp.app.browser.launchpad.LaunchpadImageFolder"
+        permission="zope.Public"
+        layer="lp.code.publisher.CodeLayer"
+        />
+
+    <!-- virtual host: translations -->
+    <browser:defaultView
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        name="translations"
+        layer="lp.translations.publisher.TranslationsLayer"
+        />
+    <browser:page
+        name=""
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        class="lp.app.browser.launchpad.LaunchpadImageFolder"
+        permission="zope.Public"
+        layer="lp.translations.publisher.TranslationsLayer"
+        />
+
+    <!-- virtual host: bugs -->
+    <browser:defaultView
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        name="bugs"
+        layer="lp.bugs.publisher.BugsLayer"
+        />
+    <browser:page
+        name=""
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        class="lp.app.browser.launchpad.LaunchpadImageFolder"
+        permission="zope.Public"
+        layer="lp.bugs.publisher.BugsLayer"
+        />
+
+    <!-- virtual host: answers -->
+    <browser:defaultView
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        name="questions"
+        layer="lp.answers.publisher.AnswersLayer"
+        />
+    <browser:page
+        name=""
+        for="lp.services.webapp.interfaces.ILaunchpadRoot"
+        class="lp.app.browser.launchpad.LaunchpadImageFolder"
+        permission="zope.Public"
+        layer="lp.answers.publisher.AnswersLayer"
+        />
+
+</configure>

@@ -1,0 +1,38 @@
+<tal:root
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  omit-tag="">
+
+  <tr>
+     <td>
+       <span tal:replace="context/status/title">PUBLISHED</span>
+       in
+       <a tal:content="context/meta_sourcepackage/distroseries/name"
+          tal:attributes="href context/meta_sourcepackage/fmt:url">
+         warty
+       </a>-<span tal:replace="context/pocket/title/fmt:lower">RELEASE</span>
+       <tal:block replace="nothing">
+         in the <span tal:replace="context/component/name">main</span>
+         component
+       </tal:block>
+       <span tal:condition="context/status/enumvalue:PENDING">
+         since
+         <span
+           tal:attributes="title view/date_last_changed/fmt:datetime"
+           tal:content="view/date_last_changed/fmt:datetime" />
+       </span>
+       <span
+         tal:condition="not: context/status/enumvalue:PENDING"
+         tal:attributes="title view/date_last_changed/fmt:datetime"
+         tal:content="view/date_last_changed/fmt:displaydate">
+         2005-09-16
+       </span>
+       <span tal:condition="view/wasDeleted">(Reason:
+         <tal:removal-comment tal:replace="view/removal_comment/fmt:shorten/60">
+           sample reason.
+         </tal:removal-comment>)
+       </span>
+     </td>
+  </tr>
+</tal:root>

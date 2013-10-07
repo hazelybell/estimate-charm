@@ -1,0 +1,23 @@
+Format: 1.7
+Date: Thu, 16 Feb 2006 15:34:09 +0000
+Source: bar
+Binary: bar
+Architecture: source i386 powerpc
+Version: 1.0-1
+Distribution: breezy
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: Daniel Silverstone <daniel.silverstone@canonical.com>
+Description: 
+ bar        - Stuff for testing
+Changes: 
+ bar (1.0-1) breezy; urgency=low
+ .
+   * Initial version
+Files: 
+ 5d533778b698edc1a122098a98c8490e 512 devel optional bar_1.0-1.dsc
+ fc1464e5985b962a042d5354452f361d 164 devel optional bar_1.0.orig.tar.gz
+ 1e35b810764f140af9616de8274e6e73 537 devel optional bar_1.0-1.diff.gz
+ c8a42455a2cacde85c5ed24e44fc67aa 654 devel optional foo_1.0-1_i386.deb
+ 752acc630e717cc43c7c42a51ae71cde 644 devel optional foo_1.0-1_powerpc.deb
+

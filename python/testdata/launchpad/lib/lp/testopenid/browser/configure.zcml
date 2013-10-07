@@ -1,0 +1,82 @@
+<!-- Copyright 2009 Canonical Ltd.  This software is licensed under the
+     GNU Affero General Public License version 3 (see the file LICENSE).
+-->
+
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="launchpad">
+
+    <browser:navigation
+        module=".server"
+        classes="TestOpenIDApplicationNavigation"
+        />
+
+    <adapter
+        provides="lp.services.webapp.interfaces.ICanonicalUrlData"
+        for="..interfaces.server.ITestOpenIDApplication"
+        factory=".server.TestOpenIDRootUrlData"
+        />
+
+    <browser:defaultView
+        for="..interfaces.server.ITestOpenIDApplication"
+        name="+index"
+        />
+
+    <browser:page
+        for="..interfaces.server.ITestOpenIDApplication"
+        class=".server.TestOpenIDView"
+        permission="zope.Public"
+        name="+openid"
+        />
+    <browser:page
+        for="..interfaces.server.ITestOpenIDApplication"
+        class=".server.TestOpenIDIndexView"
+        permission="zope.Public"
+        name="+index"
+        />
+    <browser:page
+        for="..interfaces.server.ITestOpenIDApplication"
+        class=".server.TestOpenIDLoginView"
+        permission="zope.Public"
+        name="+auth"
+        />
+
+    <browser:url
+        for="..interfaces.server.ITestOpenIDPersistentIdentity"
+        path_expression="string:${openid_identifier}"
+        parent_utility="..interfaces.server.ITestOpenIDApplication"
+        />
+
+    <browser:defaultView
+        for="..interfaces.server.ITestOpenIDPersistentIdentity"
+        name="+index"
+        />
+
+    <browser:page
+        for="..interfaces.server.ITestOpenIDPersistentIdentity"
+        name="+index"
+        template="../templates/persistentidentity-index.pt"
+        permission="zope.Public"
+        class=".server.PersistentIdentityView"
+        />
+
+    <browser:page
+        name=""
+        for="..interfaces.server.ITestOpenIDApplication"
+        class="lp.app.browser.launchpad.LaunchpadImageFolder"
+        permission="zope.Public"
+        layer="lp.layers.TestOpenIDLayer"
+        />
+
+    <!-- A simple view used by the page tests. -->
+    <browser:page
+        for="..interfaces.server.ITestOpenIDApplication"
+        name="+echo"
+        permission="zope.Public"
+        class="..testing.helpers.EchoView"
+        layer="lp.layers.PageTestLayer"
+        />
+
+</configure>

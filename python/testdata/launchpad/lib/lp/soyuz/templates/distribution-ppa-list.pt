@@ -1,0 +1,130 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="view/macro:page/main_only"
+  i18n:domain="launchpad"
+>
+<body>
+
+  <div metal:fill-slot="main"
+       tal:define="batch view/search_results;
+                   no_search python:not (view.name_filter or batch);
+                   empty_results python:view.name_filter and not batch">
+
+    <div id="ppa_search" class="top-portlet">
+
+      <p>Personal Package Archives (PPA) allow you to upload
+         Ubuntu source packages to be built and published as an
+         apt repository by Launchpad. You can find out more about
+         PPAs and how to use them in our
+         <a href="https://help.launchpad.net/Packaging/PPA"
+          >help page</a>.</p>
+
+      <form name="ppa_search" action="" method="GET"
+            tal:condition="view/distribution_has_ppas">
+        <p>Search user-contributed software packages published in any
+           <tal:distribution replace="context/title"
+            >Ubuntu</tal:distribution> PPA.</p>
+        <table>
+          <tbody>
+            <tr>
+              <th><label for="name">Show PPAs matching:</label></th>
+              <td><input id="name" type="text" name="name_filter"
+                         style="width: 95%;"
+                         tal:attributes="value view/name_filter" /></td>
+              <td><input type="submit" value="Search" /></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td><input id="inactive" type="checkbox" name="show_inactive"
+                  tal:attributes="checked view/show_inactive" />
+                <label for="inactive">
+                  Including descriptions of empty PPAs
+                </label></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </form>
+    </div> <!-- ppa_search -->
+
+    <div class="yui-g" tal:condition="no_search">
+
+      <div class="yui-u first">
+
+        <div id="ppa_latest_uploads" class="portlet"
+             tal:condition="view/distribution_has_ppas">
+          <h2>Latest uploads</h2>
+          <ul class="source package">
+            <li class="sprite package-source"
+                tal:repeat="pub view/latest_ppa_source_publications">
+              <tal:source_title replace="pub/displayname">
+                mozilla-firefox - 1.0 in warty
+              </tal:source_title> in
+              <a tal:replace="structure pub/archive/fmt:link"
+                >PPA for Celso Providelo </a>
+              <tal:datepublished replace="pub/age/fmt:approximateduration">
+                3 minutes</tal:datepublished> ago
+           </li>
+          </ul>
+        </div> <!-- ppa_latest_uploads -->
+
+        <div id="ppa_most_active" class="portlet"
+             tal:condition="view/distribution_has_ppas">
+          <h2>Most active</h2>
+          <p>PPAs with the highest number of uploads in the
+             last 7 days.</p>
+          <table>
+            <tr tal:repeat="most_active view/most_active_ppas">
+              <td>
+                <a tal:replace="structure most_active/archive/fmt:link"
+                  >PPA for Celso Providelo</a>
+              </td>
+              <td align="right">
+                <tal:sources replace="most_active/uploads" /> uploads
+              </td>
+            </tr>
+          </table>
+        </div> <!-- ppa_most_active -->
+
+      </div> <!-- yui-u -->
+
+      <div id="supports_virtualized_architectures" class="yui-u">
+        <div tal:replace="structure context/@@+portlet-ppa-architectures" />
+      </div> <!-- supports-virtualized-archs -->
+
+    </div> <!-- yui-g -->
+
+    <div id="ppa_list" tal:condition="batch">
+      <tal:navigation_top
+           replace="structure view/batchnav/@@+navigation-links-upper" />
+      <table class="listing sortable">
+        <thead>
+          <tr>
+            <th>PPA name</th>
+            <th>Description</th>
+            <th>Sources</th>
+            <th>Binaries</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr tal:repeat="ppa batch"
+              tal:replace="structure ppa/@@+ppa-row" />
+        </tbody>
+      </table>
+      <tal:navigation_bottom
+           replace="structure view/batchnav/@@+navigation-links-lower" />
+    </div><!-- ppa_list -->
+
+    <div id="empty_results" style="padding-top: 1em;"
+         tal:condition="empty_results">
+      <p>No matching Personal Package Archive
+         for '<tal:name_filter replace="view/name_filter" />'.</p>
+    </div> <!-- empty_results -->
+
+  </div> <!-- main -->
+
+</body>
+</html>

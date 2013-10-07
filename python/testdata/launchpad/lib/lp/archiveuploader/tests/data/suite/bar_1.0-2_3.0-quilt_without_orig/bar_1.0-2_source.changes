@@ -1,0 +1,25 @@
+Format: 1.8
+Date: Sun, 01 Nov 2009 10:49:22 +1100
+Source: bar
+Binary: bar
+Architecture: source
+Version: 1.0-2
+Distribution: breezy
+Urgency: low
+Maintainer: Launchpad team <launchpad@lists.canonical.com>
+Changed-By: William Grant <me@williamgrant.id.au>
+Description: 
+ bar        - Stuff for testing
+Changes: 
+ bar (1.0-2) breezy; urgency=low
+ .
+   * Another version
+Checksums-Sha1: 
+ d9ccd09135965a759bd741fba1f5223a0314aac8 1115 bar_1.0-2.dsc
+ 62776c07df0412798956af8b625a9f1744c8f0fb 807 bar_1.0-2.debian.tar.bz2
+Checksums-Sha256: 
+ 53ec1fb4c1671e203c433db570a667750bf4a503e4556ac2c9600389e119744a 1115 bar_1.0-2.dsc
+ a2a4a82e6f6b212e7de11df327fea18bf2b8e846d221e417b0a479d0f8bf9d79 807 bar_1.0-2.debian.tar.bz2
+Files: 
+ 014288c2cdeca7a9a5e3201aca044c3b 1115 devel optional bar_1.0-2.dsc
+ 8b17b1469943483df4d5093955553992 807 devel optional bar_1.0-2.debian.tar.bz2

@@ -1,0 +1,244 @@
+#!/usr/bin/env python2.6
+# -*- mode: python -*-
+
+from base64 import standard_b64encode
+from optparse import OptionParser
+import sys
+
+from lxml import etree
+
+
+NS = "https://launchpad.net/xmlns/2006/bugs"
+
+
+def norm_text(elem):
+    if elem is not None:
+        if elem.text is None:
+            elem.text = u""
+        else:
+            elem.text = elem.text.strip()
+
+
+def truncate(text, message=None):
+    lines = text.splitlines()
+    if len(lines) >= 30:
+        if message is None:
+            message = "[Truncated]"
+        else:
+            message = "[Truncated; %s]" % message
+        return u"%s...\n\n%s" % (
+            "\n".join(lines[:30]).strip(), message)
+    else:
+        return text
+
+
+def problem(message):
+    sys.stderr.write("{0}\n".format(message))
+
+
+def problem_detail(message):
+    sys.stderr.write("  {0}\n".format(message))
+
+
+def problem_resolution(message):
+    sys.stderr.write("  --> {0}\n".format(message))
+
+
+def problem_resolved():
+    sys.stderr.write("\n")
+
+
+def massage(root, project_name, fix_nickname, tag_nickname):
+    """Fix problems in the bug import XML tree.
+
+    This includes:
+
+    - Adding a tags element if one does not exist,
+
+    - Fixing up the bug nickname, adding the existing nickname as a tag,
+
+    - Resolving duplicates to a bug that is not itself a duplicate
+      (i.e. remove chains of duplicates),
+
+    - Fixing up the description, including truncating it if it's too long,
+
+    - Fixing up the first comment, including truncating it if it's too long,
+
+    - Normalizing whitespace.
+
+    """
+    # Resolve duplicates as far as they'll go.
+    duplicates = dict(
+        (node.getparent().get("id"), node.text)
+        for node in root.findall('{%s}bug/{%s}duplicateof' % (NS, NS))
+        if node.text is not None and node.text.isdigit())
+
+    def resolve(bug_id):
+        dupe_of = duplicates.get(bug_id)
+        return (bug_id if dupe_of is None else resolve(dupe_of))
+
+    duplicates = dict(
+        (bug_id, resolve(bug_id)) for bug_id in duplicates)
+
+    # Scan the tree, fixing up issues.
+    for bug in root.findall('{%s}bug' % NS):
+        # Get or create the tags element.
+        tags = bug.find('{%s}tags' % NS)
+        if tags is None:
+            tags = etree.SubElement(bug, '{%s}tags' % NS)
+
+        nickname = bug.find('{%s}nickname' % NS)
+        if nickname is None:
+            # Add an empty nickname to be filled in later.
+            nickname = etree.SubElement(bug, '{%s}nickname' % NS)
+        elif tag_nickname:
+            # Add the original nickname as a tag.
+            etree.SubElement(tags, '{%s}tag' % NS).text = nickname.text
+
+        # Change the nickname.
+        if nickname.text is None or fix_nickname:
+            nickname.text = u"%s-%s" % (project_name, bug.get('id'))
+
+        # Resolve duplicateof, if it exists.
+        if bug.get("id") in duplicates:
+            bug.find("{%s}duplicateof" % NS).text = duplicates[bug.get("id")]
+
+        # Get the first comment and its text. We'll need these later.
+        first_comment = bug.find('{%s}comment' % NS)
+        first_comment_text = first_comment.find('{%s}text' % NS)
+        norm_text(first_comment_text)
+
+        # Check the description.
+        description = bug.find('{%s}description' % NS)
+        norm_text(description)
+        if len(description.text) == 0:
+            problem("Bug %s has no description." % bug.get('id'))
+            # Try and get the description from the first comment.
+            if first_comment_text is None:
+                problem_detail("No comments!")
+                problem_resolution("Setting description to '-'.")
+                description.text = u'-'
+            elif len(first_comment_text.text) == 0:
+                problem_detail("First comment has no text!")
+                problem_resolution("Setting description to '-'.")
+                description.text = u'-'
+            else:
+                problem_detail("First comment has text.")
+                problem_resolution("Removing description.")
+                # The spec says that the description is not optional, but the
+                # importer treats it as optional.
+                bug.remove(description)
+            problem_resolved()
+        elif len(description.text) > 50000:
+            problem(
+                "Bug %s's description is too long (%d chars)." % (
+                    bug.get('id'), len(description.text),))
+            # Compare the description to the first comment. If it's
+            # the same, we don't need the description.
+            if first_comment_text is None:
+                problem_detail("No comments!")
+                problem_resolution("Adding comment.")
+                raise NotImplementedError("Add a comment.")
+            elif description.text == first_comment_text.text:
+                problem_detail('Description is same as first comment.')
+                problem_resolution('Trimming description.')
+                # It's safe to point the user to an attachment here,
+                # even though it has not yet been created. It will be
+                # created later because the first comment is also too
+                # long.
+                description.text = truncate(
+                    description.text, 'see "Full description" attachment')
+            else:
+                problem_resolution("Truncating description.")
+                raise NotImplementedError("Fix overlong description.")
+            problem_resolved()
+
+        # Check first comment text.
+        if first_comment_text is not None:
+            if len(first_comment_text.text) == 0:
+                problem(
+                    "Bug %s's first comment has no text." % bug.get('id'))
+                problem_resolution("Setting comment text to '-'.")
+                first_comment_text.text = u'-'
+                problem_resolved()
+            elif len(first_comment_text.text) > 50000:
+                problem(
+                    "Bug %s's first comment is too long (%d chars)." % (
+                        bug.get('id'), len(first_comment_text.text)))
+                # Save the original text as an attachment.
+                problem_resolution('Adding attachment.')
+                attachment = etree.SubElement(
+                    first_comment, '{%s}attachment' % NS)
+                etree.SubElement(attachment, '{%s}filename' % NS).text = (
+                    u"%s-bug-%s-full-description.txt" % (
+                        project_name, bug.get('id')))
+                etree.SubElement(attachment, '{%s}title' % NS).text = (
+                    u"Full description (text/plain, utf-8)")
+                etree.SubElement(attachment, '{%s}mimetype' % NS).text = (
+                    u"text/plain")
+                etree.SubElement(attachment, '{%s}contents' % NS).text = (
+                    standard_b64encode(
+                        first_comment_text.text.encode('utf-8')))
+                # Trim the comment text.
+                problem_resolution('Trimming comment text.')
+                first_comment_text.text = truncate(
+                    first_comment_text.text,
+                    'see "Full description" attachment')
+                problem_resolved()
+
+
+def main(arguments):
+    # optparse.OptionParser uses lower-case for usage and help text by
+    # default. This is distressing, so it is corrected for below.
+    usage = "Usage: %prog [options]"
+    description = """
+        This acts as a filter: pipe bug import XML into stdin and capture
+        stdout. By default it removes duplicate chains and ensures that bug
+        descriptions and the first comment are correct. If either the
+        description or the first comment exceeds 50,000 characters it is
+        truncated and an attachment is created to hold the original.
+        """
+    parser = OptionParser(
+        usage=usage,
+        description=description.strip(),
+        add_help_option=False)
+    parser.add_option(
+        "-p", "--project", dest="project_name", metavar="NAME",
+        help="The project to which this import data refers.")
+    parser.add_option(
+        "--fix-nickname", action="store_true", dest="fix_nickname",
+        help="Normalize the nickname to ${project_name}-${bug-id}.")
+    parser.add_option(
+        "--tag-nickname", action="store_true", dest="tag_nickname",
+        help="Add the original bug nickname as a tag.")
+    parser.add_option(
+        "-h", "--help", action="help",
+        help="Show this help message and exit.")
+    parser.set_defaults(
+        project_name=None,
+        fix_nickname=False,
+        tag_nickname=False)
+
+    options, filenames = parser.parse_args(arguments)
+    if options.project_name is None:
+        parser.error("A project name must be specified.")
+
+    if len(filenames) == 0:
+        filenames = ["-"]
+
+    for filename in filenames:
+        tree = etree.parse(sys.stdin if filename == "-" else filename)
+        massage(
+            root=tree.getroot(),
+            project_name=options.project_name,
+            fix_nickname=options.fix_nickname,
+            tag_nickname=options.tag_nickname)
+        tree.write(
+            (sys.stdout if filename == "-" else filename), encoding='utf-8',
+            pretty_print=True, xml_declaration=True)
+
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv[1:]))

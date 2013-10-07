@@ -1,0 +1,19 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  xml:lang="en"
+  lang="en"
+  dir="ltr"
+  metal:use-macro="context/@@unlinkbugs_template/master"
+  i18n:domain="launchpad">
+
+  <body>
+    <div class="documentDescription" metal:fill-slot="extra_info">
+      <div tal:content="structure context/fmt:link" />
+      This will <em>remove</em> the link between the blueprint and the
+      selected bug reports.
+    </div>
+  </body>
+</html>

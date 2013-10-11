@@ -17,14 +17,14 @@
 
 from ucUtil import *
 from mitlmCorpus import *
-from pythonLexical import *
+from pythonSource import *
 from operator import itemgetter
 
 class sourceModel(object):
     
-    def __init__(self, cm=mitlmCorpus(), lm=pythonLexical(), windowSize=20):
-        self.cm = cm
-        self.lm = lm
+    def __init__(self, cm=mitlmCorpus, language=pythonSource, windowSize=20):
+        self.cm = cm()
+        self.lang = language
         self.windowSize = windowSize
     
     def trainFile(self, files):
@@ -35,13 +35,9 @@ class sourceModel(object):
             sourceCode = slurp(fi)
             self.trainString(sourceCode)
             
-    def stringifySource(self, sourceCode):
-        """Convert source code to a list of strings"""
-        return self.stringifyAll(self.lm.lex(sourceCode))
-    
     def stringifyAll(self, lexemes):
         """Clean up a list of lexemes and convert it to a list of strings"""
-        return map(self.lm.stringify1, self.lm.scrub(lexemes))
+        return map(str, lexemes)
 
     def corpify(self, lexemes):
         """Corpify a string"""
@@ -49,10 +45,10 @@ class sourceModel(object):
     
     def trainString(self, sourceCode):
         """Train on a source code string"""
-        return self.cm.addToCorpus(self.stringifySource(sourceCode))
+        return self.cm.addToCorpus(self.stringifyAll(self.lang(sourceCode).scrubbed()))
     
     def queryString(self, sourceCode):
-        return self.cm.queryCorpus(self.stringifySource(sourceCode))
+        return self.queryLexed(self.lang(sourceCode))
     
     def queryLexed(self, lexemes):
         return self.cm.queryCorpus(self.stringifyAll(lexemes))
@@ -68,6 +64,7 @@ class sourceModel(object):
         return r
     
     def worstWindows(self, lexemes):
+        lexemes = lexemes.scrubbed()
         unsorted = self.windowedQuery(lexemes)
         return sorted(unsorted, key=itemgetter(1), reverse=True)
     

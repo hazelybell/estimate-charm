@@ -17,80 +17,95 @@
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys, token, tokenize, zmq;
-from StringIO import StringIO
+from cStringIO import StringIO
 from ucUtil import *
+from unnaturalCode import *
+from logging import debug, info, warning, error
 
-class pythonLexical(object):
+class pythonLexeme(ucLexeme):
     
-    def __init__(self):
-        pass
-    
-    def lex(self, code):
-        def tup_to_dict(tup):
+    def __new__(cls, *args):
+        if isinstance(args[0], tuple):
+            tup = args[0]
             # tup = [type, val, [startrow, col], [endrow, col], line]
-            return {
-                    'type': token.tok_name[tup[0]],
-                    'value': tup[1],
-                    'start': tup[2],
-                    'end': tup[3],
-            }
+            return ucLexeme.__new__(cls, token.tok_name[tup[0]], str(tup[1]), ucPos(tup[2]), ucPos(tup[3]))
+        else:
+            return ucLexeme.__new__(cls, *args)
 
-        return [tup_to_dict(tok) for tok in \
+    def __str__(self):
+        """Stringify a lexeme: produce text describing its value"""
+        if self.ltype == 'COMMENT':
+            return '<'+self.ltype+'>'
+        elif ws.match(str(self.val)) :
+            return '<'+self.ltype+'>'
+        elif len(self.val) > 0 :
+            return self.val
+        else:
+            return self.type
+          
+    def comment(self):
+        return (self.ltype == 'COMMENT')
+      
+
+class pythonSource(ucSource):
+    
+    def extend(self, arg):
+        if isinstance(arg, str):
+          super(pythonSource, self).extend(self.lex(arg))
+        else:
+            for a in arg:
+                if isinstance(a, str):
+                    assert len(a)>1
+                    super(pythonSource, self).extend(self.lex(a))
+                else:
+                    super(pythonSource, self).extend([a])
+
+    def lex(self, code):
+        return [pythonLexeme(tok) for tok in \
             tokenize.generate_tokens(StringIO(code).readline)]
     
-    # Stringify a lexeme: produce text describing its value
-    def stringify1(self, lexeme):
-        if lexeme['type'] == 'COMMENT':
-            return '<'+lexeme['type']+'>'
-        elif ws.match(str(lexeme['value'])) :
-            return '<'+lexeme['type']+'>'
-        elif len(lexeme['value']) > 0 :
-            return lexeme['value']
-        else:
-            return '<'+lexeme['type']+'>'
-    
-    def deLex(self, lexemes):
+    def deLex(self):
         line = 1
         col = 0
         src = ""
-        for l in lexemes:
-            for i in range(line, l['start'][0]):
+        for l in self:
+            for i in range(line, l.start.line):
                 src += os.linesep
                 col = 0
                 line += 1
-            for i in range(col, l['start'][1]):
+            for i in range(col, l.start.col):
                 src += " "
                 col += 1
-            src += l['value']
-            col += len(l['value'])
-            nls = l['value'].count(os.linesep)
+            src += l.val
+            col += len(l.val)
+            nls = l.val.count(os.linesep)
             if (nls > 0):
                 line += nls
-                col = len(l['value'].splitlines().pop())
+                col = len(l.val.splitlines().pop())
         return src
     
     def isntComment(self, lexeme):
-        return not (lexeme['type'] == 'COMMENT')
+        return not lexeme.comment
     
-    def unComment(self, lexemes):
-        return filter(self.isntComment, lexemes)
+    def unCommented(self):
+        return filter(self.isntComment, copy(self))
     
-    def scrub(self, lexemes):
+    def scrubbed(self):
         """Clean up python source code removing extra whitespace tokens and comments"""
-        ls = self.unComment(lexemes)
+        ls = self.unCommented()
         i = 0
         r = []
         for i in range(0, len(ls)):
-            if ls[i]['type'] == 'NL':
+            if ls[i].ltype == 'NL':
                 continue
-            elif ls[i]['type'] == 'NEWLINE' and ls[i+1]['type'] == 'NEWLINE':
+            elif ls[i].ltype == 'NEWLINE' and ls[i+1].ltype == 'NEWLINE':
                 continue
-            elif ls[i]['type'] == 'NEWLINE' and ls[i+1]['type'] == 'INDENT':
+            elif ls[i].ltype == 'NEWLINE' and ls[i+1].ltype == 'INDENT':
                 continue
             else:
                 r.append(ls[i])
         return r
-    
+
 class LexPyMQ(object):
 	def __init__(self, lexer):
 		self.lexer = lexer

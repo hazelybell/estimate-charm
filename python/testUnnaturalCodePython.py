@@ -21,7 +21,7 @@ from logging import debug, info, warning, error
 from ucUtil import *
 from unnaturalCode import *
 from sourceModel import *
-from pythonLexical import *
+from pythonSource import *
 from mitlmCorpus import *
 
 import os, os.path, zmq, sys, shutil
@@ -60,7 +60,7 @@ class testUnnaturalCode(unittest.TestCase):
         self.assertTrue(os.access(dir, os.X_OK & os.R_OK & os.W_OK))
         self.assertTrue(os.path.isdir(dir))
     def testZctx(self):
-        self.assertEquals(type(ucGlobal.zctx), zmq.core.context.Context)
+        self.assertTrue(isinstance(ucGlobal.zctx, zmq.core.context.Context))
     @classmethod
     def tearDownClass(self):
         #del self.uc
@@ -79,19 +79,20 @@ class testMitlmCorpus(unittest.TestCase):
         self.assertTrue(os.access(dir, os.X_OK & os.R_OK & os.W_OK))
         self.assertTrue(os.path.isdir(dir))
     def testCorpify(self):
-        sm = sourceModel(cm=mitlmCorpus())
-        self.assertEquals(sm.corpify(someLexemes), 'print ( 1 + 2 ** 2 ) <ENDMARKER>')
+        sm = sourceModel(cm=mitlmCorpus)
+        self.assertEquals(sm.corpify(ucSource(someLexemes)), 'print ( 1 + 2 ** 2 ) <ENDMARKER>')
         
 class testPythonLexical(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        self.lm = pythonLexical()
+        pass
     def testLexExpectedLength(self):
-        r = self.lm.lex(somePythonCode)
+        r = pythonSource(somePythonCode)
         self.assertEquals(len(r), 9)
     def testLexExpectedFormat(self):
-        r = self.lm.lex(somePythonCode)
-        self.assertTrue(isinstance(r[0], dict))
+        r = pythonSource(somePythonCode)
+        self.assertTrue(isinstance(r, ucSource))
+        self.assertTrue(isinstance(r[0], ucLexeme))
         self.assertTrue(isinstance(r[0]['end'], tuple))
         self.assertTrue(isinstance(r[0]['end'][0], int))
         self.assertTrue(isinstance(r[0]['end'][1], int))
@@ -101,7 +102,7 @@ class testPythonLexical(unittest.TestCase):
         self.assertTrue(isinstance(r[0]['type'], str))
         self.assertTrue(isinstance(r[0]['value'], str))
     def testLexExpectedToken(self):
-        r = self.lm.lex(somePythonCode)
+        r = pythonSource(somePythonCode)
         self.assertEquals(r[0]['end'][0], 1)
         self.assertEquals(r[0]['end'][1], 5)
         self.assertEquals(r[0]['start'][0], 1)
@@ -109,15 +110,15 @@ class testPythonLexical(unittest.TestCase):
         self.assertEquals(r[0]['type'], 'NAME')
         self.assertEquals(r[0]['value'], 'print')
     def testStringify1(self):
-        self.assertEquals(self.lm.stringify1(someLexemes[0]), 'print')
-        self.assertEquals(self.lm.stringify1(someLexemes[8]), '<ENDMARKER>')
-        self.assertEquals(self.lm.stringify1(indentLexeme), '<INDENT>')
+        self.assertEquals(str(pythonSource(someLexemes)[0]), 'print')
+        self.assertEquals(str(pythonSource(someLexemes)[8]), '<ENDMARKER>')
+        self.assertEquals(str(pythonLexeme(indentLexeme)), '<INDENT>')
     def testLexDeLex(self):
-        self.assertEquals(lotsOfPythonCode, (self.lm.deLex(self.lm.lex(lotsOfPythonCode))))
-        self.assertEquals(codeWithComments, (self.lm.deLex(self.lm.lex(codeWithComments))))
+        self.assertEquals(lotsOfPythonCode, (pythonSource(lotsOfPythonCode).deLex()))
+        self.assertEquals(codeWithComments, (pythonSource(codeWithComments).deLex()))
     @classmethod
     def tearDownClass(self):
-        del self.lm
+        pass
             
 class testSourceModelWithFiles(unittest.TestCase):
     @classmethod
@@ -130,7 +131,7 @@ class testSourceModelWithFiles(unittest.TestCase):
         self.uc = unnaturalCode(logFilePath=logFilePath)
         self.cm = mitlmCorpus(readCorpus=readCorpus, writeCorpus=readCorpus, uc=ucGlobal)
         self.lm = pythonLexical()
-        self.sm = sourceModel(cm=self.cm, lm=self.lm)
+        self.sm = sourceModel(cm=mitlmCorpus, language=pythonSource)
     def testEnvCorpus(self):
         dir=os.path.dirname(self.cm.readCorpus)
         self.assertTrue(os.access(dir, os.X_OK & os.R_OK & os.W_OK))
@@ -171,12 +172,12 @@ class testSourceModelWithFiles(unittest.TestCase):
         logFilePath = os.path.join(self.td, 'ucLogFile')
         self.uc = unnaturalCode(logFilePath=logFilePath)
         self.cm = mitlmCorpus(readCorpus=readCorpus, writeCorpus=readCorpus, uc=ucGlobal)
-        self.lm = pythonLexical()
-        self.sm = sourceModel(cm=self.cm, lm=self.lm)
+        self.lm = pythonSource
+        self.sm = sourceModel(cm=mitlmCorpus, language=pythonSource)
         self.sm.trainFile(testProjectFiles)
     def testQueryCorpus(self):
-        ls = self.sm.stringifyAll(someLexemes)
-        r = self.cm.queryCorpus(self.sm.stringifyAll(someLexemes))
+        ls = self.sm.stringifyAll(ucSource(someLexemes))
+        r = self.cm.queryCorpus(self.sm.stringifyAll(ucSource(someLexemes)))
         self.assertGreater(r, 0.1)
         self.assertLess(r, 70.0)
     def testQueryCorpusString(self):
@@ -184,14 +185,14 @@ class testSourceModelWithFiles(unittest.TestCase):
         self.assertLess(r, 70.0)
         self.assertGreater(r, 0.1)
     def testWindowedQuery(self):
-        r = self.sm.windowedQuery(self.lm.lex(somePythonCodeFromProject))
+        r = self.sm.windowedQuery(pythonSource(somePythonCodeFromProject))
         debug(type(r))
         debug(type(r[0]))
         debug(type(r[0][0]))
         self.assertLess(r[0][1], 70.0)
         self.assertGreater(r[0][1], 0.1)
     def testWorst(self):
-        r = self.sm.worstWindows(self.lm.lex(somePythonCodeFromProject))
+        r = self.sm.worstWindows(pythonSource(somePythonCodeFromProject))
         for i in range(0, len(r)-2):
             self.assertGreater(r[i][1], r[i+1][1])
     @classmethod

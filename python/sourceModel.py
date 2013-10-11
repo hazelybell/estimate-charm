@@ -22,8 +22,8 @@ from operator import itemgetter
 
 class sourceModel(object):
     
-    def __init__(self, cm=mitlmCorpus, language=pythonSource, windowSize=20):
-        self.cm = cm()
+    def __init__(self, cm=mitlmCorpus(), language=pythonSource, windowSize=20):
+        self.cm = cm
         self.lang = language
         self.windowSize = windowSize
     

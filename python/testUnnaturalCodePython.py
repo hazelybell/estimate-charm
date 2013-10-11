@@ -24,7 +24,7 @@ from sourceModel import *
 from pythonSource import *
 from mitlmCorpus import *
 
-import os, os.path, zmq, sys, shutil
+import os, os.path, zmq, sys, shutil, token
 from tempfile import *
 
 from ucTestData import *
@@ -79,8 +79,8 @@ class testMitlmCorpus(unittest.TestCase):
         self.assertTrue(os.access(dir, os.X_OK & os.R_OK & os.W_OK))
         self.assertTrue(os.path.isdir(dir))
     def testCorpify(self):
-        sm = sourceModel(cm=mitlmCorpus)
-        self.assertEquals(sm.corpify(ucSource(someLexemes)), 'print ( 1 + 2 ** 2 ) <ENDMARKER>')
+        sm = sourceModel(cm=mitlmCorpus())
+        self.assertEquals(sm.corpify(pythonSource(someLexemes)), 'print ( 1 + 2 ** 2 ) <ENDMARKER>')
         
 class testPythonLexical(unittest.TestCase):
     @classmethod
@@ -116,6 +116,9 @@ class testPythonLexical(unittest.TestCase):
     def testLexDeLex(self):
         self.assertEquals(lotsOfPythonCode, (pythonSource(lotsOfPythonCode).deLex()))
         self.assertEquals(codeWithComments, (pythonSource(codeWithComments).deLex()))
+    def testComment(self):
+        self.assertTrue(pythonLexeme((COMMENT, '# wevie stunder', (1, 0), (1, 0))).comment())
+        self.assertFalse(pythonLexeme((token.INDENT, '    ', (2, 0), (2, 0))).comment())
     @classmethod
     def tearDownClass(self):
         pass
@@ -131,7 +134,7 @@ class testSourceModelWithFiles(unittest.TestCase):
         self.uc = unnaturalCode(logFilePath=logFilePath)
         self.cm = mitlmCorpus(readCorpus=readCorpus, writeCorpus=readCorpus, uc=ucGlobal)
         self.lm = pythonLexical()
-        self.sm = sourceModel(cm=mitlmCorpus, language=pythonSource)
+        self.sm = sourceModel(cm=self.cm, language=pythonSource)
     def testEnvCorpus(self):
         dir=os.path.dirname(self.cm.readCorpus)
         self.assertTrue(os.access(dir, os.X_OK & os.R_OK & os.W_OK))
@@ -173,7 +176,7 @@ class testSourceModelWithFiles(unittest.TestCase):
         self.uc = unnaturalCode(logFilePath=logFilePath)
         self.cm = mitlmCorpus(readCorpus=readCorpus, writeCorpus=readCorpus, uc=ucGlobal)
         self.lm = pythonSource
-        self.sm = sourceModel(cm=mitlmCorpus, language=pythonSource)
+        self.sm = sourceModel(cm=self.cm, language=pythonSource)
         self.sm.trainFile(testProjectFiles)
     def testQueryCorpus(self):
         ls = self.sm.stringifyAll(ucSource(someLexemes))

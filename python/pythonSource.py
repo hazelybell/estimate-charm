@@ -22,6 +22,8 @@ from ucUtil import *
 from unnaturalCode import *
 from logging import debug, info, warning, error
 
+COMMENT = 53
+
 class pythonLexeme(ucLexeme):
     
     def __new__(cls, *args):
@@ -84,15 +86,14 @@ class pythonSource(ucSource):
                 col = len(l.val.splitlines().pop())
         return src
     
-    def isntComment(self, lexeme):
-        return not lexeme.comment
-    
     def unCommented(self):
-        return filter(self.isntComment, copy(self))
+        assert len(self)
+        return filter(lambda a: not a.comment(), copy(self))
     
     def scrubbed(self):
         """Clean up python source code removing extra whitespace tokens and comments"""
         ls = self.unCommented()
+        assert len(ls)
         i = 0
         r = []
         for i in range(0, len(ls)):
@@ -104,6 +105,7 @@ class pythonSource(ucSource):
                 continue
             else:
                 r.append(ls[i])
+        assert len(r)
         return r
 
 class LexPyMQ(object):

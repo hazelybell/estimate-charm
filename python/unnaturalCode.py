@@ -128,10 +128,11 @@ class ucLexeme(tuple):
             return self[2]
         elif name == 'end':
             return self[3]
-        elif name == 'comment':
-            return False
         raise AttributeError
 
+    def comment(self):
+        return False
+    
     def __str__(self):
         if self.val:
             return self.val

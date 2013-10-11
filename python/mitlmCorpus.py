@@ -42,6 +42,7 @@ class mitlmCorpus(object):
             # Already running
             return
         assert os.path.exists(self.readCorpus), "No such corpus."
+        assert not ws.match(slurp(self.readCorpus)), "Corpus is full of whitespace!"
         assert os.path.exists(self.estimateNgramPath), "No such estimate-ngram."
         self.mitlmPID = os.fork()
         if self.mitlmPID == 0:
@@ -72,6 +73,7 @@ class mitlmCorpus(object):
     def corpify(self, lexemes):
         """Stringify lexed source: produce space-seperated sequence of lexemes"""
         assert isinstance(lexemes, list)
+        assert len(lexemes)
         return " ".join(lexemes)
     
     def openCorpus(self):
@@ -89,8 +91,14 @@ class mitlmCorpus(object):
 
     def addToCorpus(self, lexemes):
         """Adds a string of lexemes to the corpus"""
+        assert isinstance(lexemes, list)
+        assert len(lexemes)
         self.openCorpus()
-        print(self.corpify(lexemes), file=self.corpusFile)
+        cl = self.corpify(lexemes)
+        debug(cl)
+        assert(len(cl))
+        assert (not ws.match(cl)), "Adding blank line to corpus!"
+        print(cl, file=self.corpusFile)
         self.corpusFile.flush()
         self.stopMitlm
     

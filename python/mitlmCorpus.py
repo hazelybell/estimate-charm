@@ -16,8 +16,9 @@
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function
-import os, zmq, signal, os.path
+import os, zmq, signal, os.path, subprocess, fcntl, time
 from unnaturalCode import *
+from logging import debug, info, warning, error
 
 class mitlmCorpus(object):
     
@@ -28,48 +29,61 @@ class mitlmCorpus(object):
         self.estimateNgramPath = (estimateNgramPath or os.getenv("ESTIMATENGRAM", os.popen('which estimate-ngram').read()))
         self.corpusFile = False
         self.mitlmSocket = None
-        self.mitlmPID = 0
+        self.mitlmProc = None
         self.order = order
         self.zctx = uc.zctx
+    
+    def checkMitlm(self):
+        while self.mitlmProc:
+            try:
+                info(self.mitlmProc.stdout.read())
+            except:
+                break
     
     def startMitlm(self):
         """Start MITLM estimate-ngram in 0MQ entropy query mode, unless already running."""
         if not self.mitlmSocket == None :
             assert not self.mitlmSocket.closed
-            assert self.mitlmPID
-            r = os.waitpid(self.mitlmPID, os.WNOHANG)
-            assert r == (0, 0)
+            assert self.mitlmProc.poll() == None
             # Already running
+            self.checkMitlm()
             return
         assert os.path.exists(self.readCorpus), "No such corpus."
         assert not ws.match(slurp(self.readCorpus)), "Corpus is full of whitespace!"
         assert os.path.exists(self.estimateNgramPath), "No such estimate-ngram."
-        self.mitlmPID = os.fork()
-        if self.mitlmPID == 0:
-            os.execv(self.estimateNgramPath, [self.estimateNgramPath, "-t", self.readCorpus, "-o", str(self.order+1), "-s", "ModKN", "-u", "-live-prob", self.mitlmSocketPath])
-            assert false, "Failed to exec."
-        debug("Started MITLM as PID %i." % self.mitlmPID)
+        self.mitlmProc = subprocess.Popen([self.estimateNgramPath, "-t", self.readCorpus, "-o", str(self.order+1), "-s", "ModKN", "-u", "-live-prob", self.mitlmSocketPath], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        debug("Started MITLM as PID %i." % self.mitlmProc.pid)
+        
+        fd = self.mitlmProc.stdout.fileno()
+        fl = fcntl.fcntl(fd, fcntl.F_GETFL)
+        fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+        self.checkMitlm()
         self.mitlmSocket = self.zctx.socket(zmq.REQ)
         self.mitlmSocket.connect(self.mitlmSocketPath)
         self.mitlmSocket.send("for ( i =")
         r = float(self.mitlmSocket.recv())
         debug("MITLM said %f" % r)
+        self.checkMitlm()
         
     def stopMitlm(self):
         """Stop MITLM estimate-ngram, unless not running."""
+        self.checkMitlm()
         if self.mitlmSocket:
             self.mitlmSocket.setsockopt(zmq.LINGER, 0)
             self.mitlmSocket.close()
             assert self.mitlmSocket.closed
-            os.remove(self.mitlmSocketPath)
+            #os.remove(self.mitlmSocketPath)
             self.mitlmSocket = None
-        if self.mitlmPID > 0:
-            r = os.waitpid(self.mitlmPID, os.WNOHANG)
-            if r == (0, 0):
-                os.kill(self.mitlmPID, signal.HUP)
-                r = os.waitpid(self.mitlmPID, 0)
-            self.mitlmPID = 0
-    
+        if self.mitlmProc:
+            rc = None
+            debug("Waiting for MITLM to shut down...")
+            while self.mitlmProc and (rc == None):
+                self.mitlmProc.terminate()
+                time.sleep(0.1)
+                rc = self.mitlmProc.poll()
+            self.mitlmProc = None
+            debug("MITLM exited with status %r" % (rc))
+            
     def corpify(self, lexemes):
         """Stringify lexed source: produce space-seperated sequence of lexemes"""
         assert isinstance(lexemes, list)
@@ -88,6 +102,7 @@ class mitlmCorpus(object):
         if (self.corpusFile):
             self.corpusFile.close()
             assert self.corpusFile.closed
+            self.corpusFile = None
 
     def addToCorpus(self, lexemes):
         """Adds a string of lexemes to the corpus"""
@@ -100,7 +115,7 @@ class mitlmCorpus(object):
         assert (not ws.match(cl)), "Adding blank line to corpus!"
         print(cl, file=self.corpusFile)
         self.corpusFile.flush()
-        self.stopMitlm
+        self.stopMitlm()
     
     def queryCorpus(self, lexemes):
         self.startMitlm()
@@ -111,11 +126,14 @@ class mitlmCorpus(object):
     
     def release(self):
         """Close files and stop MITLM"""
-        self.closeCorpus
-        self.stopMitlm
+        self.closeCorpus()
+        self.stopMitlm()
         
     def __del__(self):
         """I am a destructor, but release should be called explictly."""
-        self.release
+        assert not self.mitlmProc, "Destructor called before release()"
+        assert not self.mitlmSocket, "Destructor called before release()"
+        assert not self.corpusFile, "Destructor called before release()"
+        #super(mitlmCorpus, self).__del__()
 
 # rwfubmqqoiigevcdefhmidzavjwg

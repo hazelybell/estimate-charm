@@ -24,7 +24,7 @@ from sourceModel import *
 from pythonSource import *
 from mitlmCorpus import *
 
-import os, os.path, zmq, sys, shutil, token
+import os, os.path, zmq, sys, shutil, token, gc
 from tempfile import *
 
 from ucTestData import *
@@ -133,7 +133,6 @@ class testSourceModelWithFiles(unittest.TestCase):
         logFilePath = os.path.join(self.td, 'ucLogFile')
         self.uc = unnaturalCode(logFilePath=logFilePath)
         self.cm = mitlmCorpus(readCorpus=readCorpus, writeCorpus=readCorpus, uc=ucGlobal)
-        self.lm = pythonLexical()
         self.sm = sourceModel(cm=self.cm, language=pythonSource)
     def testEnvCorpus(self):
         dir=os.path.dirname(self.cm.readCorpus)
@@ -165,7 +164,7 @@ class testSourceModelWithFiles(unittest.TestCase):
         self.sm.release()
         shutil.rmtree(self.td)
 
-class testSourceModelWithFiles(unittest.TestCase):
+class testTrainedSourceModel(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.td = mkdtemp(prefix='ucUnitTest-')
@@ -206,5 +205,10 @@ class testSourceModelWithFiles(unittest.TestCase):
 def tearDownModule():
     global ucGlobal
     del ucGlobal
-    
+    # ~~~ valgrind for python ~~~
+    gc.collect()
+    for i in gc.get_objects():
+        if isinstance(i, mitlmCorpus):
+            i.__del__()
+
 # rwfubmqqoiigevcdefhmidzavjwg

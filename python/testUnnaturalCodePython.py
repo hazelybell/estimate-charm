@@ -23,6 +23,7 @@ from unnaturalCode import *
 from sourceModel import *
 from pythonSource import *
 from mitlmCorpus import *
+from modelValidator import *
 
 import os, os.path, zmq, sys, shutil, token, gc
 from tempfile import *
@@ -126,7 +127,7 @@ class testPythonLexical(unittest.TestCase):
 class testSourceModelWithFiles(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        self.td = mkdtemp(prefix='ucUnitTest-')
+        self.td = mkdtemp(prefix='ucTest-')
         assert os.access(self.td, os.X_OK & os.R_OK & os.W_OK)
         assert os.path.isdir(self.td)
         readCorpus = os.path.join(self.td, 'ucCorpus') 
@@ -167,7 +168,7 @@ class testSourceModelWithFiles(unittest.TestCase):
 class testTrainedSourceModel(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        self.td = mkdtemp(prefix='ucUnitTest-')
+        self.td = mkdtemp(prefix='ucTest-')
         assert os.access(self.td, os.X_OK & os.R_OK & os.W_OK)
         assert os.path.isdir(self.td)
         readCorpus = os.path.join(self.td, 'ucCorpus') 
@@ -202,13 +203,28 @@ class testTrainedSourceModel(unittest.TestCase):
         self.sm.release()
         shutil.rmtree(self.td)
 
+class testValidator(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        self.td = mkdtemp(prefix='ucTest-')
+        assert os.access(self.td, os.X_OK & os.R_OK & os.W_OK)
+        assert os.path.isdir(self.td)
+    def testValidatorFiles(self):
+        v = modelValidation(source=testProjectFiles, language=pythonSource, out=self.td)
+        v.validate(mutation='d', n=100)
+        # TODO: assert csvs
+    @classmethod
+    def tearDownClass(self):
+        self.vd.release()
+        shutil.rmtree(self.td)
+        
 def tearDownModule():
     global ucGlobal
     del ucGlobal
     # ~~~ valgrind for python ~~~
     gc.collect()
     for i in gc.get_objects():
-        if isinstance(i, mitlmCorpus):
+        if isinstance(i, (mitlmCorpus, modelValidation)):
             i.__del__()
 
 # rwfubmqqoiigevcdefhmidzavjwg

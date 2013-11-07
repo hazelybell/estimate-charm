@@ -15,7 +15,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
 from ucUtil import *
-import os, zmq
+import sys, os, zmq
 import logging
 from logging import debug, info, warning, error
 from copy import copy
@@ -103,13 +103,13 @@ class ucLexeme(tuple):
         elif len(args) == 4:
             t = (args[0], args[1], ucPos(args[2]), ucPos(args[3]))
         else:
-            raise TypeError("Constructor arguments")
+            raise TypeError("Constructor arguments cant be " + str(type(args)))
         assert t[0]
         assert isinstance(t[0], str)
         assert isinstance(t[1], str)
         assert isinstance(t[2], ucPos)
         assert isinstance(t[3], ucPos)
-        assert t[2] <= t[3], "%s > %s" % (start, end)
+        assert t[2] <= t[3], "%s > %s" % (t[2], t[3])
         return tuple.__new__(cls, t)
     
     def __getitem__(self, name):
@@ -146,23 +146,110 @@ class ucSource(list):
     
     def __init__(self, *args):
         return self.extend(*args)
-
+    
+    def settle(self):
+      """Contents may settle during shipping."""
+      first = self[0].start
+      for i in range(0, len(self)):
+        if self[i].start.l == first.l:
+          startL = 1
+          startC = self[i].start.c - first.c
+        else:
+          startL = self[i].start.l - first.l-1
+          startC = self[i].start.c
+        if self[i].end.l == first.l:
+          endL = 1
+          endC = self[i].end.c - first.c
+        else:
+          endL = self[i].end.l - first.l-1
+          endC = self[i].end.c
+        self[i] = self[i].__class__(self[i][0], self[i][1], ucPos((startL, startC)), ucPos((endL, endC)))
+      self.check()
+      return self
+    
+    def check(self, start=0, end=sys.maxint):
+      start = max(start, 0)
+      end = min(end, len(self))
+      #debug(str(start) + "-" + str(end))
+      for i in range(start, end-1):
+        assert isinstance(self[i], ucLexeme)
+        assert self[i].end <= self[i+1].start, ""+repr(self[i:i+2])
+        
     def extend(self, arg):
         a = map(ucLexeme, arg)
-        for i in range(0, len(a)-1):
-            assert a[i].end <= a[i+1].start
-        return super(ucSource, self).extend(a)
+        s = len(self)-1
+        r = super(ucSource, self).extend(a)
+        if s >= 0:
+          self.check(start=s)
+        return r
     
     def append(self, *args):
         return self.extend(args)
       
     def insert(self, i, arg):
-        return self.insert(i, ucLexeme(arg))
+        if not isinstance(arg, list):
+          arg = [arg]
+        if not isinstance(arg, ucSource):
+          arg = ucSource(arg)
+        a = copy(arg)
+        a.settle()
+        debug(repr(a))
+        for j in range(0, len(a)):
+          ((startL, startC), (endL, endC)) = (a[j].start, a[j].end)
+          if startL == 1:
+            startC += self[i].start.c
+          if endL == 1:
+            endC += self[i].start.c
+          startL += self[i].start.l-1
+          endL += self[i].start.l-1
+          a[j] = a[j].__class__(a[j][0], a[j][1], ucPos((startL, startC)), ucPos((endL, endC)))
+        for j in range(i, len(self)):
+          ((startL, startC), (endL, endC)) = (self[j].start, self[j].end)
+          if startL == self[i].start.l:
+            startC += a[-1].end.c
+          if endL == self[i].start.l:
+            endC += a[-1].end.c
+          startL += a[-1].end.l-1
+          endL += a[-1].end.l-1
+          self[j:j+1] = self[j].__class__(self[j][0], self[j][1], ucPos((startL, startC)), ucPos((endL, endC)))
+        for j in range(0, len(a)):
+          r = super(ucSource, self).insert(i+j, a[j])
+        self.check()
+        return r
     
+    def pop(self, i):
+        r = super(ucSource, self).pop(i)
+        for j in range(i, len(self)):
+          ((startL, startC), (endL, endC)) = (self[j].start, self[j].end)
+          if startL == r.start.l:
+            startC -= (r.end.c-r.start.c)
+          if endL == r.start.l:
+            endC -= (r.end.c-r.start.c)
+          startL -= (r.end.l-r.start.l)
+          endL -= (r.end.l-r.start.l)
+          self[j] = self[j].__class__(self[j][0], self[j][1], ucPos((startL, startC)), ucPos((endL, endC)))
+        self.check()
+        return r
+
     def scrubbed(self):
-        return copy(self)
+        raise NotImplementedError
+        
+    def __setitem__(self, index, value):
+      r = super(ucSource, self).__setitem__(index, value)
+      # TODO: Make this not check the entire list again
+      if isinstance(index, int):
+        self.check(index-1, index+2)
+      return r
+        
+    # Taken from the python documentation: http://docs.python.org/2/reference/datamodel.html v2.7.5 November 2013
+    # Licesne: PSF
+    def __setslice__(self, i, j, seq):
+      self[max(0, i):max(0, j):] = seq
+    # End License
     
-    def __getslice__(self, *args):
-        return ucSource(super(ucSource, self).__getslice__(*args))
+    def sort():
+      raise TypeError("Je refuse!")
+    
+    
       
 # rwfubmqqoiigevcdefhmidzavjwg

@@ -110,7 +110,7 @@ class mitlmCorpus(object):
         assert len(lexemes)
         self.openCorpus()
         cl = self.corpify(lexemes)
-        debug(cl)
+        #debug(cl)
         assert(len(cl))
         assert (not ws.match(cl)), "Adding blank line to corpus!"
         print(cl, file=self.corpusFile)

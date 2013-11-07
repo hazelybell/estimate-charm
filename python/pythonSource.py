@@ -28,10 +28,16 @@ COMMENT = 53
 class pythonLexeme(ucLexeme):
     
     def __new__(cls, *args):
-        if isinstance(args[0], tuple):
+        if isinstance(args[0], ucLexeme):
+            return ucLexeme.__new__(cls, *args)
+        elif isinstance(args[0], tuple):
             tup = args[0]
             # tup = [type, val, [startrow, col], [endrow, col], line]
-            return ucLexeme.__new__(cls, token.tok_name[tup[0]], str(tup[1]), ucPos(tup[2]), ucPos(tup[3]))
+            if isinstance(tup[0], int):
+              t0 = token.tok_name[tup[0]]
+            else:
+              t0 = tup[0]
+            return ucLexeme.__new__(cls, t0, str(tup[1]), ucPos(tup[2]), ucPos(tup[3]))
         else:
             return ucLexeme.__new__(cls, *args)
 
@@ -107,7 +113,7 @@ class pythonSource(ucSource):
             else:
                 r.append(ls[i])
         assert len(r)
-        return r
+        return pythonSource(r)
 
 class LexPyMQ(object):
 	def __init__(self, lexer):

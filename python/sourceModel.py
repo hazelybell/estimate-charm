@@ -43,9 +43,16 @@ class sourceModel(object):
         """Corpify a string"""
         return self.cm.corpify(self.stringifyAll(lexemes))
     
+    def sourceToScrubbed(self, sourceCode):
+        return self.lang(sourceCode).scrubbed()
+      
+    def trainLexemes(self, lexemes):
+        """Train on a lexeme sequence."""
+        return self.cm.addToCorpus(self.stringifyAll(lexemes))
+    
     def trainString(self, sourceCode):
         """Train on a source code string"""
-        return self.cm.addToCorpus(self.stringifyAll(self.lang(sourceCode).scrubbed()))
+        return self.trainLexemes(self.sourceToScrubbed(sourceCode))
     
     def queryString(self, sourceCode):
         return self.queryLexed(self.lang(sourceCode))

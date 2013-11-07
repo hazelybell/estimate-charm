@@ -15,6 +15,8 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
 
+"""Typically ran with FAST="True" nose2-2.7 -B --log-capture"""
+
 import unittest
 from logging import debug, info, warning, error
 
@@ -158,6 +160,7 @@ class testSourceModelWithFiles(unittest.TestCase):
         self.sm.trainString(somePythonCode)
     def testTrainFile(self):
         self.sm.trainFile(testProject1File)
+    @unittest.skipIf(os.getenv("FAST", False), "Skipping slow tests...")
     def testTrainProject(self):
         self.sm.trainFile(testProjectFiles)
     @classmethod
@@ -165,6 +168,7 @@ class testSourceModelWithFiles(unittest.TestCase):
         self.sm.release()
         shutil.rmtree(self.td)
 
+@unittest.skipIf(os.getenv("FAST", False), "Skipping slow tests...")
 class testTrainedSourceModel(unittest.TestCase):
     @classmethod
     def setUpClass(self):
@@ -203,20 +207,37 @@ class testTrainedSourceModel(unittest.TestCase):
         self.sm.release()
         shutil.rmtree(self.td)
 
-class testValidator(unittest.TestCase):
+@unittest.skipIf(os.getenv("FAST", False), "Skipping slow tests...")
+class testValidatorLong(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.td = mkdtemp(prefix='ucTest-')
         assert os.access(self.td, os.X_OK & os.R_OK & os.W_OK)
         assert os.path.isdir(self.td)
     def testValidatorFiles(self):
-        v = modelValidation(source=testProjectFiles, language=pythonSource, out=self.td)
-        v.validate(mutation='d', n=100)
+        v = modelValidation(source=testProjectFiles, language=pythonSource, corpus=mitlmCorpus, resultsDir=self.td)
+        v.validate(mutation=DELETE, n=100)
         # TODO: assert csvs
     @classmethod
     def tearDownClass(self):
-        self.vd.release()
         shutil.rmtree(self.td)
+
+class testValidator(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        self.td = mkdtemp(prefix='ucTest-')
+        assert os.access(self.td, os.X_OK & os.R_OK & os.W_OK)
+        assert os.path.isdir(self.td)
+    def testValidatorFile(self):
+        v = modelValidation(source=[testProject1File], language=pythonSource, corpus=mitlmCorpus, resultsDir=self.td)
+        v.validate(mutation=DELETE, n=10)
+        v.validate(mutation=INSERT, n=10)
+        v.validate(mutation=REPLACE, n=10)
+        # TODO: assert csvs
+    @classmethod
+    def tearDownClass(self):
+        shutil.rmtree(self.td)
+    
         
 def tearDownModule():
     global ucGlobal

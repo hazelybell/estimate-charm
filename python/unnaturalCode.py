@@ -193,7 +193,7 @@ class ucSource(list):
           arg = ucSource(arg)
         a = copy(arg)
         a.settle()
-        debug(repr(a))
+        self.check()
         for j in range(0, len(a)):
           ((startL, startC), (endL, endC)) = (a[j].start, a[j].end)
           if startL == 1:
@@ -205,13 +205,13 @@ class ucSource(list):
           a[j] = a[j].__class__(a[j][0], a[j][1], ucPos((startL, startC)), ucPos((endL, endC)))
         for j in range(i, len(self)):
           ((startL, startC), (endL, endC)) = (self[j].start, self[j].end)
-          if startL == self[i].start.l:
+          if startL == a[-1].start.l:
             startC += a[-1].end.c
-          if endL == self[i].start.l:
+          if endL == a[-1].start.l:
             endC += a[-1].end.c
           startL += a[-1].end.l-1
           endL += a[-1].end.l-1
-          self[j:j+1] = self[j].__class__(self[j][0], self[j][1], ucPos((startL, startC)), ucPos((endL, endC)))
+          self[j:j+1] = [self[j].__class__(self[j][0], self[j][1], ucPos((startL, startC)), ucPos((endL, endC)))]
         for j in range(0, len(a)):
           r = super(ucSource, self).insert(i+j, a[j])
         self.check()

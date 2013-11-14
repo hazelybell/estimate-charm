@@ -106,6 +106,16 @@ class modelValidation(object):
         self.addValidationFile(self.validFileNames)
         self.genCorpus()
 
+    def release(self):
+        """Close files and stop MITLM"""
+        self.cm.release()
+        self.cm = None
+        
+    def __del__(self):
+        """I am a destructor, but release should be called explictly."""
+        assert not self.cm, "Destructor called before release()"
+
 DELETE = modelValidation.deleteRandom
 INSERT = modelValidation.insertRandom
 REPLACE = modelValidation.replaceRandom
+

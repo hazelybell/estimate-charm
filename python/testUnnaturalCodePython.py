@@ -234,6 +234,7 @@ class testValidator(unittest.TestCase):
         v.validate(mutation=INSERT, n=10)
         v.validate(mutation=REPLACE, n=10)
         # TODO: assert csvs
+        v.release()
     @classmethod
     def tearDownClass(self):
         shutil.rmtree(self.td)

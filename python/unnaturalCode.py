@@ -235,8 +235,12 @@ class ucSource(list):
         raise NotImplementedError
         
     def __setitem__(self, index, value):
+      if isinstance(value, list):
+        for i in value:
+          assert isinstance(i, ucLexeme)
+      else:
+          assert isinstance(value, ucLexeme)
       r = super(ucSource, self).__setitem__(index, value)
-      # TODO: Make this not check the entire list again
       if isinstance(index, int):
         self.check(index-1, index+2)
       return r

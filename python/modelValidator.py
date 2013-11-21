@@ -44,8 +44,6 @@ class validationFile(object):
         self.mutatedLocation = location
         self.mutatedSource = lexemes.deLex()
         
-        
-        
 class modelValidation(object):
     
     def addValidationFile(self, files):
@@ -65,10 +63,11 @@ class modelValidation(object):
           assert isinstance(fi, validationFile)
           for i in range(0, n):
             mutation(self, fi)
+            self.sm.windowedQuery(fi.mutatedLexemes)
             
     def deleteRandom(self, vFile):
         ls = copy(vFile.scrubbed)
-        token = ls.pop(randint(0, len(ls)))
+        token = ls.pop(randint(0, len(ls)-1))
         vFile.mutate(ls, token)
             
     def insertRandom(self, vFile):
@@ -106,6 +105,16 @@ class modelValidation(object):
         self.addValidationFile(self.validFileNames)
         self.genCorpus()
 
+    def release(self):
+        """Close files and stop MITLM"""
+        self.cm.release()
+        self.cm = None
+        
+    def __del__(self):
+        """I am a destructor, but release should be called explictly."""
+        assert not self.cm, "Destructor called before release()"
+
 DELETE = modelValidation.deleteRandom
 INSERT = modelValidation.insertRandom
 REPLACE = modelValidation.replaceRandom
+

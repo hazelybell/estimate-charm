@@ -133,6 +133,15 @@ class ucLexeme(tuple):
     def comment(self):
         return False
     
+    def columns(self):
+        if self[2][0] == self[3][0]:
+            return self[3][1] - self[2][1]
+        else:
+            return 0
+    
+    def lines(self):
+         return self[3][0] - self[2][0]
+    
     def __str__(self):
         if self.val:
             return self.val
@@ -193,7 +202,7 @@ class ucSource(list):
           arg = ucSource(arg)
         a = copy(arg)
         a.settle()
-        debug(repr(a))
+        self.check()
         for j in range(0, len(a)):
           ((startL, startC), (endL, endC)) = (a[j].start, a[j].end)
           if startL == 1:
@@ -205,13 +214,13 @@ class ucSource(list):
           a[j] = a[j].__class__(a[j][0], a[j][1], ucPos((startL, startC)), ucPos((endL, endC)))
         for j in range(i, len(self)):
           ((startL, startC), (endL, endC)) = (self[j].start, self[j].end)
-          if startL == self[i].start.l:
+          if startL == a[-1].start.l:
             startC += a[-1].end.c
-          if endL == self[i].start.l:
+          if endL == a[-1].start.l:
             endC += a[-1].end.c
           startL += a[-1].end.l-1
           endL += a[-1].end.l-1
-          self[j:j+1] = self[j].__class__(self[j][0], self[j][1], ucPos((startL, startC)), ucPos((endL, endC)))
+          self[j:j+1] = [self[j].__class__(self[j][0], self[j][1], ucPos((startL, startC)), ucPos((endL, endC)))]
         for j in range(0, len(a)):
           r = super(ucSource, self).insert(i+j, a[j])
         self.check()
@@ -222,12 +231,12 @@ class ucSource(list):
         for j in range(i, len(self)):
           ((startL, startC), (endL, endC)) = (self[j].start, self[j].end)
           if startL == r.start.l:
-            startC -= (r.end.c-r.start.c)
+            startC -= r.columns()
           if endL == r.start.l:
-            endC -= (r.end.c-r.start.c)
-          startL -= (r.end.l-r.start.l)
-          endL -= (r.end.l-r.start.l)
-          self[j] = self[j].__class__(self[j][0], self[j][1], ucPos((startL, startC)), ucPos((endL, endC)))
+            endC -= r.columns()
+          startL -= r.lines()
+          endL -= r.lines()
+          self[j:j+1] = [self[j].__class__(self[j][0], self[j][1], ucPos((startL, startC)), ucPos((endL, endC)))]
         self.check()
         return r
 

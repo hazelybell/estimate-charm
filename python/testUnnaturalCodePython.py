@@ -217,7 +217,10 @@ class testValidatorLong(unittest.TestCase):
     def testValidatorFiles(self):
         v = modelValidation(source=testProjectFiles, language=pythonSource, corpus=mitlmCorpus, resultsDir=self.td)
         v.validate(mutation=DELETE, n=100)
+        v.validate(mutation=INSERT, n=100)
+        v.validate(mutation=REPLACE, n=100)
         # TODO: assert csvs
+        v.release()
     @classmethod
     def tearDownClass(self):
         shutil.rmtree(self.td)
@@ -230,10 +233,12 @@ class testValidator(unittest.TestCase):
         assert os.path.isdir(self.td)
     def testValidatorFile(self):
         v = modelValidation(source=[testProject1File], language=pythonSource, corpus=mitlmCorpus, resultsDir=self.td)
+        v.genCorpus()
         v.validate(mutation=DELETE, n=10)
         v.validate(mutation=INSERT, n=10)
         v.validate(mutation=REPLACE, n=10)
         # TODO: assert csvs
+        v.release()
     @classmethod
     def tearDownClass(self):
         shutil.rmtree(self.td)

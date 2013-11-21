@@ -133,6 +133,15 @@ class ucLexeme(tuple):
     def comment(self):
         return False
     
+    def columns(self):
+        if self[2][0] == self[3][0]:
+            return self[3][1] - self[2][1]
+        else:
+            return 0
+    
+    def lines(self):
+         return self[3][0] - self[2][0]
+    
     def __str__(self):
         if self.val:
             return self.val
@@ -222,12 +231,12 @@ class ucSource(list):
         for j in range(i, len(self)):
           ((startL, startC), (endL, endC)) = (self[j].start, self[j].end)
           if startL == r.start.l:
-            startC -= (r.end.c-r.start.c)
+            startC -= r.columns()
           if endL == r.start.l:
-            endC -= (r.end.c-r.start.c)
-          startL -= (r.end.l-r.start.l)
-          endL -= (r.end.l-r.start.l)
-          self[j] = self[j].__class__(self[j][0], self[j][1], ucPos((startL, startC)), ucPos((endL, endC)))
+            endC -= r.columns()
+          startL -= r.lines()
+          endL -= r.lines()
+          self[j:j+1] = [self[j].__class__(self[j][0], self[j][1], ucPos((startL, startC)), ucPos((endL, endC)))]
         self.check()
         return r
 

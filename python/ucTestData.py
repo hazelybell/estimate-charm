@@ -59,3 +59,4 @@ self.assertEqual(
     submission_2.status, HWSubmissionProcessingStatus.SUBMITTED,
     'Unexpected status of submission 1: %s' % submission_2.status)
 """
+

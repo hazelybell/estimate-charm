@@ -61,6 +61,7 @@ class modelValidation(object):
         assert n > 0
         for fi in self.validFiles:
           assert isinstance(fi, validationFile)
+          
           for i in range(0, n):
             mutation(self, fi)
             self.sm.windowedQuery(fi.mutatedLexemes)

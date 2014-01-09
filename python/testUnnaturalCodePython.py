@@ -143,6 +143,14 @@ class testPythonLexical(unittest.TestCase):
         r.check()
         r.pop(1)
         r.check()
+    def testDeleteOneTwo(self):
+        r = pythonSource(codeWithDeleteFailure)
+        x = r.pop(2)
+        r.check()
+        r.pop(2)
+        r.check()
+        r.pop(2)
+        r.check()
     def testStringify1(self):
         self.assertEquals(str(pythonSource(someLexemes)[0]), 'print')
         self.assertEquals(str(pythonSource(someLexemes)[8]), '<ENDMARKER>')

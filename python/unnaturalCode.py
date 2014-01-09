@@ -22,6 +22,8 @@ from copy import copy
 
 zctx = None
 
+currentValidationFileForDebuggingPurposesOnly=""
+
 @singleton
 class unnaturalCode(object):
     """Singleton class for UC."""
@@ -182,7 +184,7 @@ class ucSource(list):
       #debug(str(start) + "-" + str(end))
       for i in range(start, end-1):
         assert isinstance(self[i], ucLexeme)
-        assert self[i].end <= self[i+1].start, ""+repr(self[i:i+2])
+        assert self[i].end <= self[i+1].start, "In file: %s %s"  % (currentValidationFileForDebuggingPurposesOnly, ""+repr(self[i:i+2]))
         
     def extend(self, arg):
         a = map(ucLexeme, arg)

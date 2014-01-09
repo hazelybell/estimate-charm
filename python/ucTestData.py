@@ -48,6 +48,21 @@ def mult(x, y):
 print mul(1, 2) # output the result
 """
 
+codeWithDeleteFailure = """
+null_translationimportqueueentry_potemplate = \"\"\"\\
+UPDATE TranslationImportQueueEntry
+   SET potemplate = NULL
+ WHERE TranslationImportQueueEntry.id IN (
+    SELECT TranslationImportQueueEntry.id
+      FROM TranslationImportQueueEntry, POTemplate
+     WHERE TranslationImportQueueEntry.potemplate = POTemplate.id
+       AND POTemplate.distroseries = ?
+     LIMIT ?)
+\"\"\"
+"""
+
+
+
 testProjectFiles = open("testdata/launchpad/python-file-list.txt").read().splitlines()
 
 testProject1File = "testdata/launchpad/lib/lp/hardwaredb/scripts/tests/test_hwdb_submission_processing.py"

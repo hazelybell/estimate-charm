@@ -230,11 +230,14 @@ class ucSource(list):
     
     def pop(self, i):
         r = super(ucSource, self).pop(i)
+        removedLines = r.lines()
         for j in range(i, len(self)):
           ((startL, startC), (endL, endC)) = (self[j].start, self[j].end)
-          if startL == r.start.l:
+          columns = endC-startC
+          lines = endL-startL
+          if startL == r.end.l:
             startC -= r.columns()
-          if endL == r.start.l:
+          if endL == r.end.l:
             endC -= r.columns()
           startL -= r.lines()
           endL -= r.lines()

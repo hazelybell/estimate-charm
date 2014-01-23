@@ -233,12 +233,10 @@ class ucSource(list):
         removedLines = r.lines()
         for j in range(i, len(self)):
           ((startL, startC), (endL, endC)) = (self[j].start, self[j].end)
-          columns = endC-startC
-          lines = endL-startL
           if startL == r.end.l:
-            startC -= r.columns()
-          if endL == r.end.l:
-            endC -= r.columns()
+            startC += r.start.c - r.end.c
+            if endL == startL:
+              endC += r.start.c - r.end.c
           startL -= r.lines()
           endL -= r.lines()
           self[j:j+1] = [self[j].__class__(self[j][0], self[j][1], ucPos((startL, startC)), ucPos((endL, endC)))]

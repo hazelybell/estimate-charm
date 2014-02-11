@@ -20,6 +20,9 @@ from mitlmCorpus import *
 from pythonSource import *
 from operator import itemgetter
 
+from logging import debug, info, warning, error
+
+
 class sourceModel(object):
     
     def __init__(self, cm=mitlmCorpus(), language=pythonSource, windowSize=20):
@@ -37,7 +40,7 @@ class sourceModel(object):
             
     def stringifyAll(self, lexemes):
         """Clean up a list of lexemes and convert it to a list of strings"""
-        return map(str, lexemes)
+        return [i[4] for i in lexemes]
 
     def corpify(self, lexemes):
         """Corpify a string"""

@@ -22,7 +22,7 @@ from copy import copy
 
 zctx = None
 
-currentValidationFileForDebuggingPurposesOnly=""
+ucParanoid = os.getenv("PARANOID", False)
 
 @singleton
 class unnaturalCode(object):
@@ -50,20 +50,23 @@ class unnaturalCode(object):
         
 class ucPos(tuple):
     def __new__(cls, *args):
-        if len(args) == 2:
+        if isinstance(args[0], ucPos):
+            return args[0]
+        elif len(args) == 2:
             l = args[0]
             c = args[1]
-        elif isinstance(args[0], ucPos):
-            return args[0]
         elif isinstance(args[0], tuple):
             (l, c) = args[0]
         else:
           raise TypeError("Bad constructor arguments.")
-        assert isinstance(l, int)
-        assert isinstance(c, int)
-        assert l >= 1
-        assert c >= 0
         return tuple.__new__(cls, (l, c))
+    
+    if ucParanoid:
+        def __init__(self, *args):
+            assert isinstance(self[0], int)
+            assert isinstance(self[1], int)
+            assert self[0] >= 1
+            assert self[1] >= 0
     
     def __getattr__(self, name):
         if name[0] == 'l':
@@ -94,33 +97,21 @@ class ucPos(tuple):
         return self.__lt__(other) or self.__eq__(other)
       
 class ucLexeme(tuple):
-    def __new__(cls, *args):
-        """Initialize a lexeme object."""
-        if isinstance(args[0], cls):
-            return args[0]
-        elif isinstance(args[0], tuple):
-            t = (args[0][0], args[0][1], ucPos(args[0][2]), ucPos(args[0][3]))
-        elif isinstance(args[0], dict):
-            t = (args[0]['type'], args[0]['value'],  ucPos(args[0]['start']),  ucPos(args[0]['end']))
-        elif len(args) == 4:
-            t = (args[0], args[1], ucPos(args[2]), ucPos(args[3]))
-        else:
-            raise TypeError("Constructor arguments cant be " + str(type(args)))
-        assert t[0]
-        assert isinstance(t[0], str)
-        assert isinstance(t[1], str)
-        assert isinstance(t[2], ucPos)
-        assert isinstance(t[3], ucPos)
-        assert t[2] <= t[3], "%s > %s" % (t[2], t[3])
-        return tuple.__new__(cls, t)
-    
-    def __getitem__(self, name):
-        if isinstance(name, int):
-            return tuple.__getitem__(self, name)
-        else:
-            return self.__getattr__(name)
+    if ucParanoid:
+        def __init__(self, *args):
+            assert len(self) == 5
+            assert self[0]
+            assert isinstance(self[0], str)
+            assert len(self[0] > 0)
+            assert isinstance(self[1], str)
+            assert len(self[1] > 0)
+            assert isinstance(self[2], ucPos)
+            assert isinstance(self[3], ucPos)
+            assert self[2] <= self[3], "%s > %s" % (self[2], self[3])
+            assert isinstance(self[4], str)
+            assert len(self[4] > 0)
             
-        
+    
     def __getattr__(self, name):
         if name == 'ltype' or name == 'type':
             return self[0]
@@ -144,39 +135,85 @@ class ucLexeme(tuple):
     def lines(self):
          return self[3][0] - self[2][0]
     
-    def __str__(self):
-        if self.val:
-            return self.val
+    @classmethod
+    def stringify(cls, t, v):
+        if v:
+            return v
         else:
-            return '<'+self.ltype+'>'
+            return '<'+t+'>'
+        
+    @classmethod
+    def fromTuple(cls, tup):
+        if len(args[0] == 4):
+            t = (args[0][0], args[0][1], ucPos(args[0][2]), ucPos(args[0][3]), cls.stringify(args[0][0], args[0][1]))
+        elif len(args[0] == 5):
+            t = (args[0][0], args[0][1], ucPos(args[0][2]), ucPos(args[0][3]), args[0][4])
+        else:
+            raise TypeError("Constructor argument cant be " + str(type(args[0])))
+        return cls(t)
+
+    
+    @classmethod
+    def fromDict(cls, d):
+        if isinstance(d, dict):
+            t = (d['type'], d['value'],  ucPos(d['start']),  ucPos(d['end']), cls.stringify(d['type'], d['value']))
+        else:
+            raise TypeError("Constructor argument cant be " + str(type(d)))
+        return cls(t)
+    
+    @classmethod
+    def build(cls, *args):
+        """Initialize a lexeme object."""
+        if isinstance(args[0], cls):
+            return args[0]
+        elif len(args) == 4:
+            t = (args[0], args[1], ucPos(args[2]), ucPos(args[3]), cls.stringify(args[0], args[1]))
+        elif len(args) == 5:
+            t = (args[0], args[1], ucPos(args[2]), ucPos(args[3]), args[4])
+        else:
+            raise TypeError("Constructor arguments cant be " + str(type(args)))
+        return cls(t)
+        
+
+    def __str__(self):
+        return self[4]
+
     
 class ucSource(list):
     
-    def __new__(cls, *args):
-        return list.__new__(cls, *args)
-    
-    def __init__(self, *args):
-        return self.extend(*args)
-    
+    def __init__(self, value=[]):
+        if isinstance(value, str):
+            self.extend(self.lex(value))
+        elif isinstance(value, list):
+            if len(value) == 0:
+                return
+            elif isinstance(value[0], dict):
+                self.extend(map(ucLexeme.fromDict, value))
+            else:
+                self.extend(map(ucLexeme, value))
+        else:
+            raise AttributeError
+
     def settle(self):
-      """Contents may settle during shipping."""
-      first = self[0].start
-      for i in range(0, len(self)):
-        if self[i].start.l == first.l:
-          startL = 1
-          startC = self[i].start.c - first.c
-        else:
-          startL = self[i].start.l - first.l-1
-          startC = self[i].start.c
-        if self[i].end.l == first.l:
-          endL = 1
-          endC = self[i].end.c - first.c
-        else:
-          endL = self[i].end.l - first.l-1
-          endC = self[i].end.c
-        self[i] = self[i].__class__(self[i][0], self[i][1], ucPos((startL, startC)), ucPos((endL, endC)))
-      self.check()
-      return self
+        """Contents may settle during shipping."""
+        first = self[0].start
+        for i in range(0, len(self)):
+            if self[i].start.l == first.l:
+                startL = 1
+                startC = self[i].start.c - first.c
+            else:
+                startL = self[i].start.l - first.l-1
+                startC = self[i].start.c
+            if self[i].end.l == first.l:
+                endL = 1
+                endC = self[i].end.c - first.c
+            else:
+                endL = self[i].end.l - first.l-1
+                endC = self[i].end.c
+            self[i] = self[i].__class__((self[i][0], self[i][1], ucPos((startL, startC)), ucPos((endL, endC)), self[i][4]))
+        if ucParanoid:
+            self.check()
+        return self
     
     def check(self, start=0, end=sys.maxint):
       start = max(start, 0)
@@ -185,17 +222,19 @@ class ucSource(list):
       for i in range(start, end-1):
         assert isinstance(self[i], ucLexeme)
         assert self[i].end <= self[i+1].start, "In file: %s %s"  % (currentValidationFileForDebuggingPurposesOnly, ""+repr(self[i:i+2]))
-        
-    def extend(self, arg):
-        a = map(ucLexeme, arg)
-        s = len(self)-1
-        r = super(ucSource, self).extend(a)
-        if s >= 0:
-          self.check(start=s)
-        return r
     
-    def append(self, *args):
-        return self.extend(args)
+    if ucParanoid:
+        def extend(self, arg):
+            for a in arg:
+                assert isinstance(a, ucLexeme)
+            s = len(self)-1
+            r = super(ucSource, self).extend(arg)
+            if s >= 0:
+                self.check(start=s)
+            return r
+    
+        def append(self, *args):
+            return self.extend(args)
       
     def insert(self, i, arg):
         if not isinstance(arg, list):
@@ -204,7 +243,6 @@ class ucSource(list):
           arg = ucSource(arg)
         a = copy(arg)
         a.settle()
-        self.check()
         for j in range(0, len(a)):
           ((startL, startC), (endL, endC)) = (a[j].start, a[j].end)
           if startL == 1:
@@ -213,7 +251,7 @@ class ucSource(list):
             endC += self[i].start.c
           startL += self[i].start.l-1
           endL += self[i].start.l-1
-          a[j] = a[j].__class__(a[j][0], a[j][1], ucPos((startL, startC)), ucPos((endL, endC)))
+          a[j] = a[j].__class__((a[j][0], a[j][1], ucPos((startL, startC)), ucPos((endL, endC)), a[j][4]))
         for j in range(i, len(self)):
           ((startL, startC), (endL, endC)) = (self[j].start, self[j].end)
           if startL == a[-1].start.l:
@@ -222,10 +260,11 @@ class ucSource(list):
             endC += a[-1].end.c
           startL += a[-1].end.l-1
           endL += a[-1].end.l-1
-          self[j:j+1] = [self[j].__class__(self[j][0], self[j][1], ucPos((startL, startC)), ucPos((endL, endC)))]
+          self[j:j+1] = [self[j].__class__((self[j][0], self[j][1], ucPos((startL, startC)), ucPos((endL, endC)), self[j][4]))]
         for j in range(0, len(a)):
           r = super(ucSource, self).insert(i+j, a[j])
-        self.check()
+        if ucParanoid:
+            self.check()
         return r
     
     def pop(self, i):
@@ -239,29 +278,31 @@ class ucSource(list):
               endC += r.start.c - r.end.c
           startL -= r.lines()
           endL -= r.lines()
-          self[j:j+1] = [self[j].__class__(self[j][0], self[j][1], ucPos((startL, startC)), ucPos((endL, endC)))]
-        self.check()
+          self[j:j+1] = [self[j].__class__((self[j][0], self[j][1], ucPos((startL, startC)), ucPos((endL, endC)), self[j][4]))]
+        if ucParanoid:
+            self.check()
         return r
 
     def scrubbed(self):
         raise NotImplementedError
         
-    def __setitem__(self, index, value):
-      if isinstance(value, list):
-        for i in value:
-          assert isinstance(i, ucLexeme)
-      else:
-          assert isinstance(value, ucLexeme)
-      r = super(ucSource, self).__setitem__(index, value)
-      if isinstance(index, int):
-        self.check(index-1, index+2)
-      return r
-        
-    # Taken from the python documentation: http://docs.python.org/2/reference/datamodel.html v2.7.5 November 2013
-    # Licesne: PSF
-    def __setslice__(self, i, j, seq):
-      self[max(0, i):max(0, j):] = seq
-    # End License
+    if ucParanoid:
+        def __setitem__(self, index, value):
+            if isinstance(value, list):
+                for i in value:
+                    assert isinstance(i, ucLexeme)
+            else:
+                assert isinstance(value, ucLexeme)
+            r = super(ucSource, self).__setitem__(index, value)
+            if isinstance(index, int):
+                self.check(index-1, index+2)
+            return r
+       
+        # Taken from the python documentation: http://docs.python.org/2/reference/datamodel.html v2.7.5 November 2013
+        # Licesne: PSF
+        def __setslice__(self, i, j, seq):
+            self[max(0, i):max(0, j):] = seq
+        # End License
     
     def sort():
       raise TypeError("Je refuse!")

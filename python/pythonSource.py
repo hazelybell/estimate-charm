@@ -25,32 +25,33 @@ from cStringIO import StringIO
 
 COMMENT = 53
 
+ws = re.compile('\s')
+
 class pythonLexeme(ucLexeme):
     
-    def __new__(cls, *args):
-        if isinstance(args[0], ucLexeme):
-            return ucLexeme.__new__(cls, *args)
-        elif isinstance(args[0], tuple):
-            tup = args[0]
-            # tup = [type, val, [startrow, col], [endrow, col], line]
-            if isinstance(tup[0], int):
-              t0 = token.tok_name[tup[0]]
-            else:
-              t0 = tup[0]
-            return ucLexeme.__new__(cls, t0, str(tup[1]), ucPos(tup[2]), ucPos(tup[3]))
-        else:
-            return ucLexeme.__new__(cls, *args)
-
-    def __str__(self):
+    @classmethod
+    def stringify(cls, t, v):
         """Stringify a lexeme: produce text describing its value"""
-        if self.ltype == 'COMMENT':
-            return '<'+self.ltype+'>'
-        elif ws.match(str(self.val)) :
-            return '<'+self.ltype+'>'
-        elif len(self.val) > 0 :
-            return self.val
+        if t == 'COMMENT':
+            return '<'+t+'>'
+        elif len(v) > 20 :
+            return '<'+t+'>'
+        elif ws.match(str(v)) :
+            return '<'+t+'>'
+        elif t == 'STRING' :
+            return '<'+t+'>'
+        elif len(v) > 0 :
+            return v
         else:
-            return self.type
+            return t
+    
+    @classmethod
+    def fromTuple(cls, tup):
+        if isinstance(tup[0], int):
+            t0 = token.tok_name[tup[0]]
+        else:
+            t0 = tup[0]
+        return tuple.__new__(cls, (t0, str(tup[1]), ucPos(tup[2]), ucPos(tup[3]), cls.stringify(t0, str(tup[1]))))
           
     def comment(self):
         return (self.ltype == 'COMMENT')
@@ -58,19 +59,8 @@ class pythonLexeme(ucLexeme):
 
 class pythonSource(ucSource):
     
-    def extend(self, arg):
-        if isinstance(arg, str):
-          super(pythonSource, self).extend(self.lex(arg))
-        else:
-            for a in arg:
-                if isinstance(a, str):
-                    assert len(a)>1
-                    super(pythonSource, self).extend(self.lex(a))
-                else:
-                    super(pythonSource, self).extend([a])
-
     def lex(self, code):
-        return [pythonLexeme(tok) for tok in \
+        return [pythonLexeme.fromTuple(tok) for tok in \
             tokenize.generate_tokens(StringIO(code).readline)]
     
     def deLex(self):
@@ -99,12 +89,14 @@ class pythonSource(ucSource):
     
     def scrubbed(self):
         """Clean up python source code removing extra whitespace tokens and comments"""
-        ls = self.unCommented()
+        ls = copy(self)
         assert len(ls)
         i = 0
         r = []
         for i in range(0, len(ls)):
-            if ls[i].ltype == 'NL':
+            if ls[i].comment():
+                continue
+            elif ls[i].ltype == 'NL':
                 continue
             elif ls[i].ltype == 'NEWLINE' and ls[i+1].ltype == 'NEWLINE':
                 continue

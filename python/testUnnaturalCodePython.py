@@ -42,9 +42,6 @@ class testUcUtil(unittest.TestCase):
     def testToBool(self):
         self.assertFalse(toBool("false"), 'toBool false not false')
         self.assertTrue(toBool("true"), 'toBool true not true')
-    def testWS(self):
-        self.assertTrue(ws.match('        '))
-        self.assertTrue(ws.match(indentLexeme['value']))
 
 class testUnnaturalCode(unittest.TestCase):
     @classmethod
@@ -96,22 +93,22 @@ class testPythonLexical(unittest.TestCase):
         r = pythonSource(somePythonCode)
         self.assertTrue(isinstance(r, ucSource))
         self.assertTrue(isinstance(r[0], ucLexeme))
-        self.assertTrue(isinstance(r[0]['end'], tuple))
-        self.assertTrue(isinstance(r[0]['end'].l, int))
-        self.assertTrue(isinstance(r[0]['end'].c, int))
-        self.assertTrue(isinstance(r[0]['start'], tuple))
-        self.assertTrue(isinstance(r[0]['start'][0], int))
-        self.assertTrue(isinstance(r[0]['start'][1], int))
-        self.assertTrue(isinstance(r[0]['type'], str))
-        self.assertTrue(isinstance(r[0]['value'], str))
+        self.assertTrue(isinstance(r[0].end, tuple))
+        self.assertTrue(isinstance(r[0].end.l, int))
+        self.assertTrue(isinstance(r[0].end.c, int))
+        self.assertTrue(isinstance(r[0].start, tuple))
+        self.assertTrue(isinstance(r[0].start[0], int))
+        self.assertTrue(isinstance(r[0].start[1], int))
+        self.assertTrue(isinstance(r[0].type, str))
+        self.assertTrue(isinstance(r[0].value, str))
     def testLexExpectedToken(self):
         r = pythonSource(somePythonCode)
-        self.assertEquals(r[0]['end'][0], 1)
-        self.assertEquals(r[0]['end'][1], 5)
-        self.assertEquals(r[0]['start'][0], 1)
-        self.assertEquals(r[0]['start'][1], 0)
-        self.assertEquals(r[0]['type'], 'NAME')
-        self.assertEquals(r[0]['value'], 'print')
+        self.assertEquals(r[0].end[0], 1)
+        self.assertEquals(r[0].end[1], 5)
+        self.assertEquals(r[0].start[0], 1)
+        self.assertEquals(r[0].start[1], 0)
+        self.assertEquals(r[0].type, 'NAME')
+        self.assertEquals(r[0].value, 'print')
     def testColumns(self):
         r = pythonSource(lotsOfPythonCode)
         self.assertEquals(r[1].columns(), 3) # this should be the "def" token
@@ -119,7 +116,7 @@ class testPythonLexical(unittest.TestCase):
     def testDeleteOne(self):
         r = pythonSource(lotsOfPythonCode)
         x = r.pop(1)
-        self.assertEquals(x['value'], 'def')
+        self.assertEquals(x.value, 'def')
         r.check()
         r.pop(6)
         r.check()
@@ -154,17 +151,17 @@ class testPythonLexical(unittest.TestCase):
     def testStringify1(self):
         self.assertEquals(str(pythonSource(someLexemes)[0]), 'print')
         self.assertEquals(str(pythonSource(someLexemes)[8]), '<ENDMARKER>')
-        self.assertEquals(str(pythonLexeme(indentLexeme)), '<INDENT>')
+        self.assertEquals(str(pythonLexeme.fromDict(indentLexeme)), '<INDENT>')
     def testLexDeLex(self):
         self.assertEquals(lotsOfPythonCode, (pythonSource(lotsOfPythonCode).deLex()))
         self.assertEquals(codeWithComments, (pythonSource(codeWithComments).deLex()))
     def testComment(self):
-        self.assertTrue(pythonLexeme((COMMENT, '# wevie stunder', (1, 0), (1, 0))).comment())
-        self.assertFalse(pythonLexeme((token.INDENT, '    ', (2, 0), (2, 0))).comment())
+        self.assertTrue(pythonLexeme.fromTuple((COMMENT, '# wevie stunder', (1, 0), (1, 0))).comment())
+        self.assertFalse(pythonLexeme.fromTuple((token.INDENT, '    ', (2, 0), (2, 0))).comment())
     def testExclusiveEnd(self):
         r = pythonSource("1+2")
-        self.assertTrue(r[0]['start'].c + 1 == r[0]['end'].c) # First token is r[0]
-        self.assertTrue(r[2]['start'].c + 1 == r[2]['end'].c)
+        self.assertTrue(r[0].start.c + 1 == r[0].end.c) # First token is r[0]
+        self.assertTrue(r[2].start.c + 1 == r[2].end.c)
     def testPoppin(self):
         r = pythonSource("1+2")
         r.pop(0)
@@ -187,11 +184,11 @@ class testPythonLexical(unittest.TestCase):
         r = pythonSource("for _ in range(0, x):\n\ta=1\n\n")
         x = r.pop(14)
         r.check()
-        self.assertEquals(x['value'], '1')
+        self.assertEquals(x.value, '1')
         r = pythonSource("for _ in range(0, x):\n\ta=1\n\n")
         x = r.pop(9)
         r.check()
-        self.assertEquals(x['value'], ':')
+        self.assertEquals(x.value, ':')
     @classmethod
     def tearDownClass(self):
         pass

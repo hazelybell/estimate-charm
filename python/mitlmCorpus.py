@@ -18,7 +18,13 @@
 from __future__ import print_function
 import os, zmq, signal, os.path, subprocess, fcntl, time
 from unnaturalCode import *
-from logging import debug, info, warning, error
+from logging import debug, info, warning, error, getLogger
+
+allWhitespace = re.compile('^\s+$')
+
+ucParanoid = os.getenv("PARANOID", False)
+
+mitlmLogger = getLogger('MITLM')
 
 class mitlmCorpus(object):
     
@@ -36,20 +42,21 @@ class mitlmCorpus(object):
     def checkMitlm(self):
         while self.mitlmProc:
             try:
-                info(self.mitlmProc.stdout.read())
+                mitlmLogger.info(self.mitlmProc.stdout.readline().rstrip('\n'))
             except:
                 break
     
     def startMitlm(self):
         """Start MITLM estimate-ngram in 0MQ entropy query mode, unless already running."""
         if not self.mitlmSocket == None :
-            assert not self.mitlmSocket.closed
-            assert self.mitlmProc.poll() == None
-            # Already running
-            self.checkMitlm()
+            if ucParanoid:
+                assert not self.mitlmSocket.closed
+                assert self.mitlmProc.poll() == None
+                # Already running
+                self.checkMitlm()
             return
         assert os.path.exists(self.readCorpus), "No such corpus."
-        assert not ws.match(slurp(self.readCorpus)), "Corpus is full of whitespace!"
+        assert not allWhitespace.match(slurp(self.readCorpus)), "Corpus is full of whitespace!"
         assert os.path.exists(self.estimateNgramPath), "No such estimate-ngram."
         self.mitlmProc = subprocess.Popen([self.estimateNgramPath, "-t", self.readCorpus, "-o", str(self.order+1), "-s", "ModKN", "-u", "-live-prob", self.mitlmSocketPath], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         debug("Started MITLM as PID %i." % self.mitlmProc.pid)
@@ -112,7 +119,7 @@ class mitlmCorpus(object):
         cl = self.corpify(lexemes)
         #debug(cl)
         assert(len(cl))
-        assert (not ws.match(cl)), "Adding blank line to corpus!"
+        assert (not allWhitespace.match(cl)), "Adding blank line to corpus!"
         print(cl, file=self.corpusFile)
         self.corpusFile.flush()
         self.stopMitlm()

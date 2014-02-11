@@ -18,8 +18,6 @@
 
 import os, sys, re, json
 
-ws = re.compile('^\s+$')
-
 def slurp(fn):
     return open(fn).read()
 

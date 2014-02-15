@@ -3,54 +3,66 @@
 UnnaturalCode is a system with the purpose of augmenting the compiler's own
 syntax error location strategies. It is designed to assist the developer in
 locating syntax errors in their software. For more information, please consult
-the current draft of the UnnaturalCode paper (on submission) at:
-
-    http://webdocs.cs.ualberta.ca/~joshua2/syntax.pdf
+the current draft of the [UnnaturalCode
+paper](http://webdocs.cs.ualberta.ca/~joshua2/syntax.pdf) (on submission) at
 
 UnnaturalCode should be considered proof-of-concept quality software. The
-primary author of UnnaturalCode can be reached at:
-
-    unnaturalcode@orezpraw.com
+primary author of UnnaturalCode can be reached at unnaturalcode@orezpraw.com
 
 # Installation
 
-Requires the modified version of MITLM available at:
-https://github.com/orezpraw/MIT-Language-Modeling-Toolkit
+## Prerequisites
 
-Get jzmq http://www.zeromq.org/bindings:java::
+Get jzmq http://www.zeromq.org/bindings:java:
 
-    git clone https://github.com/zeromq/jzmq.git
-    cd jzmq
-    autogen.sh
-    ./configure
-    make
-    sudo make install
+```bash
+git clone https://github.com/zeromq/jzmq.git
+cd jzmq
+autogen.sh
+./configure
+make
+sudo make install
 
-Get modified mitlm::
+Get modified mitlm:
+```
 
-    git clone \
-        https://github.com/orezpraw/MIT-Language-Modeling-Toolkit.git mitlm
-    cd mitlm
-    ./autogen.sh
-    make
-    export ESTIMATENGRAM="`pwd`/.libs/estimate-ngram"
-    export LD_LIBRARY_PATH="`pwd`/.libs"
+```bash
+git clone \
+    https://github.com/orezpraw/MIT-Language-Modeling-Toolkit.git mitlm
+cd mitlm
+./autogen.sh
+make
+export ESTIMATENGRAM="`pwd`/.libs/estimate-ngram"
+export LD_LIBRARY_PATH="`pwd`/.libs"
+```
 
-get antlr3::
+Get antlr3:
 
-    sudo apt-get install antlr3
+```bash
+sudo apt-get install antlr3
+```
 
-build antlr stuff::
+## Building
 
-    cd unnaturalcode/antlr
-    make
+Build antlr stuff:
 
-install python and perl reqs: ?????::
+```bash
+cd unnaturalcode/antlr
+make
+```
+
+Install python and perl reqs:
+
+```bash`
+#FIXME
+```
 
 # Running
 
-    ESTIMATENGRAM="/path/to/estimate-ngram"
-    LD_LIBRARY_PATH="/path/to/mitlm/libs"
+```bash
+ESTIMATENGRAM="/path/to/estimate-ngram"
+LD_LIBRARY_PATH="/path/to/mitlm/libs"
+```
 
 # LICENSING
 

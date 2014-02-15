@@ -4,16 +4,16 @@ UnnaturalCode is a system with the purpose of augmenting the compiler's own
 syntax error location strategies. It is designed to assist the developer in
 locating syntax errors in their software. For more information, please consult
 the current draft of the [UnnaturalCode
-paper](http://webdocs.cs.ualberta.ca/~joshua2/syntax.pdf) (on submission) at
+paper](http://webdocs.cs.ualberta.ca/~joshua2/syntax.pdf) (on submission).
 
 UnnaturalCode should be considered proof-of-concept quality software. The
-primary author of UnnaturalCode can be reached at unnaturalcode@orezpraw.com
+primary author of UnnaturalCode can be reached at <unnaturalcode@orezpraw.com>.
 
 # Installation
 
-## Prerequisites
+### Prerequisites
 
-Get jzmq <http://www.zeromq.org/bindings:java>:
+Get [jzmq](http://www.zeromq.org/bindings:java):
 
 ```bash
 git clone https://github.com/zeromq/jzmq.git
@@ -22,9 +22,9 @@ autogen.sh
 ./configure
 make
 sudo make install
+```
 
 Get modified mitlm:
-```
 
 ```bash
 git clone \
@@ -42,7 +42,7 @@ Get antlr3:
 sudo apt-get install antlr3
 ```
 
-## Building
+### Building
 
 Build antlr stuff:
 
@@ -64,7 +64,7 @@ ESTIMATENGRAM="/path/to/estimate-ngram"
 LD_LIBRARY_PATH="/path/to/mitlm/libs"
 ```
 
-# LICENSING
+# Licensing
 
 Assume that UnnaturalCode is licensed under the AGPL3+ unless otherwise
 specified. The antlr/ directory is licensed under GPL2+, see that directory for

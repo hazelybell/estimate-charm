@@ -13,7 +13,7 @@ primary author of UnnaturalCode can be reached at unnaturalcode@orezpraw.com
 
 ## Prerequisites
 
-Get jzmq http://www.zeromq.org/bindings:java:
+Get jzmq <http://www.zeromq.org/bindings:java>:
 
 ```bash
 git clone https://github.com/zeromq/jzmq.git
@@ -70,11 +70,11 @@ Assume that UnnaturalCode is licensed under the AGPL3+ unless otherwise
 specified. The antlr/ directory is licensed under GPL2+, see that directory for
 more information.
 
-Copyright 2010,2011,2012
-    Abram Hindle, Prem Devanbu, Earl T. Barr, Daryl Posnett
+Copyright 2010,2011,2012  
+Abram Hindle, Prem Devanbu, Earl T. Barr, Daryl Posnett
 
-Copyright 2012, 2013
-    Joshua Charles Campbell, Abram Hindle, Alex Wilson
+Copyright 2012, 2013  
+Joshua Charles Campbell, Abram Hindle, Alex Wilson
 
 UnnaturalCode is free software: you can redistribute it and/or modify it under
 the terms of the GNU Affero General Public License as published by the Free

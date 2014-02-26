@@ -317,6 +317,7 @@ unless ($validate) {
       for my $file (@inputfiles) {
           print TOKFILE toksToTrain(lexAfile($file));
       }
+      print "CORPUS UPDATED";
     }
   } else {
     my ($validateMode, $validateNumber) = split(' ', $validate);

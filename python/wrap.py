@@ -17,9 +17,9 @@
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
 import re, runpy, sys, traceback
 
-from UCUtil import *
+from logging import debug, info, warning, error
 
-startMitlm()
+print sys.path
 
 name_err_extract = re.compile(r"^name\s+'([^']+)'")
 
@@ -30,7 +30,6 @@ def get_file_line(filename, line):
 	except:
 		return None
 
-# NOTE: errors have line info 1-indexed, so we subtract 1
 try:
 	runpy.run_path(sys.argv[1])
 except SyntaxError as se:
@@ -39,7 +38,6 @@ except SyntaxError as se:
 except NameError as ne:
 	exctype, _, tb = sys.exc_info()
 	filename, line, func, text = traceback.extract_tb(tb)[-1]
-	line = line - 1
 	name = name_err_extract.match(ne.message).group(1)
 	# note: text has all leading whitespace stripped, so the column
 	# we find for name will not be quite right.

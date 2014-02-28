@@ -27,6 +27,16 @@ from random import randint
 from os import path
 
 import csv
+import runpy
+import sys
+from shutil import copyfile
+
+virtualEnvActivate = os.getenv("VIRTUALENV_ACTIVATE", None)
+
+if not virtualEnvActivate is None:
+    execfile(virtualEnvActivate, dict(__file__=virtualEnvActivate))
+
+print sys.path
 
 class validationFile(object):
     
@@ -40,6 +50,8 @@ class validationFile(object):
         self.f.close()
         self.mutatedLexemes = None
         self.mutatedLocation = None
+        info("Running %s", self.path)
+        runpy.run_path(self.path)
     
     def mutate(self, lexemes, location):
         assert isinstance(lexemes, ucSource)

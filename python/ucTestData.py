@@ -14,6 +14,8 @@
 #
 #    You should have received a copy of the GNU Affero General Public License
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
+import os
+
 somePythonCode = "print (1+2**2)"
 
 someLexemes = [{'end': (1, 5), 'start': (1, 0), 'type': 'NAME', 'value': 'print'},
@@ -61,11 +63,11 @@ UPDATE TranslationImportQueueEntry
 \"\"\"
 """
 
+testFileList = os.getenv("TEST_FILE_LIST", "testdata/launchpad/python-file-list.txt")
 
+testProjectFiles = open(testFileList).read().splitlines()
 
-testProjectFiles = open("testdata/launchpad/python-file-list.txt").read().splitlines()
-
-testProject1File = "testdata/launchpad/lib/lp/hardwaredb/scripts/tests/test_hwdb_submission_processing.py"
+testProject1File = testProjectFiles[10]
 
 somePythonCodeFromProject = """
 submission_set = getUtility(IHWSubmissionSet)

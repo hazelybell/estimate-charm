@@ -3,8 +3,8 @@
 UnnaturalCode is a system with the purpose of augmenting the compiler's own
 syntax error location strategies. It is designed to assist the developer in
 locating syntax errors in their software. For more information, please consult
-the current draft of the [UnnaturalCode
-paper](http://webdocs.cs.ualberta.ca/~joshua2/syntax.pdf) (on submission).
+the the [UnnaturalCode
+paper](http://webdocs.cs.ualberta.ca/~joshua2/syntax.pdf) (preprint).
 
 UnnaturalCode should be considered proof-of-concept quality software. The
 primary author of UnnaturalCode can be reached at <unnaturalcode@orezpraw.com>.
@@ -54,14 +54,11 @@ run_some_command
 # Licensing
 
 Assume that UnnaturalCode is licensed under the AGPL3+ unless otherwise
-specified. The antlr/ directory is licensed under GPL2+, see that directory for
-more information.
+specified.
 
-Copyright 2010,2011,2012  
-Abram Hindle, Prem Devanbu, Earl T. Barr, Daryl Posnett
+&copy; 2010-2012 Abram Hindle, Prem Devanbu, Earl T. Barr, Daryl Posnett
 
-Copyright 2012, 2013  
-Joshua Charles Campbell, Abram Hindle, Alex Wilson
+&copy; 2012-2014 Joshua Charles Campbell, Abram Hindle, Alex Wilson
 
 UnnaturalCode is free software: you can redistribute it and/or modify it under
 the terms of the GNU Affero General Public License as published by the Free

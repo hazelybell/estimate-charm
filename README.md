@@ -18,19 +18,21 @@ primary author of UnnaturalCode can be reached at <unnaturalcode@orezpraw.com>.
 Ubuntu/Debian:
 
 ```bash
-sudo apt-get install python-zmq libzmq-dev automake autoconf gfortran
+sudo apt-get install python-zmq libzmq-dev \
+    automake autoconf gfortran python-nose
 ```
 
 Fedora:
 
 ```bash
-sudo yum install python-zmq automake autoconf gcc-gfortran
+sudo yum install python-zmq automake autoconf gcc-gfortran python-nose
 # the version of zeromq3-devel on Fedora 19+ does not include zmq.hpp.
 # grab it directly from upstream and drop it in for now
-sudo wget https://raw.github.com/zeromq/cppzmq/master/zmq.hpp -O /usr/include/zmq.hpp
+sudo wget https://raw.github.com/zeromq/cppzmq/master/zmq.hpp \
+    -O /usr/include/zmq.hpp
 ```
 
-### Get modified mitlm:
+### Get/install modified mitlm:
 
 ```bash
 git clone \
@@ -38,17 +40,18 @@ git clone \
 cd mitlm
 ./autogen.sh
 make
-export ESTIMATENGRAM="`pwd`/.libs/estimate-ngram"
-export LD_LIBRARY_PATH="`pwd`/.libs"
+sudo make install
+sudo ldconfig
 ```
 
 # Running
 
 ```bash
-# export these as above
-ESTIMATENGRAM="/path/to/estimate-ngram"
-LD_LIBRARY_PATH="/path/to/mitlm/libs"
-run_some_command
+cd python
+# Ubuntu
+FAST=1 nose2-2.7 -B --log-capture
+# Fedora
+nosetests
 ```
 
 # Licensing

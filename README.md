@@ -18,21 +18,16 @@ primary author of UnnaturalCode can be reached at <unnaturalcode@orezpraw.com>.
 Ubuntu/Debian:
 
 ```bash
-sudo apt-get install libzmq-dev
+sudo apt-get install python-zmq libzmq-dev automake autoconf gfortran
 ```
 
 Fedora:
 
 ```bash
-sudo yum install zeromq3-devel
-```
-
-### Get [pyzmq](https://github.com/zeromq/pyzmq):
-
-```bash
-virtualenv dev     # create a new, empty virtualenv
-. dev/bin/activate # enable it, sandboxing us from the system-installed python libraries
-pip install pyzmq  # install pyzmq into our virtualenv
+sudo yum install python-zmq automake autoconf gcc-gfortran
+# the version of zeromq3-devel on Fedora 19+ does not include zmq.hpp.
+# grab it directly from upstream and drop it in for now
+sudo wget https://raw.github.com/zeromq/cppzmq/master/zmq.hpp -O /usr/include/zmq.hpp
 ```
 
 ### Get modified mitlm:
@@ -50,7 +45,7 @@ export LD_LIBRARY_PATH="`pwd`/.libs"
 # Running
 
 ```bash
-. dev/bin/activate
+# export these as above
 ESTIMATENGRAM="/path/to/estimate-ngram"
 LD_LIBRARY_PATH="/path/to/mitlm/libs"
 run_some_command

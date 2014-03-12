@@ -11,20 +11,31 @@ primary author of UnnaturalCode can be reached at <unnaturalcode@orezpraw.com>.
 
 # Installation
 
-### Prerequisites
+## Prerequisites
 
-Get [jzmq](http://www.zeromq.org/bindings:java):
+### Install packaged dependencies
+
+Ubuntu/Debian:
 
 ```bash
-git clone https://github.com/zeromq/jzmq.git
-cd jzmq
-autogen.sh
-./configure
-make
-sudo make install
+sudo apt-get install libzmq-dev
 ```
 
-Get modified mitlm:
+Fedora:
+
+```bash
+sudo yum install zeromq3-devel
+```
+
+### Get [pyzmq](https://github.com/zeromq/pyzmq):
+
+```bash
+virtualenv dev     # create a new, empty virtualenv
+. dev/bin/activate # enable it, sandboxing us from the system-installed python libraries
+pip install pyzmq  # install pyzmq into our virtualenv
+```
+
+### Get modified mitlm:
 
 ```bash
 git clone \
@@ -36,32 +47,13 @@ export ESTIMATENGRAM="`pwd`/.libs/estimate-ngram"
 export LD_LIBRARY_PATH="`pwd`/.libs"
 ```
 
-Get antlr3:
-
-```bash
-sudo apt-get install antlr3
-```
-
-### Building
-
-Build antlr stuff:
-
-```bash
-cd unnaturalcode/antlr
-make
-```
-
-Install python and perl reqs:
-
-```bash`
-#FIXME
-```
-
 # Running
 
 ```bash
+. dev/bin/activate
 ESTIMATENGRAM="/path/to/estimate-ngram"
 LD_LIBRARY_PATH="/path/to/mitlm/libs"
+run_some_command
 ```
 
 # Licensing

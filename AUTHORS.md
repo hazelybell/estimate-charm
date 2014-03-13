@@ -18,7 +18,7 @@ Department of Computing Science
 
 University of Alberta
 
-joshua2@ualberta.ca
+hindle1@ualberta.ca
 
 ## Other Contributors
 

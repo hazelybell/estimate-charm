@@ -16,7 +16,7 @@ primary author of UnnaturalCode can be reached at <unnaturalcode@orezpraw.com>.
 
 # Licensing
 
-Assume that UnnaturalCode is licensed under the AGPL3+ unless otherwise
+Assume that UnnaturalCode is licensed under the [AGPL3+](LICENSE) unless otherwise
 specified.
 
 &copy; 2010-2012 Abram Hindle, Prem Devanbu, Earl T. Barr, Daryl Posnett

@@ -35,3 +35,17 @@ details.
 
 You should have received a copy of the GNU Affero General Public License along
 with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
+
+# Academic Use
+
+Now we aren't going to impose any extra requirements, but we ask kindly if you 
+are using this academically that you should consider citing our relevant work:
+
+    @InProceedings{campbellMSR2014,
+      author =       {Joshua Charles Campbell and Abram Hindle and José Nelson Amaral},
+      title =        {{Syntax Errors Just Aren’t Natural: Improving Error Reporting with Language Models}},
+      booktitle = {Proceedings of the 11th Working Conference on Mining Software Repositories},
+      year =      {2014},
+      pages =     {10}
+    }
+    

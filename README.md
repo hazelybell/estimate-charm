@@ -6,6 +6,7 @@ locating syntax errors in their software. For more information, please consult
 the the [UnnaturalCode
 paper](http://webdocs.cs.ualberta.ca/~joshua2/syntax.pdf) (preprint).
 
+* [Video Demo](https://www.youtube.com/watch?v=mIMpfh7rDEk)
 * [About the Authors](AUTHORS.md)
 * [Installation](INSTALL.md)
 

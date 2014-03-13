@@ -6,6 +6,8 @@ locating syntax errors in their software. For more information, please consult
 the the [UnnaturalCode
 paper](http://webdocs.cs.ualberta.ca/~joshua2/syntax.pdf) (preprint).
 
+* [About the Authors](AUTHORS.md)
+
 UnnaturalCode should be considered proof-of-concept quality software. The
 primary author of UnnaturalCode can be reached at <unnaturalcode@orezpraw.com>.
 

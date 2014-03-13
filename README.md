@@ -12,7 +12,7 @@ paper](http://webdocs.cs.ualberta.ca/~joshua2/syntax.pdf) (preprint).
 * [About the Authors](AUTHORS.md)
 
 UnnaturalCode should be considered proof-of-concept quality software. The
-primary author of UnnaturalCode can be reached at <unnaturalcode@orezpraw.com>.
+primary author of UnnaturalCode, Joshua Charles Campbell can be reached at <joshua2@ualberta.ca>.
 
 # Licensing
 

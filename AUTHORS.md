@@ -19,3 +19,15 @@ Department of Computing Science
 University of Alberta
 
 joshua2@ualberta.ca
+
+## Other Contributors
+
+Alex Wilson
+
+Graham Forest
+
+Earl T. Barr
+
+Prem Devanbu
+
+Daryl Posnett

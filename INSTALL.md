@@ -33,13 +33,19 @@ sudo make install
 sudo ldconfig
 ```
 
+# Testing
+
+```bash
+test -d venv || virtualenv venv
+. venv/bin/activate
+python setup.py nosetests
+```
+
 # Running
 
 ```bash
-cd python
-# Ubuntu
-FAST=1 nose2-2.7 -B --log-capture
-# Fedora
-nosetests
+test -d venv || virtualenv venv
+. venv/bin/activate
+python setup.py develop
+ucwrap /path/to/some/python.py
 ```
-

@@ -1,7 +1,12 @@
 #!/usr/bin/env python
+import sys
 from setuptools import setup, find_packages
 
-libraries = [l.strip() for l in open('requirements.txt').readlines()]
+requires = [l.strip() for l in open('requirements.txt').readlines()]
+
+if 'test' in sys.argv:
+    sys.argv.remove('test')
+    sys.argv.append('nosetests')
 
 # To set __version__
 __version__ = 'unknown'
@@ -19,6 +24,7 @@ setup(
     author = "Joshua Charles Campbell",
     description = "Compiler Error Augmentation System",
     include_package_data = True,
-    install_requires = libraries,
+    install_requires = requires,
+    setup_requires = ['nose>=1.0'],
     zip_safe = False,
 )

@@ -10,3 +10,6 @@
 IEEEtran.bst
 *.kate-swp
 *.pyc
+venv
+*.egg
+*.egg-info

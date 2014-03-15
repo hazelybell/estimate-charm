@@ -7,14 +7,13 @@
 Ubuntu/Debian:
 
 ```bash
-sudo apt-get install python-zmq libzmq-dev \
-    automake autoconf gfortran python-nose
+sudo apt-get install libzmq-dev automake autoconf gfortran python-virtualenv
 ```
 
 Fedora:
 
 ```bash
-sudo yum install python-zmq automake autoconf gcc-gfortran python-nose
+sudo yum install automake autoconf gcc-gfortran python-virtualenv
 # the version of zeromq3-devel on Fedora 19+ does not include zmq.hpp.
 # grab it directly from upstream and drop it in for now
 sudo wget https://raw.github.com/zeromq/cppzmq/master/zmq.hpp \

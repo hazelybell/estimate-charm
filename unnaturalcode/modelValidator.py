@@ -80,6 +80,7 @@ class modelValidation(object):
         assert n > 0
         for fi in self.validFiles:
           assert isinstance(fi, validationFile)
+          info("Testing " + fi.path)
           for i in range(0, n):
             mutation(self, fi)
             worst = self.sm.worstWindows(fi.mutatedLexemes)

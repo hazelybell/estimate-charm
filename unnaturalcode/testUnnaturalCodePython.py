@@ -69,7 +69,7 @@ class testUnnaturalCode(unittest.TestCase):
         self.assertTrue(os.access(dir, os.X_OK & os.R_OK & os.W_OK))
         self.assertTrue(os.path.isdir(dir))
     def testZctx(self):
-        self.assertTrue(isinstance(ucGlobal.zctx, zmq.core.context.Context))
+        self.assertTrue(isinstance(ucGlobal.zctx, zmq.backend.context.Context))
     @classmethod
     def tearDownClass(self):
         #del self.uc

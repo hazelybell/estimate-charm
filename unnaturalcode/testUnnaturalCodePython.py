@@ -15,7 +15,16 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Typically ran with FAST="True" nose2-2.7 -B --log-capture"""
+"""Typically ran with FAST="True" nose2-2.7 -B --log-capture
+
+Other things to consider:
+
+export ESTIMATENGRAM="/home/joshua/projects/mitlm/.libs/estimate-ngram" 
+export TEST_FILE_LIST=/home/wz/ucPython/all
+export LD_LIBRARY_PATH="/home/joshua/projects/mitlm/.libs"
+source ~/ucPython/bin/activate
+export VIRTUALENV_ACTIVATE=/home/joshua/ucPython/bin/activate_this.py
+"""
 
 import unittest
 from logging import debug, info, warning, error

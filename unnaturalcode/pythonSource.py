@@ -98,9 +98,9 @@ class pythonSource(ucSource):
                 continue
             elif ls[i].ltype == 'NL':
                 continue
-            elif ls[i].ltype == 'NEWLINE' and ls[i+1].ltype == 'NEWLINE':
+            elif ls[i].ltype == 'NEWLINE' and i < len(ls)-1 and ls[i+1].ltype == 'NEWLINE':
                 continue
-            elif ls[i].ltype == 'NEWLINE' and ls[i+1].ltype == 'INDENT':
+            elif ls[i].ltype == 'NEWLINE' and i < len(ls)-1 and ls[i+1].ltype == 'INDENT':
                 continue
             else:
                 r.append(ls[i])

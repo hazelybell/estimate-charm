@@ -108,16 +108,16 @@ class modelValidation(object):
             
     def insertRandom(self, vFile):
         ls = copy(vFile.scrubbed)
-        token = ls[randint(0, len(ls))]
-        pos = randint(0, len(ls))
+        token = ls[randint(0, len(ls)-1)]
+        pos = randint(0, len(ls)-1)
         ls.insert(pos, token)
         token = ls[pos]
         vFile.mutate(ls, token)
             
     def replaceRandom(self, vFile):
         ls = copy(vFile.scrubbed)
-        token = ls[randint(0, len(ls))]
-        pos = randint(0, len(ls))
+        token = ls[randint(0, len(ls)-1)]
+        pos = randint(0, len(ls)-1)
         ls.pop(pos)
         ls.insert(pos, token)
         token = ls[pos]

@@ -69,7 +69,7 @@ class testUnnaturalCode(unittest.TestCase):
         self.assertTrue(os.access(dir, os.X_OK & os.R_OK & os.W_OK))
         self.assertTrue(os.path.isdir(dir))
     def testZctx(self):
-        self.assertTrue(isinstance(ucGlobal.zctx, zmq.backend.context.Context))
+        self.assertTrue(isinstance(ucGlobal.zctx, zmq.backend.Context))
     @classmethod
     def tearDownClass(self):
         #del self.uc
@@ -277,7 +277,7 @@ class testTrainedSourceModel(unittest.TestCase):
     def testWorst(self):
         r = self.sm.worstWindows(pythonSource(somePythonCodeFromProject))
         for i in range(0, len(r)-2):
-            self.assertGreater(r[i][1], r[i+1][1])
+            self.assertTrue(r[i][1] >= r[i+1][1])
     @classmethod
     def tearDownClass(self):
         self.sm.release()
@@ -292,9 +292,9 @@ class testValidatorLong(unittest.TestCase):
         assert os.path.isdir(self.td)
     def testValidatorFiles(self):
         v = modelValidation(source=testProjectFiles, language=pythonSource, corpus=mitlmCorpus, resultsDir=self.td)
-        v.validate(mutation=DELETE, n=100)
-        v.validate(mutation=INSERT, n=100)
-        v.validate(mutation=REPLACE, n=100)
+        v.validate(mutation=DELETE, n=10)
+        v.validate(mutation=INSERT, n=10)
+        v.validate(mutation=REPLACE, n=10)
         # TODO: assert csvs
         v.release()
     @classmethod

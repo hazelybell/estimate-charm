@@ -237,6 +237,8 @@ class ucSource(list):
             return self.extend(args)
       
     def insert(self, i, arg):
+        assert i < len(self)
+        assert i >= 0
         if not isinstance(arg, list):
           arg = [arg]
         if not isinstance(arg, ucSource):
@@ -268,6 +270,8 @@ class ucSource(list):
         return r
     
     def pop(self, i):
+        assert i < len(self)
+        assert i >= 0
         r = super(ucSource, self).pop(i)
         removedLines = r.lines()
         for j in range(i, len(self)):

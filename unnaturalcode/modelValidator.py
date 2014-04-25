@@ -38,6 +38,8 @@ if not virtualEnvActivate is None:
 
 print sys.path
 
+nonWord = re.compile('\W+')
+
 class validationFile(object):
     
     def __init__(self, path, language):
@@ -88,7 +90,7 @@ class modelValidation(object):
                 #debug(str(worst[i][0][0].start) + " " + str(fi.mutatedLocation.start) + " " + str(worst[i][1]))
                 if worst[i][0][0].start < fi.mutatedLocation.start and worst[i][0][-1].end > fi.mutatedLocation.end:
                     #debug(">>>> Rank %i (%s)" % (i, fi.path))
-                    self.csv.writerow([fi.path, mutation.__name__, i, worst[i][1]])
+                    self.csv.writerow([fi.path, mutation.__name__, i, worst[i][1], fi.mutatedLocation.type, nonWord.sub('', fi.mutatedLocation.value)])
                     self.csvFile.flush()
                     trr += 1/float(i+1)
                     tr += float(i)

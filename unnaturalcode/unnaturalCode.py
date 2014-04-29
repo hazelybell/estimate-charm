@@ -247,12 +247,16 @@ class ucSource(list):
         a.settle()
         for j in range(0, len(a)):
           ((startL, startC), (endL, endC)) = (a[j].start, a[j].end)
+          if j == 0:
+            startC += 1
           if startL == 1:
             startC += self[i].start.c
           if endL == 1:
             endC += self[i].start.c
           startL += self[i].start.l-1
           endL += self[i].start.l-1
+          if j == len(a)-1:
+            endC += 1
           a[j] = a[j].__class__((a[j][0], a[j][1], ucPos((startL, startC)), ucPos((endL, endC)), a[j][4]))
         for j in range(i, len(self)):
           ((startL, startC), (endL, endC)) = (self[j].start, self[j].end)

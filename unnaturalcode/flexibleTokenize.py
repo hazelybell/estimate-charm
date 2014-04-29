@@ -1,3 +1,15 @@
+#!/usr/bin/python
+#
+#
+#    This file is part of UnnaturalCode.
+#
+#    It is based on tokenize.py from Python 2.7, and retains
+#    Python's copyright and license.
+#
+#    Mostly this is just the original version with some raise
+#    statements commented out.
+
+
 """Tokenization help for Python programs.
 
 generate_tokens(readline) is a generator that breaks a stream of
@@ -299,7 +311,10 @@ def generate_tokens(readline):
 
         if contstr:                            # continued string
             if not line:
-                raise TokenError, ("EOF in multi-line string", strstart)
+                yield (STRING, contstr,
+                       strstart, (lnum, 0), contline)
+                break
+                #raise TokenError, ("EOF in multi-line string", strstart)
             endmatch = endprog.match(line)
             if endmatch:
                 pos = end = endmatch.end(0)
@@ -320,6 +335,8 @@ def generate_tokens(readline):
 
         elif parenlev == 0 and not continued:  # new statement
             if not line: break
+          
+          
             column = 0
             while pos < max:                   # measure leading whitespace
                 if line[pos] == ' ':

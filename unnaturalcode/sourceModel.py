@@ -65,16 +65,14 @@ class sourceModel(object):
     
     def windowedQuery(self, lexemes):
         lastWindowStarts = len(lexemes)-self.windowSize-1
+        if lastWindowStarts < 1:
+          return [self.queryLexed(lexemes)]
         r = []
         for i in range(0,lastWindowStarts):
             end = i+self.windowSize
             w = lexemes[i:end]
             e = self.queryLexed(w)
             r.append( (w,e) )
-        if not len(r) >= 1:
-          error("%d %d" % (lastWindowStarts, len(lexemes)))
-          error(str(lexemes))
-          assert len(r) >= 1
         return r
     
     def worstWindows(self, lexemes):

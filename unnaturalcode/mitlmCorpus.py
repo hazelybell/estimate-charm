@@ -19,6 +19,7 @@ from __future__ import print_function
 import os, zmq, signal, os.path, subprocess, fcntl, time
 from unnaturalCode import *
 from logging import debug, info, warning, error, getLogger
+from multiprocessing import Process
 
 allWhitespace = re.compile('^\s+$')
 

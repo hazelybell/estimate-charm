@@ -28,21 +28,48 @@ from os import path
 
 import csv
 import runpy
-import sys
+import sys, traceback
 from shutil import copyfile
+from tempfile import mkstemp, mkdtemp
+import os
+
+from multiprocessing import Process, Queue
+from Queue import Empty
 
 virtualEnvActivate = os.getenv("VIRTUALENV_ACTIVATE", None)
-
-if not virtualEnvActivate is None:
-    execfile(virtualEnvActivate, dict(__file__=virtualEnvActivate))
 
 print sys.path
 
 nonWord = re.compile('\W+')
 
+class HaltingError(Exception):
+  def __init__(self, value):
+    self.value = value
+  def __str__(self):
+    return repr(self.value)
+
+def runFile(q,path):
+    if not virtualEnvActivate is None:
+      execfile(virtualEnvActivate, dict(__file__=virtualEnvActivate))
+    try:
+        runpy.run_path(path)
+    except SyntaxError as se:
+        ei = sys.exc_info();
+        eip = (ei[0], ei[1], traceback.extract_tb(ei[2]))
+        eip[2].append((se[1]))
+        q.put(eip)
+        return
+    except Exception as e:
+        ei = sys.exc_info();
+        info("run_path exception:", exc_info=ei)
+        eip = (ei[0], ei[1], traceback.extract_tb(ei[2]))
+        q.put(eip)
+        return
+    q.put((None, "None", [(None, None, None, None)]))
+
 class validationFile(object):
     
-    def __init__(self, path, language):
+    def __init__(self, path, language, tempDir):
         self.path = path
         self.lm = language
         self.f = open(path)
@@ -52,13 +79,41 @@ class validationFile(object):
         self.f.close()
         self.mutatedLexemes = None
         self.mutatedLocation = None
-        info("Running %s", self.path)
-        runpy.run_path(self.path)
+        self.tempDir = tempDir
+        r = self.run(path)
+        if (r[0] != None):
+          raise Exception("Couldn't run file: %s because %s" % (self.path, r[1]))
+        #runpy.run_path(self.path)
+    
+    def run(self, path):
+        q = Queue()
+        p = Process(target=runFile, args=(q,path,))
+        p.start()
+        try:
+          r = q.get(True, 10)
+          assert r[2][-1][2] != "_get_code_from_file"
+        except Empty as e:
+          r = (HaltingError, "Didn't halt.", [(None, None, None, None)])
+        p.terminate()
+        p.join()
+        assert not p.is_alive()
+        info("Ran %s, got %s" % (self.path, r[1]))
+        return r
+
     
     def mutate(self, lexemes, location):
         assert isinstance(lexemes, ucSource)
         self.mutatedLexemes = lexemes
         self.mutatedLocation = location
+        
+    def runMutant(self):
+        (mutantFileHandle, mutantFilePath) = mkstemp(suffix=".py", prefix="mutant", dir=self.tempDir)
+        mutantFile = os.fdopen(mutantFileHandle, "w")
+        mutantFile.write(self.mutatedLexemes.deLex())
+        r = self.run(mutantFilePath)
+        mutantFile.close()
+        os.remove(mutantFilePath)
+        return r
         
 class modelValidation(object):
     
@@ -67,7 +122,7 @@ class modelValidation(object):
           files = [files] if isinstance(files, str) else files
           assert isinstance(files, list)
           for fi in files:
-            self.validFiles.append(validationFile(fi, self.lm))
+            self.validFiles.append(validationFile(fi, self.lm, self.resultsDir))
     
     def genCorpus(self):
           """Create the corpus from the known-good file list."""
@@ -85,12 +140,36 @@ class modelValidation(object):
           info("Testing " + fi.path)
           for i in range(0, n):
             mutation(self, fi)
+            runException = fi.runMutant()
+            if (runException[0] == None):
+              exceptionName = "None"
+              online = False
+              line = 0
+            else:
+              exceptionName = runException[0].__name__
+              filename, line, func, text = runException[2][-1]
+              if (fi.mutatedLocation.start.line == line):
+                online = True
+              else:
+                online = False
             worst = self.sm.worstWindows(fi.mutatedLexemes)
             for i in range(0, len(worst)):
                 #debug(str(worst[i][0][0].start) + " " + str(fi.mutatedLocation.start) + " " + str(worst[i][1]))
                 if worst[i][0][0].start < fi.mutatedLocation.start and worst[i][0][-1].end > fi.mutatedLocation.end:
                     #debug(">>>> Rank %i (%s)" % (i, fi.path))
-                    self.csv.writerow([fi.path, mutation.__name__, i, worst[i][1], fi.mutatedLocation.type, nonWord.sub('', fi.mutatedLocation.value)])
+                    self.csv.writerow([
+                      fi.path, 
+                      mutation.__name__, 
+                      i, 
+                      worst[i][1], 
+                      fi.mutatedLocation.type,
+                      fi.mutatedLocation.start.line,
+                      nonWord.sub('', fi.mutatedLocation.value), 
+                      exceptionName, 
+                      online,
+                      filename,
+                      line,
+                      func])
                     self.csvFile.flush()
                     trr += 1/float(i+1)
                     tr += float(i)
@@ -119,8 +198,8 @@ class modelValidation(object):
     def replaceRandom(self, vFile):
         ls = copy(vFile.scrubbed)
         token = ls[randint(0, len(ls)-1)]
-        pos = randint(0, len(ls)-1)
-        ls.pop(pos)
+        pos = randint(0, len(ls)-2)
+        oldToken = ls.pop(pos)
         ls.insert(pos, token)
         token = ls[pos]
         vFile.mutate(ls, token)

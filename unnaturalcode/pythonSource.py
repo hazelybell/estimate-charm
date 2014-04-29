@@ -20,7 +20,7 @@ from ucUtil import *
 from unnaturalCode import *
 from logging import debug, info, warning, error
 
-import sys, token, tokenize, zmq;
+import sys, token, flexibleTokenize, zmq;
 from cStringIO import StringIO
 
 COMMENT = 53
@@ -60,8 +60,23 @@ class pythonLexeme(ucLexeme):
 class pythonSource(ucSource):
     
     def lex(self, code):
-        return [pythonLexeme.fromTuple(tok) for tok in \
-            tokenize.generate_tokens(StringIO(code).readline)]
+        tokGen = flexibleTokenize.generate_tokens(StringIO(code).readline)
+        done = False
+        toks = []
+        while not done:
+          try:
+            tok = next(tokGen)
+          except flexibleTokenize.TokenError as e:
+            #error("Skipping", exc_info=sys.exc_info())
+            pass
+          except IndentationError as e:
+            #error("Skipping", exc_info=sys.exc_info())
+            pass
+          except StopIteration:
+            done = True
+          else:
+            toks.append(tok)
+        return [pythonLexeme.fromTuple(t) for t in toks]
     
     def deLex(self):
         line = 1

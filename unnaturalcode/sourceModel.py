@@ -71,6 +71,10 @@ class sourceModel(object):
             w = lexemes[i:end]
             e = self.queryLexed(w)
             r.append( (w,e) )
+        if not len(r) >= 1:
+          error("%d %d" % (lastWindowStarts, len(lexemes)))
+          error(str(lexemes))
+          assert len(r) >= 1
         return r
     
     def worstWindows(self, lexemes):

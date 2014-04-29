@@ -55,17 +55,20 @@ def runFile(q,path):
         runpy.run_path(path)
     except SyntaxError as se:
         ei = sys.exc_info();
-        eip = (ei[0], ei[1], traceback.extract_tb(ei[2]))
-        eip[2].append((se[1]))
+        eip = (ei[0], str(ei[1]), traceback.extract_tb(ei[2]))
+        try:
+          eip[2].append(ei[1][1])
+        except IndexError:
+          eip[2].append((se.filename, se.lineno, None, None))
         q.put(eip)
         return
     except Exception as e:
         ei = sys.exc_info();
         info("run_path exception:", exc_info=ei)
-        eip = (ei[0], ei[1], traceback.extract_tb(ei[2]))
+        eip = (ei[0], str(ei[1]), traceback.extract_tb(ei[2]))
         q.put(eip)
         return
-    q.put((None, "None", [(None, None, None, None)]))
+    q.put((None, "None", [(path, None, None, None)]))
 
 class validationFile(object):
     
@@ -81,6 +84,7 @@ class validationFile(object):
         self.mutatedLocation = None
         self.tempDir = tempDir
         r = self.run(path)
+        info("Ran %s, got %s" % (self.path, r[1]))
         if (r[0] != None):
           raise Exception("Couldn't run file: %s because %s" % (self.path, r[1]))
         #runpy.run_path(self.path)
@@ -91,27 +95,26 @@ class validationFile(object):
         p.start()
         try:
           r = q.get(True, 10)
-          assert r[2][-1][2] != "_get_code_from_file"
         except Empty as e:
-          r = (HaltingError, "Didn't halt.", [(None, None, None, None)])
+          r = (HaltingError, "Didn't halt.", [(path, None, None, None)])
         p.terminate()
         p.join()
         assert not p.is_alive()
-        info("Ran %s, got %s" % (self.path, r[1]))
+        assert r[2][-1][2] != "_get_code_from_file"
         return r
 
     
     def mutate(self, lexemes, location):
         assert isinstance(lexemes, ucSource)
-        self.mutatedLexemes = lexemes
+        self.mutatedLexemes = self.lm(lexemes.deLex())
         self.mutatedLocation = location
         
     def runMutant(self):
         (mutantFileHandle, mutantFilePath) = mkstemp(suffix=".py", prefix="mutant", dir=self.tempDir)
         mutantFile = os.fdopen(mutantFileHandle, "w")
         mutantFile.write(self.mutatedLexemes.deLex())
-        r = self.run(mutantFilePath)
         mutantFile.close()
+        r = self.run(mutantFilePath)
         os.remove(mutantFilePath)
         return r
         
@@ -143,39 +146,42 @@ class modelValidation(object):
             runException = fi.runMutant()
             if (runException[0] == None):
               exceptionName = "None"
-              online = False
-              line = 0
             else:
               exceptionName = runException[0].__name__
-              filename, line, func, text = runException[2][-1]
-              if (fi.mutatedLocation.start.line == line):
-                online = True
-              else:
-                online = False
+            filename, line, func, text = runException[2][-1]
+            if (fi.mutatedLocation.start.line == line):
+              online = True
+            else:
+              online = False
             worst = self.sm.worstWindows(fi.mutatedLexemes)
-            for i in range(0, len(worst)):
+            for j in range(0, len(worst)):
                 #debug(str(worst[i][0][0].start) + " " + str(fi.mutatedLocation.start) + " " + str(worst[i][1]))
-                if worst[i][0][0].start < fi.mutatedLocation.start and worst[i][0][-1].end > fi.mutatedLocation.end:
+                if worst[j][0][0].start <= fi.mutatedLocation.start and worst[j][0][-1].end >= fi.mutatedLocation.end:
                     #debug(">>>> Rank %i (%s)" % (i, fi.path))
-                    self.csv.writerow([
-                      fi.path, 
-                      mutation.__name__, 
-                      i, 
-                      worst[i][1], 
-                      fi.mutatedLocation.type,
-                      fi.mutatedLocation.start.line,
-                      nonWord.sub('', fi.mutatedLocation.value), 
-                      exceptionName, 
-                      online,
-                      filename,
-                      line,
-                      func])
-                    self.csvFile.flush()
-                    trr += 1/float(i+1)
-                    tr += float(i)
-                    if i < 5:
-                        ttn += 1
                     break
+            info(" ".join(map(str, [mutation.__name__, j, fi.mutatedLocation.start.line, exceptionName, line])))
+            if j >= len(worst):
+              error(repr(worst))
+              error(repr(fi.mutatedLocation))
+              assert False
+            self.csv.writerow([
+              fi.path, 
+              mutation.__name__, 
+              j, 
+              worst[j][1], 
+              fi.mutatedLocation.type,
+              fi.mutatedLocation.start.line,
+              nonWord.sub('', fi.mutatedLocation.value), 
+              exceptionName, 
+              online,
+              filename,
+              line,
+              func])
+            self.csvFile.flush()
+            trr += 1/float(i+1)
+            tr += float(i)
+            if i < 5:
+                ttn += 1
         mrr = trr/float(len(self.validFiles) * n)
         mr = tr/float(len(self.validFiles) * n)
         mtn = ttn/float(len(self.validFiles) * n)

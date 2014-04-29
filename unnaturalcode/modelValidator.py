@@ -69,7 +69,7 @@ def runFile(q,path):
         q.put(eip)
         return
     q.put((None, "None", [(path, None, None, None)]))
-
+    
 class validationFile(object):
     
     def __init__(self, path, language, tempDir):
@@ -125,7 +125,9 @@ class modelValidation(object):
           files = [files] if isinstance(files, str) else files
           assert isinstance(files, list)
           for fi in files:
-            self.validFiles.append(validationFile(fi, self.lm, self.resultsDir))
+            vfi = validationFile(fi, self.lm, self.resultsDir)
+            if len(vfi.lexed) > self.sm.windowSize:
+              self.validFiles.append(validationFile(fi, self.lm, self.resultsDir))
     
     def genCorpus(self):
           """Create the corpus from the known-good file list."""

@@ -66,12 +66,12 @@ class pythonSource(ucSource):
         while not done:
           try:
             tok = next(tokGen)
-          except flexibleTokenize.TokenError as e:
-            #error("Skipping", exc_info=sys.exc_info())
-            pass
-          except IndentationError as e:
-            #error("Skipping", exc_info=sys.exc_info())
-            pass
+          #except flexibleTokenize.TokenError as e:
+            ##error("Skipping", exc_info=sys.exc_info())
+            #pass
+          #except IndentationError as e:
+            ##error("Skipping", exc_info=sys.exc_info())
+            #pass
           except StopIteration:
             done = True
           else:

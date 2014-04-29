@@ -351,16 +351,17 @@ def generate_tokens(readline):
                 indents.append(column)
                 yield (INDENT, line[:pos], (lnum, 0), (lnum, pos), line)
             while column < indents[-1]:
-                if column not in indents:
-                    raise IndentationError(
-                        "unindent does not match any outer indentation level",
-                        ("<tokenize>", lnum, pos, line))
+                #if column not in indents:
+                    #raise IndentationError(
+                        #"unindent does not match any outer indentation level",
+                        #("<tokenize>", lnum, pos, line))
                 indents = indents[:-1]
                 yield (DEDENT, '', (lnum, pos), (lnum, pos), line)
 
         else:                                  # continued statement
             if not line:
-                raise TokenError, ("EOF in multi-line statement", (lnum, 0))
+                break
+                #raise TokenError, ("EOF in multi-line statement", (lnum, 0))
             continued = 0
 
         while pos < max:

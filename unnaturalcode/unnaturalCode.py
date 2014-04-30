@@ -271,7 +271,7 @@ class ucSource(list):
           r = super(ucSource, self).insert(i+j, a[j])
         if ucParanoid:
             self.check()
-        return r
+        return a
     
     def pop(self, i):
         assert i < len(self)

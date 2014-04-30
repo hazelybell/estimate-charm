@@ -23,6 +23,7 @@ from mitlmCorpus import *
 from sourceModel import *
 
 from logging import debug, info, warning, error
+import logging
 from random import randint
 from os import path
 
@@ -37,8 +38,6 @@ from multiprocessing import Process, Queue
 from Queue import Empty
 
 virtualEnvActivate = os.getenv("VIRTUALENV_ACTIVATE", None)
-
-print sys.path
 
 nonWord = re.compile('\W+')
 
@@ -127,7 +126,7 @@ class modelValidation(object):
           for fi in files:
             vfi = validationFile(fi, self.lm, self.resultsDir)
             if len(vfi.lexed) > self.sm.windowSize:
-              self.validFiles.append(validationFile(fi, self.lm, self.resultsDir))
+              self.validFiles.append(vfi)
     
     def genCorpus(self):
           """Create the corpus from the known-good file list."""
@@ -199,18 +198,16 @@ class modelValidation(object):
         ls = copy(vFile.scrubbed)
         token = ls[randint(0, len(ls)-1)]
         pos = randint(0, len(ls)-1)
-        ls.insert(pos, token)
-        token = ls[pos]
-        vFile.mutate(ls, token)
+        inserted = ls.insert(pos, token)
+        vFile.mutate(ls, inserted[0])
             
     def replaceRandom(self, vFile):
         ls = copy(vFile.scrubbed)
         token = ls[randint(0, len(ls)-1)]
         pos = randint(0, len(ls)-2)
         oldToken = ls.pop(pos)
-        ls.insert(pos, token)
-        token = ls[pos]
-        vFile.mutate(ls, token)
+        inserted = ls.insert(pos, token)
+        vFile.mutate(ls, inserted[0])
       
     def __init__(self, source=None, language=pythonSource, resultsDir=None, corpus=mitlmCorpus):
         self.resultsDir = ((resultsDir or os.getenv("ucResultsDir", None)) or mkdtemp(prefix='ucValidation-'))
@@ -247,3 +244,18 @@ DELETE = modelValidation.deleteRandom
 INSERT = modelValidation.insertRandom
 REPLACE = modelValidation.replaceRandom
 
+def main():
+        testFileList = os.getenv("TEST_FILE_LIST", sys.argv[1])
+        n = sys.argv[2]
+        outDir = sys.argv[3]
+        logging.getLogger().setLevel(logging.DEBUG)
+        testProjectFiles = open(testFileList).read().splitlines()
+        v = modelValidation(source=testProjectFiles, language=pythonSource, corpus=mitlmCorpus, resultsDir=outDir)
+        v.validate(mutation=INSERT, n=n)
+        v.validate(mutation=REPLACE, n=n)
+        v.validate(mutation=DELETE, n=n)
+        # TODO: assert csvs
+        v.release()
+
+if __name__ == '__main__':
+    main()

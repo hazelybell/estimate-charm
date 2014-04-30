@@ -66,7 +66,7 @@ class sourceModel(object):
     def windowedQuery(self, lexemes):
         lastWindowStarts = len(lexemes)-self.windowSize-1
         if lastWindowStarts < 1:
-          return [self.queryLexed(lexemes)]
+          return [(lexemes, self.queryLexed(lexemes))]
         r = []
         for i in range(0,lastWindowStarts):
             end = i+self.windowSize

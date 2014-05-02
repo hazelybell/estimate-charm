@@ -165,6 +165,7 @@ class modelValidation(object):
               error(repr(worst))
               error(repr(fi.mutatedLocation))
               assert False
+            assert worst[j][1] < 70.0 # 70 == infinity, this indicates the model failed
             self.csv.writerow([
               fi.path, 
               mutation.__name__, 
@@ -246,7 +247,7 @@ REPLACE = modelValidation.replaceRandom
 
 def main():
         testFileList = os.getenv("TEST_FILE_LIST", sys.argv[1])
-        n = sys.argv[2]
+        n = int(sys.argv[2])
         outDir = sys.argv[3]
         logging.getLogger().setLevel(logging.DEBUG)
         testProjectFiles = open(testFileList).read().splitlines()

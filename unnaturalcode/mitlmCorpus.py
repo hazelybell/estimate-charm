@@ -130,6 +130,8 @@ class mitlmCorpus(object):
         qString = self.corpify(lexemes)
         self.mitlmSocket.send(qString)
         r = float(self.mitlmSocket.recv())
+        if r >= 70.0:
+          warning("Infinity: %s" % qString)
         return r
     
     def release(self):

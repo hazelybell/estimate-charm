@@ -32,14 +32,18 @@ import runpy
 import sys, traceback
 from shutil import copyfile
 from tempfile import mkstemp, mkdtemp
-import os
+import os, re
 
 from multiprocessing import Process, Queue
 from Queue import Empty
+import flexibleTokenize
 
 virtualEnvActivate = os.getenv("VIRTUALENV_ACTIVATE", None)
 
 nonWord = re.compile('\W+')
+beginsWithWhitespace = re.compile('^\w')
+funny = re.compile(flexibleTokenize.Funny)
+name = re.compile(flexibleTokenize.Name)
 
 class HaltingError(Exception):
   def __init__(self, value):
@@ -165,7 +169,6 @@ class modelValidation(object):
               error(repr(worst))
               error(repr(fi.mutatedLocation))
               assert False
-            assert worst[j][1] < 70.0 # 70 == infinity, this indicates the model failed
             self.csv.writerow([
               fi.path, 
               mutation.__name__, 
@@ -193,6 +196,8 @@ class modelValidation(object):
         """Delete a random token from a file."""
         ls = copy(vFile.scrubbed)
         token = ls.pop(randint(0, len(ls)-1))
+        if token.type == 'ENDMARKER':
+          return self.deleteRandom(vFile)
         vFile.mutate(ls, token)
             
     def insertRandom(self, vFile):
@@ -200,6 +205,8 @@ class modelValidation(object):
         token = ls[randint(0, len(ls)-1)]
         pos = randint(0, len(ls)-1)
         inserted = ls.insert(pos, token)
+        if inserted[0].type == 'ENDMARKER':
+          return self.insertRandom(vFile)
         vFile.mutate(ls, inserted[0])
             
     def replaceRandom(self, vFile):
@@ -207,8 +214,72 @@ class modelValidation(object):
         token = ls[randint(0, len(ls)-1)]
         pos = randint(0, len(ls)-2)
         oldToken = ls.pop(pos)
+        if oldToken.type == 'ENDMARKER':
+          return self.replaceRandom(vFile)
         inserted = ls.insert(pos, token)
+        if inserted[0].type == 'ENDMARKER':
+          return self.replaceRandom(vFile)
         vFile.mutate(ls, inserted[0])
+        
+    def indentRandom(self, vFile):
+        s = copy(vFile.original)
+        lines = s.splitlines(True);
+        line = randint(0, len(lines)-1)
+        iord = randint(0, 1)
+        if (iord == 1):
+          lines[line] = " " + lines[line]
+        else:
+          if beginsWithWhitespace.match(lines[line]):
+            beginsWithWhitespace.sub('', lines[line], count=1)
+          else:
+            return self.indentRandom(self, vFile) # well this is a cheap hack
+        self.mutatedLexemes = self.lm("".join(lines))
+        self.mutatedLocation = pythonLexeme.fromTuple((token.INDENT, ' ', (line, 0), (line, 0)))
+    
+    def punctRandom(self, vFile):
+        s = copy(vFile.original)
+        charPos = randint(0, len(s)-1)
+        linesbefore = s[:charPos].splitlines(True)
+        line = len(linesbefore)
+        lineChar = len(linesbefore[-1])
+        c = s[charPos:charPos+1]
+        if (funny.match(c)):
+          new = s[:charPos] + s[charPos+1:]
+          self.mutatedLexemes = self.lm(new)
+          self.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
+        else:
+          return self.punctRandom(vFile)
+    
+    #def keyRandom(self, vFile):
+        #s = copy(vFile.original)
+        
+    def nameRandom(self, vFile):
+        s = copy(vFile.original)
+        charPos = randint(0, len(s)-1)
+        linesbefore = s[:charPos].splitlines(True)
+        line = len(linesbefore)
+        lineChar = len(linesbefore[-1])
+        c = s[charPos:charPos+1]
+        if (name.match(c)):
+          new = s[:charPos] + s[charPos+1:]
+          self.mutatedLexemes = self.lm(new)
+          self.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
+        else:
+          return self.punctRandom(vFile)
+        
+    def colonRandom(self, vFile):
+        s = copy(vFile.original)
+        charPos = randint(0, len(s)-1)
+        linesbefore = s[:charPos].splitlines(True)
+        line = len(linesbefore)
+        lineChar = len(linesbefore[-1])
+        c = s[charPos:charPos+1]
+        if (c == ':'):
+          new = s[:charPos] + s[charPos+1:]
+          self.mutatedLexemes = self.lm(new)
+          self.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
+        else:
+          return self.punctRandom(vFile)
       
     def __init__(self, source=None, language=pythonSource, resultsDir=None, corpus=mitlmCorpus):
         self.resultsDir = ((resultsDir or os.getenv("ucResultsDir", None)) or mkdtemp(prefix='ucValidation-'))
@@ -223,7 +294,6 @@ class modelValidation(object):
         self.csvPath = path.join(self.resultsDir, 'results.csv')
         self.csvFile = open(self.csvPath, 'a')
         self.csv = csv.writer(self.csvFile)
-        
         self.corpusPath = os.path.join(self.resultsDir, 'validationCorpus')
         self.cm = corpus(readCorpus=self.corpusPath, writeCorpus=self.corpusPath, order=10)
         self.lm = language
@@ -244,6 +314,10 @@ class modelValidation(object):
 DELETE = modelValidation.deleteRandom
 INSERT = modelValidation.insertRandom
 REPLACE = modelValidation.replaceRandom
+INDENTATION = modelValidation.indentRandom
+PUNCTUATION = modelValidation.punctRandom
+NAMELIKE = modelValidation.nameRandom
+COLON = modelValidation.colonRandom
 
 def main():
         testFileList = os.getenv("TEST_FILE_LIST", sys.argv[1])
@@ -252,9 +326,20 @@ def main():
         logging.getLogger().setLevel(logging.DEBUG)
         testProjectFiles = open(testFileList).read().splitlines()
         v = modelValidation(source=testProjectFiles, language=pythonSource, corpus=mitlmCorpus, resultsDir=outDir)
-        v.validate(mutation=INSERT, n=n)
-        v.validate(mutation=REPLACE, n=n)
-        v.validate(mutation=DELETE, n=n)
+        if re.match('i', sys.argv[4]):
+          v.validate(mutation=INSERT, n=n)
+        if re.match('r', sys.argv[4]):
+          v.validate(mutation=REPLACE, n=n)
+        if re.match('d', sys.argv[4]):
+          v.validate(mutation=DELETE, n=n)
+        if re.match('s', sys.argv[4]):
+          v.validate(mutation=INDENTATION, n=n)
+        if re.match('p', sys.argv[4]):
+          v.validate(mutation=PUNCTUATION, n=n)
+        if re.match('n', sys.argv[4]):
+          v.validate(mutation=NAMELIKE, n=n)
+        if re.match('c', sys.argv[4]):
+          v.validate(mutation=COLON, n=n)
         # TODO: assert csvs
         v.release()
 

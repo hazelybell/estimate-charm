@@ -232,21 +232,21 @@ class modelValidation(object):
           if beginsWithWhitespace.match(lines[line]):
             beginsWithWhitespace.sub('', lines[line], count=1)
           else:
-            return self.indentRandom(self, vFile) # well this is a cheap hack
-        self.mutatedLexemes = self.lm("".join(lines))
-        self.mutatedLocation = pythonLexeme.fromTuple((token.INDENT, ' ', (line, 0), (line, 0)))
+            return self.indentRandom(vFile) # well this is a cheap hack
+        vFile.mutatedLexemes = vFile.lm("".join(lines))
+        vFile.mutatedLocation = pythonLexeme.fromTuple((token.INDENT, ' ', (line+1, 0), (line+1, 0)))
     
     def punctRandom(self, vFile):
         s = copy(vFile.original)
-        charPos = randint(0, len(s)-1)
+        charPos = randint(1, len(s)-1)
         linesbefore = s[:charPos].splitlines(True)
         line = len(linesbefore)
         lineChar = len(linesbefore[-1])
         c = s[charPos:charPos+1]
         if (funny.match(c)):
           new = s[:charPos] + s[charPos+1:]
-          self.mutatedLexemes = self.lm(new)
-          self.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
+          vFile.mutatedLexemes = vFile.lm(new)
+          vFile.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
         else:
           return self.punctRandom(vFile)
     
@@ -255,29 +255,29 @@ class modelValidation(object):
         
     def nameRandom(self, vFile):
         s = copy(vFile.original)
-        charPos = randint(0, len(s)-1)
+        charPos = randint(1, len(s)-1)
         linesbefore = s[:charPos].splitlines(True)
         line = len(linesbefore)
         lineChar = len(linesbefore[-1])
         c = s[charPos:charPos+1]
         if (name.match(c)):
           new = s[:charPos] + s[charPos+1:]
-          self.mutatedLexemes = self.lm(new)
-          self.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
+          vFile.mutatedLexemes = vFile.lm(new)
+          vFile.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
         else:
           return self.punctRandom(vFile)
         
     def colonRandom(self, vFile):
         s = copy(vFile.original)
-        charPos = randint(0, len(s)-1)
+        charPos = randint(1, len(s)-1)
         linesbefore = s[:charPos].splitlines(True)
         line = len(linesbefore)
         lineChar = len(linesbefore[-1])
         c = s[charPos:charPos+1]
         if (c == ':'):
           new = s[:charPos] + s[charPos+1:]
-          self.mutatedLexemes = self.lm(new)
-          self.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
+          vFile.mutatedLexemes = vFile.lm(new)
+          vFile.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
         else:
           return self.punctRandom(vFile)
       

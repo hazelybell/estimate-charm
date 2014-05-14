@@ -15,17 +15,17 @@
 #
 #    You should have received a copy of the GNU Affero General Public License
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
-import re
-import runpy
-import sys
-import traceback
-
-from logging import debug, info, warning, error
-
 
 def main():
+    import re
+    import runpy
+    import sys
+    import traceback
+    from copy import copy
+
+    from logging import debug, info, warning, error
     
-    print sys.path
+    savedSysPath = deepcopy(sys.path)
     
     name_err_extract = re.compile(r"^name\s+'([^']+)'")
     
@@ -35,22 +35,43 @@ def main():
     			return filename.readlines()[line - 1]
     	except:
     		return None
-    
-    try:
-    	runpy.run_path(sys.argv[1])
-    except SyntaxError as se:
-    	print 'syntax error: {} {}:{}'.format(se.filename, se.lineno - 1,
-    		se.offset)
-    except NameError as ne:
-    	exctype, _, tb = sys.exc_info()
-    	filename, line, func, text = traceback.extract_tb(tb)[-1]
-    	name = name_err_extract.match(ne.message).group(1)
-    	# note: text has all leading whitespace stripped, so the column
-    	# we find for name will not be quite right.
-    	column = (get_file_line(filename, line) or text).index(name)
-    	print 'name error: {} {}:{}'.format(filename, line, column)
-    
-    print [m.__file__ for m in sys.modules.values() if hasattr(m, '__file__')] + [sys.argv[1]]
+    # TODO: run this fn in a seperate proc using os.fork
+    def runit():
+      program = sys.argv[1]
+      del sys.argv[1]
+      try:
+          r = runpy.run_path(program)
+      except SyntaxError as se:
+          ei = sys.exc_info();
+          traceback.print_exc();
+          eip = (ei[0], str(ei[1]), traceback.extract_tb(ei[2]))
+          try:
+            eip[2].append(ei[1][1])
+          except IndexError:
+            eip[2].append((se.filename, se.lineno, None, None))
+          return (eip)
+      except Exception as e:
+          ei = sys.exc_info();
+          traceback.print_exc();
+          eip = (ei[0], str(ei[1]), traceback.extract_tb(ei[2]))
+          return (eip)
+      return ((None, "None", [(path, None, None, None)]))
+      
+      e = runit()
+      
+      if e[0] == None:
+        return
+      
+      sys.path = savedSysPath;
+      
+      from ucUser import pyUser
+      ucpy = pyUser()
+      
+      worst = ucpy.sm.worstWindows(pythonSource(somePythonCodeFromProject))
+      
+      from __future__ import print_function
+      print(repr(worst[0]), file=sys.stderr)
+
 
 if __name__ == '__main__':
     main()

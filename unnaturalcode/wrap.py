@@ -16,29 +16,25 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function
+
 def main():
     import re
     import runpy
     import sys
     import traceback
-    from copy import copy
+    from copy import deepcopy
 
     from logging import debug, info, warning, error
     
     savedSysPath = deepcopy(sys.path)
+    program = sys.argv[1]
+    del sys.argv[1]
     
-    name_err_extract = re.compile(r"^name\s+'([^']+)'")
-    
-    def get_file_line(filename, line):
-    	try:
-    		with open(filename) as f:
-    			return filename.readlines()[line - 1]
-    	except:
-    		return None
+    source = open(program).read()
+        
     # TODO: run this fn in a seperate proc using os.fork
     def runit():
-      program = sys.argv[1]
-      del sys.argv[1]
       try:
           r = runpy.run_path(program)
       except SyntaxError as se:
@@ -55,22 +51,23 @@ def main():
           traceback.print_exc();
           eip = (ei[0], str(ei[1]), traceback.extract_tb(ei[2]))
           return (eip)
-      return ((None, "None", [(path, None, None, None)]))
+      return ((None, "None", [(program, None, None, None)]))
       
-      e = runit()
-      
-      if e[0] == None:
-        return
-      
-      sys.path = savedSysPath;
-      
-      from ucUser import pyUser
-      ucpy = pyUser()
-      
-      worst = ucpy.sm.worstWindows(pythonSource(somePythonCodeFromProject))
-      
-      from __future__ import print_function
-      print(repr(worst[0]), file=sys.stderr)
+    e = runit()
+    
+    if e[0] == None:
+      return
+    
+    sys.path = savedSysPath;
+    
+    from ucUser import pyUser
+    ucpy = pyUser()
+    
+    worst = ucpy.sm.worstWindows(ucpy.lm(source))
+    print("Suggest checking %s:%d:%d" % (program, worst[0][0][10][2][0], worst[0][0][10][2][1]), file=sys.stderr)
+    print("Near:\n" + ucpy.lm(worst[0][0]).settle().deLex())
+    
+    ucpy.release()
 
 
 if __name__ == '__main__':

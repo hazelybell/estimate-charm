@@ -26,17 +26,20 @@ class pyUser(object):
   
   def __init__(self):
       self.homeDir = os.path.expanduser("~")
-      self.ucDir = os.getenv("UC_DATA", os.path.join(homeDir, ".unnaturalCode"))
-      if not os.path.exists(ucDir):
-        os.makedirs(ucDir)
-      assert os.access(ucDir, os.X_OK & os.R_OK & os.W_OK)
-      assert os.path.isdir(ucDir)
+      self.ucDir = os.getenv("UC_DATA", os.path.join(self.homeDir, ".unnaturalCode"))
+      if not os.path.exists(self.ucDir):
+        os.makedirs(self.ucDir)
+      assert os.access(self.ucDir, os.X_OK & os.R_OK & os.W_OK)
+      assert os.path.isdir(self.ucDir)
       
-      self.readCorpus = os.path.join(ucDir, 'pyCorpus') 
-      self.logFilePath = os.path.join(ucDir, 'pyLogFile')
+      self.readCorpus = os.path.join(self.ucDir, 'pyCorpus') 
+      self.logFilePath = os.path.join(self.ucDir, 'pyLogFile')
       
       self.uc = unnaturalCode(logFilePath=self.logFilePath)
       self.cm = mitlmCorpus(readCorpus=self.readCorpus, writeCorpus=self.readCorpus, uc=self.uc)
       self.lm = pythonSource
-      self.sm = sourceModel(cm=cm, language=self.lm)
+      self.sm = sourceModel(cm=self.cm, language=self.lm)
+      
+  def release(self):
+      self.cm.release()
     

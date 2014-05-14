@@ -29,3 +29,5 @@ parser.add_argument('files', metavar='file', type=str, nargs='+',
 args = parser.parse_args()
 
 ucpy.sm.trainFile(args.files)
+
+ucpy.release()

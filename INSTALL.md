@@ -37,7 +37,7 @@ sudo ldconfig
 ```bash
 test -d venv || virtualenv venv
 . venv/bin/activate
-python setup.py nosetests
+nose2-2.7
 ```
 
 You might need some environment variables set

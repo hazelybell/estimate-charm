@@ -59,16 +59,19 @@ class mitlmCorpus(object):
         assert os.path.exists(self.readCorpus), "No such corpus."
         assert not allWhitespace.match(slurp(self.readCorpus)), "Corpus is full of whitespace!"
         assert os.path.exists(self.estimateNgramPath), "No such estimate-ngram."
-        self.mitlmProc = subprocess.Popen([self.estimateNgramPath, "-t", self.readCorpus, "-o", str(self.order+1), "-s", "ModKN", "-u", "-live-prob", self.mitlmSocketPath], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        self.mitlmProc = subprocess.Popen([self.estimateNgramPath, "-t", self.readCorpus, "-o", str(self.order), "-s", "ModKN", "-u", "-live-prob", self.mitlmSocketPath], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         debug("Started MITLM as PID %i." % self.mitlmProc.pid)
         
         fd = self.mitlmProc.stdout.fileno()
         fl = fcntl.fcntl(fd, fcntl.F_GETFL)
         fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+        time.sleep(1)
         self.checkMitlm()
         self.mitlmSocket = self.zctx.socket(zmq.REQ)
         self.mitlmSocket.connect(self.mitlmSocketPath)
+        self.checkMitlm()
         self.mitlmSocket.send("for ( i =")
+        self.checkMitlm()
         r = float(self.mitlmSocket.recv())
         debug("MITLM said %f" % r)
         self.checkMitlm()
@@ -132,6 +135,8 @@ class mitlmCorpus(object):
         r = float(self.mitlmSocket.recv())
         if r >= 70.0:
           warning("Infinity: %s" % qString)
+          self.checkMitlm()
+          assert False
         return r
     
     def release(self):

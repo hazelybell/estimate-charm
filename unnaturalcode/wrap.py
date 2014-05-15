@@ -24,8 +24,9 @@ def main():
     import sys
     import traceback
     from copy import deepcopy
-
+    import logging
     from logging import debug, info, warning, error
+    #logging.getLogger().setLevel(logging.DEBUG)
     
     savedSysPath = deepcopy(sys.path)
     program = sys.argv[1]

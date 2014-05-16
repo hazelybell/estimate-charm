@@ -19,6 +19,7 @@ setup(
     entry_points = {
         "console_scripts": [
             "ucwrap = unnaturalcode.wrap:main",
+            "uclearn = unnaturalcode.learn:main"
         ],
     },
     author = "Joshua Charles Campbell",

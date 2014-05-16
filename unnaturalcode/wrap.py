@@ -32,11 +32,15 @@ def main():
     program = sys.argv[1]
     del sys.argv[1]
     
+    
+    
     source = open(program).read()
         
     # TODO: run this fn in a seperate proc using os.fork
     def runit():
       try:
+          sys.argv.insert(0, os.getcwd())
+          sys.argv.insert(0, os.path.dirname(program))
           r = runpy.run_path(program)
       except SyntaxError as se:
           ei = sys.exc_info();
@@ -65,7 +69,7 @@ def main():
     ucpy = pyUser()
     
     worst = ucpy.sm.worstWindows(ucpy.lm(source))
-    print("Suggest checking %s:%d:%d" % (program, worst[0][0][10][2][0], worst[0][0][10][2][1]), file=sys.stderr)
+    print("Suggest checking around %s:%d:%d" % (program, worst[0][0][10][2][0], worst[0][0][10][2][1]), file=sys.stderr)
     print("Near:\n" + ucpy.lm(worst[0][0]).settle().deLex())
     
     ucpy.release()

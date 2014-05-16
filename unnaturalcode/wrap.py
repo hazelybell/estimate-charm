@@ -40,8 +40,8 @@ def main():
     # TODO: run this fn in a seperate proc using os.fork
     def runit():
       try:
-          sys.argv.insert(0, os.getcwd())
-          sys.argv.insert(0, os.path.dirname(program))
+          sys.path.insert(0, os.getcwd())
+          sys.path.insert(0, os.path.dirname(program))
           r = runpy.run_path(program)
       except SyntaxError as se:
           ei = sys.exc_info();

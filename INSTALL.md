@@ -55,8 +55,6 @@ python unnaturalcode/modelValidator.py $TEST_FILE_LIST 10 `pwd`/out i
 # Running
 
 ```bash
-test -d venv || virtualenv venv
-. venv/bin/activate
 python setup.py develop
 ucwrap /path/to/some/python.py
 ```

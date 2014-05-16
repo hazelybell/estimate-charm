@@ -45,19 +45,15 @@ You might need some environment variables set
 ```bash
 export ESTIMATENGRAM="/usr/local/bin/estimate-ngram"
 export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
-export TEST_FILE_LIST=`pwd`/example-test-file.txt
-mkdir out
-python unnaturalcode/modelValidator.py $TEST_FILE_LIST 10 `pwd`/out i
 ```
-
-
 
 # Running
 
 ```bash
-test -d venv || virtualenv venv
-. venv/bin/activate
+export PATH="/path/to/unnaturalcode/unnaturalcode:$PATH"
 python setup.py develop
-ucwrap /path/to/some/python.py
+learn.py /usr/lib/python2.7/*.py
+learn.py /path/to/some/known-good-python.py
+wrap.py /path/to/some/python.py
 ```
 

@@ -42,7 +42,7 @@ def main():
       try:
           sys.path.insert(0, os.getcwd())
           sys.path.insert(0, os.path.dirname(program))
-          r = runpy.run_path(program)
+          r = runpy.run_path(program, run_name="__main__")
       except SyntaxError as se:
           ei = sys.exc_info();
           traceback.print_exc();

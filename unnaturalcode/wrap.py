@@ -25,6 +25,7 @@ def main():
     import traceback
     from copy import deepcopy
     import logging
+    import os
     from logging import debug, info, warning, error
     #logging.getLogger().setLevel(logging.DEBUG)
     

@@ -18,7 +18,7 @@
 
 from __future__ import print_function
 
-def main():
+def main(mode="wrap"):
     import re
     import runpy
     import sys
@@ -42,7 +42,10 @@ def main():
       try:
           sys.path.insert(0, os.getcwd())
           sys.path.insert(0, os.path.dirname(program))
-          r = runpy.run_path(program, run_name="__main__")
+          if mode == "check":
+            r = runpy.run_module(program)
+          else:
+            r = runpy.run_path(program, run_name="__main__")
       except SyntaxError as se:
           ei = sys.exc_info();
           traceback.print_exc();
@@ -74,7 +77,9 @@ def main():
     print("Near:\n" + ucpy.lm(worst[0][0]).settle().deLex())
     
     ucpy.release()
-
+    
+def check():
+  main(mode="check")
 
 if __name__ == '__main__':
     main()

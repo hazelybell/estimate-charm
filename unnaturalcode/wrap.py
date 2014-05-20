@@ -26,6 +26,7 @@ def main(mode="wrap"):
     from copy import deepcopy
     import logging
     import os
+    import imp
     from logging import debug, info, warning, error
     #logging.getLogger().setLevel(logging.DEBUG)
     

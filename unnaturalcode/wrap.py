@@ -33,7 +33,8 @@ def main(mode="wrap"):
     savedSysPath = deepcopy(sys.path)
     program = sys.argv[1]
     del sys.argv[1]
-    
+    sys.path.insert(0, os.getcwd())
+    sys.path.insert(0, os.path.dirname(program))
     if mode == "check":
       source = open(imp.find_module(program)).read()
     else:
@@ -42,8 +43,6 @@ def main(mode="wrap"):
     # TODO: run this fn in a seperate proc using os.fork
     def runit():
       try:
-          sys.path.insert(0, os.getcwd())
-          sys.path.insert(0, os.path.dirname(program))
           if mode == "check":
             r = runpy.run_module(program)
           else:

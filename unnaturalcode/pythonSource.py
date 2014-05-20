@@ -1,5 +1,5 @@
 #!/usr/bin/python
-#    Copyright 2013 Joshua Charles Campbell, Alex Wilson
+#    Copyright 2013, 2014 Joshua Charles Campbell, Alex Wilson
 #
 #    This file is part of UnnaturalCode.
 #    

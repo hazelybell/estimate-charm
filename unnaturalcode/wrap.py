@@ -33,9 +33,10 @@ def main(mode="wrap"):
     program = sys.argv[1]
     del sys.argv[1]
     
-    
-    
-    source = open(program).read()
+    if mode == "check":
+      source = open(imp.find_module(program)).read()
+    else:
+      source = open(program).read()
         
     # TODO: run this fn in a seperate proc using os.fork
     def runit():

@@ -26,7 +26,7 @@ def main(mode="wrap"):
     from copy import deepcopy
     import logging
     import os
-    import imp
+    import imputil
     from logging import debug, info, warning, error
     #logging.getLogger().setLevel(logging.DEBUG)
     
@@ -34,13 +34,9 @@ def main(mode="wrap"):
     program = sys.argv[1]
     del sys.argv[1]
     sys.path.insert(0, os.getcwd())
-    sys.path.insert(0, os.path.dirname(program))
-    if mode == "check":
-      sourceFile, undef, undef = imp.find_module(program)
-      source = sourceFile.read()
-    else:
-      source = open(program).read()
-        
+    if not mode == "check":
+      sys.path.insert(0, os.path.dirname(program))
+
     # TODO: run this fn in a seperate proc using os.fork
     def runit():
       try:
@@ -68,6 +64,8 @@ def main(mode="wrap"):
     
     if e[0] == None:
       return
+    
+    source = open(e[2][-1][0]).read()
     
     sys.path = savedSysPath;
     

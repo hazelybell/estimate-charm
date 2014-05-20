@@ -33,11 +33,12 @@ def main(mode="wrap"):
     savedSysPath = deepcopy(sys.path)
     program = sys.argv[1]
     del sys.argv[1]
-    sys.path.insert(0, os.getcwd())
-    if not mode == "check":
-      sys.path.insert(0, os.path.dirname(program))
+
     # TODO: run this fn in a seperate proc using os.fork
     def runit():
+      sys.path.insert(0, os.getcwd())
+      if not mode == "check":
+        sys.path.insert(0, os.path.dirname(program))
       virtualEnvActivate = os.getenv("VIRTUALENV_ACTIVATE", None)
       if not virtualEnvActivate is None:
         execfile(virtualEnvActivate, dict(__file__=virtualEnvActivate))

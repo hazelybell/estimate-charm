@@ -36,7 +36,8 @@ def main(mode="wrap"):
     sys.path.insert(0, os.getcwd())
     sys.path.insert(0, os.path.dirname(program))
     if mode == "check":
-      source = open(imp.find_module(program)).read()
+      sourceFile, undef, undef = imp.find_module(program)
+      source = sourceFile.read()
     else:
       source = open(program).read()
         

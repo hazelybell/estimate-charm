@@ -32,6 +32,12 @@ sudo make install
 sudo ldconfig
 ```
 
+# Install UnnaturalCode
+
+```bash
+python setup.py develop
+```
+
 # Testing
 
 ```bash
@@ -52,8 +58,9 @@ export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
 ```bash
 export PATH="/path/to/unnaturalcode/unnaturalcode:$PATH"
 python setup.py develop
-learn.py /usr/lib/python2.7/*.py
-learn.py /path/to/some/known-good-python.py
-wrap.py /path/to/some/python.py
+uclearn /usr/lib/python2.7/*.py
+uclearn /path/to/some/known-good-python.py
+ucwrap /path/to/some/python.py
+uccheck some.python.module
 ```
 

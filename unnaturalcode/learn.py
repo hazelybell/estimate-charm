@@ -16,18 +16,22 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
 
-import argparse
 
-from ucUser import pyUser
-ucpy = pyUser()
+def main():
+    import argparse
 
-parser = argparse.ArgumentParser(description='Add known-good Python files to UnnaturalCode.')
+    from ucUser import pyUser
+    ucpy = pyUser()
 
-parser.add_argument('files', metavar='file', type=str, nargs='+',
-                   help='A file to be added.')
+    parser = argparse.ArgumentParser(
+        description='Add known-good Python files to UnnaturalCode.'
+    )
+    parser.add_argument('files', metavar='file', type=str, nargs='+',
+                       help='A file to be added.')
+    args = parser.parse_args()
 
-args = parser.parse_args()
+    ucpy.sm.trainFile(args.files)
+    ucpy.release()
 
-ucpy.sm.trainFile(args.files)
-
-ucpy.release()
+if __name__ == '__main__':
+    main()

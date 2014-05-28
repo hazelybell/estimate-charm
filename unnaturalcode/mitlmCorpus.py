@@ -43,23 +43,24 @@ class mitlmCorpus(object):
     def checkMitlm(self):
         while self.mitlmProc:
             try:
-                mitlmLogger.info(self.mitlmProc.stdout.readline().rstrip('\n'))
+                msg = self.mitlmProc.stdout.readline().rstrip('\n')
+                if not allWhitespace.match(msg):
+                  mitlmLogger.info()
             except:
                 break
     
     def startMitlm(self):
         """Start MITLM estimate-ngram in 0MQ entropy query mode, unless already running."""
         if not self.mitlmSocket == None :
-            if ucParanoid:
-                assert not self.mitlmSocket.closed
-                assert self.mitlmProc.poll() == None
-                # Already running
-                self.checkMitlm()
+            assert not self.mitlmSocket.closed
+            assert self.mitlmProc.poll() == None
+            # Already running
+            self.checkMitlm()
             return
         assert os.path.exists(self.readCorpus), "No such corpus."
         assert not allWhitespace.match(slurp(self.readCorpus)), "Corpus is full of whitespace!"
         assert os.path.exists(self.estimateNgramPath), "No such estimate-ngram."
-        self.mitlmProc = subprocess.Popen([self.estimateNgramPath, "-t", self.readCorpus, "-o", str(self.order), "-s", "ModKN", "-u", "-live-prob", self.mitlmSocketPath], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        self.mitlmProc = subprocess.Popen([self.estimateNgramPath, "-t", self.readCorpus, "-o", str(self.order), "-s", "ModKN", "-u", "-live-prob", self.mitlmSocketPath], stdout=subprocess.PIPE)
         debug("Started MITLM as PID %i." % self.mitlmProc.pid)
         
         fd = self.mitlmProc.stdout.fileno()
@@ -132,7 +133,17 @@ class mitlmCorpus(object):
         self.startMitlm()
         qString = self.corpify(lexemes)
         self.mitlmSocket.send(qString)
-        r = float(self.mitlmSocket.recv())
+        noMessageYet = True
+        r = 74.0
+        while noMessageYet:
+          self.checkMitlm()
+          try:
+            self.mitlmSocket.poll(timeout=1000)
+            r = float(self.mitlmSocket.recv(flags=zmq.NOBLOCK))
+            noMessageYet = False
+          except zmq.ZMQError:
+            self.startMitlm()
+            pass
         if r >= 70.0:
           warning("Infinity: %s" % qString)
           self.checkMitlm()

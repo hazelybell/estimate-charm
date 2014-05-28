@@ -19,15 +19,20 @@
 import argparse
 
 from ucUser import pyUser
-ucpy = pyUser()
 
-parser = argparse.ArgumentParser(description='Add known-good Python files to UnnaturalCode.')
+def main():
+  ucpy = pyUser()
 
-parser.add_argument('files', metavar='file', type=str, nargs='+',
-                   help='A file to be added.')
+  parser = argparse.ArgumentParser(description='Add known-good Python files to UnnaturalCode.')
 
-args = parser.parse_args()
+  parser.add_argument('files', metavar='file', type=str, nargs='+',
+                    help='A file to be added.')
 
-ucpy.sm.trainFile(args.files)
+  args = parser.parse_args()
 
-ucpy.release()
+  ucpy.sm.trainFile(args.files)
+
+  ucpy.release()
+  
+if __name__ == '__main__':
+    main()

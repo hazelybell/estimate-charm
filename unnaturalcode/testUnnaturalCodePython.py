@@ -19,9 +19,9 @@
 
 Other things to consider:
 
-export ESTIMATENGRAM="/home/joshua/projects/mitlm/.libs/estimate-ngram" 
+export ESTIMATENGRAM="/home/joshua/mitlm/.libs/estimate-ngram" 
 export TEST_FILE_LIST=/home/wz/ucPython/all
-export LD_LIBRARY_PATH="/home/joshua/projects/mitlm/.libs"
+export LD_LIBRARY_PATH="/home/joshua/mitlm/.libs"
 source ~/ucPython/bin/activate
 export VIRTUALENV_ACTIVATE=/home/joshua/ucPython/bin/activate_this.py
 """

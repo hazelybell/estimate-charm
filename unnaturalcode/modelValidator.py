@@ -42,6 +42,8 @@ virtualEnvActivate = os.getenv("VIRTUALENV_ACTIVATE", None)
 
 nonWord = re.compile('\W+')
 beginsWithWhitespace = re.compile('^\w')
+numeric = re.compile('\d+')
+punct = re.compile('[~!@#$%^%&*(){}<>.,;[]`/\\]')
 funny = re.compile(flexibleTokenize.Funny)
 name = re.compile(flexibleTokenize.Name)
 
@@ -221,18 +223,25 @@ class modelValidation(object):
           return self.replaceRandom(vFile)
         vFile.mutate(ls, inserted[0])
         
+    def dedentRandom(self, vFile):
+        s = copy(vFile.original)
+        lines = s.splitlines(True);
+        line = randint(0, len(lines)-1)
+        if beginsWithWhitespace.match(lines[line]):
+          beginsWithWhitespace.sub('', lines[line], count=1)
+        else:
+          return self.indentRandom(vFile) # well this is a cheap hack
+        vFile.mutatedLexemes = vFile.lm("".join(lines))
+        vFile.mutatedLocation = pythonLexeme.fromTuple((token.INDENT, ' ', (line+1, 0), (line+1, 0)))
+        
     def indentRandom(self, vFile):
         s = copy(vFile.original)
         lines = s.splitlines(True);
         line = randint(0, len(lines)-1)
-        iord = randint(0, 1)
-        if (iord == 1):
-          lines[line] = " " + lines[line]
+        if beginsWithWhitespace.match(lines[line]):
+          lines[line] = lines[line][0] + lines[line]
         else:
-          if beginsWithWhitespace.match(lines[line]):
-            beginsWithWhitespace.sub('', lines[line], count=1)
-          else:
-            return self.indentRandom(vFile) # well this is a cheap hack
+          lines[line] = " " + lines[line]
         vFile.mutatedLexemes = vFile.lm("".join(lines))
         vFile.mutatedLocation = pythonLexeme.fromTuple((token.INDENT, ' ', (line+1, 0), (line+1, 0)))
     
@@ -285,6 +294,64 @@ class modelValidation(object):
         else:
           return self.deleteWordRandom(vFile)
         
+    def insertPunctRandom(self, vFile):
+        s = copy(vFile.original)
+        char = s[randint(1, len(s)-1)]
+        charPos = randint(1, len(s)-1)
+        linesbefore = s[:charPos].splitlines(True)
+        line = len(linesbefore)
+        lineChar = len(linesbefore[-1])
+        c = s[charPos:charPos+1]
+        if (punct.match(char)):
+          new = s[:charPos] + char + s[charPos:]
+          vFile.mutatedLexemes = vFile.lm(new)
+          vFile.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
+        else:
+          return self.insertWordRandom(vFile)
+
+    def deleteNumRandom(self, vFile):
+        s = copy(vFile.original)
+        charPos = randint(1, len(s)-1)
+        linesbefore = s[:charPos].splitlines(True)
+        line = len(linesbefore)
+        lineChar = len(linesbefore[-1])
+        c = s[charPos:charPos+1]
+        if (numeric.match(c)):
+          new = s[:charPos] + s[charPos+1:]
+          vFile.mutatedLexemes = vFile.lm(new)
+          vFile.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
+        else:
+          return self.deleteWordRandom(vFile)
+
+    def insertNumRandom(self, vFile):
+        s = copy(vFile.original)
+        char = s[randint(1, len(s)-1)]
+        charPos = randint(1, len(s)-1)
+        linesbefore = s[:charPos].splitlines(True)
+        line = len(linesbefore)
+        lineChar = len(linesbefore[-1])
+        c = s[charPos:charPos+1]
+        if (numeric.match(char)):
+          new = s[:charPos] + char + s[charPos:]
+          vFile.mutatedLexemes = vFile.lm(new)
+          vFile.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
+        else:
+          return self.insertWordRandom(vFile)
+
+    def deletePunctRandom(self, vFile):
+        s = copy(vFile.original)
+        charPos = randint(1, len(s)-1)
+        linesbefore = s[:charPos].splitlines(True)
+        line = len(linesbefore)
+        lineChar = len(linesbefore[-1])
+        c = s[charPos:charPos+1]
+        if (punct.match(c)):
+          new = s[:charPos] + s[charPos+1:]
+          vFile.mutatedLexemes = vFile.lm(new)
+          vFile.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
+        else:
+          return self.deleteWordRandom(vFile)
+
     def colonRandom(self, vFile):
         s = copy(vFile.original)
         charPos = randint(1, len(s)-1)
@@ -332,12 +399,17 @@ class modelValidation(object):
 DELETE = modelValidation.deleteRandom
 INSERT = modelValidation.insertRandom
 REPLACE = modelValidation.replaceRandom
-INDENTATION = modelValidation.indentRandom
 PUNCTUATION = modelValidation.punctRandom
 NAMELIKE = modelValidation.nameRandom
 COLON = modelValidation.colonRandom
 DELETEWORDCHAR = modelValidation.deleteWordRandom
 INSERTWORDCHAR = modelValidation.insertWordRandom
+DELETENUMCHAR = modelValidation.deleteNumRandom
+INSERTNUMCHAR = modelValidation.insertNumRandom
+DELETEPUNCTCHAR = modelValidation.deletePunctRandom
+INSERTPUNCTCHAR = modelValidation.insertPunctRandom
+DELETESPACE = modelValidation.dedentRandom
+INSERTSPACE = modelValidation.indentRandom
 
 def main():
         testFileList = os.getenv("TEST_FILE_LIST", sys.argv[1])
@@ -353,9 +425,11 @@ def main():
         if re.match('d', sys.argv[4]):
           v.validate(mutation=DELETE, n=n)
         if re.match('s', sys.argv[4]):
-          v.validate(mutation=INDENTATION, n=n)
-        if re.match('p', sys.argv[4]):
-          v.validate(mutation=PUNCTUATION, n=n)
+          v.validate(mutation=DELETESPACE, n=n)
+        if re.match('S', sys.argv[4]):
+          v.validate(mutation=INSERTSPACE, n=n)
+        #if re.match('p', sys.argv[4]):
+          #v.validate(mutation=PUNCTUATION, n=n)
         if re.match('n', sys.argv[4]):
           v.validate(mutation=NAMELIKE, n=n)
         if re.match('c', sys.argv[4]):
@@ -364,6 +438,14 @@ def main():
           v.validate(mutation=DELETEWORDCHAR, n=n)
         if re.match('W', sys.argv[4]):
           v.validate(mutation=INSERTWORDCHAR, n=n)
+        if re.match('p', sys.argv[4]):
+          v.validate(mutation=DELETEPUNCTCHAR, n=n)
+        if re.match('P', sys.argv[4]):
+          v.validate(mutation=INSERTPUNCTCHAR, n=n)
+        if re.match('o', sys.argv[4]):
+          v.validate(mutation=DELETEPNUMCHAR, n=n)
+        if re.match('O', sys.argv[4]):
+          v.validate(mutation=INSERTNUMCHAR, n=n)
         # TODO: assert csvs
         v.release()
 

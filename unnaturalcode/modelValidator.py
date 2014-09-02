@@ -254,6 +254,24 @@ class modelValidation(object):
         #s = copy(vFile.original)
         
     def nameRandom(self, vFile):
+      return self.deleteWordRandom(vFile)
+
+    def insertWordRandom(self, vFile):
+        s = copy(vFile.original)
+        char = s[randint(1, len(s)-1)]
+        charPos = randint(1, len(s)-1)
+        linesbefore = s[:charPos].splitlines(True)
+        line = len(linesbefore)
+        lineChar = len(linesbefore[-1])
+        c = s[charPos:charPos+1]
+        if (name.match(char)):
+          new = s[:charPos] + char + s[charPos:]
+          vFile.mutatedLexemes = vFile.lm(new)
+          vFile.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
+        else:
+          return self.insertWordRandom(vFile)
+
+    def deleteWordRandom(self, vFile):
         s = copy(vFile.original)
         charPos = randint(1, len(s)-1)
         linesbefore = s[:charPos].splitlines(True)
@@ -265,7 +283,7 @@ class modelValidation(object):
           vFile.mutatedLexemes = vFile.lm(new)
           vFile.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
         else:
-          return self.punctRandom(vFile)
+          return self.deleteWordRandom(vFile)
         
     def colonRandom(self, vFile):
         s = copy(vFile.original)
@@ -318,6 +336,8 @@ INDENTATION = modelValidation.indentRandom
 PUNCTUATION = modelValidation.punctRandom
 NAMELIKE = modelValidation.nameRandom
 COLON = modelValidation.colonRandom
+DELETEWORDCHAR = modelValidation.deleteWordRandom
+INSERTWORDCHAR = modelValidation.insertWordRandom
 
 def main():
         testFileList = os.getenv("TEST_FILE_LIST", sys.argv[1])
@@ -340,6 +360,10 @@ def main():
           v.validate(mutation=NAMELIKE, n=n)
         if re.match('c', sys.argv[4]):
           v.validate(mutation=COLON, n=n)
+        if re.match('w', sys.argv[4]):
+          v.validate(mutation=DELETEWORDCHAR, n=n)
+        if re.match('W', sys.argv[4]):
+          v.validate(mutation=INSERTWORDCHAR, n=n)
         # TODO: assert csvs
         v.release()
 

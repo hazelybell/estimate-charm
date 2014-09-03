@@ -40,9 +40,9 @@ import flexibleTokenize
 
 virtualEnvActivate = os.getenv("VIRTUALENV_ACTIVATE", None)
 
-nonWord = re.compile('\W+')
-beginsWithWhitespace = re.compile('^\w')
-numeric = re.compile('\d+')
+nonWord = re.compile('\\W+')
+beginsWithWhitespace = re.compile('^\\w')
+numeric = re.compile('\\d')
 punct = re.compile('[~!@#$%^%&*(){}<>.,;\\[\\]`/\\\=\\-+]')
 funny = re.compile(flexibleTokenize.Funny)
 name = re.compile(flexibleTokenize.Name)
@@ -149,7 +149,10 @@ class modelValidation(object):
           assert isinstance(fi, validationFile)
           info("Testing " + fi.path)
           for i in range(0, n):
-            mutation(self, fi)
+            merror = mutation(self, fi)
+            if error is not None:
+              info(merror)
+              break
             runException = fi.runMutant()
             if (runException[0] == None):
               exceptionName = "None"
@@ -202,6 +205,7 @@ class modelValidation(object):
         if token.type == 'ENDMARKER':
           return self.deleteRandom(vFile)
         vFile.mutate(ls, token)
+        return None
             
     def insertRandom(self, vFile):
         ls = copy(vFile.scrubbed)
@@ -211,6 +215,7 @@ class modelValidation(object):
         if inserted[0].type == 'ENDMARKER':
           return self.insertRandom(vFile)
         vFile.mutate(ls, inserted[0])
+        return None
             
     def replaceRandom(self, vFile):
         ls = copy(vFile.scrubbed)
@@ -223,6 +228,7 @@ class modelValidation(object):
         if inserted[0].type == 'ENDMARKER':
           return self.replaceRandom(vFile)
         vFile.mutate(ls, inserted[0])
+        return None
         
     def dedentRandom(self, vFile):
         s = copy(vFile.original)
@@ -234,6 +240,7 @@ class modelValidation(object):
           return self.dedentRandom(vFile) # well this is a cheap hack
         vFile.mutatedLexemes = vFile.lm("".join(lines))
         vFile.mutatedLocation = pythonLexeme.fromTuple((token.INDENT, ' ', (line+1, 0), (line+1, 0)))
+        return None
         
     def indentRandom(self, vFile):
         s = copy(vFile.original)
@@ -245,6 +252,7 @@ class modelValidation(object):
           lines[line] = " " + lines[line]
         vFile.mutatedLexemes = vFile.lm("".join(lines))
         vFile.mutatedLocation = pythonLexeme.fromTuple((token.INDENT, ' ', (line+1, 0), (line+1, 0)))
+        return None
     
     def punctRandom(self, vFile):
         s = copy(vFile.original)
@@ -257,6 +265,7 @@ class modelValidation(object):
           new = s[:charPos] + s[charPos+1:]
           vFile.mutatedLexemes = vFile.lm(new)
           vFile.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
+          return None
         else:
           return self.punctRandom(vFile)
     
@@ -280,6 +289,7 @@ class modelValidation(object):
         new = s[:charPos] + char + s[charPos:]
         vFile.mutatedLexemes = vFile.lm(new)
         vFile.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
+        return None
 
     def deleteWordRandom(self, vFile):
         s = copy(vFile.original)
@@ -294,11 +304,12 @@ class modelValidation(object):
         new = s[:charPos] + s[charPos+1:]
         vFile.mutatedLexemes = vFile.lm(new)
         vFile.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
+        return None
         
     def insertPunctRandom(self, vFile):
         s = copy(vFile.original)
         if not punct.match(s):
-          return
+          return True
         while (True):
           char = s[randint(1, len(s)-1)]
           if (punct.match(char)):
@@ -311,11 +322,12 @@ class modelValidation(object):
         new = s[:charPos] + char + s[charPos:]
         vFile.mutatedLexemes = vFile.lm(new)
         vFile.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
+        return None
 
     def deleteNumRandom(self, vFile):
         s = copy(vFile.original)
         if not numeric.match(s):
-          return
+          return "No numbers"
         while True:
           charPos = randint(1, len(s)-1)
           linesbefore = s[:charPos].splitlines(True)
@@ -327,11 +339,12 @@ class modelValidation(object):
         new = s[:charPos] + s[charPos+1:]
         vFile.mutatedLexemes = vFile.lm(new)
         vFile.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
+        return False
 
     def insertNumRandom(self, vFile):
         s = copy(vFile.original)
         if not numeric.match(s):
-          return
+          return "No numbers"
         while True:
           char = s[randint(1, len(s)-1)]
           charPos = randint(1, len(s)-1)
@@ -344,11 +357,12 @@ class modelValidation(object):
         new = s[:charPos] + char + s[charPos:]
         vFile.mutatedLexemes = vFile.lm(new)
         vFile.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
+        return None
 
     def deletePunctRandom(self, vFile):
         s = copy(vFile.original)
         if not punct.match(s):
-          return
+          return True
         while True:
           charPos = randint(1, len(s)-1)
           linesbefore = s[:charPos].splitlines(True)
@@ -360,6 +374,7 @@ class modelValidation(object):
         new = s[:charPos] + s[charPos+1:]
         vFile.mutatedLexemes = vFile.lm(new)
         vFile.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
+        return None
 
     def colonRandom(self, vFile):
         s = copy(vFile.original)
@@ -374,6 +389,7 @@ class modelValidation(object):
         new = s[:charPos] + s[charPos+1:]
         vFile.mutatedLexemes = vFile.lm(new)
         vFile.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
+        return None
       
     def __init__(self, source=None, language=pythonSource, resultsDir=None, corpus=mitlmCorpus):
         self.resultsDir = ((resultsDir or os.getenv("ucResultsDir", None)) or mkdtemp(prefix='ucValidation-'))

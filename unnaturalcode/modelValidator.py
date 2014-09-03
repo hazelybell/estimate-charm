@@ -350,6 +350,7 @@ class modelValidation(object):
     def insertNumRandom(self, vFile):
         s = copy(vFile.original)
         char = str(randint(0, 9))
+        charPos = randint(1, len(s)-1)
         linesbefore = s[:charPos].splitlines(True)
         line = len(linesbefore)
         lineChar = len(linesbefore[-1])

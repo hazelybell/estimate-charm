@@ -349,21 +349,11 @@ class modelValidation(object):
 
     def insertNumRandom(self, vFile):
         s = copy(vFile.original)
-        if not numeric.search(s):
-          return "No numbers"
-        positions = [x.start() for x in numeric.finditer(s)]
-        while True:
-          char = str(randint(0, 10))
-          if (len(positions) == 1):
-            charPos = positions[0]
-          else:
-            charPos = positions[randint(1, len(positions)-1)]
-          linesbefore = s[:charPos].splitlines(True)
-          line = len(linesbefore)
-          lineChar = len(linesbefore[-1])
-          c = s[charPos:charPos+1]
-          if (numeric.match(c)):
-            break
+        char = str(randint(0, 9))
+        linesbefore = s[:charPos].splitlines(True)
+        line = len(linesbefore)
+        lineChar = len(linesbefore[-1])
+        c = s[charPos:charPos+1]
         new = s[:charPos] + char + s[charPos:]
         vFile.mutatedLexemes = vFile.lm(new)
         vFile.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))

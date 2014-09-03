@@ -329,10 +329,13 @@ class modelValidation(object):
     def deleteNumRandom(self, vFile):
         s = copy(vFile.original)
         if not numeric.search(s):
-          pdb.set_trace()
           return "No numbers"
+        positions = [x.start() for x in numeric.finditer(s)]
         while True:
-          charPos = randint(1, len(s)-1)
+          if (len(positions) == 1):
+            charPos = positions[0]
+          else:
+            charPos = positions[randint(1, len(positions)-1)]
           linesbefore = s[:charPos].splitlines(True)
           line = len(linesbefore)
           lineChar = len(linesbefore[-1])
@@ -347,16 +350,19 @@ class modelValidation(object):
     def insertNumRandom(self, vFile):
         s = copy(vFile.original)
         if not numeric.search(s):
-          pdb.set_trace()
           return "No numbers"
+        positions = [x.start() for x in numeric.finditer(s)]
         while True:
-          char = s[randint(1, len(s)-1)]
-          charPos = randint(1, len(s)-1)
+          char = str(randint(0, 10))
+          if (len(positions) == 1):
+            charPos = positions[0]
+          else:
+            charPos = positions[randint(1, len(positions)-1)]
           linesbefore = s[:charPos].splitlines(True)
           line = len(linesbefore)
           lineChar = len(linesbefore[-1])
           c = s[charPos:charPos+1]
-          if (numeric.match(char)):
+          if (numeric.match(c)):
             break
         new = s[:charPos] + char + s[charPos:]
         vFile.mutatedLexemes = vFile.lm(new)

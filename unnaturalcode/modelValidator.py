@@ -38,11 +38,13 @@ from multiprocessing import Process, Queue
 from Queue import Empty
 import flexibleTokenize
 
+import pdb
+
 virtualEnvActivate = os.getenv("VIRTUALENV_ACTIVATE", None)
 
 nonWord = re.compile('\\W+')
 beginsWithWhitespace = re.compile('^\\w')
-numeric = re.compile('\\d')
+numeric = re.compile('[0-9]')
 punct = re.compile('[~!@#$%^%&*(){}<>.,;\\[\\]`/\\\=\\-+]')
 funny = re.compile(flexibleTokenize.Funny)
 name = re.compile(flexibleTokenize.Name)
@@ -150,7 +152,7 @@ class modelValidation(object):
           info("Testing " + fi.path)
           for i in range(0, n):
             merror = mutation(self, fi)
-            if error is not None:
+            if merror is not None:
               info(merror)
               break
             runException = fi.runMutant()
@@ -308,8 +310,8 @@ class modelValidation(object):
         
     def insertPunctRandom(self, vFile):
         s = copy(vFile.original)
-        if not punct.match(s):
-          return True
+        if not punct.search(s):
+          return "No punctuation"
         while (True):
           char = s[randint(1, len(s)-1)]
           if (punct.match(char)):
@@ -326,7 +328,8 @@ class modelValidation(object):
 
     def deleteNumRandom(self, vFile):
         s = copy(vFile.original)
-        if not numeric.match(s):
+        if not numeric.search(s):
+          pdb.set_trace()
           return "No numbers"
         while True:
           charPos = randint(1, len(s)-1)
@@ -339,11 +342,12 @@ class modelValidation(object):
         new = s[:charPos] + s[charPos+1:]
         vFile.mutatedLexemes = vFile.lm(new)
         vFile.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
-        return False
+        return None
 
     def insertNumRandom(self, vFile):
         s = copy(vFile.original)
-        if not numeric.match(s):
+        if not numeric.search(s):
+          pdb.set_trace()
           return "No numbers"
         while True:
           char = s[randint(1, len(s)-1)]
@@ -361,8 +365,8 @@ class modelValidation(object):
 
     def deletePunctRandom(self, vFile):
         s = copy(vFile.original)
-        if not punct.match(s):
-          return True
+        if not punct.search(s):
+          return "No punctuation"
         while True:
           charPos = randint(1, len(s)-1)
           linesbefore = s[:charPos].splitlines(True)

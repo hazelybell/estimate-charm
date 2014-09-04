@@ -407,9 +407,9 @@ class modelValidation(object):
 
         assert os.access(self.resultsDir, os.X_OK & os.R_OK & os.W_OK)
         self.csvPath = path.join(self.resultsDir, 'results.csv')
+        self.progress = dict()
         try:
           self.csvFile = open(self.csvPath, 'r')
-          self.progress = dict()
           self.csv = csv.reader(self.csvFile)
           for row in self.csv:
             if row[0] in self.progress:

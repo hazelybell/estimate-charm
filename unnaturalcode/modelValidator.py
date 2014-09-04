@@ -149,8 +149,12 @@ class modelValidation(object):
         assert n > 0
         for fi in self.validFiles:
           assert isinstance(fi, validationFile)
-          info("Testing " + fi.path)
-          for i in range(0, n):
+          if fi.path in self.progress:
+            progress = self.progress[fi.path]
+          else:
+            progress = 0
+          info("Testing " + str(progress) + "/" + str(n) + " " + fi.path)
+          for i in range(progress, n):
             merror = mutation(self, fi)
             if merror is not None:
               info(merror)
@@ -235,11 +239,11 @@ class modelValidation(object):
     def dedentRandom(self, vFile):
         s = copy(vFile.original)
         lines = s.splitlines(True);
-        line = randint(0, len(lines)-1)
-        if beginsWithWhitespace.match(lines[line]):
-          beginsWithWhitespace.sub('', lines[line], count=1)
-        else:
-          return self.dedentRandom(vFile) # well this is a cheap hack
+        while True:
+          line = randint(0, len(lines)-1)
+          if beginsWithWhitespace.match(lines[line]):
+            beginsWithWhitespace.sub('', lines[line], count=1)
+            break
         vFile.mutatedLexemes = vFile.lm("".join(lines))
         vFile.mutatedLocation = pythonLexeme.fromTuple((token.INDENT, ' ', (line+1, 0), (line+1, 0)))
         return None
@@ -403,6 +407,18 @@ class modelValidation(object):
 
         assert os.access(self.resultsDir, os.X_OK & os.R_OK & os.W_OK)
         self.csvPath = path.join(self.resultsDir, 'results.csv')
+        try:
+          self.csvFile = open(self.csvPath, 'r')
+          self.progress = dict()
+          self.csv = csv.reader(self.csvFile)
+          for row in self.csv:
+            if row[0] in self.progress:
+              self.progress[row[0]] += 1 
+            else:
+              self.progress[row[0]] = 1
+          self.csvFile.close()
+        except (IOError):
+          pass
         self.csvFile = open(self.csvPath, 'a')
         self.csv = csv.writer(self.csvFile)
         self.corpusPath = os.path.join(self.resultsDir, 'validationCorpus')

@@ -1,0 +1,6 @@
+Flask==0.10.1
+# Note: Not kept in any package index as of yet. Installed using:
+# $ pip install unnaturalcode --find-links <fully-qualified-path-to-repo>/dist
+# There is also
+# $ pip install -e <fully-qualified-path-to-repo>
+unnaturalcode==0.1

@@ -10,7 +10,6 @@ import unnaturalcode.ucUser
 __all__ = ['PythonCorpus', 'CORPORA']
 
 
-
 class PythonCorpus(object):
     """
     The default UnnaturalCode Python corpus.
@@ -20,10 +19,11 @@ class PythonCorpus(object):
     description = __doc__
     language = 'Python'
 
-    # Get the singleton instance of the underlying Python language model.
-    _underlying_lm = unnaturalcode.ucUser.pyUser()
+    # Get the singleton instance of the underlying Python language (source)
+    # model.
     # [sigh]... this API.
-    _lm = _underlying_lm.lm()
+    _corpus = unnaturalcode.ucUser.pyUser().sm
+    _lang = _corpus.lang()
 
     # TODO: Come up with these next two DYNAMICALLY.
     order = 10
@@ -37,7 +37,7 @@ class PythonCorpus(object):
         "Returns a select portion of properties."
 
         props = ('name', 'description', 'language', 'order', 'smoothing',
-                'last_updated')
+                 'last_updated')
         return {attr: getattr(self, attr) for attr in props}
 
     def tokenize(self, string):
@@ -45,24 +45,28 @@ class PythonCorpus(object):
         Tokenizes the given string in the manner appropriate for this
         corpus's language model.
         """
-        return self._lm.lex(string)
+        return self._lang.lex(string)
 
     def train(self, tokens):
         """
         Trains the language model with tokens -- precious tokens!
         Updates last_updated as a side-effect.
         """
-        pass
+        return self._corpus.trainLexemes(tokens)
 
-    def predict(self, prefix):
-        pass
+    def predict(self, prefix_tokens):
+        """
+        Predicts...? The next tokens from the token string.
+        """
+        raise NotImplemented("Don't know how to do token prediction...")
 
     def cross_entropy(self, tokens):
-        pass
-
+        """
+        Calculates the cross entropy for the given token string.
+        """
+        return self._corpus.queryLexed(tokens)
 
 
 CORPORA = {
     'py': PythonCorpus()
 }
-

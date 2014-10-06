@@ -5,7 +5,7 @@ Utitlities for common Flask operations.
 """
 
 from functools import wraps
-from flask import json, abort
+from flask import json, abort, request
 from corpora import CORPORA
 
 
@@ -19,10 +19,12 @@ def get_corpus_or_404(name):
         abort(404)
     return CORPORA[name]
 
+
 def get_default(seq, index, default=None):
     if len(seq) <= index:
         return default
     return seq[index]
+
 
 def jsonify(fn):
     @wraps(fn)
@@ -36,3 +38,18 @@ def jsonify(fn):
         return content, status, headers
     return json_returned
 
+
+def get_string_content():
+    "Gets string contents from either 'f' or 'file'."
+    content = request.files.get('f')
+    # Try the file first...
+    if content is not None:
+        return content.read()
+
+    content = request.form.get('s')
+    # Next, try the content.
+    if content is not None:
+        return content
+
+    # Bad request!
+    abort(400)

@@ -22,6 +22,8 @@ hindle1@ualberta.ca
 
 ## Other Contributors
 
+Eddie Antonio Santos
+
 Alex Wilson
 
 Graham Forest

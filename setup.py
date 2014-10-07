@@ -2,15 +2,14 @@
 import sys
 from setuptools import setup, find_packages
 
-requires = [l.strip() for l in open('requirements.txt').readlines()]
+from unnaturalcode import __version__
+
+with open('requirements.txt') as requirements:
+    requires = [l.strip() for l in requirements.readlines()]
 
 if 'test' in sys.argv:
     sys.argv.remove('test')
     sys.argv.append('nosetests')
-
-# To set __version__
-__version__ = 'unknown'
-execfile('unnaturalcode/_version.py')
 
 setup(
     name = "unnaturalcode",

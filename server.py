@@ -8,6 +8,7 @@ Currently only serves up a Python service.
 
 from api_utils import get_corpus_or_404, get_string_content, NotFound, jsonify
 from flask import Flask, request, abort, json
+from token_fmt import parse_tokens
 
 
 app = Flask(__name__)
@@ -43,7 +44,6 @@ def predict(corpus_name, token_str=None):
     #  s - number of suggestions to emit
 
     if token_str is not None:
-        # TODO: Should I even support this feature?
         tokens = parse_tokens(token_str)
     else:
         tokens = corpus.tokenize(get_string_content())

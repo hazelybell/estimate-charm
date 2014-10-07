@@ -4,3 +4,4 @@ Flask==0.10.1
 # There is also
 # $ pip install -e <fully-qualified-path-to-repo>
 unnaturalcode==0.1
+more-itertools==2.2

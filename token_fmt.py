@@ -50,14 +50,14 @@ def parse_tokens(token_str):
     Parses a token string.
 
     >>> ex1 = "for/(/int/i/;"
-    >>> ans1 = parse_token_fmt(ex1)
+    >>> ans1 = parse_tokens(ex1)
     >>> ans1[0]
     ('', 'for', [], [], 'for')
     >>> ans1[-1]
     ('', ';', [], [], ';')
 
     >>> ex2 = r'for:NAME/i:NAME/in:NAME/range:NAME/(:OP/10:NUMBER/):OP/\::OP'
-    >>> ans2 = parse_token_fmt(ex2)
+    >>> ans2 = parse_tokens(ex2)
     >>> len(ans2)
     8
     >>> ans2[0]
@@ -65,18 +65,18 @@ def parse_tokens(token_str):
     >>> ans2[-1]
     ('OP', ':', [], [], ':')
 
-    >>> parse_token_fmt(r'1/\//2')
+    >>> parse_tokens(r'1/\//2')
     [('', '1', [], [], '1'), ('', '/', [], [], '/'), ('', '2', [], [], '2')]
 
     Edge cases:
 
-    >>> parse_token_fmt('/')
+    >>> parse_tokens('/')
     [('', '/', [], [], '/')]
-    >>> parse_token_fmt(r'\::OP')
+    >>> parse_tokens(r'\::OP')
     [('OP', ':', [], [], ':')]
-    >>> parse_token_fmt(':')
+    >>> parse_tokens(':')
     [('', ':', [], [], ':')]
-    >>> parse_token_fmt('\\')
+    >>> parse_tokens('\\')
     [('', '\\', [], [], '\\')]
 
     """

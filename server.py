@@ -67,6 +67,7 @@ def cross_entropy(corpus_name):
 
 
 @app.route('/<corpus_name>/', methods=('POST',))
+@jsonify
 def train(corpus_name):
     """
     POST /{corpus}/
@@ -76,9 +77,9 @@ def train(corpus_name):
     corpus = get_corpus_or_404(corpus_name)
     content = get_string_content()
     tokens = corpus.tokenize(content)
-    corpus.train(tokens)
+
     # TODO: return some kind of statistics?
-    return '', 201
+    return {'result': corpus.train(tokens)}, 201
 
 
 @app.route('/<corpus_name>/tokenize', methods=('POST',))

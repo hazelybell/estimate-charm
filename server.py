@@ -53,6 +53,7 @@ def predict(corpus_name, token_str=None):
 
 @app.route('/<corpus_name>/cross-entropy')
 @app.route('/<corpus_name>/xentropy', methods=('GET', 'POST'))
+@jsonify
 def cross_entropy(corpus_name):
     """
     POST /{corpus}/xentropy/
@@ -63,7 +64,7 @@ def cross_entropy(corpus_name):
     corpus = get_corpus_or_404(corpus_name)
     content = get_string_content()
     tokens = corpus.tokenize(content)
-    return corpus.cross_entropy(tokens)
+    return {'cross_entropy': corpus.cross_entropy(tokens)}
 
 
 @app.route('/<corpus_name>/', methods=('POST',))

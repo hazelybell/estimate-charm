@@ -27,6 +27,9 @@ ucParanoid = os.getenv("PARANOID", False)
 
 mitlmLogger = getLogger('MITLM')
 
+CROSS_ENTROPY_PREFIX = 'x'
+PREDICTION_PREFIX = 'p'
+
 class mitlmCorpus(object):
     
     def __init__(self, readCorpus=None, writeCorpus=None, estimateNgramPath=None, uc=unnaturalCode(), order=10):
@@ -39,7 +42,7 @@ class mitlmCorpus(object):
         self.mitlmProc = None
         self.order = order
         self.zctx = uc.zctx
-    
+
     def checkMitlm(self):
         while self.mitlmProc:
             try:
@@ -48,7 +51,7 @@ class mitlmCorpus(object):
                   mitlmLogger.info()
             except:
                 break
-    
+
     def startMitlm(self):
         """Start MITLM estimate-ngram in 0MQ entropy query mode, unless already running."""
         if not self.mitlmSocket == None :
@@ -60,23 +63,40 @@ class mitlmCorpus(object):
         assert os.path.exists(self.readCorpus), "No such corpus."
         assert not allWhitespace.match(slurp(self.readCorpus)), "Corpus is full of whitespace!"
         assert os.path.exists(self.estimateNgramPath), "No such estimate-ngram."
-        self.mitlmProc = subprocess.Popen([self.estimateNgramPath, "-t", self.readCorpus, "-o", str(self.order), "-s", "ModKN", "-u", "-live-prob", self.mitlmSocketPath], stdout=subprocess.PIPE)
+        self.mitlmProc = subprocess.Popen([self.estimateNgramPath,
+            "-t", self.readCorpus,
+            "-o", str(self.order),
+            "-s", "ModKN",
+            "-u",
+            "-verbose", "2",
+            "-live-prob", self.mitlmSocketPath], stdout=subprocess.PIPE)
         debug("Started MITLM as PID %i." % self.mitlmProc.pid)
-        
+
+        # wft are you doing josh
         fd = self.mitlmProc.stdout.fileno()
         fl = fcntl.fcntl(fd, fcntl.F_GETFL)
         fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+
+        # Test the ZMQ connection.
         time.sleep(1)
         self.checkMitlm()
         self.mitlmSocket = self.zctx.socket(zmq.REQ)
         self.mitlmSocket.connect(self.mitlmSocketPath)
         self.checkMitlm()
-        self.mitlmSocket.send("for ( i =")
+        self.sendEntropyRequest("for ( i =")
         self.checkMitlm()
         r = float(self.mitlmSocket.recv())
         debug("MITLM said %f" % r)
         self.checkMitlm()
-        
+
+    def sendEntropyRequest(self, request):
+        assert self.mitlmSocket is not None
+        return self.mitlmSocket.send(CROSS_ENTROPY_PREFIX + request)
+
+    def sendPredictionRequest(self, request):
+        assert self.mitlmSocket is not None
+        return self.mitlmSocket.send(PREDICTION_PREFIX + request)
+
     def stopMitlm(self):
         """Stop MITLM estimate-ngram, unless not running."""
         self.checkMitlm()
@@ -132,7 +152,7 @@ class mitlmCorpus(object):
     def queryCorpus(self, lexemes):
         self.startMitlm()
         qString = self.corpify(lexemes)
-        self.mitlmSocket.send(qString)
+        self.sendEntropyRequest(qString)
         noMessageYet = True
         r = 74.0
         while noMessageYet:

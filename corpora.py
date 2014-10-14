@@ -58,7 +58,7 @@ class PythonCorpus(object):
         """
         Predicts...? The next tokens from the token string.
         """
-        raise NotImplemented("Don't know how to do token prediction...")
+        return self._corpus.predictLexed(prefix_tokens)
 
     def cross_entropy(self, tokens):
         """

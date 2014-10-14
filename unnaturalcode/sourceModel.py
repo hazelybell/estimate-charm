@@ -63,6 +63,9 @@ class sourceModel(object):
     def queryLexed(self, lexemes):
         return self.cm.queryCorpus(self.stringifyAll(lexemes))
 
+    def predictLexed(self, lexemes):
+        return self.cm.predictCorpus(self.stringifyAll(lexemes))
+
     def windowedQuery(self, lexemes):
         lastWindowStarts = len(lexemes)-self.windowSize-1
         if lastWindowStarts < 1:

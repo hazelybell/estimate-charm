@@ -205,7 +205,7 @@ class mitlmCorpus(object):
             _blank, entropy_str, text = components
             return float(entropy_str), text
 
-        return [cleanLine(line) for line in lines]
+        return [cleanLine(line) for line in lines if line.strip() != ""]
 
 
     def release(self):

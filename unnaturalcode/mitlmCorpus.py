@@ -87,7 +87,7 @@ class mitlmCorpus(object):
         self.mitlmSocket = self.zctx.socket(zmq.REQ)
         self.mitlmSocket.connect(self.mitlmSocketPath)
         self.checkMitlm()
-        self.sendEntropyRequest("for ( i =")
+        self.sendEntropyRequest(['for', '(', 'i', '='])
         self.checkMitlm()
         r = float(self.mitlmSocket.recv())
         debug("MITLM said %f" % r)
@@ -163,7 +163,6 @@ class mitlmCorpus(object):
           except zmq.ZMQError:
               pass
 
-    @_corpified
     def queryCorpus(self, request):
         self.startMitlm()
         self.sendEntropyRequest(request)
@@ -174,17 +173,19 @@ class mitlmCorpus(object):
           assert False
         return r
 
-    @_corpified
     def predictCorpus(self, lexemes):
         self.startMitlm()
         self.sendPredictionRequest(lexemes)
-        return self.parsePredictionResult(self._waitForZMQResponse())
+        return self.parsePredictionResult(self._waitForZMQResponse(),
+                remove_prefix=len(lexemes))
 
 
+    @_corpified
     def sendEntropyRequest(self, request):
         # Coerce into bytes, if required.
         return self._send(CROSS_ENTROPY_PREFIX + request)
 
+    @_corpified
     def sendPredictionRequest(self, request):
         return self._send(PREDICTION_PREFIX + request)
 
@@ -196,14 +197,17 @@ class mitlmCorpus(object):
         return self.mitlmSocket.send(string)
 
     @staticmethod
-    def parsePredictionResult(resultString):
+    def parsePredictionResult(resultString, remove_prefix=2):
         lines = resultString.split('\n')
 
+        def split_tail(text):
+            return text.split()[2:]
+
         def cleanLine(line):
-            components = line.split('\t', 2)
-            assert len(components) == 3
-            _blank, entropy_str, text = components
-            return float(entropy_str), text
+            components = line.split('\t', 1)
+            assert len(components) == 2
+            entropy_str, text = components
+            return float(entropy_str), split_tail(text)
 
         return [cleanLine(line) for line in lines if line.strip() != ""]
 

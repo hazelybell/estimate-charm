@@ -197,11 +197,11 @@ class mitlmCorpus(object):
         return self.mitlmSocket.send(string)
 
     @staticmethod
-    def parsePredictionResult(resultString, remove_prefix=2):
+    def parsePredictionResult(resultString, remove_prefix):
         lines = resultString.split('\n')
 
         def split_tail(text):
-            return text.split()[2:]
+            return text.split()[remove_prefix:]
 
         def cleanLine(line):
             components = line.split('\t', 1)

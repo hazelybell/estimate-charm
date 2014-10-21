@@ -1,3 +1,0 @@
-The message you sent included commands to modify the %(context)s,
-but your OpenPGP key isn't imported into Launchpad. Please go to
-%(import_url)s to import your key.

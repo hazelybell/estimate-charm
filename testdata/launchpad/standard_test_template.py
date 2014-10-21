@@ -1,1 +1,0 @@
-lib/lp/testing/tests/test_standard_test_template.py

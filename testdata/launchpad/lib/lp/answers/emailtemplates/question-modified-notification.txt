@@ -1,4 +1,0 @@
-Question #%(question_id)s on %(target_name)s changed:
-%(question_url)s
-
-%(body)s

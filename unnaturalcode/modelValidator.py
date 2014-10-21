@@ -242,7 +242,7 @@ class modelValidation(object):
         while True:
           line = randint(0, len(lines)-1)
           if beginsWithWhitespace.match(lines[line]):
-            beginsWithWhitespace.sub('', lines[line], count=1)
+            lines[line][0] = ''
             break
         vFile.mutatedLexemes = vFile.lm("".join(lines))
         vFile.mutatedLocation = pythonLexeme.fromTuple((token.INDENT, ' ', (line+1, 0), (line+1, 0)))

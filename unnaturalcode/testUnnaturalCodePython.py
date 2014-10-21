@@ -43,6 +43,8 @@ from ucTestData import *
 
 ucGlobal = None
 
+logging.getLogger(__name__).setLevel(logging.DEBUG)
+
 def setUpModule():
     global ucGlobal
     ucGlobal = unnaturalCode()

@@ -1,2 +1,0 @@
-The message you sent included commands to modify the %(context)s, but the
-signature was (apparently) generated too far in the past or future.

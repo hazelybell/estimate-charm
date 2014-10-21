@@ -1,5 +1,0 @@
-The 'private' command expects either 'yes' or 'no'.
-
-For example:
-
-    private yes

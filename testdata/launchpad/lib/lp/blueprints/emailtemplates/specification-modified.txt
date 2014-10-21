@@ -1,7 +1,0 @@
-Blueprint changed by %(editor)s:
-
-%(info_fields)s
-
--- 
-%(spec_title)s
-%(spec_url)s

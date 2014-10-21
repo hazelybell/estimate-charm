@@ -1,0 +1,28 @@
+* Compute cross entropy
+  * Input: [PREFIX]
+    * Token string
+    * Extra labels
+  * Output: X-entropy score
+* Compute predictions
+  * Input: [PREFIX], [POSTFIX], min-max # of tokens to predict
+    * Token string
+    * Extra labels
+  * Output: list of lists of completed tokens
+    * Token string
+    * Labels
+    * Scoring metric (entropy/log likelyhood)
+* Add to training DB
+  * sequence of tokens (something better than whitespace seperated)
+  * Token weights
+  * Extra labels
+* Modified KN Smoothing
+* Immediate save / no model regeneration
+* No multiple access/parallelism
+
+
+Core data:
+
+char* token text (internally transformed to lookup table)
+int   token category
+
+Internal dependencies:

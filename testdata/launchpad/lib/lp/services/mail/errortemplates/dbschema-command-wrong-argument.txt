@@ -1,6 +1,0 @@
-The '%(command_name)s' command expects any of the following arguments:
-%(arguments)s
-
-For example:
-
-    %(command_name)s %(example_argument)s

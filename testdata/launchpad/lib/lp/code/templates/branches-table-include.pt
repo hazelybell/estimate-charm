@@ -1,3 +1,0 @@
-<tal:branchlisting define="branches view/branches">
-  <tal:branchlisting content="structure branches/@@+branch-listing" />
-</tal:branchlisting>

@@ -1,8 +1,0 @@
-Format-Version: 2
-Found-In: 1.4.5-3.2 1.4.6-2
-Subject: evolution mail crashes on opening an email with a TIFF attachment
-Date: 1078820284
-Submitter: Teun Vink <teun@tux.office.luna.net>
-Merged-With: 241742
-Package: evolution
-Message-Id: <20040309081430.98BF411EE67@tux>

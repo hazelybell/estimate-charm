@@ -1,1 +1,0 @@
-The tag you tried to remove is not assigned to this bug: %(tag)s

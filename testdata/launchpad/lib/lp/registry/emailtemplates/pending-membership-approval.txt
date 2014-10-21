@@ -1,5 +1,0 @@
-Hello %(recipient_name)s,
-
-%(person_name)s wants to be a member of %(team_name)s, but this is a moderated team, so that membership has to be approved.  You can approve, decline or leave it as proposed by following the link below.
-
-    %(url)s

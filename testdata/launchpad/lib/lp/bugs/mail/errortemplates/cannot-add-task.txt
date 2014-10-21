@@ -1,3 +1,0 @@
-Bug %(bug_id)s cannot be marked as affecting %(target_name)s.
-
-%(reason)s

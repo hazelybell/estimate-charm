@@ -20,6 +20,7 @@ import os, zmq, signal, os.path, subprocess, fcntl, time
 from unnaturalCode import *
 from logging import debug, info, warning, error, getLogger
 from multiprocessing import Process
+import pdb
 
 allWhitespace = re.compile('^\s+$')
 

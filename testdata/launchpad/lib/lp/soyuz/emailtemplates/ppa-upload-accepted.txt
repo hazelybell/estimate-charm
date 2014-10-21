@@ -1,8 +1,0 @@
-%(STATUS)s:
-%(SUMMARY)s
-
-%(CHANGESFILE)s
-
---%(ARCHIVE_URL)s
-You are receiving this email because you are the uploader of the above
-PPA package.

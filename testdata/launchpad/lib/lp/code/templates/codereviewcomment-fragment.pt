@@ -1,2 +1,0 @@
-<tal:fragment replace="structure view/comment/@@+render"
-    xmlns:tal="http://xml.zope.org/namespaces/tal" />

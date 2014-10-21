@@ -15,9 +15,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
 
-from ucUtil import *
-from mitlmCorpus import *
-from pythonSource import *
+from unnaturalcode.ucUtil import *
+from unnaturalcode.mitlmCorpus import *
+from unnaturalcode.pythonSource import *
 from operator import itemgetter
 
 from logging import debug, info, warning, error

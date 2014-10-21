@@ -17,7 +17,7 @@
 
 from __future__ import print_function
 import os, zmq, signal, os.path, subprocess, fcntl, time
-from unnaturalCode import *
+from unnaturalcode.unnaturalCode import *
 from logging import debug, info, warning, error, getLogger
 from multiprocessing import Process
 import pdb

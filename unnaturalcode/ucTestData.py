@@ -65,9 +65,17 @@ UPDATE TranslationImportQueueEntry
 \"\"\"
 """
 
-testFileList = os.getenv("TEST_FILE_LIST", "testdata/launchpad/python-file-list.txt")
+testFileList = os.getenv("TEST_FILE_LIST", None)
 
-testProjectFiles = open(testFileList).read().splitlines()
+testProjectFiles = []
+
+if testFileList == None:
+  testProjectFiles = []
+else:          
+  testProjectFiles = open(testFileList).read().splitlines()
+  
+if len(testProjectFiles) < 11:
+  raise IllegalArgumentException("Not enough testing files!")
 
 testProject1File = testProjectFiles[10]
 

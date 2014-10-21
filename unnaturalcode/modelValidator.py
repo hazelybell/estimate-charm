@@ -16,11 +16,11 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
 
-from ucUtil import *
-from unnaturalCode import *
-from pythonSource import *
-from mitlmCorpus import *
-from sourceModel import *
+from unnaturalcode.ucUtil import *
+from unnaturalcode.unnaturalCode import *
+from unnaturalcode.pythonSource import *
+from unnaturalcode.mitlmCorpus import *
+from unnaturalcode.sourceModel import *
 
 from logging import debug, info, warning, error
 import logging
@@ -35,8 +35,11 @@ from tempfile import mkstemp, mkdtemp
 import os, re
 
 from multiprocessing import Process, Queue
-from Queue import Empty
-import flexibleTokenize
+try:
+  from Queue import Empty
+except ImportError:
+  from queue import Empty
+from unnaturalcode import flexibleTokenize
 
 import pdb
 
@@ -57,7 +60,10 @@ class HaltingError(Exception):
 
 def runFile(q,path):
     if not virtualEnvActivate is None:
-      execfile(virtualEnvActivate, dict(__file__=virtualEnvActivate))
+      if sys.version_info >= (3,0):
+        exec(compile(open(virtualEnvActivate, "rb").read(), virtualEnvActivate, 'exec'), dict(__file__=virtualEnvActivate))
+      else:
+        execfile(virtualEnvActivate, dict(__file__=virtualEnvActivate))
     try:
         runpy.run_path(path)
     except SyntaxError as se:

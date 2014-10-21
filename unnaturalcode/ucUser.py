@@ -15,11 +15,11 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
 
-from ucUtil import *
-from unnaturalCode import *
-from pythonSource import *
-from mitlmCorpus import *
-from sourceModel import *
+from unnaturalcode.ucUtil import *
+from unnaturalcode.unnaturalCode import *
+from unnaturalcode.pythonSource import *
+from unnaturalcode.mitlmCorpus import *
+from unnaturalcode.sourceModel import *
 
 @singleton
 class pyUser(object):

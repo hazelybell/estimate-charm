@@ -1,1 +1,1 @@
-from _version import version, __version__
+from unnaturalcode._version import version, __version__

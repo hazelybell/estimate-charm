@@ -29,17 +29,17 @@ export VIRTUALENV_ACTIVATE=/home/joshua/ucPython/bin/activate_this.py
 import unittest
 from logging import debug, info, warning, error
 
-from ucUtil import *
-from unnaturalCode import *
-from sourceModel import *
-from pythonSource import *
-from mitlmCorpus import *
-from modelValidator import *
+from unnaturalcode.ucUtil import *
+from unnaturalcode.unnaturalCode import *
+from unnaturalcode.sourceModel import *
+from unnaturalcode.pythonSource import *
+from unnaturalcode.mitlmCorpus import *
+from unnaturalcode.modelValidator import *
 
 import os, os.path, zmq, sys, shutil, token, gc
 from tempfile import *
 
-from ucTestData import *
+from unnaturalcode.ucTestData import *
 
 ucGlobal = None
 

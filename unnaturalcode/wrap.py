@@ -72,7 +72,7 @@ def main(mode="wrap"):
     
     sys.path = savedSysPath;
     
-    from ucUser import pyUser
+    from unnaturalcode.ucUser import pyUser
     ucpy = pyUser()
     
     worst = ucpy.sm.worstWindows(ucpy.lm(source))

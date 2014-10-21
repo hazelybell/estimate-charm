@@ -27,6 +27,6 @@ setup(
     description = "Compiler Error Augmentation System",
     include_package_data = True,
     install_requires = requires,
-    setup_requires = ['nose>=1.0'],
+    setup_requires = ['nose2>=0.4'],
     zip_safe = False,
 )

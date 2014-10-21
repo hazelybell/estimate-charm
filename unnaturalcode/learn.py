@@ -18,7 +18,7 @@
 
 import argparse
 
-from ucUser import pyUser
+from unnaturalcode.ucUser import pyUser
 
 def main():
   ucpy = pyUser()

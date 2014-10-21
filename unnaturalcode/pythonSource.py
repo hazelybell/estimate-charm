@@ -16,12 +16,17 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
 
-from ucUtil import *
-from unnaturalCode import *
+from unnaturalcode.ucUtil import *
+from unnaturalcode.unnaturalCode import *
 from logging import debug, info, warning, error
 
-import sys, token, flexibleTokenize, zmq;
-from cStringIO import StringIO
+from unnaturalcode import flexibleTokenize
+
+import sys, token, zmq;
+try:
+  from cStringIO import StringIO
+except ImportError:
+  from io import StringIO
 
 COMMENT = 53
 

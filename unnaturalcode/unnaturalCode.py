@@ -14,11 +14,16 @@
 #
 #    You should have received a copy of the GNU Affero General Public License
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
-from ucUtil import *
+from unnaturalcode.ucUtil import *
 import sys, os, zmq
 import logging
 from logging import debug, info, warning, error
 from copy import copy
+
+if hasattr(sys, 'maxint'): # Python 2/3 Compatibility
+  maxint = sys.maxint
+else:
+  maxint = sys.maxsize
 
 zctx = None
 
@@ -215,7 +220,7 @@ class ucSource(list):
             self.check()
         return self
     
-    def check(self, start=0, end=sys.maxint):
+    def check(self, start=0, end=maxint):
       start = max(start, 0)
       end = min(end, len(self))
       #debug(str(start) + "-" + str(end))

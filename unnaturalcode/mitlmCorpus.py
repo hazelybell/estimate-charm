@@ -1,7 +1,7 @@
 #    Copyright 2013, 2014 Joshua Charles Campbell
 #
 #    This file is part of UnnaturalCode.
-#    
+#
 #    UnnaturalCode is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +20,7 @@ import os, zmq, signal, os.path, subprocess, fcntl, time
 from unnaturalCode import *
 from logging import debug, info, warning, error, getLogger
 from multiprocessing import Process
+from functools import wraps
 
 allWhitespace = re.compile('^\s+$')
 
@@ -27,8 +28,13 @@ ucParanoid = os.getenv("PARANOID", False)
 
 mitlmLogger = getLogger('MITLM')
 
+CROSS_ENTROPY_PREFIX = 'x'
+PREDICTION_PREFIX = 'p'
+
+
+
 class mitlmCorpus(object):
-    
+
     def __init__(self, readCorpus=None, writeCorpus=None, estimateNgramPath=None, uc=unnaturalCode(), order=10):
         self.readCorpus = (readCorpus or os.getenv("ucCorpus", "/tmp/ucCorpus"))
         self.writeCorpus = (writeCorpus or os.getenv("ucWriteCorpus", self.readCorpus))
@@ -39,7 +45,7 @@ class mitlmCorpus(object):
         self.mitlmProc = None
         self.order = order
         self.zctx = uc.zctx
-    
+
     def checkMitlm(self):
         while self.mitlmProc:
             try:
@@ -48,7 +54,7 @@ class mitlmCorpus(object):
                   mitlmLogger.info()
             except:
                 break
-    
+
     def startMitlm(self):
         """Start MITLM estimate-ngram in 0MQ entropy query mode, unless already running."""
         if not self.mitlmSocket == None :
@@ -60,23 +66,33 @@ class mitlmCorpus(object):
         assert os.path.exists(self.readCorpus), "No such corpus."
         assert not allWhitespace.match(slurp(self.readCorpus)), "Corpus is full of whitespace!"
         assert os.path.exists(self.estimateNgramPath), "No such estimate-ngram."
-        self.mitlmProc = subprocess.Popen([self.estimateNgramPath, "-t", self.readCorpus, "-o", str(self.order), "-s", "ModKN", "-u", "-live-prob", self.mitlmSocketPath], stdout=subprocess.PIPE)
+        self.mitlmProc = subprocess.Popen([self.estimateNgramPath,
+            "-t", self.readCorpus,
+            "-o", str(self.order),
+            "-s", "ModKN",
+            "-u",
+            # TODO: get rid of this line...
+            "-verbose", "2",
+            "-live-prob", self.mitlmSocketPath], stdout=subprocess.PIPE)
         debug("Started MITLM as PID %i." % self.mitlmProc.pid)
-        
+
+        # wtf are you doing josh
         fd = self.mitlmProc.stdout.fileno()
         fl = fcntl.fcntl(fd, fcntl.F_GETFL)
         fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+
+        # Test the ZMQ connection.
         time.sleep(1)
         self.checkMitlm()
         self.mitlmSocket = self.zctx.socket(zmq.REQ)
         self.mitlmSocket.connect(self.mitlmSocketPath)
         self.checkMitlm()
-        self.mitlmSocket.send("for ( i =")
+        self.sendEntropyRequest(['for', '(', 'i', '='])
         self.checkMitlm()
         r = float(self.mitlmSocket.recv())
         debug("MITLM said %f" % r)
         self.checkMitlm()
-        
+
     def stopMitlm(self):
         """Stop MITLM estimate-ngram, unless not running."""
         self.checkMitlm()
@@ -95,13 +111,13 @@ class mitlmCorpus(object):
                 rc = self.mitlmProc.poll()
             self.mitlmProc = None
             debug("MITLM exited with status %r" % (rc))
-            
+
     def corpify(self, lexemes):
         """Stringify lexed source: produce space-seperated sequence of lexemes"""
         assert isinstance(lexemes, list)
         assert len(lexemes)
         return " ".join(lexemes)
-    
+
     def openCorpus(self):
         """Opens the corpus (if necessary)"""
         if (self.corpusFile):
@@ -128,38 +144,81 @@ class mitlmCorpus(object):
         print(cl, file=self.corpusFile)
         self.corpusFile.flush()
         self.stopMitlm()
-    
-    def queryCorpus(self, lexemes):
-        self.startMitlm()
-        qString = self.corpify(lexemes)
-        self.mitlmSocket.send(qString)
-        noMessageYet = True
-        r = 74.0
-        while noMessageYet:
+
+    def _corpified(wrappedMethod):
+        "Decorator. Automatically deals with lexemes for the wrapped method."
+        @wraps(wrappedMethod)
+        def method(self, lexemes, *args, **kwargs):
+            qString = self.corpify(lexemes)
+            return wrappedMethod(self, qString, *args, **kwargs)
+        return method
+
+    def _waitForZMQResponse(self):
+        assert self.mitlmSocket
+        while True:
           self.checkMitlm()
           try:
             self.mitlmSocket.poll(timeout=1000)
-            r = float(self.mitlmSocket.recv(flags=zmq.NOBLOCK))
-            noMessageYet = False
+            return self.mitlmSocket.recv(flags=zmq.NOBLOCK)
           except zmq.ZMQError:
-            self.startMitlm()
-            pass
+              pass
+
+    def queryCorpus(self, request):
+        self.startMitlm()
+        self.sendEntropyRequest(request)
+        r = float(self._waitForZMQResponse())
         if r >= 70.0:
           warning("Infinity: %s" % qString)
           self.checkMitlm()
           assert False
         return r
-    
+
+    def predictCorpus(self, lexemes):
+        self.startMitlm()
+        self.sendPredictionRequest(lexemes)
+        return self.parsePredictionResult(self._waitForZMQResponse(),
+                remove_prefix=len(lexemes))
+
+
+    @_corpified
+    def sendEntropyRequest(self, request):
+        # Coerce into bytes, if required.
+        return self._send(CROSS_ENTROPY_PREFIX + request)
+
+    @_corpified
+    def sendPredictionRequest(self, request):
+        return self._send(PREDICTION_PREFIX + request)
+
+    def _send(self, string):
+        "Sends a string to zmq. Ensures MITLM is initialized."
+        assert self.mitlmSocket
+        if isinstance(string, unicode):
+            string = string.encode('utf-8')
+        return self.mitlmSocket.send(string)
+
+    @staticmethod
+    def parsePredictionResult(resultString, remove_prefix):
+        lines = resultString.split('\n')
+
+        def split_tail(text):
+            return text.split()[remove_prefix:]
+
+        def cleanLine(line):
+            components = line.split('\t', 1)
+            assert len(components) == 2
+            entropy_str, text = components
+            return float(entropy_str), split_tail(text)
+
+        return [cleanLine(line) for line in lines if line.strip() != ""]
+
+
     def release(self):
         """Close files and stop MITLM"""
         self.closeCorpus()
         self.stopMitlm()
-        
+
     def __del__(self):
         """I am a destructor, but release should be called explictly."""
         assert not self.mitlmProc, "Destructor called before release()"
         assert not self.mitlmSocket, "Destructor called before release()"
         assert not self.corpusFile, "Destructor called before release()"
-        #super(mitlmCorpus, self).__del__()
-
-# rwfubmqqoiigevcdefhmidzavjwg

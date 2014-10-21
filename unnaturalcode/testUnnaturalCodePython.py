@@ -90,6 +90,21 @@ class testMitlmCorpus(unittest.TestCase):
     def testCorpify(self):
         sm = sourceModel(cm=mitlmCorpus())
         self.assertEquals(sm.corpify(pythonSource(someLexemes)), 'print ( 1 + 2 ** 2 ) <ENDMARKER>')
+
+    def testParsePredictionResult(self):
+        parse = mitlmCorpus.parsePredictionResult
+        empty = ""
+        self.assertEquals(parse(empty, 2), [])
+        standard_results = (
+                "3.0\timport os <NEWLINE> import sys <NEWLINE> <COMMENT>\n"
+                "1.0\timport os <NEWLINE> import random <NEWLINE> print")
+        self.assertEquals(parse(standard_results, 2), [
+            (3.0, ['<NEWLINE>', 'import', 'sys', '<NEWLINE>', '<COMMENT>']),
+            (1.0, ['<NEWLINE>', 'import', 'random', '<NEWLINE>', 'print'])])
+        self.assertEquals(parse(standard_results, 3), [
+            (3.0, ['import', 'sys', '<NEWLINE>', '<COMMENT>']),
+            (1.0, ['import', 'random', '<NEWLINE>', 'print'])])
+
         
 class testPythonLexical(unittest.TestCase):
     @classmethod

@@ -20,9 +20,14 @@
 * No multiple access/parallelism
 
 
-Core data:
+I/O data:
 
 char* token text (internally transformed to lookup table)
 int   token category
 
 Internal dependencies:
+
+* Data store/core:
+  * Word/int map (and inverse)
+  * Word chunking function (and inverse)
+  * 

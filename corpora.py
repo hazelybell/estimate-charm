@@ -24,9 +24,10 @@ class PythonCorpus(object):
     # [sigh]... this API.
     _corpus = unnaturalcode.ucUser.pyUser().sm
     _lang = _corpus.lang()
+    #pdb.set_trace()
 
-    # TODO: Come up with these next two DYNAMICALLY.
-    order = 10
+    order = _corpus.cm.order
+    # Hard-coded because "it's the best! the best a language model can get!"
     smoothing = 'ModKN'
 
     def __init__(self):

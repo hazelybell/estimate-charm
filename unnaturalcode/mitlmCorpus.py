@@ -71,12 +71,9 @@ class mitlmCorpus(object):
             "-o", str(self.order),
             "-s", "ModKN",
             "-u",
-            # TODO: get rid of this line...
-            "-verbose", "2",
             "-live-prob", self.mitlmSocketPath], stdout=subprocess.PIPE)
         debug("Started MITLM as PID %i." % self.mitlmProc.pid)
 
-        # wtf are you doing josh
         fd = self.mitlmProc.stdout.fileno()
         fl = fcntl.fcntl(fd, fcntl.F_GETFL)
         fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)

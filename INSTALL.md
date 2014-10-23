@@ -40,18 +40,30 @@ python setup.py develop
 
 # Testing
 
+First time:
 ```bash
 test -d venv || virtualenv venv
 . venv/bin/activate
+pip install -r requirements.txt
 nose2-2.7
 ```
 
-You might need some environment variables set
+You will need some environment variables set:
 
 ```bash
 export ESTIMATENGRAM="/usr/local/bin/estimate-ngram"
 export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
 ```
+
+**ALTERNATIVELY** once the virtualenv is setup, source `source_this.sh`
+which will attempt to export _all_ environment variables automatically,
+and add `uctest` which will run nose2 `FAST`:
+
+```bash
+source source_this.sh
+uctest
+```
+
 
 # Running
 

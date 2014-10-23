@@ -1,69 +1,62 @@
-# Restful Prediction Service
+# HTTP API for [UnnaturalCode][]
 
-Resources needed:
+# Install
 
- * `POST` train model with file
- * `GET` predict from prefix
- * `GET` tokenize string/file (Debug)
- * `POST` cross entropy for file
- * ~~`POST` Who's that corpus!~~
+   pip install -r requirements.txt
+   pip install -e <fully-qualified-path-to-unnaturalcod>
+
+Though you'll probably want to create a `virtualenv` before this.
+
+# Run
+
+   python server.py
 
 # All rooted on resource `/{corpus}`
 
-### `{corpus}`
+ * Currently, only the `py` corpus is supported. Obviously, it's
+   the occam-π corpus.
 
-sets the language model to use. Possible values: `py`, `java`, `js`,
-`rb`, etc...
 
-
+# `GET /{corpus}/`—Corpus info
 
-# `GET /{corpus}/` -- Corpus info
-
-Fetches metadata for the given corpus. Metadata includes:
+Returns metadata for the given corpus. Metadata includes:
 
  * `fullname`
  * `last_updated`
  * `description`
- * `language` -- programming or otherwise
+ * `language`—programming or otherwise
  * `order`
- * `smoothing` -- Probably always `ModKN`
+ * `smoothing`—Probably always `ModKN`
  * `vocabulary`
    * `size`
-   * `categories` -- lists syntactic categories
+   * `categories`—lists syntactic categories
 
 
 
-# `GET /{corpus}/predict/{context*}` -- Predict
+# `GET /{corpus}/predict/{context*}`—Predict
 
-     GET /py/predict/$-:kw-for HTTP/1.1
-     
-     {"results":[["i", "in", "range", "(", "10", ")", ":"]]}
+     GET /py/predict/<^>/for HTTP/1.1
 
+     {"suggestions": [3.45, ["i", "in", "range", "(", "5", ")", ":"]]}
 
 ## Mandatory arguments
 
-Must give context either as query `?context` or as context path.
+Must give context as a context path.
 
 ### `{context*}`
 
 Preceding token context. The more tokens provided, the better. See
 [Context format](#context-format).
 
-### `?context` or `?c`
 
-Context *as a string*. The engine itself should tokenize this based on
-the environment.
 
-
-
-# `POST/GET /{corpus}/xentropy` -- calculate cross entropy
+# `POST /{corpus}/xentropy`—calculate cross entropy
 
 ## Mandatory arguments
 
-Either `?f` for an entire file (may be provided more than once?), or
-`?c` for "context"
+`?f` for an entire file.
 
-
+
 
 # `POST /{corpus}/`
 
@@ -71,40 +64,23 @@ Trains the corpus with some tokens from a specific source.
 
 ## Mandatory arguments
 
-### `?file` or `?f`
+### `?f`
 
 A plain-text file that will be tokenized and trained upon.
 
-
+
 
 # Context Format
 
 ## Formal Grammar
 
     token-list  = token
-                / token ":" token-list
+                / token "/" token-list
 
-    token       = [ syncat "-" ] chars
+    token       = [ syncat ":" ] chars
 
     chars       = { ~all characters other than ":"~ }
-    syncat      = [ ~all characters other than ":" and "-"~ ]
+    syncat      = [ ~all characters other than "/" and ":"~ ]
 
-# TODO
 
-Gotta write install and how to do VirutalEnv stuff. I'm rocking the
-VirutalEnvWrapper so... it's a bit magical.
-
-# Joshnotes
-
- * train some tokens.
- * n-gram query needs:
-    - next token
-    - find cross entropy with respect to the corpus: sliding window query
-    - tokenization? Client-side or server-side? Both?
- - low priority to: guess that corpus!
- - Keep in mind local corpus.
- - ~~AI MODE!!!!!!~~
-
-Start with UnnaturalCode! It does cross entropy and easily does
-multi-corpus.
-
+[UnnaturalCode]: https://github.com/orezpraw/unnaturalcode

@@ -13,8 +13,8 @@ Though you'll probably want to create a `virtualenv` before this.
 
 # All rooted on resource `/{corpus}`
 
- * Currently, only the `py` corpus is supported. Obviously, it's
-   the occam-π corpus.
+ * Currently, only the `py` corpus is supported. Obviously, `py` is the
+   occam-π corpus.
 
 
 # `GET /{corpus}/`—Corpus info
@@ -82,5 +82,23 @@ A plain-text file that will be tokenized and trained upon.
     chars       = { ~all characters other than ":"~ }
     syncat      = [ ~all characters other than "/" and ":"~ ]
 
+# Licensing
+
+Like [UnnaturalCode][], UnnaturalREST is licensed under the AGPL3+.
+
+© 2014 Eddie Antonio Santos
+
+UnnaturalREST is free software: you can redistribute it and/or modify it
+under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or (at
+your option) any later version.
+
+UnnaturalREST is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with UnnaturalREST. If not, see http://www.gnu.org/licenses/.
 
 [UnnaturalCode]: https://github.com/orezpraw/unnaturalcode

@@ -20,13 +20,14 @@ fi
 # Activate the virtualenv.
 source $VENV/bin/activate
 
-ESTIMATENGRAM=$MITLM/estimate-ngram
-LD_LIBRARY_PATH=$MITLM/.libs
-VIRTUALENV_ACTIVATE=$VENV/bin/activate_this.py
+export ESTIMATENGRAM=$MITLM/estimate-ngram
+export LD_LIBRARY_PATH=$MITLM/.libs
+export VIRTUALENV_ACTIVATE=$VENV/bin/activate_this.py
 
 if [ -z "${TEST_FILE_LIST+x}" ]; then
     TEST_FILE_LIST=$PWD/example-test-file.txt
 fi
+export TEST_FILE_LIST
 
 uctest () {
     FAST="True" nose2-2.7 -B --log-capture

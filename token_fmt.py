@@ -16,7 +16,7 @@ def generate_parsed_tokens(token_str):
 
     token_text = ''
     token_category = ''
-    bucket = intern('text')
+    bucket = 'text'
 
     while char_stream:
         char = next(char_stream)
@@ -36,7 +36,7 @@ def generate_parsed_tokens(token_str):
             token_category = ''
         else:
             # We can simply add the character to the string.
-            if bucket is 'text':
+            if bucket == 'text':
                 token_text += char
             else:
                 token_category += char

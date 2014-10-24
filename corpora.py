@@ -39,10 +39,11 @@ class PythonCorpus(object):
     # Get the singleton instance of the underlying Python language (source)
     # model.
     # [sigh]... this API.
-    _corpus = unnaturalcode.ucUser.pyUser().sm
-    _lang = _corpus.lang()
+    _sourceModel = unnaturalcode.ucUser.pyUser().sm
+    _lang = _sourceModel.lang()
+    _mitlm = _sourceModel.cm
 
-    order = _corpus.cm.order
+    order = _mitlm.order
     # Hard-coded because "it's the best! the best a language model can get!"
     smoothing = 'ModKN'
 
@@ -69,20 +70,23 @@ class PythonCorpus(object):
         Trains the language model with tokens -- precious tokens!
         Updates last_updated as a side-effect.
         """
-        return self._corpus.trainLexemes(tokens)
+        return self._sourceModel.trainLexemes(tokens)
 
     def predict(self, prefix_tokens):
         """
         Predicts...? The next tokens from the token string.
         """
-        return self._corpus.predictLexed(prefix_tokens)
+        return self._sourceModel.predictLexed(prefix_tokens)
 
     def cross_entropy(self, tokens):
         """
         Calculates the cross entropy for the given token string.
         """
-        return self._corpus.queryLexed(tokens)
+        return self._sourceModel.queryLexed(tokens)
 
+    def __del__(self):
+        # Ensures that MITLM has stopped.
+        self._mitlm.release()
 
 CORPORA = {
     'py': PythonCorpus()

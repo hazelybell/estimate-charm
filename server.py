@@ -46,26 +46,28 @@ def corpus_info(corpus_name):
     return corpus.summary
 
 
-@app.route('/<corpus_name>/predict/<path:token_str>', methods=('GET', 'POST'))
+@app.route('/<corpus_name>/predict/',
+        defaults={'token_str': ''}, methods=('POST',))
+@app.route('/<corpus_name>/predict/<path:token_str>', methods=('GET',))
 @jsonify
-def predict(corpus_name, token_str=None):
+def predict(corpus_name, token_str=""):
     """
     POST /{corpus}/predict/{tokens*}
+    POST /{corpus}/predict/f=?
 
     Returns a number of suggestions for the given token prefix.
     """
     corpus = get_corpus_or_404(corpus_name)
 
-    # TODO: Implement parameters
-    #  n - number of additional tokens to predict
-    #  s - number of suggestions to emit
-
-    if token_str is not None:
+    if token_str :
         tokens = parse_tokens(token_str)
     else:
-        tokens = corpus.tokenize(get_string_content())
+        # The last token given by tokenize will always be <ENDMARKER>
+        # which isn't useful to us at all.
+        tokens = corpus.tokenize(get_string_content())[:-1]
 
-    return {'suggestions': corpus.predict(tokens)}
+    # Predict returns a nice, JSONable dictionary, so just return that.
+    return corpus.predict(tokens)
 
 
 @app.route('/<corpus_name>/cross-entropy')

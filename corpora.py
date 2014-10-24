@@ -72,20 +72,31 @@ class PythonCorpus(object):
         """
         return self._sourceModel.trainLexemes(tokens)
 
-    def predict(self, prefix_tokens):
+    def predict(self, tokens):
         """
-        Predicts...? The next tokens from the token string.
+        Returns a dict of:
+            * suggestions: a list of suggestions from the given token string.
+            * tokens: the actual list of tokens used in the prediction. Note
+                      that this may be different from the given input.
         """
+
         # The model *requires* at least four tokens, so pad prefixs tokens
         # with `unks` until it works.
+        if len(tokens) < 4:
+            unk_padding_size = 4 - len(tokens)
+            prefix_tokens = [[None, None, None, None, '<unk>']] * unk_padding_size
+        else:
+            prefix_tokens = []
+        prefix_tokens.extend(tokens)
 
-        if len(prefix_tokens) < 4:
-            unk_padding_size = 4 - len(prefix_tokens)
-            unk_padding = ['<unk>'] * unk_padding_size
-            unk_padding.extend(prefix_tokens)
-            prefix_tokens = unk_padding
+        # Truncate to the n-gram order size, because those are all the tokens
+        # that you really need for prediction...
+        prefix_tokens = prefix_tokens[-self.order:]
 
-        return self._sourceModel.predictLexed(prefix_tokens)
+        return {
+            'suggestions': self._sourceModel.predictLexed(prefix_tokens),
+            'tokens': prefix_tokens
+        }
 
     def cross_entropy(self, tokens):
         """

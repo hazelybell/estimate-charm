@@ -57,7 +57,9 @@ def jsonify(fn):
 
 
 def get_string_content():
-    "Gets string contents from either 'f' or 'file'."
+    """
+    Gets string contents from either 'f' for file or 's' for string.
+    """
     content = request.files.get('f')
     # Try the file first...
     if content is not None:

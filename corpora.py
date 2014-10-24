@@ -76,6 +76,15 @@ class PythonCorpus(object):
         """
         Predicts...? The next tokens from the token string.
         """
+        # The model *requires* at least four tokens, so pad prefixs tokens
+        # with `unks` until it works.
+
+        if len(prefix_tokens) < 4:
+            unk_padding_size = 4 - len(prefix_tokens)
+            unk_padding = ['<unk>'] * unk_padding_size
+            unk_padding.extend(prefix_tokens)
+            prefix_tokens = unk_padding
+
         return self._sourceModel.predictLexed(prefix_tokens)
 
     def cross_entropy(self, tokens):

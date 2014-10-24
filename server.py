@@ -96,8 +96,10 @@ def train(corpus_name):
     content = get_string_content()
     tokens = corpus.tokenize(content)
 
-    # TODO: return some kind of statistics?
-    return {'result': corpus.train(tokens)}, 201
+    return {
+        'result': corpus.train(tokens),
+        'tokens': len(tokens)
+    }, 202
 
 
 @app.route('/<corpus_name>/tokenize', methods=('POST',))
@@ -116,4 +118,4 @@ def tokenize(corpus_name):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')

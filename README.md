@@ -2,14 +2,14 @@
 
 # Install
 
-   pip install -r requirements.txt
-   pip install -e <fully-qualified-path-to-unnaturalcod>
+    pip install -r requirements.txt
+    pip install -e <fully-qualified-path-to-unnaturalcod>
 
 Though you'll probably want to create a `virtualenv` before this.
 
 # Run
 
-   python server.py
+    python server.py
 
 # All rooted on resource `/{corpus}`
 
@@ -35,9 +35,9 @@ Returns metadata for the given corpus. Metadata includes:
 
 # `GET /{corpus}/predict/{context*}`—Predict
 
-     GET /py/predict/<^>/for HTTP/1.1
+     GET /py/predict/<unk>/for/i/in HTTP/1.1
 
-     {"suggestions": [3.45, ["i", "in", "range", "(", "5", ")", ":"]]}
+     {"suggestions": [3.45, ["range", "(", "5", ")", ":"]]}
 
 ## Mandatory arguments
 

@@ -41,7 +41,6 @@ class PythonCorpus(object):
     # [sigh]... this API.
     _corpus = unnaturalcode.ucUser.pyUser().sm
     _lang = _corpus.lang()
-    #pdb.set_trace()
 
     order = _corpus.cm.order
     # Hard-coded because "it's the best! the best a language model can get!"

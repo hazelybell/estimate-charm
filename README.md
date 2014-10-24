@@ -3,7 +3,7 @@
 # Install
 
     pip install -r requirements.txt
-    pip install -e <fully-qualified-path-to-unnaturalcod>
+    pip install -e <fully-qualified-path-to-unnaturalcode>
 
 Though you'll probably want to create a `virtualenv` before this.
 
@@ -31,7 +31,6 @@ Returns metadata for the given corpus. Metadata includes:
    * `size`
    * `categories`—lists syntactic categories
 
-
 
 # `GET /{corpus}/predict/{context*}`—Predict
 

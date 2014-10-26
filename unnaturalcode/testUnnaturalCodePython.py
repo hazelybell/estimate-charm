@@ -1,7 +1,7 @@
 #    Copyright 2013, 2014 Joshua Charles Campbell
 #
 #    This file is part of UnnaturalCode.
-#    
+#
 #    UnnaturalCode is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
@@ -19,7 +19,7 @@
 
 Other things to consider:
 
-export ESTIMATENGRAM="/home/joshua/mitlm/.libs/estimate-ngram" 
+export ESTIMATENGRAM="/home/joshua/mitlm/.libs/estimate-ngram"
 export TEST_FILE_LIST=/home/wz/ucPython/all
 export LD_LIBRARY_PATH="/home/joshua/mitlm/.libs"
 source ~/ucPython/bin/activate
@@ -107,7 +107,7 @@ class testMitlmCorpus(unittest.TestCase):
             (3.0, ['import', 'sys', '<NEWLINE>', '<COMMENT>']),
             (1.0, ['import', 'random', '<NEWLINE>', 'print'])])
 
-        
+
 class testPythonLexical(unittest.TestCase):
     @classmethod
     def setUpClass(self):
@@ -135,6 +135,22 @@ class testPythonLexical(unittest.TestCase):
         self.assertEquals(r[0].start[1], 0)
         self.assertEquals(r[0].type, 'NAME')
         self.assertEquals(r[0].value, 'print')
+    def testLexMidlineModeSingleLine(self):
+        r_normal = pythonSource(somePythonCode)
+        r_mid_line = pythonSource(somePythonCode, mid_line=True)
+        # This small one line example has no indent or anything.
+        self.assertEquals(len(r_normal), 9)
+        self.assertEquals(len(r_mid_line), 8)
+        self.assertEquals(r_normal[-1].type, 'ENDMARKER')
+        self.assertNotEquals(r_mid_line[-1].type, 'ENDMARKER')
+    def testLexMidlineModeExcerpt(self):
+        r_normal = pythonSource(incompletePythonCode)
+        r_mid_line = pythonSource(incompletePythonCode, mid_line=True)
+        self.assertEquals(len(r_normal), 13)
+        self.assertEquals(len(r_mid_line), 11)
+        self.assertEquals(r_normal[-1].type, 'ENDMARKER')
+        self.assertEquals(r_normal[-2].type, 'DEDENT')
+        self.assertEquals(r_mid_line[-1].value, 'ran')
     def testColumns(self):
         r = pythonSource(lotsOfPythonCode)
         self.assertEquals(r[1].columns(), 3) # this should be the "def" token
@@ -218,14 +234,14 @@ class testPythonLexical(unittest.TestCase):
     @classmethod
     def tearDownClass(self):
         pass
-            
+
 class testSourceModelWithFiles(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.td = mkdtemp(prefix='ucTest-')
         assert os.access(self.td, os.X_OK & os.R_OK & os.W_OK)
         assert os.path.isdir(self.td)
-        readCorpus = os.path.join(self.td, 'ucCorpus') 
+        readCorpus = os.path.join(self.td, 'ucCorpus')
         logFilePath = os.path.join(self.td, 'ucLogFile')
         self.uc = unnaturalCode(logFilePath=logFilePath)
         self.cm = mitlmCorpus(readCorpus=readCorpus, writeCorpus=readCorpus, uc=ucGlobal)
@@ -268,7 +284,7 @@ class testTrainedSourceModel(unittest.TestCase):
         self.td = mkdtemp(prefix='ucTest-')
         assert os.access(self.td, os.X_OK & os.R_OK & os.W_OK)
         assert os.path.isdir(self.td)
-        readCorpus = os.path.join(self.td, 'ucCorpus') 
+        readCorpus = os.path.join(self.td, 'ucCorpus')
         logFilePath = os.path.join(self.td, 'ucLogFile')
         self.uc = unnaturalCode(logFilePath=logFilePath)
         self.cm = mitlmCorpus(readCorpus=readCorpus, writeCorpus=readCorpus, uc=ucGlobal)
@@ -335,8 +351,8 @@ class testValidator(unittest.TestCase):
     @classmethod
     def tearDownClass(self):
         shutil.rmtree(self.td)
-    
-        
+
+
 def tearDownModule():
     global ucGlobal
     del ucGlobal

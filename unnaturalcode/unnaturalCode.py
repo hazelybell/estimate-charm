@@ -186,9 +186,9 @@ class ucLexeme(tuple):
     
 class ucSource(list):
     
-    def __init__(self, value=[]):
+    def __init__(self, value=[], **kwargs):
         if isinstance(value, str):
-            self.extend(self.lex(value))
+            self.extend(self.lex(value, **kwargs))
         elif isinstance(value, list):
             if len(value) == 0:
                 return

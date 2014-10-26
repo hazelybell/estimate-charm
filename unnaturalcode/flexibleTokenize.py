@@ -280,7 +280,7 @@ def untokenize(iterable):
     ut = Untokenizer()
     return ut.untokenize(iterable)
 
-def generate_tokens(readline):
+def generate_tokens(readline, mid_line=False):
     """
     The generate_tokens() generator requires one argument, readline, which
     must be a callable object which provides the same interface as the
@@ -438,6 +438,11 @@ def generate_tokens(readline):
                 yield (ERRORTOKEN, line[pos],
                            (lnum, pos), (lnum, pos+1), line)
                 pos += 1
+
+    # If we're in the middle of the line mode, return here before popping out
+    # the final DEDENT and ENDMARKER tokens.
+    if mid_line:
+        return
 
     for indent in indents[1:]:                 # pop remaining indent levels
         yield (DEDENT, '', (lnum, 0), (lnum, 0), '')

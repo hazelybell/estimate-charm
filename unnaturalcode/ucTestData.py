@@ -18,6 +18,9 @@ import os
 
 somePythonCode = "print (1+2**2)"
 
+incompletePythonCode = """def foo():
+    for i in ran"""
+
 someLexemes = [{'end': (1, 5), 'start': (1, 0), 'type': 'NAME', 'value': 'print'},
                 {'end': (1, 8), 'start': (1, 7), 'type': 'OP', 'value': '('},
                 {'end': (1, 9), 'start': (1, 8), 'type': 'NUMBER', 'value': '1'},

@@ -62,9 +62,7 @@ def predict(corpus_name, token_str=""):
     if token_str :
         tokens = parse_tokens(token_str)
     else:
-        # The last token given by tokenize will always be <ENDMARKER>
-        # which isn't useful to us at all.
-        tokens = corpus.tokenize(get_string_content())[:-1]
+        tokens = corpus.tokenize(get_string_content())
 
     # Predict returns a nice, JSONable dictionary, so just return that.
     return corpus.predict(tokens)
@@ -116,7 +114,7 @@ def tokenize(corpus_name):
     corpus = get_corpus_or_404(corpus_name)
     # Args... should be a file or strong
     content = get_string_content()
-    return {'tokens': corpus.tokenize(content)}
+    return {'tokens': corpus.tokenize(content, mid_line=False)}
 
 
 if __name__ == '__main__':

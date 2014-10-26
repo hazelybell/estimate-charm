@@ -58,12 +58,12 @@ class PythonCorpus(object):
                  'last_updated')
         return {attr: getattr(self, attr) for attr in props}
 
-    def tokenize(self, string):
+    def tokenize(self, string, mid_line=True):
         """
         Tokenizes the given string in the manner appropriate for this
         corpus's language model.
         """
-        return self._lang.lex(string)
+        return self._lang.lex(string, mid_line)
 
     def train(self, tokens):
         """

@@ -32,6 +32,7 @@ someLexemes = [{'end': (1, 5), 'start': (1, 0), 'type': 'NAME', 'value': 'print'
                 {'end': (2, 0), 'start': (2, 0), 'type': 'ENDMARKER', 'value': ''}]
 
 indentLexeme =  {'end': (3, 8), 'start': (3, 0), 'type': 'INDENT', 'value': '        '}
+dedentLexeme =  {'start': (3, 0), 'end': (3, 0), 'type': 'DEDENT', 'value': ''}
 
 lotsOfPythonCode = """
 def mult(x, y):

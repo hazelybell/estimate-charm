@@ -36,9 +36,15 @@ class pythonLexeme(ucLexeme):
     
     @classmethod
     def stringify(cls, t, v):
-        """Stringify a lexeme: produce text describing its value"""
+        """
+        Stringify a lexeme: produce a string describing it.
+        In the case of comments, strings, indents, dedents, and newlines, and
+        the endmarker, a string with '<CATEGORY-NAME>' is returned.  Else, its
+        actual text is returned.
+        """
         if t == 'COMMENT':
             return '<'+t+'>'
+        # Josh though this would be a good idea for some strange reason:
         elif len(v) > 20 :
             return '<'+t+'>'
         elif ws.match(str(v)) :
@@ -48,7 +54,9 @@ class pythonLexeme(ucLexeme):
         elif len(v) > 0 :
             return v
         else:
-            return t
+            # This covers for <DEDENT> case, and also, probably some other
+            # special cases...
+            return '<' + t + '>'
     
     @classmethod
     def fromTuple(cls, tup):

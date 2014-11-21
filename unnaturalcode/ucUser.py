@@ -24,7 +24,7 @@ from unnaturalcode.sourceModel import *
 @singleton
 class pyUser(object):
   
-  def __init__(self):
+  def __init__(self, ngram_order=10):
       self.homeDir = os.path.expanduser("~")
       self.ucDir = os.getenv("UC_DATA", os.path.join(self.homeDir, ".unnaturalCode"))
       if not os.path.exists(self.ucDir):
@@ -36,7 +36,11 @@ class pyUser(object):
       self.logFilePath = os.path.join(self.ucDir, 'pyLogFile')
       
       self.uc = unnaturalCode(logFilePath=self.logFilePath)
-      self.cm = mitlmCorpus(readCorpus=self.readCorpus, writeCorpus=self.readCorpus, uc=self.uc)
+      # Oiugh... thank you, dependecy injection.
+      self.cm = mitlmCorpus(readCorpus=self.readCorpus,
+                            writeCorpus=self.readCorpus,
+                            uc=self.uc,
+                            order=ngram_order)
       self.lm = pythonSource
       self.sm = sourceModel(cm=self.cm, language=self.lm)
       

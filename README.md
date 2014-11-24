@@ -5,11 +5,17 @@
     pip install -r requirements.txt
     pip install -e <fully-qualified-path-to-unnaturalcode>
 
-Though you'll probably want to create a `virtualenv` before this.
+You'll (most likely) want to create a [virtualenv][] before this.
+
+[virtualenv]: http://virtualenv.readthedocs.org/en/latest/
 
 # Run
 
     python server.py
+
+# Test
+
+    python test_server.py
 
 # All rooted on resource `/{corpus}`
 
@@ -21,15 +27,13 @@ Though you'll probably want to create a `virtualenv` before this.
 
 Returns metadata for the given corpus. Metadata includes:
 
- * `fullname`
- * `last_updated`
+ * `name`
  * `description`
  * `language`—programming or otherwise
- * `order`
- * `smoothing`—Probably always `ModKN`
- * `vocabulary`
-   * `size`
-   * `categories`—lists syntactic categories
+ * `order`— order of the *n*-gram
+ * `smoothing`—Probably always `ModKN` ([Modified Kneser-Ney][ModKN])
+ 
+[ModKN]: https://kheafield.com/professional/edinburgh/estimate_paper.pdf.
 
 
 # `GET /{corpus}/predict/{context*}`—Predict

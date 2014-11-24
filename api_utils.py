@@ -33,25 +33,6 @@ def get_corpus_or_404(name):
     return CORPORA[name]
 
 
-def get_default(seq, index, default=None):
-    if len(seq) <= index:
-        return default
-    return seq[index]
-
-
-def jsonify(fn):
-    @wraps(fn)
-    def json_returned(*args, **kwargs):
-        value = fn(*args, **kwargs)
-        if not isinstance(value, tuple):
-            value = (value,)
-        content = json.jsonify(get_default(value, 0))
-        status = get_default(value, 1, 200)
-        headers = get_default(value, 2, {})
-        return content, status, headers
-    return json_returned
-
-
 def get_string_content():
     """
     Gets string contents from either 'f' for file or 's' for string.

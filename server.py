@@ -23,8 +23,8 @@ HTTP interface to UnnaturalCode, and (transitivly) MITLM.
 Currently only serves up a Python service.
 """
 
-from api_utils import get_corpus_or_404, get_string_content, jsonify
-from flask import Flask
+from api_utils import get_corpus_or_404, get_string_content
+from flask import Flask, make_response, jsonify
 from token_fmt import parse_tokens
 
 
@@ -35,7 +35,6 @@ app = Flask(__name__)
 
 
 @app.route('/<corpus_name>/')
-@jsonify
 def corpus_info(corpus_name):
     """
     GET /{corpus}/
@@ -43,13 +42,12 @@ def corpus_info(corpus_name):
     Retrieve a summary of the corpus info.
     """
     corpus = get_corpus_or_404(corpus_name)
-    return corpus.summary
+    return jsonify(corpus.summary)
 
 
 @app.route('/<corpus_name>/predict/',
         defaults={'token_str': ''}, methods=('POST',))
 @app.route('/<corpus_name>/predict/<path:token_str>', methods=('GET',))
-@jsonify
 def predict(corpus_name, token_str=""):
     """
     POST /{corpus}/predict/{tokens*}
@@ -65,12 +63,11 @@ def predict(corpus_name, token_str=""):
         tokens = corpus.tokenize(get_string_content())
 
     # Predict returns a nice, JSONable dictionary, so just return that.
-    return corpus.predict(tokens)
+    return jsonify(corpus.predict(tokens))
 
 
 @app.route('/<corpus_name>/cross-entropy')
 @app.route('/<corpus_name>/xentropy', methods=('GET', 'POST'))
-@jsonify
 def cross_entropy(corpus_name):
     """
     POST /{corpus}/xentropy/
@@ -81,11 +78,10 @@ def cross_entropy(corpus_name):
     corpus = get_corpus_or_404(corpus_name)
     content = get_string_content()
     tokens = corpus.tokenize(content)
-    return {'cross_entropy': corpus.cross_entropy(tokens)}
+    return jsonify(cross_entropy=corpus.cross_entropy(tokens))
 
 
 @app.route('/<corpus_name>/', methods=('POST',))
-@jsonify
 def train(corpus_name):
     """
     POST /{corpus}/
@@ -96,14 +92,12 @@ def train(corpus_name):
     content = get_string_content()
     tokens = corpus.tokenize(content)
 
-    return {
-        'result': corpus.train(tokens),
-        'tokens': len(tokens)
-    }, 202
+    # NOTE: train doesn't really have a useful return...
+    corpus.train(tokens)
+    return make_response(jsonify(tokens=len(tokens)), 202)
 
 
 @app.route('/<corpus_name>/tokenize', methods=('POST',))
-@jsonify
 def tokenize(corpus_name):
     """
     POST /{corpus}/tokenize
@@ -114,7 +108,7 @@ def tokenize(corpus_name):
     corpus = get_corpus_or_404(corpus_name)
     # Args... should be a file or strong
     content = get_string_content()
-    return {'tokens': corpus.tokenize(content, mid_line=False)}
+    return jsonify(tokens=corpus.tokenize(content, mid_line=False))
 
 
 if __name__ == '__main__':

@@ -26,10 +26,6 @@ from flask import json, abort, request
 from corpora import CORPORA
 
 
-# Create a "NotFound" singleton
-NotFound = type('NotFound', (object,), {'__repr__': lambda s: 'NotFound'})
-
-
 def get_corpus_or_404(name):
     "Returns corpus_name; aborts Request if the corpus_name is not found."
     if name not in CORPORA:

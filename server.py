@@ -23,8 +23,8 @@ HTTP interface to UnnaturalCode, and (transitivly) MITLM.
 Currently only serves up a Python service.
 """
 
-from api_utils import get_corpus_or_404, get_string_content, NotFound, jsonify
-from flask import Flask, request, abort, json
+from api_utils import get_corpus_or_404, get_string_content, jsonify
+from flask import Flask
 from token_fmt import parse_tokens
 
 
@@ -59,7 +59,7 @@ def predict(corpus_name, token_str=""):
     """
     corpus = get_corpus_or_404(corpus_name)
 
-    if token_str :
+    if token_str:
         tokens = parse_tokens(token_str)
     else:
         tokens = corpus.tokenize(get_string_content())

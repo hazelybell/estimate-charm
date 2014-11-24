@@ -23,6 +23,9 @@ HTTP interface to UnnaturalCode, and (transitivly) MITLM.
 Currently only serves up a Python service.
 """
 
+import shutil
+import os
+
 from api_utils import get_corpus_or_404, get_string_content
 from flask import Flask, make_response, jsonify
 from flask.ext.cors import cross_origin
@@ -98,6 +101,23 @@ def train(corpus_name):
     # NOTE: train doesn't really have a useful return...
     corpus.train(tokens)
     return make_response(jsonify(tokens=len(tokens)), 202)
+
+@app.route('/<corpus_name>/', methods=('DELETE',))
+def delete_corpus(corpus_name):
+    get_corpus_or_404(corpus_name)
+    assert corpus_name == 'py'
+
+    # Right now, since there is only one corpus, we can just hardcode its
+    # path:
+    base_path = os.path.expanduser('~/.unnaturalCode/')
+    path = os.path.join(base_path, 'pyCorpus')
+
+    # Ain't gotta do nothing if the file doesn't exist.
+    if os.path.exists(path):
+        replacementPath = os.path.join(base_path, 'pyCorpus.bak')
+        shutil.move(path, replacementPath)
+    # Successful response with no content.
+    return '', 204, {}
 
 
 @app.route('/<corpus_name>/tokenize', methods=('POST',))

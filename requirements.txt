@@ -3,3 +3,4 @@ Flask==0.10.1
 # $ pip install -e <fully-qualified-path-to-repo>
 #unnaturalcode==0.1
 more-itertools==2.2
+Flask-Cors==1.9.0

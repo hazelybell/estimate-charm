@@ -25,6 +25,7 @@ Currently only serves up a Python service.
 
 from api_utils import get_corpus_or_404, get_string_content
 from flask import Flask, make_response, jsonify
+from flask.ext.cors import cross_origin
 from token_fmt import parse_tokens
 
 
@@ -48,6 +49,7 @@ def corpus_info(corpus_name):
 @app.route('/<corpus_name>/predict/',
         defaults={'token_str': ''}, methods=('POST',))
 @app.route('/<corpus_name>/predict/<path:token_str>', methods=('GET',))
+@cross_origin()
 def predict(corpus_name, token_str=""):
     """
     POST /{corpus}/predict/{tokens*}
@@ -68,6 +70,7 @@ def predict(corpus_name, token_str=""):
 
 @app.route('/<corpus_name>/cross-entropy')
 @app.route('/<corpus_name>/xentropy', methods=('GET', 'POST'))
+@cross_origin()
 def cross_entropy(corpus_name):
     """
     POST /{corpus}/xentropy/

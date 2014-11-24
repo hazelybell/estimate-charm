@@ -31,8 +31,15 @@ class UnnaturalHTTPTestCase(unittest.TestCase):
 
     def test_train(self):
         # TODO: Fake a corpus up in here!
-        # TODO: assert resp['tokens'] == amount of tokens in the request
-        pass
+        rv = self.app.post('/py/', data=dict(s='print "Hello, World!"\n'))
+
+        # TODO: THIS IS A TERRIBLE TEST AND YOU SHOULD FEEL BAD
+
+        assert rv.status_code == 202
+        assert rv.headers['Content-Type'] == 'application/json'
+
+        resp = json.loads(rv.data)
+        assert resp['tokens'] == 3
 
     def test_predict_from_url(self):
         # NOTE: THIS IS RELYING ON A CORPUS ALREADY EXISTING AT

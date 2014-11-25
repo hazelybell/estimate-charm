@@ -104,18 +104,12 @@ def train(corpus_name):
 
 @app.route('/<corpus_name>/', methods=('DELETE',))
 def delete_corpus(corpus_name):
-    get_corpus_or_404(corpus_name)
-    assert corpus_name == 'py'
+    corpus = get_corpus_or_404(corpus_name)
 
-    # Right now, since there is only one corpus, we can just hardcode its
-    # path:
-    base_path = os.path.expanduser('~/.unnaturalCode/')
-    path = os.path.join(base_path, 'pyCorpus')
+    assert hasattr(corpus, 'reset'), 'Python corpus MUST have a reset method!'
+    if hasattr(corpus, 'reset'):
+        corpus.reset()
 
-    # Ain't gotta do nothing if the file doesn't exist.
-    if os.path.exists(path):
-        replacementPath = os.path.join(base_path, 'pyCorpus.bak')
-        shutil.move(path, replacementPath)
     # Successful response with no content.
     return '', 204, {}
 

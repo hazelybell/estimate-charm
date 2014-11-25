@@ -108,6 +108,20 @@ class PythonCorpus(object):
         """
         return self._sourceModel.queryLexed(tokens)
 
+    def reset(self):
+        # Halt the MITLM process.
+        self._mitlm.stopMitlm()
+
+        # Right now, since there is only one corpus, we can just hardcode its
+        # path:
+        base_path = os.path.expanduser('~/.unnaturalCode/')
+        path = os.path.join(base_path, 'pyCorpus')
+
+        # Ain't gotta do nothing if the file doesn't exist.
+        if os.path.exists(path):
+            replacementPath = os.path.join(base_path, 'pyCorpus.bak')
+            shutil.move(path, replacementPath)
+
     def __del__(self):
         # Ensures that MITLM has stopped.
         self._mitlm.release()

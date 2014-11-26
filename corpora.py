@@ -23,6 +23,8 @@ Currently, only PythonCorpus is defined.
 """
 
 import os
+import shutil
+
 import unnaturalcode.ucUser
 
 __all__ = ['PythonCorpus', 'CORPORA']

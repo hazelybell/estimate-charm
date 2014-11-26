@@ -17,6 +17,7 @@
 
 from __future__ import print_function
 import os, zmq, signal, os.path, subprocess, fcntl, time
+import errno
 from unnaturalcode.unnaturalCode import *
 from logging import debug, info, warning, error, getLogger
 from multiprocessing import Process
@@ -97,8 +98,9 @@ class mitlmCorpus(object):
             self.mitlmSocket.setsockopt(zmq.LINGER, 0)
             self.mitlmSocket.close()
             assert self.mitlmSocket.closed
-            #os.remove(self.mitlmSocketPath)
+            chill_rm(normalize_path(self.mitlmSocketPath))
             self.mitlmSocket = None
+            self.mitlmSocketPath = None
         if self.mitlmProc:
             rc = None
             debug("Waiting for MITLM to shut down...")
@@ -219,3 +221,32 @@ class mitlmCorpus(object):
         assert not self.mitlmProc, "Destructor called before release()"
         assert not self.mitlmSocket, "Destructor called before release()"
         assert not self.corpusFile, "Destructor called before release()"
+
+def chill_rm(filename):
+    """
+    rm, but silently ignore errors if the given file does not exist. 
+    """
+    try:
+        os.remove(filename)
+    except OSError as error:
+        # Ignore the error if the file does not exist.
+        if error.errno == errno.ENOENT:
+            pass
+        else:
+            raise error
+
+def normalize_path(path):
+    """
+    Returns a path without a dangling ipc:// in front of it.
+
+    >>> path1 = 'ipc:///home/ucuser/.unnaturalCode/socket'
+    >>> path2 =       '/home/ucuser/.unnaturalCode/socket'
+    >>> normalize_path(path1) == normalize_path(path2)
+    True
+    """
+
+    if path.startswith('ipc://'):
+        _head, _sep, tail = path.partition('ipc://')
+        return tail
+    return path
+

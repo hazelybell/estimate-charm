@@ -37,6 +37,7 @@ from unnaturalcode.mitlmCorpus import *
 from unnaturalcode.modelValidator import *
 
 import os, os.path, zmq, sys, shutil, token, gc
+from glob import glob
 from tempfile import *
 
 from unnaturalcode.ucTestData import *
@@ -81,6 +82,7 @@ class testMitlmCorpus(unittest.TestCase):
     def testEnvMitlm(self):
         cm = mitlmCorpus()
         self.assertTrue(os.access(cm.estimateNgramPath, os.X_OK & os.R_OK))
+
     def testDefaultCorpusEnv(self):
         cm = mitlmCorpus()
         dir=os.path.dirname(cm.readCorpus)
@@ -145,6 +147,16 @@ class testSourceModelWithFiles(unittest.TestCase):
     @unittest.skipIf(os.getenv("FAST", False), "Skipping slow tests...")
     def testTrainProject(self):
         self.sm.trainFile(testProjectFiles)
+    def testRelease(self):
+        cm = self.cm
+        dir=os.path.dirname(cm.readCorpus)
+        self.sm.trainString(somePythonCode)
+        # Do a dummy request, whatever.
+        cm.queryCorpus( self.sm.stringifyAll(ucSource(someLexemes)))
+        self.assertTrue(len(glob(os.path.join(dir, 'ucMitlmSocket-*'))))
+        self.sm.release()
+        # That socket should be GONE!
+        self.assertFalse(len(glob(os.path.join(dir, 'ucMitlmSocket-*'))))
     @classmethod
     def tearDownClass(self):
         self.sm.release()

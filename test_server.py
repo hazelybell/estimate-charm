@@ -22,9 +22,6 @@ def estimate_ngram_pids():
     Returns a set of all estimate-ngram pids belonging to this process.
     """
     pid = os.getpid()
-    #pid = 1 # init -- we may not be the parent on estimate-ngram
-    print("process leader", pid)
-
     output = pgrep('estimate-ngram', parent=pid, _ok_code=[0,1])
     return set(int(pid) for pid in output.rstrip().split())
 
@@ -43,6 +40,12 @@ class UnnaturalHTTPTestCase(unittest.TestCase):
     def setUp(self):
         server.app.config['TESTING'] = True
         self.app = server.app.test_client()
+
+        # TODO: Install a dummy corpus....
+        with open(fromUCHome('pyCorpus'), 'w') as f:
+            # TODO: Move this to test data file...
+            corpus = 'for i in range ( 10 ) : <NEWLINE> <INDENT> print i\n'
+            f.write(corpus)
 
     def test_delete(self):
         assert len(estimate_ngram_pids()) in (0, 1)
@@ -85,9 +88,7 @@ class UnnaturalHTTPTestCase(unittest.TestCase):
         assert resp['tokens'] == 3
 
     def test_predict_from_url(self):
-        # NOTE: THIS IS RELYING ON A CORPUS ALREADY EXISTING AT
-        # ~/.unnaturalcode/pyCorpus!
-        rv = self.app.get('/py/predict/from/api_utils/import')
+        rv = self.app.get('/py/predict/for/i/in')
 
         assert rv.status_code == 200
         assert rv.headers['Content-Type'] == 'application/json'
@@ -100,8 +101,6 @@ class UnnaturalHTTPTestCase(unittest.TestCase):
         assert resp['tokens'][0][4] == '<unk>'
 
     def test_predict_from_post(self):
-        # NOTE: THIS IS RELYING ON A CORPUS ALREADY EXISTING AT
-        # ~/.unnaturalcode/pyCorpus!
         self.app.post()
 
         # TODO: THIS TEST!

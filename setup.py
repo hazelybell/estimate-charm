@@ -13,7 +13,9 @@ with open('test-requirements.txt') as f:
 setup(
     name = "unnaturalcode",
     version = __version__,
-    packages = find_packages(),
+    packages = find_packages(
+        exclude = ["testdata"]
+      ),
     entry_points = {
         "console_scripts": [
             "ucwrap = unnaturalcode.wrap:main",
@@ -23,6 +25,7 @@ setup(
     },
     author = "Joshua Charles Campbell",
     description = "Compiler Error Augmentation System",
+    license='AGPL3+',
     include_package_data = True,
     install_requires = requires,
     setup_requires = ['nose2>=0.4'],

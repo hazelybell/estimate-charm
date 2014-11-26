@@ -80,6 +80,9 @@ if testFileList == None:
 else:          
   testProjectFiles = open(testFileList).read().splitlines()
   
+  
+# DEAR EDDIE, THIS IS THE CODE YOU SHOULD TRY TO USE TO GET YOUR 
+# INPUT CORPUS FOR YOUR TESTS
 if len(testProjectFiles) < 11:
   testDataDir = resource_filename('unnaturalcode', "testdata")
   for dirPath, dirNames, fileNames in os.walk(testDataDir):

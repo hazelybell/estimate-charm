@@ -106,7 +106,7 @@ if ($command eq 'cc') { # proxy for the c compiler, preprocess the files
 	unshift @cc_argv, $cc, "-DENABLE_TESTING", "-DENABLE_DEBUG";
 	print STDERR join(" ", "RUNNING", @cc_argv) . "\n";
 	my $r = system(@cc_argv) >> 8;
-# 	unlink foreach @temps;
+ 	unlink foreach @temps;
 	exit $r; # don't do the rest of the script
 }
 

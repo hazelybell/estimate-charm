@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #ifndef _DEBUG_H_
 #define _DEBUG_H_
 

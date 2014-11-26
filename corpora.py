@@ -113,8 +113,8 @@ class PythonCorpus(object):
         return self._sourceModel.queryLexed(tokens)
 
     def reset(self):
-        # Halt the MITLM process.
-        self._mitlm.stopMitlm()
+        # Ask MITLM politely to relinquish its resources and halt.
+        self._mitlm.release()
 
         # Right now, since there is only one corpus, we can just hardcode its
         # path:

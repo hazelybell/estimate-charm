@@ -1,16 +1,60 @@
 #!/usr/bin/env python
 
+import commands
+import json
 import os
 import server
+import shutil
 import unittest
-import json
 
-# TODO: test CORSness of this...
+
+UC_HOME = os.path.expanduser('~/.unnaturalCode')
+UC_HOME_BACKUP = os.path.expanduser('~/.unnaturalCode.bak')
+
+def fromUCHome(*args):
+    "Returns a path with UnnaturalCode home as the prefix."
+    return os.path.join(UC_HOME, *args)
+
+TEST_LOCK_FILE = fromUCHome('--test--')
+
+def estimate_ngram_pids():
+    """
+    Returns a set of all estimate-ngram pids belonging to this process.
+    """
+    pid = os.getpid()
+    print("process leader", pid)
+
+    #pid = 1 # init -- we may not be the parent on estimate-ngram
+    output = commands.getoutput('pgrep -P %d lt-estimate-ngr' % pid)
+    return set(int(pid) for pid in output.split())
 
 class UnnaturalHTTPTestCase(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        # Do back-up the existing corpus...
+        assert not os.path.exists(TEST_LOCK_FILE)
+        shutil.move(UC_HOME, UC_HOME_BACKUP)
+
+        # Recreate the test directory.
+        os.mkdir(UC_HOME)
+        # Touch the lock file.
+        with open(TEST_LOCK_FILE, 'a'):
+            os.utime(TEST_LOCK_FILE, None)
+
     def setUp(self):
         server.app.config['TESTING'] = True
         self.app = server.app.test_client()
+
+    def test_delete(self):
+        assert len(estimate_ngram_pids()) in (0, 1)
+
+        rv = self.app.delete('/py/')
+        assert rv.status_code == 204
+
+        assert not os.path.exists(fromUCHome('pyCorpus'))
+        # It stopped running.
+        assert not estimate_ngram_pids()
 
     def test_info(self):
         rv = self.app.get('/py')
@@ -47,7 +91,7 @@ class UnnaturalHTTPTestCase(unittest.TestCase):
         # ~/.unnaturalcode/pyCorpus!
         rv = self.app.get('/py/predict/from/api_utils/import')
 
-        assert rv.status_code == 200 
+        assert rv.status_code == 200
         assert rv.headers['Content-Type'] == 'application/json'
         resp = json.loads(rv.data)
 
@@ -70,7 +114,7 @@ class UnnaturalHTTPTestCase(unittest.TestCase):
         assert rv.status_code == 200
         assert rv.headers.get('Access-Control-Allow-Origin') == '*'
 
-        # Could use a for-loop, but the test errors become more vague. 
+        # Could use a for-loop, but the test errors become more vague.
         rv = self.app.options('/py/xentropy')
         assert rv.status_code == 200
         assert rv.headers.get('Access-Control-Allow-Origin') == '*'
@@ -79,6 +123,15 @@ class UnnaturalHTTPTestCase(unittest.TestCase):
         # NOTE: THIS IS RELYING ON A CORPUS ALREADY EXISTING AT
         # ~/.unnaturalcode/pyCorpus!
         pass
+
+    @classmethod
+    def tearDownClass(cls):
+        # Delete the test corpus...
+        assert os.path.exists(UC_HOME_BACKUP)
+        assert os.path.exists(TEST_LOCK_FILE)
+        shutil.rmtree(UC_HOME)
+        # Restore the original corpus...
+        shutil.move(UC_HOME_BACKUP, UC_HOME)
 
 
 if __name__ == '__main__':

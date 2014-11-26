@@ -78,16 +78,24 @@ if ($command eq 'cc') { # proxy for the c compiler, preprocess the files
 			push @temps, $ppoutname;
 			while (<PPIN>) {
 				my $testcode;
-				if (m/^TEST\(/) {
+				if (m/^TEST\(\(/) {
 					my $test = "$ccarg:$.";
 					my $function = $test;
 					$function =~ s/\W/_/g;
-					print $ppout "#define TEST_$function(x) struct test_result $function() { struct test_result r; r.pass = (x); r.text = #x; return r; }\n";
+					print $ppout "#define TEST_$function(x) struct test_result $function() { struct test_result r; r.pass = (x); r.text = #x; r.name = \"$function\"; return r; }\n";
 					s/^TEST/TEST_$function/;
-				}
+				} elsif (m/^TEST\(\{/) {
+                                        my $test = "$ccarg:$.";
+                                        my $function = $test;
+                                        $function =~ s/\W/_/g;
+                                        my $function_inside = $function . "_test";
+                                        print $ppout "#define TEST_$function(x) static void $function_inside() x struct test_result $function() { copper_global_test_result.pass = 1; copper_global_test_result.text = \"\"; copper_global_test_result.name = \"$function\"; $function_inside(); return copper_global_test_result; }\n";
+                                        s/^TEST/TEST_$function/;
+                                }
 				print $ppout $_;
 			}
 			close PPIN;
+                        print $ppout $/;
 			close $ppout;
 			push @cc_argv, $ppoutname;
 		} else {
@@ -98,7 +106,7 @@ if ($command eq 'cc') { # proxy for the c compiler, preprocess the files
 	unshift @cc_argv, $cc, "-DENABLE_TESTING", "-DENABLE_DEBUG";
 	print STDERR join(" ", "RUNNING", @cc_argv) . "\n";
 	my $r = system(@cc_argv) >> 8;
-	unlink foreach @temps;
+# 	unlink foreach @temps;
 	exit $r; # don't do the rest of the script
 }
 

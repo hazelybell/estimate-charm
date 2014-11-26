@@ -27,6 +27,32 @@
 extern int copper_tests_count;
 extern struct test_result (*tests[])(void);
 
+struct test_result copper_global_test_result;
+#define SHORT_TEST_OUTPUT_LENGTH 60
+static char short_test_output[SHORT_TEST_OUTPUT_LENGTH+1];
+
+static void cu_testdriver_exit(int x) {
+        copper_global_test_result.pass = 0;
+}
+
+static int cu_testdriver_vprintf(char const *f, va_list args) {
+        int r;
+        va_list args_copy;
+        
+        va_copy(args_copy, args);
+        
+        r = vfprintf(stderr, f, args);
+        
+        if (copper_global_test_result.text != short_test_output) {
+          vsnprintf(short_test_output, SHORT_TEST_OUTPUT_LENGTH,
+                    f, args_copy);
+          copper_global_test_result.text = short_test_output;
+          short_test_output[60] = '\0';
+        }
+        
+        return r;
+}
+
 int main (int argc, char ** argv) {
 	int i, j;
 	pid_t child;
@@ -60,11 +86,14 @@ int main (int argc, char ** argv) {
 			}
 		} else if (sscanf(argv[i], "%i", &test) && test < copper_tests_count) {
 			D(("Trying test %s", argv[i]));
+                        cu_set_handlers(cu_testdriver_exit, cu_testdriver_vprintf);
 			r = (*tests[test])();
+                        cu_set_handlers(NULL, NULL);
                         if (r.pass) {
-                          D(("Test passed: %s", r.text));
+                          D(("Test passed: %s", r.name));
                         } else {
-                          D(("Test failed: %s", r.text));
+                          D(("Test failed: %s", r.name));
+                          D(("    %s", r.text));
                         }
 			return (!r.pass);
 		} else {

@@ -79,12 +79,13 @@
 
 #define TEST()
 
-// #ifdef ENABLE_TESTING
 struct test_result {
 	int pass;
+        char * name;
 	char * text;
 };
-// #endif /* ENABLE_TESTING */ 
+
+extern struct test_result copper_global_test_result;
 
 /* function prototypes */
 extern int cu_printf(const char * format, ...);

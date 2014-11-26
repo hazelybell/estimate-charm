@@ -65,4 +65,8 @@ struct UGCorpus ug_createCorpus(char * path, UGPropertyID nProperties) {
   return corpus;
 }
 
-TEST(ug_createCorpus("/tmp/ugCorpus", 1).open);
+// TEST(( ug_createCorpus("/tmp/ugCorpus", 1).open ));
+
+TEST({
+  A((0));
+});

@@ -14,7 +14,15 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from unnaturalcode.http import unnaturalhttp
+
+try:
+    from unnaturalcode.http import unnaturalhttp
+except ImportError:
+    import sys, os
+    # Oiugh. 
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+    from unnaturalcode.http import unnaturalhttp
+
 from flask import Flask
 
 app = Flask(__name__)

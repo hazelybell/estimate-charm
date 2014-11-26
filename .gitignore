@@ -13,3 +13,4 @@ IEEEtran.bst
 venv
 *.egg
 *.egg-info
+MANIFEST

@@ -25,7 +25,7 @@ Currently, only PythonCorpus is defined.
 import os
 import shutil
 
-import unnaturalcode.ucUser
+from unnaturalcode import ucUser
 
 __all__ = ['PythonCorpus', 'CORPORA']
 
@@ -46,7 +46,7 @@ class PythonCorpus(object):
     # Get the singleton instance of the underlying Python language (source)
     # model.
     # [sigh]... this API.
-    _pyUser = unnaturalcode.ucUser.pyUser(ngram_order=GOOD_ENOUGH_NGRAM_ORDER)
+    _pyUser = ucUser.pyUser(ngram_order=GOOD_ENOUGH_NGRAM_ORDER)
     _sourceModel = _pyUser.sm
     _lang = _sourceModel.lang()
     _mitlm = _sourceModel.cm

@@ -71,8 +71,10 @@ if ($command eq 'cc') { # proxy for the c compiler, preprocess the files
 			$yes++ if $ccarg eq $input_file;
 		}
 		if ($yes) {
-			my ($suffix) = ($ccarg =~ m/(\.[^.]+)/); 
-			my ($ppout, $ppoutname) = tempfile("copper-XXXXXXXX", SUFFIX => $suffix);
+                        my ($prefix, $suffix) = ($ccarg =~ m/^(.+)(\.[^.]+)$/);
+                        my $ppoutname = "$prefix.tests$suffix";
+                        -e $ppoutname and die;
+                        open(my $ppout, ">", $ppoutname) or die;
 			print STDERR "preprocessing $ccarg to $ppoutname\n";
 			open PPIN, '<', $ccarg;
 			push @temps, $ppoutname;

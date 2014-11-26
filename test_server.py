@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-import commands
 import json
 import os
 import server
 import shutil
 import unittest
 
+from sh import pgrep, touch
 
 UC_HOME = os.path.expanduser('~/.unnaturalCode')
 UC_HOME_BACKUP = os.path.expanduser('~/.unnaturalCode.bak')
@@ -22,11 +22,11 @@ def estimate_ngram_pids():
     Returns a set of all estimate-ngram pids belonging to this process.
     """
     pid = os.getpid()
+    #pid = 1 # init -- we may not be the parent on estimate-ngram
     print("process leader", pid)
 
-    #pid = 1 # init -- we may not be the parent on estimate-ngram
-    output = commands.getoutput('pgrep -P %d lt-estimate-ngr' % pid)
-    return set(int(pid) for pid in output.split())
+    output = pgrep('estimate-ngram', parent=pid, _ok_code=[0,1])
+    return set(int(pid) for pid in output.rstrip().split())
 
 class UnnaturalHTTPTestCase(unittest.TestCase):
 
@@ -38,9 +38,7 @@ class UnnaturalHTTPTestCase(unittest.TestCase):
 
         # Recreate the test directory.
         os.mkdir(UC_HOME)
-        # Touch the lock file.
-        with open(TEST_LOCK_FILE, 'a'):
-            os.utime(TEST_LOCK_FILE, None)
+        touch(TEST_LOCK_FILE)
 
     def setUp(self):
         server.app.config['TESTING'] = True

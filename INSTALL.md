@@ -45,6 +45,7 @@ First time:
 test -d venv || virtualenv venv
 . venv/bin/activate
 pip install -r requirements.txt
+pip install -r test-requirements.txt
 nose2-2.7
 ```
 

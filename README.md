@@ -14,6 +14,12 @@ paper](http://webdocs.cs.ualberta.ca/~joshua2/syntax.pdf) (preprint).
 UnnaturalCode should be considered proof-of-concept quality software. The
 primary author of UnnaturalCode, Joshua Charles Campbell can be reached at <joshua2@ualberta.ca>.
 
+# Use
+
+To start the HTTP server:
+
+    python -m unnaturalcode.http
+
 # Licensing
 
 Assume that UnnaturalCode is licensed under the [AGPL3+](LICENSE) unless otherwise

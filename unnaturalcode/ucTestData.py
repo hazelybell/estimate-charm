@@ -16,6 +16,7 @@
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
 import os
 from pkg_resources import resource_filename
+import fnmatch
 
 somePythonCode = "print (1+2**2)"
 
@@ -80,7 +81,13 @@ else:
   testProjectFiles = open(testFileList).read().splitlines()
   
 if len(testProjectFiles) < 11:
-  raise RuntimeError("Not enough testing files! " + resource_filename('unnaturalcode', "testdata"))
+  testDataDir = resource_filename('unnaturalcode', "testdata")
+  for dirPath, dirNames, fileNames in os.walk(testDataDir):
+    for pythonFile in fnmatch.filter(fileNames, '*.py'):
+      testProjectFiles.append(os.path.abspath(os.path.join(dirPath, pythonFile)))
+
+if len(testProjectFiles) < 11:
+  raise RuntimeError("Not enough testing files! ")
 
 testProject1File = testProjectFiles[10]
 

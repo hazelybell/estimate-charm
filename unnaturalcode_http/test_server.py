@@ -2,7 +2,7 @@
 
 import json
 import os
-import server
+from .app import make_app
 import shutil
 import unittest
 
@@ -38,8 +38,9 @@ class UnnaturalHTTPTestCase(unittest.TestCase):
         touch(TEST_LOCK_FILE)
 
     def setUp(self):
-        server.app.config['TESTING'] = True
-        self.app = server.app.test_client()
+        app = make_app()
+        app.config['TESTING'] = True
+        self.app = app.test_client()
 
         # TODO: Install a dummy corpus....
         with open(fromUCHome('pyCorpus'), 'w') as f:

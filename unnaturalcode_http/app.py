@@ -15,7 +15,17 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from .blueprint import unnaturalhttp
-from .app import server
+from flask import Flask, abort
+from . import unnaturalhttp
 
-__all__ = ['unnaturalhttp', 'server']
+def make_app():
+    app = Flask(__name__)
+    app.register_blueprint(unnaturalhttp)
+    return app
+
+def server():
+    app = make_app()
+    app.run(debug=True, host='0.0.0.0')
+
+if __name__ == '__main__':
+    exit(server())

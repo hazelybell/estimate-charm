@@ -22,12 +22,14 @@ Defines corpus object(s).
 Currently, only PythonCorpus is defined.
 """
 
+import os
 import unnaturalcode.ucUser
 
 __all__ = ['PythonCorpus', 'CORPORA']
 
 # See "On Naturalness of Software", Hindle et al. 2012
 BEHINDLE_NGRAM_ORDER = 6
+GOOD_ENOUGH_NGRAM_ORDER = 4
 
 
 class PythonCorpus(object):
@@ -42,7 +44,7 @@ class PythonCorpus(object):
     # Get the singleton instance of the underlying Python language (source)
     # model.
     # [sigh]... this API.
-    _pyUser = unnaturalcode.ucUser.pyUser(ngram_order=BEHINDLE_NGRAM_ORDER)
+    _pyUser = unnaturalcode.ucUser.pyUser(ngram_order=GOOD_ENOUGH_NGRAM_ORDER)
     _sourceModel = _pyUser.sm
     _lang = _sourceModel.lang()
     _mitlm = _sourceModel.cm

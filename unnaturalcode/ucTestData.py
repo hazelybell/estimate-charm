@@ -15,6 +15,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
 import os
+from pkg_resources import resource_filename
 
 somePythonCode = "print (1+2**2)"
 
@@ -79,7 +80,7 @@ else:
   testProjectFiles = open(testFileList).read().splitlines()
   
 if len(testProjectFiles) < 11:
-  raise IllegalArgumentException("Not enough testing files!")
+  raise RuntimeError("Not enough testing files! " + resource_filename('unnaturalcode', "testdata"))
 
 testProject1File = testProjectFiles[10]
 

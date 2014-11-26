@@ -4,12 +4,11 @@ from setuptools import setup, find_packages
 
 from unnaturalcode import __version__
 
-with open('requirements.txt') as requirements:
-    requires = [l.strip() for l in requirements.readlines()]
+with open('requirements.txt') as f:
+    requires = [l.strip() for l in f.readlines()]
 
-if 'test' in sys.argv:
-    sys.argv.remove('test')
-    sys.argv.append('nosetests')
+with open('test-requirements.txt') as f:
+    tests_require = [l.strip() for l in f.readlines()]
 
 setup(
     name = "unnaturalcode",
@@ -27,5 +26,6 @@ setup(
     include_package_data = True,
     install_requires = requires,
     setup_requires = ['nose2>=0.4'],
+    tests_require=tests_require,
     zip_safe = False,
 )

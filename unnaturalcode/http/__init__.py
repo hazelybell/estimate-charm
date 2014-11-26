@@ -16,6 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from .blueprint import unnaturalhttp
-from .app import server
+from .app import server, make_app
 
-__all__ = ['unnaturalhttp', 'server']
+__all__ = ['unnaturalhttp', 'server', 'make_app']

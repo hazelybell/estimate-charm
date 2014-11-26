@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from flask import Flask, abort
-from . import unnaturalhttp
+from .blueprint import unnaturalhttp
 
 def make_app():
     app = Flask(__name__)

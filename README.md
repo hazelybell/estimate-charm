@@ -3,11 +3,14 @@
 # Install
 
     pip install -r requirements.txt
+    # For testing and development:
+    pip install -r dev-requirements.txt
     pip install -e <fully-qualified-path-to-unnaturalcode>
 
 You'll (most likely) want to create a [virtualenv][] before this.
 
 [virtualenv]: http://virtualenv.readthedocs.org/en/latest/
+
 
 # Run
 
@@ -32,7 +35,7 @@ Returns metadata for the given corpus. Metadata includes:
  * `language`—programming or otherwise
  * `order`— order of the *n*-gram
  * `smoothing`—Probably always `ModKN` ([Modified Kneser-Ney][ModKN])
- 
+
 [ModKN]: https://kheafield.com/professional/edinburgh/estimate_paper.pdf.
 
 
@@ -87,21 +90,21 @@ A plain-text file that will be tokenized and trained upon.
 
 # Licensing
 
-Like [UnnaturalCode][], UnnaturalREST is licensed under the AGPL3+.
+Like [UnnaturalCode][], UnnaturalCode-HTTP is licensed under the AGPL3+.
 
 © 2014 Eddie Antonio Santos
 
-UnnaturalREST is free software: you can redistribute it and/or modify it
-under the terms of the GNU Affero General Public License as published by
-the Free Software Foundation, either version 3 of the License, or (at
-your option) any later version.
+UnnaturalCode-HTTP is free software: you can redistribute it and/or
+modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
 
-UnnaturalREST is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of
+UnnaturalCode-HTTP is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
 General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
-along with UnnaturalREST. If not, see http://www.gnu.org/licenses/.
+along with UnnaturalCode-HTTP. If not, see http://www.gnu.org/licenses/.
 
 [UnnaturalCode]: https://github.com/orezpraw/unnaturalcode

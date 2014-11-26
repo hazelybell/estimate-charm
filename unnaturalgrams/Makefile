@@ -1,4 +1,4 @@
-# Makefile for the Copper framework distribution and an example makefile.
+# Makefile UnnaturalGrams with test framework integration.
 #
 #    Copyright 2006, 2007, 2008, 2013, 2014 Joshua Charles Campbell
 #
@@ -17,15 +17,15 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
 
-COPPER_INPUT_FILES = testexamples.c
+COPPER_INPUT_FILES = ugapi.c
 
-default : copper.o
+default : ugapi.o
 
 copper.make : copper.pl
-	./copper.pl makefile testexamples.c >$@
+	./copper.pl makefile $(COPPER_INPUT_FILES) >$@
 
 clean : copper_clean
-	- rm -f testexamples.o copper.make
+	- rm -f *.o copper.make
 
 check : copper_test_all
 

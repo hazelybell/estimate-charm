@@ -58,10 +58,14 @@ int main (int argc, char ** argv) {
 					return (!r.pass);
 				}
 			}
-		} else if (sscanf(argv[i], "%i", &test)) {
+		} else if (sscanf(argv[i], "%i", &test) && test < copper_tests_count) {
 			D(("Trying test %s", argv[i]));
 			r = (*tests[test])();
-			D(("Tested %s", r.text));
+                        if (r.pass) {
+                          D(("Test passed: %s", r.text));
+                        } else {
+                          D(("Test failed: %s", r.text));
+                        }
 			return (!r.pass);
 		} else {
 			E(("Unknown test specification."));

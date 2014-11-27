@@ -1,4 +1,0 @@
-[submodule "unnaturalgrams/openldap"]
-	path = unnaturalgrams/openldap
-	url = git://git.openldap.org/openldap.git
-	branch = mdb.master

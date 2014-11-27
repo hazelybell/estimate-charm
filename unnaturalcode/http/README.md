@@ -1,24 +1,16 @@
 # HTTP API for [UnnaturalCode][]
 
-# Install
-
-    pip install -r requirements.txt
-    # For testing and development:
-    pip install -r dev-requirements.txt
-    pip install -e <fully-qualified-path-to-unnaturalcode>
-
-You'll (most likely) want to create a [virtualenv][] before this.
-
-[virtualenv]: http://virtualenv.readthedocs.org/en/latest/
-
-
 # Run
 
-    python server.py
+    python -m unnaturalcode.http
 
 # Test
 
-    python test_server.py
+With [nose2][]
+
+      nose2 unnaturalcode.http.test_server
+
+[nose2]: https://github.com/nose-devs/nose2
 
 # All rooted on resource `/{corpus}`
 
@@ -26,7 +18,7 @@ You'll (most likely) want to create a [virtualenv][] before this.
    occam-π corpus.
 
 
-# `GET /{corpus}/`—Corpus info
+# Corpus info—`GET /{corpus}/`
 
 Returns metadata for the given corpus. Metadata includes:
 
@@ -36,10 +28,10 @@ Returns metadata for the given corpus. Metadata includes:
  * `order`— order of the *n*-gram
  * `smoothing`—Probably always `ModKN` ([Modified Kneser-Ney][ModKN])
 
-[ModKN]: https://kheafield.com/professional/edinburgh/estimate_paper.pdf.
+[ModKN]: http://en.wikipedia.org/wiki/N-gram#Smoothing_techniques
 
 
-# `GET /{corpus}/predict/{context*}`—Predict
+# Predict—`GET /{corpus}/predict/{prefix*}`
 
      GET /py/predict/<unk>/for/i/in HTTP/1.1
 
@@ -47,46 +39,78 @@ Returns metadata for the given corpus. Metadata includes:
 
 ## Mandatory arguments
 
-Must give context as a context path.
+The prefix must be given in the path.
 
 ### `{context*}`
 
-Preceding token context. The more tokens provided, the better. See
-[Context format](#context-format).
+Preceding token context. The more tokens provided, the better, but
+you'll probably want to have at least three in most cases.
 
 
 
-# `POST /{corpus}/xentropy`—calculate cross entropy
+# Predict—`POST /{corpus}/predict/`
 
-## Mandatory arguments
+     POST /py/predict/ HTTP/1.1
+     Content-Type: multipart/form-data; ...
 
-`?f` for an entire file.
+     [...file upload...]
 
-
-
-# `POST /{corpus}/`
-
-Trains the corpus with some tokens from a specific source.
+     {"suggestions": [3.45, ["range", "(", "5", ")", ":"]]}
 
 ## Mandatory arguments
+
+Use one of `?f` or `?s`:
 
 ### `?f`
 
-A plain-text file that will be tokenized and trained upon.
+Upload a file in a multipart message as `?f`. The file will
+automatically be tokenized.
+
+### `?s`
+
+Post a string excerpt `?s`. The file will automatically be tokenized.
 
 
 
-# Context Format
+# Cross Entropy—`POST /{corpus}/xentropy`
 
-## Formal Grammar
+Compute the cross entropy of a file with respect to the corpus. Gives
+a number from 0 to ∞ that indicates how surprised the language model is
+by this file.
 
-    token-list  = token
-                / token "/" token-list
+## Mandatory arguments
 
-    token       = [ syncat ":" ] chars
+Use one of `?f` or `?s`:
 
-    chars       = { ~all characters other than ":"~ }
-    syncat      = [ ~all characters other than "/" and ":"~ ]
+### `?f`
+
+Upload a file in a multipart message as `?f`. The file will
+automatically be tokenized.
+
+### `?s`
+
+Post a string excerpt `?s`. The file will automatically be tokenized.
+
+
+
+# Train—`POST /{corpus}/`
+
+Trains the corpus with a file. 
+
+## Mandatory arguments
+
+Use one of `?f` or `?s`:
+
+### `?f`
+
+Upload a file in a multipart message as `?f`. The file will
+automatically be tokenized.
+
+### `?s`
+
+Post a string excerpt `?s`. The file will automatically be tokenized.
+
+
 
 # Licensing
 

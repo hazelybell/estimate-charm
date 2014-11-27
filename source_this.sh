@@ -15,10 +15,23 @@ fi
 # Set the virtualenv path.
 if [ -z "${VENV+x}" ]; then
     VENV=$PWD/venv
+
+fi
+
+# Create the virutalenv if it doesn't exist.
+if [ ! -d $VENV ]; then
+    virtualenv $VENV
+    FRESH_INSTALL=1
 fi
 
 # Activate the virtualenv.
 source $VENV/bin/activate
+
+# Install everything...
+if [ $FRESH_INSTALL ]; then
+    pip install -r requirements.txt
+    pip install -r test-requirements.txt
+fi
 
 export ESTIMATENGRAM=$MITLM/estimate-ngram
 export LD_LIBRARY_PATH=$MITLM/.libs
@@ -32,3 +45,5 @@ export TEST_FILE_LIST
 uctest () {
     FAST="True" nose2-2.7 -B --log-capture
 }
+
+unset FRESH_INSTALL

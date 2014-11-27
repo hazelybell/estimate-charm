@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-### Install packaged dependencies
+### Install mitlm dependencies
 
 Ubuntu/Debian:
 
@@ -34,37 +34,36 @@ sudo ldconfig
 
 # Install UnnaturalCode
 
+
 ```bash
-python setup.py develop
+. source_this.sh
 ```
+
+It does everything, including creating a virtual environment if it does
+not exist.
 
 # Testing
 
-First time:
 ```bash
-test -d venv || virtualenv venv
-. venv/bin/activate
-pip install -r requirements.txt
-pip install -r test-requirements.txt
 nose2-2.7
 ```
 
-You will need some environment variables set:
+_or_:
+
+```bash
+uctest
+```
+
+(Defined after running `. source_this.sh`).
+
+
+You will need some environment variables set (set to defaults if using
+`source_this.sh`:
 
 ```bash
 export ESTIMATENGRAM="/usr/local/bin/estimate-ngram"
 export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
 ```
-
-**ALTERNATIVELY** once the virtualenv is setup, source `source_this.sh`
-which will attempt to export _all_ environment variables automatically,
-and add `uctest` which will run nose2 `FAST`:
-
-```bash
-source source_this.sh
-uctest
-```
-
 
 # Running
 

@@ -21,6 +21,9 @@
 #ifndef _DB_H_
 #define _DB_H_
 
-#include "liblmdb/lmdb.h"
+#include "ug.h"
+
+int ug_openDB(char * path, struct UGCorpus * corpus);
+int ug_createDB(char * path, struct UGCorpus * corpus);
 
 #endif /* _DB_H_ */

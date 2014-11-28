@@ -36,13 +36,15 @@
 #endif /* ENABLE_DEBUG */
 
 /* error assertions: always executed, always checked, prints message */
-#define EA(x, m) {if (!x) { DEBUG('@', ("Assertion failed: %s", #x)); cu_printf("!!? %s:%i ", __FILE__, __LINE__); cu_printf m; cu_printf("\n"); cu_exit(1);} else { DEBUG('@', ("Assertion passed: %s", #x)) } }
+#define EASSERT(l, x, m) {if (!x) { DEBUG(l, ("Assertion failed: %s", #x)); cu_printf("!!? %s:%i ", __FILE__, __LINE__); cu_printf m; cu_printf("\n"); cu_exit(1);} else { DEBUG(l, ("Assertion passed: %s", #x)) } }
+#define EA(x, m) EASSERT('@', x, m)
 
 /* assertions: always executed, always checked */
+#define ASSERT(l, x) EASSERT(l, x, ("Assertion failed."))
 #define A(x) EA(x, ("Assertion failed."))
 
 /* system assertions: always executed, always checked, prints errno */
-#define ASYS(x) EA(x, ("%s", cu_err()))
+#define ASYS(x) EASSERT('/', x, ("%s", cu_err()))
 
 /* sanity check: only executed if enabled */
 #ifdef ENABLE_SANITY
@@ -61,6 +63,8 @@
 
 /* shortcuts */
 #define D(x) DEBUG('-', x)
+#define Dd(x) DEBUG('d', x)
+#define Ad(x) ASSERT('d', x)
 #define DE(x) DEBUG('E', x) /* */
 #define De(x) DEBUG('e', x)
 #define DI(x) DEBUG('I', x) /* input */

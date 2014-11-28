@@ -59,8 +59,8 @@ int main (int argc, char ** argv) {
 	int status;
 	int test;
 	struct test_result r;
-	cu_enabledebug("all");
-	EA((argc > 1),("Specify tests to run."));
+	cu_enabledebug("#");
+	EASSERT('#',(argc > 1),("Specify tests to run."));
 	for (i = 1; i < argc; i++) {
 		if (strcmp(argv[i], "all") == 0) {
 			for (j = 0; j < copper_tests_count; j++) {
@@ -68,15 +68,15 @@ int main (int argc, char ** argv) {
 				if (child > 0) {
 					wait(&status);
 					if (WIFEXITED(status)) {
-						D(("Child exited with status %i", WEXITSTATUS(status)));
+						DEBUG('#', ("Child exited with status %i", WEXITSTATUS(status)));
 						if (WEXITSTATUS(status)) {
 							return WEXITSTATUS(status);
 						}
 					} else if (WIFSIGNALED(status)) {
-						D(("Child exited with signal %i", WTERMSIG(status) ));
+						DEBUG('#', ("Child exited with signal %i", WTERMSIG(status) ));
 						return WTERMSIG(status);
 					} else {
-						D(("Child exited with %i", status));
+						DEBUG('#', ("Child exited with %i", status));
 						return status;
 					}
 				} else {
@@ -85,15 +85,16 @@ int main (int argc, char ** argv) {
 				}
 			}
 		} else if (sscanf(argv[i], "%i", &test) && test < copper_tests_count) {
-			D(("Trying test %s", argv[i]));
+			// DEBUG('#', ("Trying test %s", argv[i]));
                         cu_set_handlers(cu_testdriver_exit, cu_testdriver_vprintf);
 			r = (*tests[test])();
+                        DEBUG('#', ("Begin test %s", r.name));
                         cu_set_handlers(NULL, NULL);
                         if (r.pass) {
-                          D(("Test passed: %s", r.name));
+                          DEBUG('#', ("Test passed: %s", r.name));
                         } else {
-                          D(("Test failed: %s", r.name));
-                          D(("    %s", r.text));
+                          DEBUG('#', ("Test failed: %s", r.name));
+                          DEBUG('#', ("    %s", r.text));
                         }
 			return (!r.pass);
 		} else {

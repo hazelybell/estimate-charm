@@ -23,6 +23,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <lmdb.h>
 
 typedef uint64_t UGPropertyID;
 
@@ -66,6 +67,8 @@ struct UGramWeighted {
 struct UGCorpus {
   UGPropertyID nProperties;
   int open;
+  MDB_env * mdbEnv;
+  MDB_dbi mdbDbi;
 };
 
 struct UGPrediction {

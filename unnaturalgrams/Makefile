@@ -16,8 +16,9 @@
 #
 #    You should have received a copy of the GNU Affero General Public License
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
-
-COPPER_INPUT_FILES = ugapi.c
+SOURCES=ugapi.c db.c
+COPPER_INPUT_FILES=$(SOURCES)
+CFLAGS=-g -O2 -Wall -Wextra -Werror -Wno-error=unused-parameter -llmdb
 
 default : ugapi.o
 

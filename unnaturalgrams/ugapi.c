@@ -20,6 +20,9 @@
 
 #include "copper.h"
 #include "ugapi.h"
+#include "db.h"
+#include <string.h>
+#include <stdlib.h>
 
 double ug_crossEntropy(struct UGCorpus * ugc, struct UGram query) {
   return 70.0;
@@ -49,6 +52,7 @@ struct UGCorpus ug_openCorpus(char * path) {
     .nProperties = 0,
     .open = 0
   };
+  A(( ug_openDB(path, &corpus) == 0 ));
   return corpus;
 }
 
@@ -62,11 +66,19 @@ struct UGCorpus ug_createCorpus(char * path, UGPropertyID nProperties) {
     .nProperties = 0,
     .open = 0
   };
+  A(( ug_createDB(path, &corpus) == 0 ));
   return corpus;
 }
 
 TEST({
   struct UGCorpus c;
-  c = ug_createCorpus("/tmp/ugCorpus", 1);
+  char * tmpDir;
+  char removeCmd[] = "rm -rvf ugtest-XXXXXX";
+  char path[] = "ugtest-XXXXXX/corpus";
+  tmpDir = &(removeCmd[8]);
+  ASYS(( tmpDir == mkdtemp(tmpDir) ));
+  memcpy(path, tmpDir, strlen(tmpDir));
+  c = ug_createCorpus(path, 1);
   A((c.open));
+  system(removeCmd);
 });

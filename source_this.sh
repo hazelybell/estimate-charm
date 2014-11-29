@@ -31,6 +31,7 @@ source $VENV/bin/activate
 if [ $FRESH_INSTALL ]; then
     pip install -r requirements.txt
     pip install -r test-requirements.txt
+    pip install -e .
 fi
 
 export ESTIMATENGRAM=$MITLM/estimate-ngram

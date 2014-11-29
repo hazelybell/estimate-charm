@@ -29,9 +29,9 @@ source $VENV/bin/activate
 
 # Install everything...
 if [ $FRESH_INSTALL ]; then
+    pip install -e .
     pip install -r requirements.txt
     pip install -r test-requirements.txt
-    pip install -e .
 fi
 
 export ESTIMATENGRAM=$MITLM/estimate-ngram
@@ -44,7 +44,7 @@ fi
 export TEST_FILE_LIST
 
 uctest () {
-    FAST="True" nose2-2.7 -B --log-capture
+    FAST="True" py.test
 }
 
 unset FRESH_INSTALL

@@ -15,9 +15,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Typically ran with FAST="True" nose2-2.7 -B --log-capture
+"""Typically ran with FAST="True" py.test
 
-Other things to consider:
+You need to have all of these defined: (see /source_this.sh)
 
 export ESTIMATENGRAM="/home/joshua/mitlm/.libs/estimate-ngram"
 export TEST_FILE_LIST=/home/wz/ucPython/all

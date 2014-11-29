@@ -44,8 +44,10 @@ not exist.
 
 # Testing
 
+From the repository root directory:
+
 ```bash
-nose2-2.7
+py.test
 ```
 
 _or_:

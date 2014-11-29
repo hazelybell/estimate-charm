@@ -4,13 +4,7 @@
 
     python -m unnaturalcode.http
 
-# Test
-
-With [nose2][]
-
-      nose2 unnaturalcode.http.test_server
-
-[nose2]: https://github.com/nose-devs/nose2
+See the repository root for running all tests. 
 
 # All rooted on resource `/{corpus}`
 

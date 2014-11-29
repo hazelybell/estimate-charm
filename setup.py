@@ -28,7 +28,6 @@ setup(
     license='AGPL3+',
     include_package_data = True,
     install_requires = requires,
-    setup_requires = ['nose2>=0.4'],
     tests_require=tests_require,
     zip_safe = False,
 )

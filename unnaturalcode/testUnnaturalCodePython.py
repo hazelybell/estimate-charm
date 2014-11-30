@@ -17,13 +17,9 @@
 
 """Typically ran with FAST="True" nose2-2.7 -B --log-capture
 
-Other things to consider:
+See `source_this.sh` in the repository root for enivornment variables that
+must be set.
 
-export ESTIMATENGRAM="/home/joshua/mitlm/.libs/estimate-ngram"
-export TEST_FILE_LIST=/home/wz/ucPython/all
-export LD_LIBRARY_PATH="/home/joshua/mitlm/.libs"
-source ~/ucPython/bin/activate
-export VIRTUALENV_ACTIVATE=/home/joshua/ucPython/bin/activate_this.py
 """
 
 import unittest

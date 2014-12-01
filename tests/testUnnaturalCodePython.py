@@ -15,15 +15,11 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Typically ran with FAST="True" py.test
+"""
+Typically ran with FAST="True" py.test
 
-You need to have all of these defined: (see /source_this.sh)
-
-export ESTIMATENGRAM="/home/joshua/mitlm/.libs/estimate-ngram"
-export TEST_FILE_LIST=/home/wz/ucPython/all
-export LD_LIBRARY_PATH="/home/joshua/mitlm/.libs"
-source ~/ucPython/bin/activate
-export VIRTUALENV_ACTIVATE=/home/joshua/ucPython/bin/activate_this.py
+See `source_this.sh` in the repository root for enivornment variables that
+must be set.
 """
 
 import unittest

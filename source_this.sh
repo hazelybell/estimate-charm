@@ -2,7 +2,7 @@
 
 # YOU MUST SOURCE THIS FILE.
 
-# It will set and export required enviroment variables.  You may set them
+# It will set and export required environment variables.  You may set them
 # explicitly before sourcing this file.
 #
 # ESTIMATENGRAM

@@ -4,4 +4,4 @@ clean :
 
 .PHONY : check
 check : 
-	FAST="True" nose2-2.7 -B --log-capture	
+	FAST="True" py.test ..

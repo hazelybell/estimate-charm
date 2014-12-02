@@ -39,6 +39,7 @@ source $VENV/bin/activate
 
 # Install everything...
 if [ $FRESH_INSTALL ]; then
+    pip install -e .
     pip install -r requirements.txt
     pip install -r test-requirements.txt
 fi
@@ -54,7 +55,7 @@ if [ ! -z "${TEST_FILE_LIST+x}" ]; then
 fi
 
 uctest () {
-    FAST="True" nose2-2.7 -B --log-capture
+    FAST="True" py.test
 }
 
 unset FRESH_INSTALL

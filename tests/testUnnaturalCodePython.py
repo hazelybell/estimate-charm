@@ -15,11 +15,11 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Typically ran with FAST="True" nose2-2.7 -B --log-capture
+"""
+Typically ran with FAST="True" py.test
 
 See `source_this.sh` in the repository root for enivornment variables that
 must be set.
-
 """
 
 import unittest

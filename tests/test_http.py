@@ -2,7 +2,7 @@
 
 import json
 import os
-from .app import make_app
+from unnaturalcode.http import make_app
 import shutil
 import unittest
 

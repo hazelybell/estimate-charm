@@ -26,6 +26,12 @@
 int ug_openDB(char * path, struct UGCorpus * corpus);
 int ug_closeDB(struct UGCorpus * corpus);
 int ug_createDB(char * path, struct UGCorpus * corpus);
-int ug_storeSettingsInDB(struct UGCorpus * corpus, UGPropertyID nProperties);
+
+void ug_beginRO(struct UGCorpus * corpus);
+void ug_beginRW(struct UGCorpus * corpus);
+void ug_commit(struct UGCorpus * corpus);
+
+uint64_t ug_readUInt64ByC(struct  UGCorpus * corpus, char * cKey);
+void ug_writeUInt64ByC(struct  UGCorpus * corpus, char * cKey, uint64_t value);
 
 #endif /* _DB_H_ */

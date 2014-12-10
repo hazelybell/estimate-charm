@@ -70,6 +70,9 @@ struct UGCorpus {
   int open;
   MDB_env * mdbEnv;
   MDB_dbi mdbDbi;
+  MDB_txn * mdbTxn;
+  int readOnly;
+  int inTxn;
 };
 
 struct UGPrediction {

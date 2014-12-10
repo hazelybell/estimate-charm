@@ -60,8 +60,8 @@ int main (int argc, char ** argv) {
 	int status;
 	int test;
 	struct test_result r;
-	cu_enabledebug("#");
-	EASSERT('#',(argc > 1),("Specify tests to run."));
+	cu_enabledebug("#@");
+	EASSERT('-',(argc > 1),("Specify tests to run."));
 	for (i = 1; i < argc; i++) {
 		if (strcmp(argv[i], "all") == 0) {
 			for (j = 0; j < copper_tests_count; j++) {

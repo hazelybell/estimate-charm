@@ -28,27 +28,28 @@ extern int copper_tests_count;
 extern struct test_result (*tests[])(void);
 
 struct test_result copper_global_test_result;
-#define SHORT_TEST_OUTPUT_LENGTH 60
-static char short_test_output[SHORT_TEST_OUTPUT_LENGTH+1];
+#define MAX_OUTPUT_CAPTURE_LENGTH (1024*1024)
+static char output_capture[MAX_OUTPUT_CAPTURE_LENGTH+1];
+static size_t output_capture_pos = 0;
 
 static void cu_testdriver_exit(int x) {
         copper_global_test_result.pass = 0;
 }
 
 static int cu_testdriver_vprintf(char const *f, va_list args) {
-        int r;
+        int r = 0;
         va_list args_copy;
         
         va_copy(args_copy, args);
         
-        r = vfprintf(stderr, f, args);
-        
-        if (copper_global_test_result.text != short_test_output) {
-          vsnprintf(short_test_output, SHORT_TEST_OUTPUT_LENGTH,
+        if (MAX_OUTPUT_CAPTURE_LENGTH-output_capture_pos > 0) {
+          r = vsnprintf(output_capture+output_capture_pos,
+                    MAX_OUTPUT_CAPTURE_LENGTH-output_capture_pos,
                     f, args_copy);
-          copper_global_test_result.text = short_test_output;
-          short_test_output[60] = '\0';
+          output_capture_pos += r;
         }
+        copper_global_test_result.text = output_capture;
+        output_capture[MAX_OUTPUT_CAPTURE_LENGTH] = '\0';
         
         return r;
 }
@@ -86,15 +87,16 @@ int main (int argc, char ** argv) {
 			}
 		} else if (sscanf(argv[i], "%i", &test) && test < copper_tests_count) {
 			// DEBUG('#', ("Trying test %s", argv[i]));
+                        output_capture[0] = '\0';
+                        output_capture_pos = 0;
                         cu_set_handlers(cu_testdriver_exit, cu_testdriver_vprintf);
 			r = (*tests[test])();
-                        DEBUG('#', ("Begin test %s", r.name));
                         cu_set_handlers(NULL, NULL);
                         if (r.pass) {
                           DEBUG('#', ("Test passed: %s", r.name));
                         } else {
                           DEBUG('#', ("Test failed: %s", r.name));
-                          DEBUG('#', ("    %s", r.text));
+                          DEBUG('#', ("\n---Begin Test Failure Log---\n%s---End Test Failure Log---", r.text));
                         }
 			return (!r.pass);
 		} else {

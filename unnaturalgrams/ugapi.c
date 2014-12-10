@@ -53,20 +53,26 @@ struct UGCorpus ug_openCorpus(char * path) {
     .open = 0
   };
   A(( ug_openDB(path, &corpus) == 0 ));
+  corpus.open = 1;
   return corpus;
 }
 
-int ug_closeCorpus(struct UGCorpus * ugc) {
-  A((ugc->open));
-  return 0;
+void ug_closeCorpus(struct UGCorpus * ugc) {
+  EA(( ugc->open ), ("DB already closed"));
+  A(( ug_closeDB(ugc) == 0 ));
+  ugc->open = 0;
 }
 
-struct UGCorpus ug_createCorpus(char * path, UGPropertyID nProperties) {
+struct UGCorpus ug_createCorpus(char * path, UGPropertyID nProperties, size_t gramOrder) {
   struct UGCorpus corpus = {
     .nProperties = 0,
-    .open = 0
+    .open = 0,
+    .gramOrder = 1
   };
   A(( ug_createDB(path, &corpus) == 0 ));
+  A(( ug_storeSettingsInDB(&corpus, nProperties) == 0 ));
+  corpus.gramOrder = gramOrder;
+  corpus.open = 1;
   return corpus;
 }
 
@@ -78,7 +84,39 @@ TEST({
   tmpDir = &(removeCmd[8]);
   ASYS(( tmpDir == mkdtemp(tmpDir) ));
   memcpy(path, tmpDir, strlen(tmpDir));
-  c = ug_createCorpus(path, 1);
-  A((c.open));
+  c = ug_createCorpus(path, 1, 10);
+  EA((c.open), ("Didn't open."));
+  
+  A((c.nProperties == 1));
+  A((c.gramOrder == 10));
+
+  ug_closeCorpus(&c);
+  A((!c.open));
+  c = ug_openCorpus(path);
+  
+  A((c.nProperties == 1));
+  A((c.gramOrder == 10));
+  
+  ug_closeCorpus(&c);
+  A((!c.open));
   system(removeCmd);
 });
+
+TEST({
+  struct UGCorpus c;
+  char * tmpDir;
+  char removeCmd[] = "rm -rvf ugtest-XXXXXX";
+  char path[] = "ugtest-XXXXXX/corpus";
+  tmpDir = &(removeCmd[8]);
+  ASYS(( tmpDir == mkdtemp(tmpDir) ));
+  memcpy(path, tmpDir, strlen(tmpDir));
+  c = ug_createCorpus(path, 1, 10);
+  EA((c.open), ("Didn't open."));
+  
+  
+  
+  ug_closeCorpus(&c);
+  A((!c.open));
+  system(removeCmd);  
+});
+

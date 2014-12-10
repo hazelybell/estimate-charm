@@ -66,6 +66,7 @@ struct UGramWeighted {
 /* Instance/Context for UG */
 struct UGCorpus {
   UGPropertyID nProperties;
+  size_t gramOrder;
   int open;
   MDB_env * mdbEnv;
   MDB_dbi mdbDbi;

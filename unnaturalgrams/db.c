@@ -23,6 +23,7 @@
 
 #include <sys/stat.h>
 #include <unistd.h>
+#include <string.h>
 
 int ug_openDB(char * path, struct UGCorpus * corpus) {
   struct stat s;
@@ -38,7 +39,32 @@ int ug_openDB(char * path, struct UGCorpus * corpus) {
   Ad(( mdb_dbi_open(mdbTxn, NULL, 0, &(corpus->mdbDbi)) == 0 ));
   Ad(( mdb_txn_commit(mdbTxn) == 0 )); mdbTxn = NULL;
   
-  corpus->open = 1;
+  return 0;
+}
+
+int ug_closeDB(struct UGCorpus * corpus) {
+      mdb_env_close(corpus->mdbEnv); 
+      corpus->mdbEnv = NULL;
+      return 0;
+}
+
+int ug_storeSettingsInDB(struct UGCorpus * corpus, UGPropertyID nProperties) {
+  MDB_txn * mdbTxn = NULL;
+  struct MDB_val nPropertiesKey;
+  struct MDB_val nPropertiesData;
+  
+  nPropertiesKey.mv_data = "nProperties";
+  nPropertiesKey.mv_size = strlen(nPropertiesKey.mv_data)+1;
+  
+  nPropertiesData.mv_data = &nProperties;
+  nPropertiesData.mv_size = sizeof(nProperties);
+  
+  Ad(( mdb_txn_begin(corpus->mdbEnv, NULL, 0, &mdbTxn) == 0 ));
+  Ad(( mdb_put(mdbTxn, corpus->mdbDbi, &nPropertiesKey, &nPropertiesData, MDB_NOOVERWRITE) == 0 ));
+  Ad(( mdb_txn_commit(mdbTxn) == 0 )); mdbTxn = NULL;
+  
+  corpus->nProperties = nProperties;
+  
   return 0;
 }
 

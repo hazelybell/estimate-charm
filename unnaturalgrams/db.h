@@ -24,6 +24,8 @@
 #include "ug.h"
 
 int ug_openDB(char * path, struct UGCorpus * corpus);
+int ug_closeDB(struct UGCorpus * corpus);
 int ug_createDB(char * path, struct UGCorpus * corpus);
+int ug_storeSettingsInDB(struct UGCorpus * corpus, UGPropertyID nProperties);
 
 #endif /* _DB_H_ */

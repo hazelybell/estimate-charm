@@ -38,8 +38,11 @@ int ug_addToCorpus(struct UGCorpus * ugc, struct UGramWeighted text);
 
 struct UGCorpus ug_openCorpus(char * path);
 
-int ug_closeCorpus(struct UGCorpus * ugc);
+void ug_closeCorpus(struct UGCorpus * ugc);
 
-struct UGCorpus ug_createCorpus(char * path, UGPropertyID nProperties); 
+struct UGCorpus ug_createCorpus(char * path,
+                                UGPropertyID nProperties,
+                                size_t gramOrder
+                               ); 
 
 #endif /* _UGAPI_H_ */

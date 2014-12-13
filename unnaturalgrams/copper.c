@@ -68,23 +68,31 @@ void cu_set_handlers(void (*provided_exit)(int x), int (*provided_vprintf)(const
     }
 }
 
+static void cu_enable_debug_flags(char *f) {
+        unsigned int ifl;
+        unsigned int fl;
+        if (strcmp(f, "all") == 0) {
+                for (ifl = 0; ifl < MAXFLAGS; ifl++) {
+                        dl[ifl] = 1;
+                }
+                D(("Every debug flag enabled."));
+                return;
+        } else {
+                fl = strlen(f);
+                for (ifl = 0; ifl < fl; ifl++) {
+                        dl[(int)f[ifl]] = 1;
+                }
+                dl[(int)'-'] = 1;
+                D(("Debug flags enabled: %s", f));
+                return;
+        }
+}
+
 void cu_enabledebug(char* f) {
-	int ifl; int fl;
-	if (strcmp(f, "all") == 0) {
-		for (ifl = 0; ifl < MAXFLAGS; ifl++) {
-			dl[ifl] = 1;
-		}
-		D(("Every debug flag enabled."));
-		return;
-	} else {
-		fl = strlen(f);
-		for (ifl = 0; ifl < fl; ifl++) {
-			dl[(int)f[ifl]] = 1;
-		}
-		dl[(int)'-'] = 1;
-		D(("Debug flags enabled: %s", f));
-		return;
-	}
+        char * env_flags = NULL;
+        env_flags = getenv("DEBUG_FLAGS");
+        cu_enable_debug_flags(f);
+        if (env_flags != NULL) cu_enable_debug_flags(env_flags);
 }
 
 int cu_testdebug(char f) {

@@ -22,6 +22,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include "copper.h"
 
 extern int copper_tests_count;
@@ -32,8 +33,15 @@ struct test_result copper_global_test_result;
 static char output_capture[MAX_OUTPUT_CAPTURE_LENGTH+1];
 static size_t output_capture_pos = 0;
 
+static void cu_test_fail_exit(struct test_result r, int status) {
+    DEBUG('#', ("Test failed: %s", r.name));
+    DEBUG('#', ("\n---Begin Test Failure Log---\n%s---End Test Failure Log---", r.text));
+    exit(status);
+}
+
 static void cu_testdriver_exit(int x) {
         copper_global_test_result.pass = 0;
+        cu_test_fail_exit(copper_global_test_result, x);
 }
 
 static int cu_testdriver_vprintf(char const *f, va_list args) {
@@ -41,6 +49,8 @@ static int cu_testdriver_vprintf(char const *f, va_list args) {
         va_list args_copy;
         
         va_copy(args_copy, args);
+        
+        vfprintf(stderr, f, args);
         
         if (MAX_OUTPUT_CAPTURE_LENGTH-output_capture_pos > 0) {
           r = vsnprintf(output_capture+output_capture_pos,
@@ -95,8 +105,7 @@ int main (int argc, char ** argv) {
                         if (r.pass) {
                           DEBUG('#', ("Test passed: %s", r.name));
                         } else {
-                          DEBUG('#', ("Test failed: %s", r.name));
-                          DEBUG('#', ("\n---Begin Test Failure Log---\n%s---End Test Failure Log---", r.text));
+                          cu_test_fail_exit(r, 1);
                         }
 			return (!r.pass);
 		} else {

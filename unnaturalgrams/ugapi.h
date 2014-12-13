@@ -24,24 +24,24 @@
 #include "ug.h"
 
 /* Compute the cross-entropy of a short string vs. corpus */
-double ug_crossEntropy(struct UGCorpus * ugc, struct UGram query);
+double ug_crossEntropy(struct ug_Corpus * ugc, struct ug_Gram query);
 
 /* Make a prediction */
-struct UGPredictions ug_predict(struct UGCorpus * ugc,
-                  struct UGram prefix,
+struct ug_Predictions ug_predict(struct ug_Corpus * ugc,
+                  struct ug_Gram prefix,
                   size_t min,
                   size_t max,
-                  struct UGram postfix
+                  struct ug_Gram postfix
                  );
 
-int ug_addToCorpus(struct UGCorpus * ugc, struct UGramWeighted text);
+int ug_addToCorpus(struct ug_Corpus * ugc, struct ug_GramWeighted text);
 
-struct UGCorpus ug_openCorpus(char * path);
+struct ug_Corpus ug_openCorpus(char * path);
 
-void ug_closeCorpus(struct UGCorpus * ugc);
+void ug_closeCorpus(struct ug_Corpus * ugc);
 
-struct UGCorpus ug_createCorpus(char * path,
-                                UGPropertyID nProperties,
+struct ug_Corpus ug_createCorpus(char * path,
+                                ug_AttributeID nAttributes,
                                 size_t gramOrder
                                ); 
 

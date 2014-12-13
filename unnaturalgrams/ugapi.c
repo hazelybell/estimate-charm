@@ -21,76 +21,106 @@
 #include "copper.h"
 #include "ugapi.h"
 #include "db.h"
+#include "smoothing.h"
 #include <string.h>
 #include <stdlib.h>
 
-double ug_crossEntropy(struct UGCorpus * ugc, struct UGram query) {
+double ug_crossEntropy(struct ug_Corpus * corpus, struct ug_Gram query) {
   return 70.0;
 }
 
-struct UGPredictions ug_predict(struct UGCorpus * ugc,
-                  struct UGram prefix,
+struct ug_Predictions ug_predict(struct ug_Corpus * corpus,
+                  struct ug_Gram prefix,
                   size_t min,
                   size_t max,
-                  struct UGram postfix
+                  struct ug_Gram postfix
                  ) {
-  A((ugc->open));
-  struct UGPredictions predictions = {
+  A((corpus->open));
+  struct ug_Predictions predictions = {
     .nPredictions = 0,
     .predictions = NULL
   };
   return predictions;
 }
 
-int ug_addToCorpus(struct UGCorpus * ugc, struct UGramWeighted text) {
-  A((ugc->open));
+static void ug_parallelProperties(
+  struct ug_Corpus * corpus,
+  struct ug_GramWeighted text,
+  struct ug_Value (* lists)[corpus->nAttributes][text.length]
+) {
+    size_t i;
+    size_t j;
+    for (i = 0; i < text.length; i++) {
+      for (j = 0; j < text.words[i].nAttributes; j++) {
+        A(( text.words[i].nAttributes == corpus->nAttributes ));
+        (*lists)[j][i] = text.words[i].values[j];
+      }
+    }
+}
+
+int ug_addToCorpus(struct ug_Corpus * corpus, struct ug_GramWeighted text) {
+  size_t i = 0;
+  struct ug_Value lists[corpus->nAttributes][text.length];
+  A((corpus->open));
+  A((text.length > 0));
+
+  ug_parallelProperties(corpus, text, &lists);
+  
+  for (i = 0; i < corpus->nAttributes; i++) {
+//     ug_mapPropertyWords(corpus, i, text.length, lists[i]);
+  }
+  
+  ug_beginRW(corpus);
+  ug_commit(corpus);
   return 0;
 }
 
-struct UGCorpus ug_openCorpus(char * path) {
-  struct UGCorpus corpus = {
-    .nProperties = 0,
-    .open = 0
+struct ug_Corpus ug_openCorpus(char * path) {
+  struct ug_Corpus corpus = {
+    .nAttributes = 0,
+    .open = 0,
+    .gramOrder = 0
   };
   A(( ug_openDB(path, &corpus) == 0 ));
   corpus.open = 1;
   ug_beginRO(&corpus);
-  corpus.nProperties = ug_readUInt64ByC(&corpus, "nProperties");
+  corpus.nAttributes = ug_readUInt64ByC(&corpus, "nAttributes");
+  ug_initSmoothing(&corpus);
   ug_commit(&corpus);
   return corpus;
 }
 
-void ug_closeCorpus(struct UGCorpus * ugc) {
-  EA(( ugc->open ), ("DB already closed"));
-  A(( ug_closeDB(ugc) == 0 ));
-  ugc->open = 0;
+void ug_closeCorpus(struct ug_Corpus * corpus) {
+  EA(( corpus->open ), ("DB already closed"));
+  A(( ug_closeDB(corpus) == 0 ));
+  corpus->open = 0;
 }
 
-static int ug_storeSettingsInDB(struct UGCorpus * corpus, UGPropertyID nProperties) {
-  ug_beginRW(corpus);
-    ug_writeUInt64ByC(corpus, "nProperties", nProperties);
-  ug_commit(corpus);
+static int ug_storeSettingsInDB(struct ug_Corpus * corpus, ug_AttributeID nAttributes) {
+  ug_writeUInt64ByC(corpus, "nAttributes", nAttributes);
   
-  corpus->nProperties = nProperties;
+  corpus->nAttributes = nAttributes;
   
   return 0;
 }
 
-struct UGCorpus ug_createCorpus(char * path, UGPropertyID nProperties, size_t gramOrder) {
-  struct UGCorpus corpus = {
-    .nProperties = 0,
+struct ug_Corpus ug_createCorpus(char * path, ug_AttributeID nAttributes, size_t gramOrder) {
+  struct ug_Corpus corpus = {
+    .nAttributes = 0,
     .open = 0,
-    .gramOrder = 1
+    .gramOrder = 0
   };
   A(( ug_createDB(path, &corpus) == 0 ));
-  A(( ug_storeSettingsInDB(&corpus, nProperties) == 0 ));
-  corpus.gramOrder = gramOrder;
+  ug_beginRW(&corpus);
+  A(( ug_storeSettingsInDB(&corpus, nAttributes) == 0 ));
+  A(( ug_setSmoothing(&corpus, gramOrder) == gramOrder ));
+  ug_commit(&corpus);
   corpus.open = 1;
   return corpus;
 }
 
 TEST({
-  struct UGCorpus c;
+  struct ug_Corpus c;
   char * tmpDir;
   char removeCmd[] = "rm -rvf ugtest-XXXXXX";
   char path[] = "ugtest-XXXXXX/corpus";
@@ -100,36 +130,100 @@ TEST({
   c = ug_createCorpus(path, 1, 10);
   EA((c.open), ("Didn't open."));
   
-  A((c.nProperties == 1));
-//   A((c.gramOrder == 10));
+  A((c.nAttributes == 1));
+  A((c.gramOrder == 10));
 
   ug_closeCorpus(&c);
   A((!c.open));
   c = ug_openCorpus(path);
   
-  A((c.nProperties == 1));
-//   A((c.gramOrder == 10));
+  A((c.nAttributes == 1));
+  A((c.gramOrder == 10));
   
   ug_closeCorpus(&c);
   A((!c.open));
   system(removeCmd);
 });
 
-// TEST({
-//   struct UGCorpus c;
-//   char * tmpDir;
-//   char removeCmd[] = "rm -rvf ugtest-XXXXXX";
-//   char path[] = "ugtest-XXXXXX/corpus";
-//   tmpDir = &(removeCmd[8]);
-//   ASYS(( tmpDir == mkdtemp(tmpDir) ));
-//   memcpy(path, tmpDir, strlen(tmpDir));
-//   c = ug_createCorpus(path, 1, 10);
-//   EA((c.open), ("Didn't open."));
-//   
-//   
-//   
-//   ug_closeCorpus(&c);
-//   A((!c.open));
-//   system(removeCmd);  
-// });
+#ifdef ENABLE_TESTING
+
+static struct ug_Value testAttrArray[] = {
+  { 2, "a" },
+  { 2, "b" },
+  { 2, "c" },
+  { 2, "d" },
+  { 2, "e" },
+  { 2, "f" },
+  { 2, "g" },
+  { 2, "h" },
+  { 2, "i" },
+  { 2, "j" },
+  { 2, "k" },
+  { 2, "l" },
+  { 2, "m" },
+  { 2, "n" },
+  { 2, "o" },
+  { 2, "p" },
+  { 2, "q" },
+  { 2, "r" },
+  { 2, "s" },
+  { 2, "t" },
+  { 2, "u" },
+  { 2, "v" },
+  { 2, "w" },
+  { 2, "x" },
+  { 2, "y" },
+  { 2, "z" }
+};
+
+static struct ug_WordWeighted testTermArray[] = {
+  { 1, 1.0, testAttrArray+0 },
+  { 1, 1.0, testAttrArray+1 },
+  { 1, 1.0, testAttrArray+2 },
+  { 1, 1.0, testAttrArray+3 },
+  { 1, 1.0, testAttrArray+4 },
+  { 1, 1.0, testAttrArray+5 },
+  { 1, 1.0, testAttrArray+6 },
+  { 1, 1.0, testAttrArray+7 },
+  { 1, 1.0, testAttrArray+8 },
+  { 1, 1.0, testAttrArray+9 },
+  { 1, 1.0, testAttrArray+10 },
+  { 1, 1.0, testAttrArray+11 },
+  { 1, 1.0, testAttrArray+12 },
+  { 1, 1.0, testAttrArray+13 },
+  { 1, 1.0, testAttrArray+14 },
+  { 1, 1.0, testAttrArray+15 },
+  { 1, 1.0, testAttrArray+16 },
+  { 1, 1.0, testAttrArray+17 },
+  { 1, 1.0, testAttrArray+18 },
+  { 1, 1.0, testAttrArray+19 },
+  { 1, 1.0, testAttrArray+20 },
+  { 1, 1.0, testAttrArray+21 },
+  { 1, 1.0, testAttrArray+22 },
+  { 1, 1.0, testAttrArray+23 },
+  { 1, 1.0, testAttrArray+24 },
+  { 1, 1.0, testAttrArray+25 },
+};
+
+static struct ug_GramWeighted testText = { 20, testTermArray };
+  
+#endif /* ENABLE_TESTING */
+
+TEST({
+  struct ug_Corpus c;
+  char * tmpDir;
+  char removeCmd[] = "rm -rvf ugtest-XXXXXX";
+  char path[] = "ugtest-XXXXXX/corpus";
+  tmpDir = &(removeCmd[8]);
+  ASYS(( tmpDir == mkdtemp(tmpDir) ));
+  memcpy(path, tmpDir, strlen(tmpDir));
+  c = ug_createCorpus(path, 1, 10);
+  EA((c.open), ("Didn't open."));
+  
+  A(( ug_addToCorpus(&c, testText) ));
+  
+  ug_closeCorpus(&c);
+  A(( !c.open ));
+  system(removeCmd);  
+});
 

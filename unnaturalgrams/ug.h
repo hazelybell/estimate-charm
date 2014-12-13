@@ -25,47 +25,61 @@
 #include <stddef.h>
 #include <lmdb.h>
 
-typedef uint64_t UGPropertyID;
+/* ID of attribute (determinable) 
+   e.g. 0 = spelling 
+        1 = part of speech */
+typedef uint64_t ug_AttributeID; 
 
-/* A single value for a single property for a 1-gram
- * datastructure for API */
-struct UGOneGramProperty {
-  UGPropertyID id;
+/* ID of the value (determinant) that the attribute takes
+   e.g. 0 = "aaaaa"
+        1 = "aaaab" */
+typedef uint64_t ug_ValueID;
+
+typedef uint64_t ug_GramOrder;
+
+typedef uint32_t ug_KeyMagic;
+
+typedef uint64_t ug_Index;
+
+/* A single value (determinant) for a single property for a 1-gram
+ * datastructure for API.
+ * This is the not-yet-indexed form of ug_ValueID. */
+struct ug_Value {
   size_t length;
   char * value;
 };
 
 /* Basic 1-gram datastructure for API */
-struct UGOneGram {
-  size_t nProperties;
-  struct UGOneGramProperty * properties;
+struct ug_Word {
+  size_t nAttributes;
+  struct ug_Value * values;
 };
 
 /* Weighted 1-gram datastructure for API */
-struct UGOneGramWeighted {
-  size_t nProperties;
+struct ug_WordWeighted {
+  size_t nAttributes;
   double weight;
-  struct UGOneGramProperty * properties;
+  struct ug_Value * values;
 };
 
 /* Basic n-gram datastructure for API */
-struct UGram {
+struct ug_Gram {
   size_t length;
-  struct UGOneGram * words;
+  struct ug_Word * words;
 };
 
 /* Weighted n-gram datastructure for API */
-struct UGramWeighted {
+struct ug_GramWeighted {
   size_t length;
-  struct UGOneGramWeighted * words;
+  struct ug_WordWeighted * words;
 };
 
 /* The base-2 logarithm of numbers which we consider practically infinite. */
 #define UG_INFINITY 70.0
 
 /* Instance/Context for UG */
-struct UGCorpus {
-  UGPropertyID nProperties;
+struct ug_Corpus {
+  size_t nAttributes;
   size_t gramOrder;
   int open;
   MDB_env * mdbEnv;
@@ -75,14 +89,23 @@ struct UGCorpus {
   int inTxn;
 };
 
-struct UGPrediction {
+struct ug_Prediction {
   double score;
-  struct UGram gram;
+  struct ug_Gram gram;
 };
 
-struct UGPredictions {
+struct ug_Predictions {
   size_t nPredictions;
-  struct UGPrediction * predictions;
+  struct ug_Prediction * predictions;
 };
+
+typedef enum {
+  ug_VECTOR,
+  ug_VECTOR_LENGTH,
+  ug_VALUE,
+  ug_VALUE_COUNT,
+  ug_INVERSE_VALUE,
+} ug_KeyType;
+
 
 #endif /* _UG_H_ */

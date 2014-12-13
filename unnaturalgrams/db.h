@@ -23,15 +23,29 @@
 
 #include "ug.h"
 
-int ug_openDB(char * path, struct UGCorpus * corpus);
-int ug_closeDB(struct UGCorpus * corpus);
-int ug_createDB(char * path, struct UGCorpus * corpus);
+int ug_openDB(char * path, struct ug_Corpus * corpus);
+int ug_closeDB(struct ug_Corpus * corpus);
+int ug_createDB(char * path, struct ug_Corpus * corpus);
 
-void ug_beginRO(struct UGCorpus * corpus);
-void ug_beginRW(struct UGCorpus * corpus);
-void ug_commit(struct UGCorpus * corpus);
+void ug_beginRO(struct ug_Corpus * corpus);
+void ug_beginRW(struct ug_Corpus * corpus);
+void ug_commit(struct ug_Corpus * corpus);
 
-uint64_t ug_readUInt64ByC(struct  UGCorpus * corpus, char * cKey);
-void ug_writeUInt64ByC(struct  UGCorpus * corpus, char * cKey, uint64_t value);
+void * ug_readN(struct  ug_Corpus * corpus, size_t keyLength, void * keyData,
+              size_t valueSize);
+uint64_t ug_readUInt64ByC(struct  ug_Corpus * corpus, char * cKey);
+#define ug_readStructByStruct(corpus, key, value) ( \
+      value = *((typeof(&value)) ug_readN(corpus, \
+                                          sizeof(key), &key, \
+                                          sizeof(value)))\
+    )
+                                                            
+
+void ug_write(struct  ug_Corpus * corpus, size_t keyLength, void * keyData,
+              size_t valueLength, void * valueData);
+void ug_writeUInt64ByC(struct  ug_Corpus * corpus, char * cKey, uint64_t value);
+#define ug_writeStructByStruct(corpus, key, value) (ug_write(corpus, \
+                                                     sizeof(key), &key, \
+                                                     sizeof(value), &value))
 
 #endif /* _DB_H_ */

@@ -63,24 +63,10 @@
 
 /* shortcuts */
 #define D(x) DEBUG('-', x)
-#define Dd(x) DEBUG('d', x)
+#define Dd(x) DEBUG('d', x) /* Database layer */
 #define Ad(x) ASSERT('d', x)
-#define DE(x) DEBUG('E', x) /* */
-#define De(x) DEBUG('e', x)
-#define DI(x) DEBUG('I', x) /* input */
-#define Di(x) DEBUG('i', x)
-#define DM(x) DEBUG('M', x) /* main */
-#define Dm(x) DEBUG('m', x)
-#define DO(x) DEBUG('O', x) /* output */
-#define Do(x) DEBUG('o', x)
-#define DP(x) DEBUG('P', x) /* parser */
-#define Dp(x) DEBUG('p', x)
-#define DT(x) DEBUG('T', x) /* types */
-#define Dt(x) DEBUG('t', x)
-#define DU(x) DEBUG('U', x) /* util */
-#define Du(x) DEBUG('u', x)
-#define DW(x) DEBUG('W', x) /* word */
-#define Dw(x) DEBUG('w', x)
+#define Ds(x) DEBUG('d', x) /* Smoothing layer */
+#define As(x) ASSERT('d', x)
 
 #define TEST()
 

@@ -100,7 +100,6 @@ class mitlmCorpus(object):
             assert self.mitlmSocket.closed
             chill_rm(normalize_path(self.mitlmSocketPath))
             self.mitlmSocket = None
-            self.mitlmSocketPath = None
         if self.mitlmProc:
             rc = None
             debug("Waiting for MITLM to shut down...")

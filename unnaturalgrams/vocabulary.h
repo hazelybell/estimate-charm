@@ -24,7 +24,8 @@
 #include "ug.h"
 #include "smoothing.h"
 
-#define ug_VOCAB_KEY_PREFIX_LENGTH (16)
+#define ug_VOCAB_KEY_PREFIX_LENGTH \
+    (sizeof(ug_KeyMagic) + sizeof(ug_AttributeID))
 
 #define ug_MAX_WORD_LENGTH (511-ug_VOCAB_KEY_PREFIX_LENGTH)
 
@@ -52,6 +53,14 @@ struct __attribute__((packed)) ug_VocabKey {
   ug_AttributeID attributeID;
   ug_Vocab id;
 };
+
+void ug_initVocab(struct ug_Corpus * corpus,
+                                 ug_AttributeID attr);
+
+ug_Vocab ug_mapFeatureToVocab(struct ug_Corpus * corpus,
+                     ug_AttributeID attr,
+                     struct ug_Feature v);
+
 
 void ug_mapFeaturesToVocabsOrCreate(struct ug_Corpus * corpus,
                        ug_AttributeID attr,

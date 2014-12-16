@@ -156,8 +156,14 @@ size_t ug_read(struct  ug_Corpus * corpus, size_t keyLength, void * keyData,
 void * ug_readNOrNull(struct  ug_Corpus * corpus, size_t keyLength, void * keyData,
               size_t valueSize) {
   void * r = NULL;
-  Ad(( ug_readOrNull(corpus, keyLength, keyData, &r) == valueSize ));
-  return r;
+  size_t size = ug_readOrNull(corpus, keyLength, keyData, &r);
+  if ( size == valueSize ) {
+    return r;
+  } else  if ( size == 0 ) {
+    return NULL;
+  }
+  E(("Didn't return an object of the requested size."));
+  return NULL;
 }
 
 void * ug_readN(struct  ug_Corpus * corpus, size_t keyLength, void * keyData,

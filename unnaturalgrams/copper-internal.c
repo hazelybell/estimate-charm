@@ -36,7 +36,7 @@ static size_t output_capture_pos = 0;
 static void cu_test_fail_exit(struct test_result r, int status) {
     DEBUG('#', ("Test failed: %s", r.name));
     DEBUG('#', ("\n---Begin Test Failure Log---\n%s---End Test Failure Log---", r.text));
-    exit(status);
+    abort();
 }
 
 static void cu_testdriver_exit(int x) {

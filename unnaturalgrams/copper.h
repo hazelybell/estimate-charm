@@ -63,10 +63,12 @@
 
 /* shortcuts */
 #define D(x) DEBUG('-', x)
-#define Dd(x) DEBUG('d', x) /* Database layer */
+#define Dd(x) DEBUG('d', x) /* Database interface code */
 #define Ad(x) ASSERT('d', x)
-#define Ds(x) DEBUG('d', x) /* Smoothing layer */
-#define As(x) ASSERT('d', x)
+#define Ds(x) DEBUG('s', x) /* Smoothing code */
+#define As(x) ASSERT('s', x)
+#define Dv(x) DEBUG('v', x) /* Vocab code */
+#define Av(x) ASSERT('v', x)
 
 #define TEST()
 

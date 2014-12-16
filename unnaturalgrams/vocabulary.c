@@ -29,7 +29,7 @@ ug_Vocab ug_mapFeatureToVocab(struct ug_Corpus * corpus,
                      struct ug_Feature v)
 {
   struct ug_FeatureKey vkey = {ug_VOCAB, 0, ""};
-  A(( v.length < ug_MAX_WORD_LENGTH ));
+  Av(( v.length < ug_MAX_WORD_LENGTH ));
   
   vkey.attributeID = attr;
   vkey.magic = ug_VOCAB;
@@ -39,7 +39,7 @@ ug_Vocab ug_mapFeatureToVocab(struct ug_Corpus * corpus,
                              &vkey);
 }
 
-ug_Vocab ug_getValueCount(struct ug_Corpus * corpus,
+ug_Vocab ug_getVocabCount(struct ug_Corpus * corpus,
                                  ug_AttributeID attr)
 {
   struct ug_VocabCountKey key = {0, ug_VOCAB_COUNT};
@@ -47,12 +47,12 @@ ug_Vocab ug_getValueCount(struct ug_Corpus * corpus,
   return ug_readUInt64(corpus, sizeof(key), &key);
 }
 
-ug_Vocab ug_incrValueCount(struct ug_Corpus * corpus,
+ug_Vocab ug_incrVocabCount(struct ug_Corpus * corpus,
                                  ug_AttributeID attr)
 {
   struct ug_VocabCountKey key = {0, ug_VOCAB_COUNT};
   key.attributeID = attr;
-  ug_Vocab newCount = ug_getValueCount(corpus, attr)+1;
+  ug_Vocab newCount = ug_getVocabCount(corpus, attr)+1;
   ug_overwriteUInt64(corpus, sizeof(key), &key, newCount);
   return newCount;
 }
@@ -60,7 +60,7 @@ ug_Vocab ug_incrValueCount(struct ug_Corpus * corpus,
 ug_Vocab ug_assignFreeVocab(struct ug_Corpus * corpus,
                                  ug_AttributeID attr)
 {
-  return ug_incrValueCount(corpus, attr)-1;
+  return ug_incrVocabCount(corpus, attr)-1;
 }
 
 ug_Vocab ug_mapFeatureToVocabOrCreate(struct ug_Corpus * corpus,
@@ -79,7 +79,7 @@ ug_Vocab ug_mapFeatureToVocabOrCreate(struct ug_Corpus * corpus,
   
   /* Save the new word->id mapping */
   struct ug_FeatureKey vkey = {ug_VOCAB, attr, ""};
-  A(( v.length < ug_MAX_WORD_LENGTH ));
+  Av(( v.length < ug_MAX_WORD_LENGTH ));
   
   vkey.attributeID = attr;
   vkey.magic = ug_VOCAB;
@@ -94,6 +94,19 @@ ug_Vocab ug_mapFeatureToVocabOrCreate(struct ug_Corpus * corpus,
   ug_write(corpus, sizeof(idkey), &idkey, v.length, v.value);
   
   return new;
+}
+
+void ug_initVocab(struct ug_Corpus * corpus,
+                                 ug_AttributeID attr)
+{
+  ug_Vocab unknownId = 100;
+  struct ug_VocabCountKey key = {0, ug_VOCAB_COUNT};
+  char unknownString[] = "__UNKNOWN__";
+  struct ug_Feature unknownFeature = {strlen(unknownString)+1, unknownString};
+  key.attributeID = attr;
+  ug_writeUInt64(corpus, sizeof(key), &key, 0);
+  unknownId = ug_mapFeatureToVocabOrCreate(corpus, attr, unknownFeature);
+  Av((unknownId == 0));
 }
 
 void ug_mapFeaturesToVocabs(struct ug_Corpus * corpus,
@@ -120,3 +133,95 @@ void ug_mapFeaturesToVocabsOrCreate(struct ug_Corpus * corpus,
     }
 }
 
+#ifdef ENABLE_TESTING
+#include "ugapi.h"
+#include <stdlib.h>
+
+static struct ug_Feature testAttrArray[] = {
+  { 2, "a" },
+  { 2, "b" },
+  { 2, "c" },
+  { 2, "d" },
+  { 2, "e" },
+  { 2, "f" },
+  { 2, "g" },
+  { 2, "h" },
+  { 2, "i" },
+  { 2, "j" },
+  { 2, "k" },
+  { 2, "l" },
+  { 2, "m" },
+  { 2, "n" },
+  { 2, "o" },
+  { 2, "p" },
+  { 2, "q" },
+  { 2, "r" },
+  { 2, "s" },
+  { 2, "t" },
+  { 2, "u" },
+  { 2, "v" },
+  { 2, "w" },
+  { 2, "x" },
+  { 2, "y" },
+  { 2, "z" }
+};
+
+// static struct ug_WordWeighted testTermArray[] = {
+//   { 1, 1.0, testAttrArray+0 },
+//   { 1, 1.0, testAttrArray+1 },
+//   { 1, 1.0, testAttrArray+2 },
+//   { 1, 1.0, testAttrArray+3 },
+//   { 1, 1.0, testAttrArray+4 },
+//   { 1, 1.0, testAttrArray+5 },
+//   { 1, 1.0, testAttrArray+6 },
+//   { 1, 1.0, testAttrArray+7 },
+//   { 1, 1.0, testAttrArray+8 },
+//   { 1, 1.0, testAttrArray+9 },
+//   { 1, 1.0, testAttrArray+10 },
+//   { 1, 1.0, testAttrArray+11 },
+//   { 1, 1.0, testAttrArray+12 },
+//   { 1, 1.0, testAttrArray+13 },
+//   { 1, 1.0, testAttrArray+14 },
+//   { 1, 1.0, testAttrArray+15 },
+//   { 1, 1.0, testAttrArray+16 },
+//   { 1, 1.0, testAttrArray+17 },
+//   { 1, 1.0, testAttrArray+18 },
+//   { 1, 1.0, testAttrArray+19 },
+//   { 1, 1.0, testAttrArray+20 },
+//   { 1, 1.0, testAttrArray+21 },
+//   { 1, 1.0, testAttrArray+22 },
+//   { 1, 1.0, testAttrArray+23 },
+//   { 1, 1.0, testAttrArray+24 },
+//   { 1, 1.0, testAttrArray+25 },
+// };
+
+// static struct ug_GramWeighted testText = { 20, testTermArray };
+  
+TEST({
+  struct ug_Corpus c;
+  char * tmpDir;
+  char removeCmd[] = "rm -rvf ugtest-XXXXXX";
+  char path[] = "ugtest-XXXXXX/corpus";
+  tmpDir = &(removeCmd[8]);
+  ASYS(( tmpDir == mkdtemp(tmpDir) ));
+  memcpy(path, tmpDir, strlen(tmpDir));
+  c = ug_createCorpus(path, 1, 10);
+  EA((c.open), ("Didn't open."));
+  
+  ug_beginRW(&c);
+    A(( ug_mapFeatureToVocabOrCreate(&c, 0, testAttrArray[0]) > 0 ));
+    A(( ug_mapFeatureToVocab(&c, 0, testAttrArray[0]) > 0 ));
+    A(( ug_mapFeatureToVocabOrCreate(&c, 0, testAttrArray[1]) > 0 ));
+    A(( ug_mapFeatureToVocab(&c, 0, testAttrArray[1]) > 0 ));
+  ug_commit(&c);
+  ug_beginRW(&c);
+    A(( ug_mapFeatureToVocab(&c, 0, testAttrArray[1]) != 
+        ug_mapFeatureToVocab(&c, 0, testAttrArray[0]) ));
+  ug_commit(&c);
+  
+  ug_closeCorpus(&c);
+  A(( !c.open ));
+  system(removeCmd);  
+});
+
+#endif /* ENABLE_TESTING */

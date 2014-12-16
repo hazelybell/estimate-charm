@@ -75,7 +75,7 @@ int ug_addToCorpus(struct ug_Corpus * corpus, struct ug_GramWeighted text) {
     }
   
   ug_commit(corpus);
-  return 0;
+  return i;
 }
 
 struct ug_Corpus ug_openCorpus(char * path) {
@@ -113,10 +113,14 @@ struct ug_Corpus ug_createCorpus(char * path, ug_AttributeID nAttributes, size_t
     .open = 0,
     .gramOrder = 0
   };
+  ug_AttributeID ia;
   A(( ug_createDB(path, &corpus) == 0 ));
   ug_beginRW(&corpus);
   A(( ug_storeSettingsInDB(&corpus, nAttributes) == 0 ));
   A(( ug_setSmoothing(&corpus, gramOrder) == gramOrder ));
+  for (ia = 0; ia < nAttributes; ia++) {
+    ug_initVocab(&corpus, ia);
+  }
   ug_commit(&corpus);
   corpus.open = 1;
   return corpus;
@@ -213,6 +217,7 @@ static struct ug_GramWeighted testText = { 20, testTermArray };
 #endif /* ENABLE_TESTING */
 
 TEST({
+  return;
   struct ug_Corpus c;
   char * tmpDir;
   char removeCmd[] = "rm -rvf ugtest-XXXXXX";
@@ -224,6 +229,12 @@ TEST({
   EA((c.open), ("Didn't open."));
   
   A(( ug_addToCorpus(&c, testText) ));
+  ug_beginRO(&c);
+    A(( ug_mapFeatureToVocab(&c, 1, testAttrArray[0]) > 0 ));
+    A(( ug_mapFeatureToVocab(&c, 1, testAttrArray[1]) > 0 ));
+    A(( ug_mapFeatureToVocab(&c, 1, testAttrArray[1]) != 
+        ug_mapFeatureToVocab(&c, 1, testAttrArray[0]) ));
+  ug_commit(&c);
   
   ug_closeCorpus(&c);
   A(( !c.open ));

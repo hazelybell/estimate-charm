@@ -157,6 +157,8 @@ while(<>) {
 		$i++;
 		push @files, "$ARGV";
 	}
+} continue {
+  close ARGV if eof; # Thanks perldoc
 }
 
 my @functions = @tests;

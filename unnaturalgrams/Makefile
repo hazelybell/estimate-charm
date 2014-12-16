@@ -16,7 +16,7 @@
 #
 #    You should have received a copy of the GNU Affero General Public License
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
-SOURCES=ugapi.c db.c smoothing.c
+SOURCES=ugapi.c db.c smoothing.c vocabulary.c
 COPPER_INPUT_FILES=$(SOURCES)
 CFLAGS=-g -O2 -Wall -Wextra -Werror -Wfatal-errors -Wno-error=unused-parameter -llmdb
 

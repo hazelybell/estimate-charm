@@ -104,7 +104,7 @@ typedef enum {
   ug_VECTOR_LENGTH,
   ug_VALUE,
   ug_VALUE_COUNT,
-  ug_INVERSE_VALUE,
+  ug_VALUE_ID, /* for mapping IDs back to real words */
 } ug_KeyType;
 
 

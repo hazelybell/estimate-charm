@@ -211,8 +211,42 @@ void ug_write(struct  ug_Corpus * corpus, size_t keyLength, void * keyData,
   }
 }
 
+void ug_writeUInt64(struct  ug_Corpus * corpus,
+                        size_t keyLength, void * keyData,
+                        uint64_t value)
+{
+  ug_write(corpus, keyLength, keyData, sizeof(value), &value);
+}
+
 void ug_writeUInt64ByC(struct  ug_Corpus * corpus, char * cKey, uint64_t value) {
   ug_write(corpus, strlen(cKey)+1, cKey, sizeof(value), &value);
+}
+
+void ug_overwrite(struct  ug_Corpus * corpus, size_t keyLength, void * keyData,
+                  size_t valueLength, void * valueData)
+{
+  struct MDB_val key;
+  struct MDB_val data;
+  int r;
+
+  key.mv_data = keyData;
+  key.mv_size = keyLength;  
+  
+  data.mv_data = valueData;
+  data.mv_size = valueLength;
+  
+  r = mdb_put(corpus->mdbTxn, corpus->mdbDbi, &key, &data, 0);
+  
+  if (r != 0) {
+    E(("LMDB Error %i: %s", r, mdb_strerror(r)));
+  }
+}
+
+void ug_overwriteUInt64(struct  ug_Corpus * corpus,
+                        size_t keyLength, void * keyData,
+                        uint64_t value)
+{
+  ug_overwrite(corpus, keyLength, keyData, sizeof(value), &value);
 }
 
 int ug_createDB(char * path, struct ug_Corpus * corpus) {

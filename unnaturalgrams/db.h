@@ -39,6 +39,10 @@ uint64_t ug_readUInt64ByC(struct  ug_Corpus * corpus, char * cKey);
                                           sizeof(key), &key, \
                                           sizeof(value)))\
     )
+uint64_t ug_readUInt64(struct  ug_Corpus * corpus,
+                       size_t keyLength, void * keyData);
+uint64_t ug_readUInt64OrZero(struct  ug_Corpus * corpus,
+                       size_t keyLength, void * keyData);
                                                             
 
 void ug_write(struct  ug_Corpus * corpus, size_t keyLength, void * keyData,
@@ -47,5 +51,14 @@ void ug_writeUInt64ByC(struct  ug_Corpus * corpus, char * cKey, uint64_t value);
 #define ug_writeStructByStruct(corpus, key, value) (ug_write(corpus, \
                                                      sizeof(key), &key, \
                                                      sizeof(value), &value))
+                                                     
+void ug_overwriteUInt64(struct  ug_Corpus * corpus,
+                        size_t keyLength, void * keyData,
+                        uint64_t value);
+
+void ug_writeUInt64(struct  ug_Corpus * corpus,
+                        size_t keyLength, void * keyData,
+                        uint64_t value);
+
 
 #endif /* _DB_H_ */

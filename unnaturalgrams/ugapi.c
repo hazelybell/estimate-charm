@@ -22,6 +22,7 @@
 #include "ugapi.h"
 #include "db.h"
 #include "smoothing.h"
+#include "vocabulary.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -61,16 +62,18 @@ static void ug_parallelProperties(
 int ug_addToCorpus(struct ug_Corpus * corpus, struct ug_GramWeighted text) {
   size_t i = 0;
   struct ug_Value lists[corpus->nAttributes][text.length];
+  ug_ValueID ids[text.length];
   A((corpus->open));
   A((text.length > 0));
 
   ug_parallelProperties(corpus, text, &lists);
   
-  for (i = 0; i < corpus->nAttributes; i++) {
-//     ug_mapPropertyWords(corpus, i, text.length, lists[i]);
-  }
-  
   ug_beginRW(corpus);
+
+    for (i = 0; i < corpus->nAttributes; i++) {
+      ug_mapValuesToIDsOrCreate(corpus, i, text.length, lists[i], &ids);
+    }
+  
   ug_commit(corpus);
   return 0;
 }

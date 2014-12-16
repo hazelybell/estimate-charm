@@ -87,8 +87,8 @@ struct ug_Corpus ug_openCorpus(char * path) {
   A(( ug_openDB(path, &corpus) == 0 ));
   corpus.open = 1;
   ug_beginRO(&corpus);
-  corpus.nAttributes = ug_readUInt64ByC(&corpus, "nAttributes");
-  ug_initSmoothing(&corpus);
+    corpus.nAttributes = ug_readUInt64ByC(&corpus, "nAttributes");
+    ug_initSmoothing(&corpus);
   ug_commit(&corpus);
   return corpus;
 }

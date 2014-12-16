@@ -54,9 +54,10 @@ void ug_beginRW(struct ug_Corpus * corpus) {
 }
 
 void ug_beginRO(struct ug_Corpus * corpus) {
+  Ad(( ! corpus->inTxn ));
   if (corpus->readOnly) {
     Ad(( corpus->mdbTxn != NULL ));
-    mdb_txn_reset(corpus->mdbTxn);
+    Ad(( mdb_txn_renew(corpus->mdbTxn) == 0 ));
   } else {
     Ad(( corpus->mdbTxn == NULL ));
     Ad(( mdb_txn_begin(corpus->mdbEnv, NULL, MDB_RDONLY, &(corpus->mdbTxn)) == 0 ));    
@@ -80,13 +81,24 @@ int ug_openDB(char * path, struct ug_Corpus * corpus) {
   Ad(( mdb_dbi_open(mdbTxn, NULL, 0, &(corpus->mdbDbi)) == 0 ));
   Ad(( mdb_txn_commit(mdbTxn) == 0 )); mdbTxn = NULL;
   
+  corpus->mdbTxn = NULL;
+  corpus->readOnly = 0;
+  corpus->inTxn = 0;
+  
   return 0;
 }
 
 int ug_closeDB(struct ug_Corpus * corpus) {
-      mdb_env_close(corpus->mdbEnv); 
-      corpus->mdbEnv = NULL;
-      return 0;
+  Ad(( ! corpus->inTxn ));
+  if ( corpus->mdbTxn != NULL ) {
+    Ad(( corpus->readOnly ));
+    ug_abort(corpus);
+  }
+  mdb_dbi_close(corpus->mdbEnv, corpus->mdbDbi);
+  corpus->mdbDbi = 0;
+  mdb_env_close(corpus->mdbEnv); 
+  corpus->mdbEnv = NULL;
+  return 0;
 }
 
 int ug_existsByC(struct  ug_Corpus * corpus, char * cKey) {
@@ -110,14 +122,15 @@ int ug_existsByC(struct  ug_Corpus * corpus, char * cKey) {
 
 size_t ug_readOrNull(struct  ug_Corpus * corpus, size_t keyLength, void * keyData,
               void ** valueData) {
-  struct MDB_val key;
-  struct MDB_val data;
-  int r;
+  struct MDB_val key = {0, NULL};
+  struct MDB_val data = {0, NULL};
+  int r = 0;
 
   key.mv_data = keyData;
   key.mv_size = keyLength;
   
   Ad((key.mv_size > 0));
+  Ad((corpus->inTxn));
   
   r = mdb_get(corpus->mdbTxn, corpus->mdbDbi, &key, &data);
   

@@ -214,7 +214,18 @@ TEST({
     A(( ug_mapFeatureToVocabOrCreate(&c, 0, testAttrArray[1]) > 0 ));
     A(( ug_mapFeatureToVocab(&c, 0, testAttrArray[1]) > 0 ));
   ug_commit(&c);
-  ug_beginRW(&c);
+  ug_beginRO(&c);
+    A(( ug_mapFeatureToVocab(&c, 0, testAttrArray[1]) != 
+        ug_mapFeatureToVocab(&c, 0, testAttrArray[0]) ));
+  ug_commit(&c);
+  
+  ug_closeCorpus(&c);
+  A((!c.open));
+  c = ug_openCorpus(path);
+
+  ug_beginRO(&c);
+    A(( ug_mapFeatureToVocab(&c, 0, testAttrArray[1]) > 0 ));
+    A(( ug_mapFeatureToVocab(&c, 0, testAttrArray[0]) > 0 ));
     A(( ug_mapFeatureToVocab(&c, 0, testAttrArray[1]) != 
         ug_mapFeatureToVocab(&c, 0, testAttrArray[0]) ));
   ug_commit(&c);

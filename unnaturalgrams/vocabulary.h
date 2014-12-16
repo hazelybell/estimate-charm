@@ -18,47 +18,47 @@
  * along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _VALUEULARY_H_
-#define _VALUEULARY_H_
+#ifndef _VOCABULARY_H_
+#define _VOCABULARY_H_
 
 #include "ug.h"
 #include "smoothing.h"
 
-#define ug_VALUE_KEY_PREFIX_LENGTH (16)
+#define ug_VOCAB_KEY_PREFIX_LENGTH (16)
 
-#define ug_MAX_WORD_LENGTH (511-ug_VALUE_KEY_PREFIX_LENGTH)
+#define ug_MAX_WORD_LENGTH (511-ug_VOCAB_KEY_PREFIX_LENGTH)
 
-#define ug_VALUE_UNKNOWN ((uint64_t) 0)
+#define ug_VOCAB_UNKNOWN ((uint64_t) 0)
 
-struct __attribute__((packed)) ug_ValueCountKey {
-  ug_KeyMagic magic; /* should be ug_VALUE_COUNT */
+struct __attribute__((packed)) ug_VocabCountKey {
+  ug_KeyMagic magic; /* should be ug_VOCAB_COUNT */
   ug_AttributeID attributeID;
 };
 
-struct __attribute__((packed)) ug_ValueKey {
-  ug_KeyMagic magic; /* should be ug_VALUE */
+struct __attribute__((packed)) ug_FeatureKey {
+  ug_KeyMagic magic; /* should be ug_VOCAB */
   ug_AttributeID attributeID;
   char value[ug_MAX_WORD_LENGTH];
 };
 
-struct __attribute__((packed)) ug_ValueID {
-  ug_KeyMagic magic; /* should be ug_VALUE_ID */
+struct __attribute__((packed)) ug_Vocab {
+  ug_KeyMagic magic; /* should be ug_VOCAB */
   ug_AttributeID attributeID;
-  ug_ValueID id;
+  ug_Vocab id;
 };
 
-struct __attribute__((packed)) ug_IDKey {
-  ug_KeyMagic magic; /* should be ug_VALUE_ID */
+struct __attribute__((packed)) ug_VocabKey {
+  ug_KeyMagic magic; /* should be ug_VOCAB */
   ug_AttributeID attributeID;
-  ug_ValueID id;
+  ug_Vocab id;
 };
 
-void ug_mapValuesToIDsOrCreate(struct ug_Corpus * corpus,
+void ug_mapFeaturesToVocabsOrCreate(struct ug_Corpus * corpus,
                        ug_AttributeID attr,
                        size_t length,
-                       struct ug_Value string[length],
-                       ug_ValueID (* ids)[length]
+                       struct ug_Feature string[length],
+                       ug_Vocab (* ids)[length]
                        );
 
 
-#endif /* _VALUEULARY_H_ */
+#endif /* _VOCABULARY_H_ */

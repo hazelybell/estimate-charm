@@ -47,7 +47,7 @@ struct ug_Predictions ug_predict(struct ug_Corpus * corpus,
 static void ug_parallelProperties(
   struct ug_Corpus * corpus,
   struct ug_GramWeighted text,
-  struct ug_Value (* lists)[corpus->nAttributes][text.length]
+  struct ug_Feature (* lists)[corpus->nAttributes][text.length]
 ) {
     size_t i;
     size_t j;
@@ -61,8 +61,8 @@ static void ug_parallelProperties(
 
 int ug_addToCorpus(struct ug_Corpus * corpus, struct ug_GramWeighted text) {
   size_t i = 0;
-  struct ug_Value lists[corpus->nAttributes][text.length];
-  ug_ValueID ids[text.length];
+  struct ug_Feature lists[corpus->nAttributes][text.length];
+  ug_Vocab ids[text.length];
   A((corpus->open));
   A((text.length > 0));
 
@@ -71,7 +71,7 @@ int ug_addToCorpus(struct ug_Corpus * corpus, struct ug_GramWeighted text) {
   ug_beginRW(corpus);
 
     for (i = 0; i < corpus->nAttributes; i++) {
-      ug_mapValuesToIDsOrCreate(corpus, i, text.length, lists[i], &ids);
+      ug_mapFeaturesToVocabsOrCreate(corpus, i, text.length, lists[i], &ids);
     }
   
   ug_commit(corpus);
@@ -150,7 +150,7 @@ TEST({
 
 #ifdef ENABLE_TESTING
 
-static struct ug_Value testAttrArray[] = {
+static struct ug_Feature testAttrArray[] = {
   { 2, "a" },
   { 2, "b" },
   { 2, "c" },

@@ -36,7 +36,7 @@ struct __attribute__((packed)) ug_VectorKey {
 
 struct __attribute__((packed)) ug_VectorElement {
   ug_Index historyIndex;
-  ug_ValueID word;
+  ug_Vocab word;
   double probability;
   double backoffWeight;
   ug_Index backoffIndex;

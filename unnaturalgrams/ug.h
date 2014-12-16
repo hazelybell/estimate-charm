@@ -33,7 +33,7 @@ typedef uint64_t ug_AttributeID;
 /* ID of the value (determinant) that the attribute takes
    e.g. 0 = "aaaaa"
         1 = "aaaab" */
-typedef uint64_t ug_ValueID;
+typedef uint64_t ug_Vocab;
 
 typedef uint64_t ug_GramOrder;
 
@@ -43,8 +43,8 @@ typedef uint64_t ug_Index;
 
 /* A single value (determinant) for a single property for a 1-gram
  * datastructure for API.
- * This is the not-yet-indexed form of ug_ValueID. */
-struct ug_Value {
+ * This is the not-yet-indexed form of ug_Vocab. */
+struct ug_Feature {
   size_t length;
   char * value;
 };
@@ -52,14 +52,14 @@ struct ug_Value {
 /* Basic 1-gram datastructure for API */
 struct ug_Word {
   size_t nAttributes;
-  struct ug_Value * values;
+  struct ug_Feature * values;
 };
 
 /* Weighted 1-gram datastructure for API */
 struct ug_WordWeighted {
   size_t nAttributes;
   double weight;
-  struct ug_Value * values;
+  struct ug_Feature * values;
 };
 
 /* Basic n-gram datastructure for API */
@@ -102,9 +102,9 @@ struct ug_Predictions {
 typedef enum {
   ug_VECTOR,
   ug_VECTOR_LENGTH,
-  ug_VALUE,
-  ug_VALUE_COUNT,
-  ug_VALUE_ID, /* for mapping IDs back to real words */
+  ug_VOCAB,
+  ug_VOCAB_COUNT,
+  ug_FEATURE, /* for mapping IDs back to real words */
 } ug_KeyType;
 
 

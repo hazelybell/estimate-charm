@@ -1,4 +1,4 @@
-/* 
+/* hsuglass.c -- implements the Hsu-Glass nGram Vector Datastructure
  * 
  * Copyright 2014 Joshua Charles Campbell
  *
@@ -19,10 +19,10 @@
  */
 
 #include "copper.h"
-#include "smoothing.h"
+#include "hsuglass.h"
 #include "db.h"
 
-size_t ug_setSmoothing(struct ug_Corpus * corpus, size_t order) {
+size_t ug_setHsuGlass(struct ug_Corpus * corpus, size_t order) {
     size_t j = 0;
     size_t i = 0;
     
@@ -51,7 +51,7 @@ size_t ug_setSmoothing(struct ug_Corpus * corpus, size_t order) {
     return order;
 }
 
-void ug_initSmoothing(struct ug_Corpus * corpus) {
+void ug_initHsuGlass(struct ug_Corpus * corpus) {
     size_t j = 0;
     size_t i = 0;
     uint64_t dbChunksize = 0;

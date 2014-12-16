@@ -15,7 +15,7 @@
   * sequence of tokens (something better than whitespace seperated)
   * Token weights
   * Extra labels
-* Modified KN Smoothing
+* Modified KN HsuGlass
 * Immediate save / no model regeneration
 * No multiple access/parallelism
 

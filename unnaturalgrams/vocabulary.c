@@ -1,4 +1,4 @@
-/* vocabulary.h -- maps words to integers and back
+/* vocabulary.c -- maps words to integers and back
  * 
  * Copyright 2014 Joshua Charles Campbell
  *
@@ -20,7 +20,7 @@
 
 #include "copper.h"
 #include "vocabulary.h"
-#include "smoothing.h"
+#include "hsuglass.h"
 #include "db.h"
 #include <string.h>
 

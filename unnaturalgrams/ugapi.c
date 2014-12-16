@@ -21,7 +21,7 @@
 #include "copper.h"
 #include "ugapi.h"
 #include "db.h"
-#include "smoothing.h"
+#include "hsuglass.h"
 #include "vocabulary.h"
 #include <string.h>
 #include <stdlib.h>
@@ -88,7 +88,7 @@ struct ug_Corpus ug_openCorpus(char * path) {
   corpus.open = 1;
   ug_beginRO(&corpus);
     corpus.nAttributes = ug_readUInt64ByC(&corpus, "nAttributes");
-    ug_initSmoothing(&corpus);
+    ug_initHsuGlass(&corpus);
   ug_commit(&corpus);
   return corpus;
 }
@@ -117,7 +117,7 @@ struct ug_Corpus ug_createCorpus(char * path, ug_AttributeID nAttributes, size_t
   A(( ug_createDB(path, &corpus) == 0 ));
   ug_beginRW(&corpus);
   A(( ug_storeSettingsInDB(&corpus, nAttributes) == 0 ));
-  A(( ug_setSmoothing(&corpus, gramOrder) == gramOrder ));
+  A(( ug_setHsuGlass(&corpus, gramOrder) == gramOrder ));
   for (ia = 0; ia < nAttributes; ia++) {
     ug_initVocab(&corpus, ia);
   }

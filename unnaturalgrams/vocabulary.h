@@ -1,4 +1,4 @@
-/* wordmap.h -- Word indexing routines
+/* vocabulary.h -- Word indexing routines
  * 
  * Copyright 2014 Joshua Charles Campbell
  *
@@ -22,7 +22,7 @@
 #define _VOCABULARY_H_
 
 #include "ug.h"
-#include "smoothing.h"
+#include "hsuglass.h"
 
 #define ug_VOCAB_KEY_PREFIX_LENGTH \
     (sizeof(ug_KeyMagic) + sizeof(ug_AttributeID))

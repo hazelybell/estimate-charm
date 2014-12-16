@@ -1,4 +1,4 @@
-/* smoothing.h -- Smoothing-related routines
+/* hsuglass.c -- Implements the Hsu-Glass nGram Vector Datastructure
  * 
  * Copyright 2014 Joshua Charles Campbell
  *
@@ -18,8 +18,8 @@
  * along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SMOOTHING_H_
-#define _SMOOTHING_H_
+#ifndef _HSUGLASS_H_
+#define _HSUGLASS_H_
 
 #include "ug.h"
 
@@ -52,7 +52,7 @@ struct __attribute__((packed)) ug_VectorLength {
   ug_Index vectorLength; /* for allocation */
 };
 
-ug_GramOrder ug_setSmoothing(struct ug_Corpus * corpus, ug_GramOrder order);
-void ug_initSmoothing(struct ug_Corpus * corpus);
+ug_GramOrder ug_setHsuGlass(struct ug_Corpus * corpus, ug_GramOrder order);
+void ug_initHsuGlass(struct ug_Corpus * corpus);
 
-#endif /* _SMOOTHING_H_ */
+#endif /* _HSUGLASS_H_ */

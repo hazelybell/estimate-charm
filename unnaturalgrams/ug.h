@@ -77,17 +77,8 @@ struct ug_GramWeighted {
 /* The base-2 logarithm of numbers which we consider practically infinite. */
 #define UG_INFINITY 70.0
 
-/* Instance/Context for UG */
-struct ug_Corpus {
-  size_t nAttributes;
-  size_t gramOrder;
-  int open;
-  MDB_env * mdbEnv;
-  MDB_dbi mdbDbi;
-  MDB_txn * mdbTxn;
-  int readOnly;
-  int inTxn;
-};
+
+
 
 struct ug_Prediction {
   double score;
@@ -102,9 +93,10 @@ struct ug_Predictions {
 typedef enum {
   ug_VECTOR,
   ug_VECTOR_LENGTH,
-  ug_VOCAB,
-  ug_VOCAB_COUNT,
+  ug_VOCAB, /* for mapping words to vocab IDs */
+  ug_VOCAB_COUNT, /* for storing the current size of the vocabulary */
   ug_FEATURE, /* for mapping IDs back to real words */
+  ug_GRAM_LOOKUP, /* for mapping (vocab, history) pairs to indices in the vector */
 } ug_KeyType;
 
 

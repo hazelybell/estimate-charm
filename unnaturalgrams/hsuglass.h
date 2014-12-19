@@ -26,6 +26,7 @@
 #define ug_CHUNKSIZE (1024*1024)
 #define ug_MAX_ORDER (0xFFFFFFFF)
 
+#define ug_NGRAM_UNKNOWN ((ug_Index) 0)
 
 struct __attribute__((packed)) ug_VectorKey {
   ug_KeyMagic magic; /* should be ug_VECTOR */
@@ -36,8 +37,8 @@ struct __attribute__((packed)) ug_VectorKey {
 
 struct __attribute__((packed)) ug_VectorElement {
   ug_Index historyIndex;
-  ug_Vocab word;
-  double probability;
+  ug_Vocab vocab;
+  double weight;
   double backoffWeight;
   ug_Index backoffIndex;
 };
@@ -50,6 +51,14 @@ struct __attribute__((packed)) ug_VectorLengthKey {
 
 struct __attribute__((packed)) ug_VectorLength {
   ug_Index vectorLength; /* for allocation */
+};
+
+struct __attribute__((packed)) ug_GramKey {
+  ug_KeyMagic magic; /* should be ug_GRAM_LOOKUP */
+  ug_AttributeID attributeID;
+  ug_GramOrder gramOrder;
+  ug_Vocab vocab;
+  ug_Index historyIndex;
 };
 
 ug_GramOrder ug_setHsuGlass(struct ug_Corpus * corpus, ug_GramOrder order);

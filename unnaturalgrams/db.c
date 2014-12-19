@@ -268,6 +268,34 @@ void ug_overwriteUInt64(struct  ug_Corpus * corpus,
   ug_overwrite(corpus, keyLength, keyData, sizeof(value), &value);
 }
 
+void * ug_overwriteBuffer(
+  struct  ug_Corpus * corpus,
+  size_t keyLength,
+  void * keyData,
+  size_t valueLength
+)
+{
+  struct MDB_val key;
+  struct MDB_val data;
+  int r;
+
+  key.mv_data = keyData;
+  key.mv_size = keyLength;  
+  
+  data.mv_data = NULL;
+  data.mv_size = valueLength;
+  
+  r = mdb_put(corpus->mdbTxn, corpus->mdbDbi, &key, &data, MDB_RESERVE);
+  
+  if (r != 0) {
+    E(("LMDB Error %i: %s", r, mdb_strerror(r)));
+  }
+  
+  return data.mv_data;
+}
+
+
+
 int ug_createDB(char * path, struct ug_Corpus * corpus) {
   MDB_txn * mdbTxn = NULL;
   MDB_env * mdbEnv = NULL;

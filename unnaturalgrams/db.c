@@ -27,7 +27,7 @@
 
 void ug_commit(struct ug_Corpus * corpus) {
   Ad(( corpus->inTxn  ));
-  if (corpus->readOnly) {
+  if (corpus->readOnlyTxn) {
     mdb_txn_reset(corpus->mdbTxn);
   } else {  
     Ad(( mdb_txn_commit(corpus->mdbTxn) == 0 ));
@@ -44,8 +44,8 @@ void ug_abort(struct ug_Corpus * corpus) {
 
 void ug_beginRW(struct ug_Corpus * corpus) {
   Ad(( ! corpus->inTxn  ));
-  if (corpus->readOnly) {
-    corpus->readOnly = 0;
+  if (corpus->readOnlyTxn) {
+    corpus->readOnlyTxn = 0;
     ug_abort(corpus);
   }
   Ad(( corpus->mdbTxn == NULL ));
@@ -55,13 +55,13 @@ void ug_beginRW(struct ug_Corpus * corpus) {
 
 void ug_beginRO(struct ug_Corpus * corpus) {
   Ad(( ! corpus->inTxn ));
-  if (corpus->readOnly) {
+  if (corpus->readOnlyTxn) {
     Ad(( corpus->mdbTxn != NULL ));
     Ad(( mdb_txn_renew(corpus->mdbTxn) == 0 ));
   } else {
     Ad(( corpus->mdbTxn == NULL ));
     Ad(( mdb_txn_begin(corpus->mdbEnv, NULL, MDB_RDONLY, &(corpus->mdbTxn)) == 0 ));    
-    corpus->readOnly = 1;
+    corpus->readOnlyTxn = 1;
   }
   corpus->inTxn = 1;
 }
@@ -82,7 +82,7 @@ int ug_openDB(char * path, struct ug_Corpus * corpus) {
   Ad(( mdb_txn_commit(mdbTxn) == 0 )); mdbTxn = NULL;
   
   corpus->mdbTxn = NULL;
-  corpus->readOnly = 0;
+  corpus->readOnlyTxn = 0;
   corpus->inTxn = 0;
   
   return 0;
@@ -91,7 +91,7 @@ int ug_openDB(char * path, struct ug_Corpus * corpus) {
 int ug_closeDB(struct ug_Corpus * corpus) {
   Ad(( ! corpus->inTxn ));
   if ( corpus->mdbTxn != NULL ) {
-    Ad(( corpus->readOnly ));
+    Ad(( corpus->readOnlyTxn ));
     ug_abort(corpus);
   }
   mdb_dbi_close(corpus->mdbEnv, corpus->mdbDbi);

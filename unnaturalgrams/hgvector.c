@@ -18,9 +18,11 @@
  * along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "hgvector.h"
 #include <string.h>
 #include <stdlib.h>
+#include "copper.h"
+#include "hgvector.h"
+#include "db.h"
 
 struct ug_HGVector ug_getHGVector(struct ug_Attribute attribute,
                                   ug_GramOrder order)
@@ -29,16 +31,22 @@ struct ug_HGVector ug_getHGVector(struct ug_Attribute attribute,
   return v;
 }
 
-static ug_Index ug_lookupGram(
+ug_Index ug_lookupGram(
   struct ug_HGVector v,
   ug_Vocab vocab,
   ug_Index history)
 {
-  struct ug_GramKey = { ug_GRAM_LOOKUP, attr, order, vocab, history };
-  return ug_readUInt64OrZero(corpus, sizeof(ug_GramKey), &ug_GramKey);
+  struct ug_GramKey key = {
+    ug_GRAM_LOOKUP,
+    v.attributeID,
+    v.order,
+    vocab,
+    history
+  };
+  return ug_readUInt64OrZero(v.corpus, sizeof(key), &key);
 }
 
-ug_Index ug_getVectorLength(struct ug_HGVector v)
+static ug_Index ug_getVectorLength(struct ug_HGVector v)
 {
   struct ug_VectorLengthKey key = {
     ug_VECTOR_LENGTH,
@@ -62,7 +70,7 @@ static struct ug_VectorElement * ug_getChunk(
   struct ug_VectorElement * chunkStart = NULL;
   struct ug_VectorKey key = { ug_VECTOR, v.attributeID, v.order, index };
   
-  chunkStart = ug_readNOrNull(corpus, sizeof(key), &key,
+  chunkStart = ug_readNOrNull(v.corpus, sizeof(key), &key,
                               sizeof(struct ug_VectorElement) * ug_CHUNKSIZE);
   if (chunkStart == NULL) {
     return NULL;
@@ -70,22 +78,19 @@ static struct ug_VectorElement * ug_getChunk(
   return chunkStart;
 }
 
-static struct 
-
 static struct ug_VectorElement * ug_getWritableChunk(
   struct ug_HGVector v,
   ug_Index index)
 {
   struct ug_VectorKey key = { ug_VECTOR, v.attributeID, v.order, index };
   ug_Index chunk = index/ug_CHUNKSIZE;
-  
-  struct ug_VectorElement ** chunkP;
+  struct ug_VectorElement * chunkStart = NULL;
   
   if (v.corpus->dirtyChunks == NULL) {
     ASYS(( (
       v.corpus->dirtyChunks 
         = calloc(sizeof(struct ug_VectorElement *),
-                 corpus->nAttributes))
+                 v.corpus->nAttributes)
     ) != NULL ));
   }
 
@@ -93,21 +98,21 @@ static struct ug_VectorElement * ug_getWritableChunk(
     ASYS(( (
       v.corpus->dirtyChunks[v.attributeID] =
         calloc(sizeof(struct ug_VectorElement *),
-               corpus->gramOrder)
+               v.corpus->gramOrder)
     ) != NULL ));
   }
 
-  if (v.corpus->dirtyChunks[v.attributeID][order] == NULL) {
+  if (v.corpus->dirtyChunks[v.attributeID][v.order] == NULL) {
     ASYS(( (
-      v.corpus->dirtyChunks[v.attributeID][order]
+      v.corpus->dirtyChunks[v.attributeID][v.order]
         = calloc(sizeof(struct ug_VectorElement *),
                  ug_getVectorLength(v))
     ) != NULL ));
   }
   
-  if (v.corpus->dirtyChunks[v.attributeID][order][chunk] == NULL) {
+  if (v.corpus->dirtyChunks[v.attributeID][v.order][chunk] == NULL) {
     ASYS(( (
-      v.corpus->dirtyChunks[v.attributeID][order][chunk]
+      v.corpus->dirtyChunks[v.attributeID][v.order][chunk]
         = ug_overwriteBuffer(
                              v.corpus,
                              sizeof(key),
@@ -119,26 +124,27 @@ static struct ug_VectorElement * ug_getWritableChunk(
     chunkStart = ug_getChunk(v, index);
     
     if (chunkStart != NULL) {
-      memcpy(v.corpus->dirtyChunks[v.attributeID][order][chunk],
+      memcpy(v.corpus->dirtyChunks[v.attributeID][v.order][chunk],
             chunkStart,
             sizeof(struct ug_VectorElement) * ug_CHUNKSIZE);
     } else {
-      memset(v.corpus->dirtyChunks[v.attributeID][order][chunk],
+      memset(v.corpus->dirtyChunks[v.attributeID][v.order][chunk],
              0,
              sizeof(struct ug_VectorElement) * ug_CHUNKSIZE);
     }
   }
   
-  return corpus->dirtyChunks[v.attributeID][order][chunk];
+  return v.corpus->dirtyChunks[v.attributeID][v.order][chunk];
 }
 
-static struct ug_VectorElement * ug_getElement(
+struct ug_VectorElement * ug_getElement(
   struct ug_HGVector v,
   ug_Index index
 )
 {
   ug_Index chunkOffsetInVector = (index/ug_CHUNKSIZE)*ug_CHUNKSIZE;
   ug_Index offsetInChunk = index%ug_CHUNKSIZE;
+  struct ug_VectorElement * chunkStart = NULL;
 
   chunkStart = ug_getChunk(v, chunkOffsetInVector);
 
@@ -155,6 +161,7 @@ static struct ug_VectorElement * ug_getWritableElement(
 {
   ug_Index chunkOffsetInVector = (index/ug_CHUNKSIZE)*ug_CHUNKSIZE;
   ug_Index offsetInChunk = index%ug_CHUNKSIZE;
+  struct ug_VectorElement * chunkStart = NULL;
 
   chunkStart = ug_getWritableChunk(v, chunkOffsetInVector);
 
@@ -170,9 +177,9 @@ static ug_Index ug_incrVectorLength(
     v.attributeID,
     v.order
   };
-  key.attributeID = attr;
+  key.attributeID = v.attributeID;
   ug_Index newLength = ug_getVectorLength(v)+1;
-  ug_overwriteUInt64(corpus, sizeof(key), &key, newLength);
+  ug_overwriteUInt64(v.corpus, sizeof(key), &key, newLength);
   return newLength;
 }
 
@@ -183,21 +190,21 @@ ug_Index ug_assignFreeIndex(
   return ug_incrVectorLength(v)-1;
 }
 
-static void ug_updateElement (
-  ug_HGVector v,
+void ug_updateElement (
+  struct ug_HGVector v,
   ug_Index index,
   struct ug_VectorElement data
 )
 {
   struct ug_VectorElement * elementPointer = NULL;
   
-  elementPointer = ug_getWriteableElement(v, index);
+  elementPointer = ug_getWritableElement(v, index);
   
   (*elementPointer) = data;
 }
 
-static ug_Index ug_addElement (
-  ug_HGVector v,
+ug_Index ug_addElement (
+  struct ug_HGVector v,
   struct ug_VectorElement data
 )
 {
@@ -214,7 +221,7 @@ static ug_Index ug_addElement (
   
   ug_writeUInt64(v.corpus, sizeof(lookup), &lookup, newIndex);
   
-  ug_updateElement(v, index, data);
+  ug_updateElement(v, newIndex, data);
   
   return newIndex;
 }

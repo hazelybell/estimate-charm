@@ -22,44 +22,8 @@
 #define _HSUGLASS_H_
 
 #include "ug.h"
-
-#define ug_CHUNKSIZE (1024*1024)
-#define ug_MAX_ORDER (0xFFFFFFFF)
-
-#define ug_NGRAM_UNKNOWN ((ug_Index) 0)
-
-struct __attribute__((packed)) ug_VectorKey {
-  ug_KeyMagic magic; /* should be ug_VECTOR */
-  ug_AttributeID attributeID;
-  ug_GramOrder gramOrder;
-  ug_Index startOffset;
-};
-
-struct __attribute__((packed)) ug_VectorElement {
-  ug_Index historyIndex;
-  ug_Vocab vocab;
-  double weight;
-  double backoffWeight;
-  ug_Index backoffIndex;
-};
-
-struct __attribute__((packed)) ug_VectorLengthKey {
-  ug_KeyMagic magic; /* should be ug_VECTOR_LENGTH */
-  ug_AttributeID attributeID;
-  ug_GramOrder gramOrder;
-};
-
-struct __attribute__((packed)) ug_VectorLength {
-  ug_Index vectorLength; /* for allocation */
-};
-
-struct __attribute__((packed)) ug_GramKey {
-  ug_KeyMagic magic; /* should be ug_GRAM_LOOKUP */
-  ug_AttributeID attributeID;
-  ug_GramOrder gramOrder;
-  ug_Vocab vocab;
-  ug_Index historyIndex;
-};
+#include "corpus.h"
+#include "attribute.h"
 
 ug_GramOrder ug_setHsuGlass(struct ug_Corpus * corpus, ug_GramOrder order);
 void ug_initHsuGlass(struct ug_Corpus * corpus);

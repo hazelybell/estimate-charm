@@ -22,6 +22,7 @@
 #define _DB_H_
 
 #include "ug.h"
+#include "corpus.h"
 
 int ug_openDB(char * path, struct ug_Corpus * corpus);
 int ug_closeDB(struct ug_Corpus * corpus);
@@ -31,6 +32,8 @@ void ug_beginRO(struct ug_Corpus * corpus);
 void ug_beginRW(struct ug_Corpus * corpus);
 void ug_commit(struct ug_Corpus * corpus);
 
+void * ug_readNOrNull(struct  ug_Corpus * corpus, size_t keyLength, void * keyData,
+              size_t valueSize);
 void * ug_readN(struct  ug_Corpus * corpus, size_t keyLength, void * keyData,
               size_t valueSize);
 uint64_t ug_readUInt64ByC(struct  ug_Corpus * corpus, char * cKey);
@@ -52,13 +55,19 @@ void ug_writeUInt64ByC(struct  ug_Corpus * corpus, char * cKey, uint64_t value);
                                                      sizeof(key), &key, \
                                                      sizeof(value), &value))
                                                      
-void ug_overwriteUInt64(struct  ug_Corpus * corpus,
-                        size_t keyLength, void * keyData,
-                        uint64_t value);
-
 void ug_writeUInt64(struct  ug_Corpus * corpus,
                         size_t keyLength, void * keyData,
                         uint64_t value);
 
+void ug_overwriteUInt64(struct  ug_Corpus * corpus,
+                        size_t keyLength, void * keyData,
+                        uint64_t value);
+
+void * ug_overwriteBuffer(
+  struct  ug_Corpus * corpus,
+  size_t keyLength,
+  void * keyData,
+  size_t valueLength
+);
 
 #endif /* _DB_H_ */

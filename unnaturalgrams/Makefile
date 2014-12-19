@@ -16,9 +16,10 @@
 #
 #    You should have received a copy of the GNU Affero General Public License
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
-SOURCES=ugapi.c db.c hsuglass.c vocabulary.c
+SOURCES=ugapi.c db.c hsuglass.c vocabulary.c attribute.c hgvector.c
 COPPER_INPUT_FILES=$(SOURCES)
-CFLAGS=-g -O0 -Wall -Wextra -Werror -Wfatal-errors -Wno-error=unused-parameter -llmdb
+CFLAGS=-g -O0 -Wall -Wextra -Werror -Wfatal-errors -Wno-error=unused-parameter \
+       -llmdb -fplan9-extensions
 
 default : ugapi.o
 

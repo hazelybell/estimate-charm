@@ -21,6 +21,7 @@
 #include "copper.h"
 #include "hsuglass.h"
 #include "db.h"
+#include "hgvector.h"
 
 size_t ug_setHsuGlass(struct ug_Corpus * corpus, size_t order) {
     size_t j = 0;
@@ -107,6 +108,7 @@ static ug_Index ug_addNGram(struct ug_Attribute attr,
   ug_Index history = ug_NGRAM_UNKNOWN; /* into order (order-1) */
   ug_Index backoff = ug_NGRAM_UNKNOWN; /* into order (order-1) */
   struct ug_VectorElement elt;
+  struct ug_HGVector v = ug_getHGVector(attr, order);
   
   /* recursive base case */
   if (order == 1) {
@@ -118,12 +120,12 @@ static ug_Index ug_addNGram(struct ug_Attribute attr,
      * otherwise goto state 3.
      */
     history = ug_addNGram(attr, order-1,
-                                  vocabString, weightString,
-                                  ((recursionState != 3) ? 2 : 3
-                                  );
+                          vocabString, weightString,
+                          ((recursionState != 3) ? 2 : 3)
+                         );
   }
   
-  index = ug_lookupGram(attr, order,
+  index = ug_lookupGram(v,
                         vocabString[order-1],
                         history);
   
@@ -138,23 +140,24 @@ static ug_Index ug_addNGram(struct ug_Attribute attr,
       */
       backoff = ug_addNGram(attr, order-1,
                             &(vocabString[1]), &(weightString[1]),
-                            ((recursionState == 1) ? 1 : 3);
+                            ((recursionState == 1) ? 1 : 3)
+                           );
     }
                          
     A(( recursionState != 3 ));
     
-    elt.history = history;
+    elt.historyIndex = history;
     elt.vocab = vocabString[order-1];
     elt.weight = weightString[order-1];
     elt.backoffWeight = 0.0;
-    elt.backoff = backoff;
+    elt.backoffIndex = backoff;
     
     
     index = ug_addElement(v, elt);  
   } else { /* It does already exist. */
-    elt = ug_getElement(v, index);
+    elt = *ug_getElement(v, index);
     
-    A(( elt.history == history ));
+    A(( elt.historyIndex == history ));
     A(( elt.vocab == vocabString[order-1] ));
     
     if (recursionState == 1) {
@@ -162,49 +165,51 @@ static ug_Index ug_addNGram(struct ug_Attribute attr,
         backoff = ug_NGRAM_UNKNOWN;
       } else {
         backoff = ug_addNGram(attr, order-1,
-                        &(vocabString[1]), &(weightString[1]),
-                        ((recursionState == 1) ? 1 : 3);
+                              &(vocabString[1]), &(weightString[1]),
+                              ((recursionState == 1) ? 1 : 3)
+                             );
       }
-      A(( elt.backoff == backoff ));
+      A(( elt.backoffIndex == backoff ));
     }
     
     if (recursionState != 3) {
       elt.weight += weightString[order-1];
-      ug_updateElement(v, index, new);
+      ug_updateElement(v, index, elt);
     }
   }
   return index;
 }
 
-void ug_addFeatureStringToAttribute(struct ug_Attribute attr,
-                                    size_t length,
-                                    ug_Vocab * vocabString,
-                                    double * weightString,
-                                   ) 
+static void ug_addFeatureStringToAttribute(
+  struct ug_Attribute attr,
+  size_t length,
+  ug_Vocab * vocabString,
+  double * weightString
+) 
 {
     size_t iWord = 0;
     /* Sliding window */
     for (iWord = 0; iWord < length-attr.corpus->gramOrder; iWord++) {
-      ug_addNGramToCorpus(attr,
-                          attr.corpus->gramOrder,
-                          vocabString[iWord],
-                          weightString[iWord],
-                          2
-                        );
+      ug_addNGram(attr,
+                  attr.corpus->gramOrder,
+                  &(vocabString[iWord]),
+                  &(weightString[iWord]),
+                  2
+                 );
     }
-    ug_addNGramToCorpus(attr,
-                        length - iWord, /* = order */
-                        vocabString[iWord],
-                        weightString[iWord],
-                        1
-                      );
+    ug_addNGram(attr,
+                length - iWord, /* = order */
+                &(vocabString[iWord]),
+                &(weightString[iWord]),
+                1
+               );
 }
 
 void ug_addFeatureStringToCorpus(struct ug_Corpus * corpus,
                                   ug_AttributeID attr,
                                   size_t length,
                                   ug_Vocab * vocabString,
-                                  double * weightString,
+                                  double * weightString
                                 ) 
 {
   ug_addFeatureStringToAttribute(ug_getAttribute(corpus, attr),

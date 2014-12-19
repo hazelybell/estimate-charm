@@ -22,6 +22,7 @@
 #define _UGAPI_H_
 
 #include "ug.h"
+#include "corpus.h"
 
 /* Compute the cross-entropy of a short string vs. corpus */
 double ug_crossEntropy(struct ug_Corpus * ugc, struct ug_Gram query);

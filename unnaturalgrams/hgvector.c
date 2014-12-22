@@ -226,3 +226,10 @@ ug_Index ug_addElement (
   return newIndex;
 }
 
+double ug_bincount (
+  struct ug_HGVector v,
+  ug_Index i
+)
+{
+  return 0.0;
+};

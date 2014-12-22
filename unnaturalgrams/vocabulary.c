@@ -93,6 +93,8 @@ ug_Vocab ug_mapFeatureToVocabOrCreate(struct ug_Corpus * corpus,
   
   ug_write(corpus, sizeof(idkey), &idkey, v.length, v.value);
   
+  Dv(( "Allocated new vocab %u", new ));
+  
   return new;
 }
 

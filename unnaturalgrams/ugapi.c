@@ -214,10 +214,41 @@ static struct ug_WordWeighted testTermArray[] = {
 
 static struct ug_GramWeighted testText = { 20, testTermArray };
   
+static struct ug_Word testTermQueryArray[] = {
+  { 1, testAttrArray+0 },
+  { 1, testAttrArray+1 },
+  { 1, testAttrArray+2 },
+  { 1, testAttrArray+3 },
+  { 1, testAttrArray+4 },
+  { 1, testAttrArray+5 },
+  { 1, testAttrArray+6 },
+  { 1, testAttrArray+7 },
+  { 1, testAttrArray+8 },
+  { 1, testAttrArray+9 },
+  { 1, testAttrArray+10 },
+  { 1, testAttrArray+11 },
+  { 1, testAttrArray+12 },
+  { 1, testAttrArray+13 },
+  { 1, testAttrArray+14 },
+  { 1, testAttrArray+15 },
+  { 1, testAttrArray+16 },
+  { 1, testAttrArray+17 },
+  { 1, testAttrArray+18 },
+  { 1, testAttrArray+19 },
+  { 1, testAttrArray+20 },
+  { 1, testAttrArray+21 },
+  { 1, testAttrArray+22 },
+  { 1, testAttrArray+23 },
+  { 1, testAttrArray+24 },
+  { 1, testAttrArray+25 },
+};
+
+static struct ug_Gram testQuery = { 20, testTermQueryArray };
+
+
 #endif /* ENABLE_TESTING */
 
 TEST({
-  return;
   struct ug_Corpus c;
   char * tmpDir;
   char removeCmd[] = "rm -rvf ugtest-XXXXXX";
@@ -230,11 +261,12 @@ TEST({
   
   A(( ug_addToCorpus(&c, testText) ));
   ug_beginRO(&c);
-    A(( ug_mapFeatureToVocab(&c, 1, testAttrArray[0]) > 0 ));
-    A(( ug_mapFeatureToVocab(&c, 1, testAttrArray[1]) > 0 ));
-    A(( ug_mapFeatureToVocab(&c, 1, testAttrArray[1]) != 
-        ug_mapFeatureToVocab(&c, 1, testAttrArray[0]) ));
+    A(( ug_mapFeatureToVocab(&c, 0, testAttrArray[0]) > 0 ));
+    A(( ug_mapFeatureToVocab(&c, 0, testAttrArray[1]) > 0 ));
+    A(( ug_mapFeatureToVocab(&c, 0, testAttrArray[1]) != 
+        ug_mapFeatureToVocab(&c, 0, testAttrArray[0]) ));
   ug_commit(&c);
+  A(( ug_crossEntropy(&c, testQuery) < 69.0 ));
   
   ug_closeCorpus(&c);
   A(( !c.open ));

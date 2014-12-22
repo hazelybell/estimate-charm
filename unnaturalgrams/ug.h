@@ -77,9 +77,6 @@ struct ug_GramWeighted {
 /* The base-2 logarithm of numbers which we consider practically infinite. */
 #define UG_INFINITY 70.0
 
-
-
-
 struct ug_Prediction {
   double score;
   struct ug_Gram gram;

@@ -218,7 +218,8 @@ ug_Index ug_addElement (
   ug_Index newIndex = 0;
   
   newIndex = ug_assignFreeIndex(v);
-  
+  Ds(("ug_addElement order %u index %u", v.order, newIndex));
+
   ug_writeUInt64(v.corpus, sizeof(lookup), &lookup, newIndex);
   
   ug_updateElement(v, newIndex, data);

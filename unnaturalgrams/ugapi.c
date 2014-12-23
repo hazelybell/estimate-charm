@@ -47,32 +47,37 @@ struct ug_Predictions ug_predict(struct ug_Corpus * corpus,
 static void ug_parallelProperties(
   struct ug_Corpus * corpus,
   struct ug_GramWeighted text,
-  struct ug_Feature (* lists)[corpus->nAttributes][text.length]
+  struct ug_Feature (* lists)[corpus->nAttributes][text.length],
+  double (* weights)[text.length]
 ) {
     size_t i;
     size_t j;
     for (i = 0; i < text.length; i++) {
       for (j = 0; j < text.words[i].nAttributes; j++) {
-        A(( text.words[i].nAttributes == corpus->nAttributes ));
+        Au(( text.words[i].nAttributes == corpus->nAttributes ));
         (*lists)[j][i] = text.words[i].values[j];
       }
+      (*weights)[i] = text.words[i].weight;
     }
 }
 
 int ug_addToCorpus(struct ug_Corpus * corpus, struct ug_GramWeighted text) {
   size_t i = 0;
   struct ug_Feature lists[corpus->nAttributes][text.length];
+  double weights[text.length];
   ug_Vocab ids[text.length];
   A((corpus->open));
   A((text.length > 0));
 
-  ug_parallelProperties(corpus, text, &lists);
+  ug_parallelProperties(corpus, text, &lists, &weights);
   
   ug_beginRW(corpus);
 
     for (i = 0; i < corpus->nAttributes; i++) {
       ug_mapFeaturesToVocabsOrCreate(corpus, i, text.length, lists[i], &ids);
+      ug_addFeatureStringToCorpus(corpus, i, text.length, ids, weights);
     }
+    
   
   ug_commit(corpus);
   return i;

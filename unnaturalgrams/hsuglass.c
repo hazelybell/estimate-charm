@@ -41,7 +41,7 @@ size_t ug_setHsuGlass(struct ug_Corpus * corpus, size_t order) {
       ug_writeUInt64ByC(corpus, "chunkSize", ug_CHUNKSIZE);
       /* Save the vector lengths */
       for (i = 0; i < corpus->nAttributes; i++) {
-        for (j = 0; j < corpus->gramOrder; j++) {
+        for (j = 1; j <= corpus->gramOrder; j++) {
           metakey.attributeID = i;
           metakey.gramOrder = j;
           ug_writeStructByStruct(corpus, metakey, metadata);
@@ -70,7 +70,7 @@ void ug_initHsuGlass(struct ug_Corpus * corpus) {
       As((dbChunksize == ug_CHUNKSIZE));
       /* Save the vector lengths */
       for (i = 0; i < corpus->nAttributes; i++) {
-        for (j = 0; j < corpus->gramOrder; j++) {
+        for (j = 1; j <= corpus->gramOrder; j++) {
           metakey.attributeID = i;
           metakey.gramOrder = j;
           ug_readStructByStruct(corpus, metakey, metadata);
@@ -82,20 +82,20 @@ void ug_initHsuGlass(struct ug_Corpus * corpus) {
  * nGrams which were on a path that right-recursed ANY amount of times
  * and then left-recursed ANY amount of times, but no other pattern is allowed:
  * Example:
- *              \           \        5-grams      \  history recursion
- *               \           \       4-grams      /  backoff recursion
- *                \          /       3-grams
- *                /         /        2-grams
- *               /          \        1-grams
+ *                /         \        5-grams      /  history recursion
+ *               /           \       4-grams      \  backoff recursion
+ *              /            /       3-grams
+ *              \           /        2-grams
+ *               \          \        1-grams
  *              counted    not
  *
  * Thus we track 3 states:
- * 1) ONLY right-recursion has ever occured
- * 2) ONLY right-recursion followed by ONLY left-recursion has occured 
- * 3) right-left-right has occured, in this state we will not count weights
+ * 1) ONLY left-recursion has ever occured
+ * 2) ONLY left-recursion followed by ONLY right-recursion has occured 
+ * 3) left-right-left has occured, in this state we will not count weights
  * 
- * When called from a sliding window recursionState should be 1 on the last
- * (rightmost) window and 2 otherwise.
+ * When called from a sliding window recursionState should be 1 on the first
+ * (leftmost) window and 2 otherwise.
  */    
 static ug_Index ug_addNGram(struct ug_Attribute attr,
                                     ug_GramOrder order,
@@ -110,41 +110,45 @@ static ug_Index ug_addNGram(struct ug_Attribute attr,
   struct ug_VectorElement elt;
   struct ug_HGVector v = ug_getHGVector(attr, order);
   
+  Ds(("ug_addNGram %u %u %u %p %i", attr.attributeID, order, vocabString[0], 
+      weightString, recursionState));
+  
   /* recursive base case */
   if (order == 1) {
     history = ug_NGRAM_UNKNOWN; /* Doesn't make sense for unigrams to have a */
                                 /* history or a backoff. */
   } else {
     /* Recursively build our prefix trie by adding
-     * the prefix if necessary. In either state 1 or 2 go to state 2,
-     * otherwise goto state 3.
+     * the prefix if necessary. In state 1 stay in state 1, otherwise
+     * goto state 3.
      */
     history = ug_addNGram(attr, order-1,
                           vocabString, weightString,
-                          ((recursionState != 3) ? 2 : 3)
+                          ((recursionState == 1) ? 1 : 3)
                          );
   }
   
   index = ug_lookupGram(v,
                         vocabString[order-1],
                         history);
-  
+
+  Ds(("ug_addNGram index %u", index));
   /* Does it already exist? */
   if (index == ug_NGRAM_UNKNOWN) { /* It does not already exist. */
     if (order == 1) {
       backoff = ug_NGRAM_UNKNOWN;
     } else {
       /* Recursively build our backoff trie by adding
-      * the postfix if necessary. In state 1 stay in state 1, otherwise
+      * the postfix if necessary. In state 1 or 2 goto state 2, otherwise
       * goto state 3.
       */
       backoff = ug_addNGram(attr, order-1,
                             &(vocabString[1]), &(weightString[1]),
-                            ((recursionState == 1) ? 1 : 3)
+                            ((recursionState != 3) ? 2 : 3)
                            );
     }
                          
-    A(( recursionState != 3 ));
+    Av(( recursionState != 3 ));
     
     elt.historyIndex = history;
     elt.vocab = vocabString[order-1];
@@ -157,8 +161,8 @@ static ug_Index ug_addNGram(struct ug_Attribute attr,
   } else { /* It does already exist. */
     elt = *ug_getElement(v, index);
     
-    A(( elt.historyIndex == history ));
-    A(( elt.vocab == vocabString[order-1] ));
+    As(( elt.historyIndex == history ));
+    As(( elt.vocab == vocabString[order-1] ));
     
     if (recursionState == 1) {
       if (order == 1) {
@@ -166,10 +170,10 @@ static ug_Index ug_addNGram(struct ug_Attribute attr,
       } else {
         backoff = ug_addNGram(attr, order-1,
                               &(vocabString[1]), &(weightString[1]),
-                              ((recursionState == 1) ? 1 : 3)
+                              ((recursionState != 3) ? 2 : 3)
                              );
       }
-      A(( elt.backoffIndex == backoff ));
+      As(( elt.backoffIndex == backoff ));
     }
     
     if (recursionState != 3) {
@@ -189,7 +193,13 @@ static void ug_addFeatureStringToAttribute(
 {
     size_t iWord = 0;
     /* Sliding window */
-    for (iWord = 0; iWord < length-attr.corpus->gramOrder; iWord++) {
+    ug_addNGram(attr,
+                (length <= attr.corpus->gramOrder ? length : attr.corpus->gramOrder), /* = order */
+                &(vocabString[0]),
+                &(weightString[0]),
+                1
+               );
+    for (iWord = 1; iWord < length-attr.corpus->gramOrder; iWord++) {
       ug_addNGram(attr,
                   attr.corpus->gramOrder,
                   &(vocabString[iWord]),
@@ -197,19 +207,13 @@ static void ug_addFeatureStringToAttribute(
                   2
                  );
     }
-    ug_addNGram(attr,
-                length - iWord, /* = order */
-                &(vocabString[iWord]),
-                &(weightString[iWord]),
-                1
-               );
 }
 
 void ug_addFeatureStringToCorpus(struct ug_Corpus * corpus,
                                   ug_AttributeID attr,
                                   size_t length,
-                                  ug_Vocab * vocabString,
-                                  double * weightString
+                                  ug_Vocab vocabString[length],
+                                  double weightString[length]
                                 ) 
 {
   ug_addFeatureStringToAttribute(ug_getAttribute(corpus, attr),

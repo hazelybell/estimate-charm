@@ -67,6 +67,8 @@
 #define Ad(x) ASSERT('d', x)
 #define Ds(x) DEBUG('s', x) /* HsuGlass code */
 #define As(x) ASSERT('s', x)
+#define Du(x) DEBUG('u', x) /* Utility code */
+#define Au(x) ASSERT('u', x)
 #define Dv(x) DEBUG('v', x) /* Vocab code */
 #define Av(x) ASSERT('v', x)
 

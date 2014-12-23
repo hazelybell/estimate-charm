@@ -27,5 +27,12 @@
 
 ug_GramOrder ug_setHsuGlass(struct ug_Corpus * corpus, ug_GramOrder order);
 void ug_initHsuGlass(struct ug_Corpus * corpus);
+void ug_addFeatureStringToCorpus(struct ug_Corpus * corpus,
+                                  ug_AttributeID attr,
+                                  size_t length,
+                                  ug_Vocab vocabString[length],
+                                  double weightString[length]
+                                );
+
 
 #endif /* _HSUGLASS_H_ */

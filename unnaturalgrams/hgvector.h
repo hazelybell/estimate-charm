@@ -23,7 +23,7 @@
 
 #include "attribute.h"
 
-#define ug_CHUNKSIZE (1024*1024)
+#define ug_CHUNKSIZE (1024)
 #define ug_MAX_ORDER (0xFFFFFFFF)
 
 #define ug_NGRAM_UNKNOWN ((ug_Index) 0)
@@ -31,7 +31,7 @@
 struct __attribute__((packed)) ug_VectorKey {
   ug_KeyMagic magic; /* should be ug_VECTOR */
   ug_AttributeID attributeID;
-  ug_GramOrder gramOrder;
+  ug_GramOrder gramOrder; /* 1-based! */
   ug_Index startOffset;
 };
 
@@ -46,7 +46,7 @@ struct __attribute__((packed)) ug_VectorElement {
 struct __attribute__((packed)) ug_VectorLengthKey {
   ug_KeyMagic magic; /* should be ug_VECTOR_LENGTH */
   ug_AttributeID attributeID;
-  ug_GramOrder gramOrder;
+  ug_GramOrder gramOrder; /* 1-based! */
 };
 
 struct __attribute__((packed)) ug_VectorLength {
@@ -56,7 +56,7 @@ struct __attribute__((packed)) ug_VectorLength {
 struct __attribute__((packed)) ug_GramKey {
   ug_KeyMagic magic; /* should be ug_GRAM_LOOKUP */
   ug_AttributeID attributeID;
-  ug_GramOrder gramOrder;
+  ug_GramOrder gramOrder; /* 1-based! */
   ug_Vocab vocab;
   ug_Index historyIndex;
 };
@@ -65,12 +65,12 @@ struct __attribute__((packed)) ug_GramKey {
 /* Instance/Context for a UG Hsu-Glass order vector */
 struct ug_HGVector {
   struct ug_Attribute;
-  ug_GramOrder order;
+  ug_GramOrder order; /* 1-based! */
 };
 
 struct ug_HGVector ug_getHGVector (
   struct ug_Attribute attribute,
-  ug_GramOrder order
+  ug_GramOrder order /* 1-based! */
 );
 
 ug_Index ug_lookupGram (

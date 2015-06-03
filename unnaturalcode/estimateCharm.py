@@ -19,13 +19,13 @@
 from unnaturalcode.ucUtil import *
 from unnaturalcode.unnaturalCode import *
 from unnaturalcode.pythonSource import *
-from unnaturalcode.mitlmCorpus import *
 from unnaturalcode.sourceModel import *
 
 from logging import debug, info, warning, error
 import logging
 from random import randint
 from os import path
+import argparse
 
 import csv
 import runpy
@@ -83,7 +83,7 @@ def runFile(q,path):
         return
     q.put((None, "None", [(path, None, None, None)]))
     
-class validationFile(object):
+class charmFile(object):
     
     def __init__(self, path, language, tempDir):
         self.path = path
@@ -131,36 +131,27 @@ class validationFile(object):
         os.remove(mutantFilePath)
         return r
         
-class modelValidation(object):
+class estimateCharm(object):
     
-    def addValidationFile(self, files):
+    def addCharmFile(self, files):
           """Add a file for validation..."""
           files = [files] if isinstance(files, str) else files
           assert isinstance(files, list)
           for fi in files:
-            vfi = validationFile(fi, self.lm, self.resultsDir)
-            if len(vfi.lexed) > self.sm.windowSize:
-              self.validFiles.append(vfi)
+            vfi = charmFile(fi, self.lm, self.tempDir)
+            if len(vfi.lexed) > 1:
+              self.charmFiles.append(vfi)
     
-    def genCorpus(self):
-          """Create the corpus from the known-good file list."""
-          for fi in self.validFiles:
-            self.sm.trainLexemes(fi.scrubbed)
-    
-    def validate(self, mutation, n):
-        """Run main validation loop."""
-        trr = 0 # total reciprocal rank
-        tr = 0 # total rank
-        ttn = 0 # total in top n
-        assert n > 0
-        for fi in self.validFiles:
-          assert isinstance(fi, validationFile)
+    def estimate(self, mutation, deltamax):
+        """Run main estimation loop."""
+        for fi in self.charmFiles:
+          assert isinstance(fi, charmFile)
           if fi.path in self.progress:
             progress = self.progress[fi.path]
           else:
             progress = 0
-          info("Testing " + str(progress) + "/" + str(n) + " " + fi.path)
-          for i in range(progress, n):
+          info("Testing " + str(progress) + " " + fi.path)
+          while (delta > deltamax):
             merror = mutation(self, fi)
             if merror is not None:
               info(merror)
@@ -205,9 +196,9 @@ class modelValidation(object):
             tr += float(i)
             if i < 5:
                 ttn += 1
-        mrr = trr/float(len(self.validFiles) * n)
-        mr = tr/float(len(self.validFiles) * n)
-        mtn = ttn/float(len(self.validFiles) * n)
+        mrr = trr/float(len(self.charmFiles) * n)
+        mr = tr/float(len(self.charmFiles) * n)
+        mtn = ttn/float(len(self.charmFiles) * n)
         info("MRR %f MR %f M5+ %f" % (mrr, mr, mtn))
             
     def deleteRandom(self, vFile):
@@ -402,99 +393,82 @@ class modelValidation(object):
         vFile.mutatedLocation = pythonLexeme.fromTuple((token.OP, c, (line, lineChar), (line, lineChar)))
         return None
       
-    def __init__(self, source=None, language=pythonSource, resultsDir=None, corpus=mitlmCorpus):
-        self.resultsDir = ((resultsDir or os.getenv("ucResultsDir", None)) or mkdtemp(prefix='ucValidation-'))
+    def __init__(self, source=None,
+                 language=pythonSource,
+                 results=None,
+                 corpus=None,
+                 details=None,
+                 activate=None,
+                 tempDir="."):
         if isinstance(source, str):
             raise NotImplementedError
         elif isinstance(source, list):
-            self.validFileNames = source
+            self.charmFileNames = source
         else:
             raise TypeError("Constructor arguments!")
-
-        assert os.access(self.resultsDir, os.X_OK & os.R_OK & os.W_OK)
-        self.csvPath = path.join(self.resultsDir, 'results.csv')
+        self.notReleased = True
         self.progress = dict()
+        self.results = results
+        self.details = details
+        self.tempDir = tempDir
         try:
-          self.csvFile = open(self.csvPath, 'r')
+          self.csvFile = open(self.results, 'r')
           self.csv = csv.reader(self.csvFile)
           for row in self.csv:
-            if row[0] in self.progress:
-              self.progress[row[0]] += 1 
-            else:
-              self.progress[row[0]] = 1
+              self.progress[row[0]][row[1]] = row[2]
           self.csvFile.close()
         except (IOError):
           pass
-        self.csvFile = open(self.csvPath, 'a')
+        self.csvFile = open(self.results + ".new", 'w')
         self.csv = csv.writer(self.csvFile)
-        self.corpusPath = os.path.join(self.resultsDir, 'validationCorpus')
-        self.cm = corpus(readCorpus=self.corpusPath, writeCorpus=self.corpusPath, order=10)
+        self.csv.writerow([
+          "file",
+          "line",
+          "datapoints"
+        ])
         self.lm = language
-        self.sm = sourceModel(cm=self.cm, language=self.lm)
-        self.validFiles = list()
-        self.addValidationFile(self.validFileNames)
-        self.genCorpus()
+        self.charmFiles = list()
+        self.addCharmFile(self.charmFileNames)
 
     def release(self):
-        """Close files and stop MITLM"""
-        self.cm.release()
-        self.cm = None
+        self.notReleased = False
+        """Any cleanup goes here..."""
         
     def __del__(self):
         """I am a destructor, but release should be called explictly."""
-        assert not self.cm, "Destructor called before release()"
+        assert not self.notReleased, "Destructor called before release()"
 
-DELETE = modelValidation.deleteRandom
-INSERT = modelValidation.insertRandom
-REPLACE = modelValidation.replaceRandom
-PUNCTUATION = modelValidation.punctRandom
-NAMELIKE = modelValidation.nameRandom
-COLON = modelValidation.colonRandom
-DELETEWORDCHAR = modelValidation.deleteWordRandom
-INSERTWORDCHAR = modelValidation.insertWordRandom
-DELETENUMCHAR = modelValidation.deleteNumRandom
-INSERTNUMCHAR = modelValidation.insertNumRandom
-DELETEPUNCTCHAR = modelValidation.deletePunctRandom
-INSERTPUNCTCHAR = modelValidation.insertPunctRandom
-DELETESPACE = modelValidation.dedentRandom
-INSERTSPACE = modelValidation.indentRandom
+DELETE = estimateCharm.deleteRandom
+INSERT = estimateCharm.insertRandom
+REPLACE = estimateCharm.replaceRandom
+PUNCTUATION = estimateCharm.punctRandom
+NAMELIKE = estimateCharm.nameRandom
+COLON = estimateCharm.colonRandom
+DELETEWORDCHAR = estimateCharm.deleteWordRandom
+INSERTWORDCHAR = estimateCharm.insertWordRandom
+DELETENUMCHAR = estimateCharm.deleteNumRandom
+INSERTNUMCHAR = estimateCharm.insertNumRandom
+DELETEPUNCTCHAR = estimateCharm.deletePunctRandom
+INSERTPUNCTCHAR = estimateCharm.insertPunctRandom
+DELETESPACE = estimateCharm.dedentRandom
+INSERTSPACE = estimateCharm.indentRandom
 
 def main():
-        testFileList = os.getenv("TEST_FILE_LIST", sys.argv[1])
-        n = int(sys.argv[2])
-        outDir = sys.argv[3]
         logging.getLogger().setLevel(logging.DEBUG)
-        testProjectFiles = open(testFileList).read().splitlines()
-        v = modelValidation(source=testProjectFiles, language=pythonSource, corpus=mitlmCorpus, resultsDir=outDir)
-        if re.match('i', sys.argv[4]):
-          v.validate(mutation=INSERT, n=n)
-        if re.match('r', sys.argv[4]):
-          v.validate(mutation=REPLACE, n=n)
-        if re.match('d', sys.argv[4]):
-          v.validate(mutation=DELETE, n=n)
-        if re.match('s', sys.argv[4]):
-          v.validate(mutation=DELETESPACE, n=n)
-        if re.match('S', sys.argv[4]):
-          v.validate(mutation=INSERTSPACE, n=n)
-        #if re.match('p', sys.argv[4]):
-          #v.validate(mutation=PUNCTUATION, n=n)
-        if re.match('n', sys.argv[4]):
-          v.validate(mutation=NAMELIKE, n=n)
-        if re.match('c', sys.argv[4]):
-          v.validate(mutation=COLON, n=n)
-        if re.match('w', sys.argv[4]):
-          v.validate(mutation=DELETEWORDCHAR, n=n)
-        if re.match('W', sys.argv[4]):
-          v.validate(mutation=INSERTWORDCHAR, n=n)
-        if re.match('p', sys.argv[4]):
-          v.validate(mutation=DELETEPUNCTCHAR, n=n)
-        if re.match('P', sys.argv[4]):
-          v.validate(mutation=INSERTPUNCTCHAR, n=n)
-        if re.match('o', sys.argv[4]):
-          v.validate(mutation=DELETENUMCHAR, n=n)
-        if re.match('O', sys.argv[4]):
-          v.validate(mutation=INSERTNUMCHAR, n=n)
-        # TODO: assert csvs
+        parser=argparse.ArgumentParser(description="Estimates charm for Python source code.")
+        parser.add_argument("input_file", help="Python source file to estimate charm for.", nargs="+")
+        parser.add_argument("-o", "--results-file", help="File to store results in.", default="charm.csv")
+        parser.add_argument("-d", "--details-file", help="File to store extra detailed results in.", default=None)
+        parser.add_argument("-a", "--activate", help="VirtualEnv activate.py to run before input files (if any)", default=None)
+        parser.add_argument("-e", "--maximum-error", help="Sets the maximum allowed error (the minimum precision) of the results", default=0.1, type=float)
+        args = parser.parse_args()
+        v = estimateCharm(source=args.input_file, 
+                          language=pythonSource,
+                          results=args.results_file,
+                          details=args.details_file,
+                          activate=args.activate
+                         )
+        v.estimate(REPLACE, args.maximum_error)
         v.release()
 
 if __name__ == '__main__':

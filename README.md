@@ -1,6 +1,7 @@
 # About
 
-EstimateCharm is a tool for estimating per-line charm in Python programs.
+EstimateCharm is a tool for estimating per-line charm in Python programs. Not to
+be confused with [pycharm](https://www.jetbrains.com/pycharm/).
 
 # Licensing
 

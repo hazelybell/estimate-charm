@@ -201,19 +201,23 @@ class ucSource(list):
 
     def settle(self):
         """Contents may settle during shipping."""
-        first = self[0].start
+        first = ucPos(self[0].start)
         for i in range(0, len(self)):
+            if (self[i].end.l - self[i].start.l) > 1:
+                endL = self[i].start.l + 1
+            else:
+                endL = self[i].end.l
             if self[i].start.l == first.l:
                 startL = 1
                 startC = self[i].start.c - first.c
             else:
                 startL = self[i].start.l - first.l-1
                 startC = self[i].start.c
-            if self[i].end.l == first.l:
+            if endL == first.l:
                 endL = 1
                 endC = self[i].end.c - first.c
             else:
-                endL = self[i].end.l - first.l-1
+                endL = endL - (first.l-1)
                 endC = self[i].end.c
             self[i] = self[i].__class__((self[i][0], self[i][1], ucPos((startL, startC)), ucPos((endL, endC)), self[i][4]))
         if ucParanoid:
@@ -250,6 +254,11 @@ class ucSource(list):
           arg = ucSource(arg)
         a = copy(arg)
         a.settle()
+        width = 0
+        if (a[0].start.l == a[-1].end.l):
+          width = a[-1].end.c - a[0].start.c
+        height = a[-1].end.l - a[0].start.l
+        oldend = self[-1].end.l
         for j in range(0, len(a)):
           ((startL, startC), (endL, endC)) = (a[j].start, a[j].end)
           if j == 0:
@@ -265,15 +274,18 @@ class ucSource(list):
           a[j] = a[j].__class__((a[j][0], a[j][1], ucPos((startL, startC)), ucPos((endL, endC)), a[j][4]))
         for j in range(i, len(self)):
           ((startL, startC), (endL, endC)) = (self[j].start, self[j].end)
-          if startL == a[-1].start.l:
-            startC += a[-1].end.c
+          if startL == a[-1].end.l:
+            startC += width
           if endL == a[-1].start.l:
-            endC += a[-1].end.c
-          startL += a[-1].end.l-1
-          endL += a[-1].end.l-1
+            endC += width
+          startL += height
+          endL += height
           self[j:j+1] = [self[j].__class__((self[j][0], self[j][1], ucPos((startL, startC)), ucPos((endL, endC)), self[j][4]))]
         for j in range(0, len(a)):
           r = super(ucSource, self).insert(i+j, a[j])
+        #if ( self[-1].end.l > oldend +1):
+          #info(str(self[-1].end.l) + " > " + str(oldend + 1))
+          #assert(false, 'waugh!')
         if ucParanoid:
             self.check()
         return a

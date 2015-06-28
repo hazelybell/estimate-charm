@@ -42,6 +42,7 @@ except ImportError:
 from unnaturalcode import flexibleTokenize
 
 import pdb
+import math
 
 virtualEnvActivate = os.getenv("VIRTUALENV_ACTIVATE", None)
 
@@ -92,6 +93,17 @@ class charmFile(object):
         self.original = self.f.read()
         self.lexed = self.lm(self.original)
         self.scrubbed = self.lexed.scrubbed()
+        self.lines = self.lexed[-1].end.line
+        self.lineStart = [-1 for i in range(0, self.lines+1)]
+        self.lineTokens = [0 for i in range(0, self.lines+1)]
+        for i in range(0, len(self.scrubbed)):
+          line = self.scrubbed[i].start.line
+          self.lineTokens[line] = self.lineTokens[line] + 1
+          for j in range(line, 0, -1):
+            if self.lineStart[j] == -1:
+              self.lineStart[j] = i
+            else:
+              break
         self.f.close()
         self.mutatedLexemes = None
         self.mutatedLocation = None
@@ -124,6 +136,7 @@ class charmFile(object):
         
     def runMutant(self):
         (mutantFileHandle, mutantFilePath) = mkstemp(suffix=".py", prefix="mutant", dir=self.tempDir)
+        self.mutantFilePath = mutantFilePath
         mutantFile = os.fdopen(mutantFileHandle, "w")
         mutantFile.write(self.mutatedLexemes.deLex())
         mutantFile.close()
@@ -146,60 +159,100 @@ class estimateCharm(object):
         """Run main estimation loop."""
         for fi in self.charmFiles:
           assert isinstance(fi, charmFile)
+          n = len(fi.scrubbed)
+          l = fi.lexed[-1].end.line
           if fi.path in self.progress:
             progress = self.progress[fi.path]
+            errors = self.errors[fi.path]
+            mutations = self.mutations[fi.path]
+            charm = self.charm[fi.path]
           else:
-            progress = 0
+            progress = [0 for i in range(1,l+3)]
+            progress[0] = None # Line numbers start with 1
+            errors = [0 for i in range(1,l+3)]
+            errors[0] = None
+            charm = [0 for i in range(1,l+3)]
+            charm[0] = None
+            mutations = 0
           info("Testing " + str(progress) + " " + fi.path)
+          delta = float("inf")
+          mi = 0
           while (delta > deltamax):
-            merror = mutation(self, fi)
-            if merror is not None:
-              info(merror)
-              break
-            runException = fi.runMutant()
-            if (runException[0] == None):
-              exceptionName = "None"
-            else:
-              exceptionName = runException[0].__name__
-            filename, line, func, text = runException[2][-1]
-            if (fi.mutatedLocation.start.line == line):
-              online = True
-            else:
-              online = False
-            worst = self.sm.worstWindows(fi.mutatedLexemes)
-            for j in range(0, len(worst)):
-                #debug(str(worst[i][0][0].start) + " " + str(fi.mutatedLocation.start) + " " + str(worst[i][1]))
-                if worst[j][0][0].start <= fi.mutatedLocation.start and worst[j][0][-1].end >= fi.mutatedLocation.end:
-                    #debug(">>>> Rank %i (%s)" % (i, fi.path))
+            mi = mi + 1
+            mline = (mi % l) + 1
+            if fi.lineTokens[mline] > 0:
+              merror = mutation(self, fi, mline)
+              if merror is not None:
+                info(merror)
+                break
+              runException = fi.runMutant()
+              errorLine = None
+              filename = None
+              func = None
+              text = None
+              if (runException[0] == None):
+                exceptionName = "None"
+              else:
+                exceptionName = runException[0].__name__
+                for location in reversed(runException[2]):
+                  if (location[0] == fi.mutantFilePath):
+                    filename, errorLine, func, text = location
                     break
-            info(" ".join(map(str, [mutation.__name__, j, fi.mutatedLocation.start.line, exceptionName, line])))
-            if j >= len(worst):
-              error(repr(worst))
-              error(repr(fi.mutatedLocation))
-              assert False
+              if errorLine == None:
+                errorLine = l+1
+              if errorLine > l+1: # This can be caused by inserting giant multi-line string literals, in python docstrinsg
+                errorLine = l+1
+              mutLine = fi.mutatedLocation.start.line
+              #info(" ".join(map(str, [fi.path, mutLine, l, fi.mutatedLocation])))
+              #info(" ".join(map(str, [filename, errorLine, func, text])))
+              #info(runException)
+              if (mutLine == errorLine):
+                online = True
+              else:
+                online = False
+              errors[errorLine] = errors[errorLine] + 1
+              progress[mutLine] = progress[mutLine] + 1
+              mutations = mutations + 1
+              assert(l>0)
+              assert(mutations>0)
+              charm[mutLine] = (errors[mutLine]-progress[mutLine])/(float(mutations)/float(l))
+              if errorLine <= l:
+                charm[errorLine] = (errors[errorLine]-progress[errorLine])/(float(mutations)/float(l))
+              delta = 1.0/math.sqrt(float(mutations)/float(l))
+              info(" ".join(map(str, [
+                  str(mutations) + "/" + str(int(math.ceil(float(l)/(deltamax*deltamax)))),
+                  mutLine, errorLine,
+                  errors[errorLine],
+                  progress[mutLine],
+                  charm[mutLine],
+                  delta
+                ])))
+              self.detailsCsv.writerow([
+                fi.path, 
+                mutLine,
+                errorLine,
+                errors[errorLine],
+                progress[mutLine],
+                mutations,
+                charm[mutLine],
+                delta,
+                mutation.__name__, 
+                fi.mutatedLocation.type,
+                nonWord.sub('', fi.mutatedLocation.value), 
+                exceptionName, 
+                online,
+                filename,
+                func])
+              self.detailsFile.flush()
+          for li in range(1,l):
             self.csv.writerow([
-              fi.path, 
-              mutation.__name__, 
-              j, 
-              worst[j][1], 
-              fi.mutatedLocation.type,
-              fi.mutatedLocation.start.line,
-              nonWord.sub('', fi.mutatedLocation.value), 
-              exceptionName, 
-              online,
-              filename,
-              line,
-              func,
-              worst[j][0][0].start.line])
-            self.csvFile.flush()
-            trr += 1/float(i+1)
-            tr += float(i)
-            if i < 5:
-                ttn += 1
-        mrr = trr/float(len(self.charmFiles) * n)
-        mr = tr/float(len(self.charmFiles) * n)
-        mtn = ttn/float(len(self.charmFiles) * n)
-        info("MRR %f MR %f M5+ %f" % (mrr, mr, mtn))
+              fi.path,
+              li,
+              progress[li],
+              errors[li],
+              charm[li],
+              delta
+            ])
             
     def deleteRandom(self, vFile):
         """Delete a random token from a file."""
@@ -220,10 +273,23 @@ class estimateCharm(object):
         vFile.mutate(ls, inserted[0])
         return None
             
-    def replaceRandom(self, vFile):
+    def replaceRandom(self, vFile, targetLine=None):
         ls = copy(vFile.scrubbed)
         token = ls[randint(0, len(ls)-1)]
-        pos = randint(0, len(ls)-2)
+        if targetLine == None:
+          pos = randint(0, len(ls)-2)
+        else:
+          lineStart = vFile.lineStart[targetLine]
+          nextLineStart = len(vFile.scrubbed)
+          if targetLine < vFile.lines:
+            nextLineStart = vFile.lineStart[targetLine+1]
+          if (lineStart > nextLineStart):
+            pos = randint(lineStart, nextLineStart-1)
+          else:
+            pos = lineStart
+          #print str(targetLine)
+          #print repr(ls[pos])
+          assert(ls[pos].start.line <= targetLine and targetLine <= ls[pos].end.line)
         oldToken = ls.pop(pos)
         if oldToken.type == 'ENDMARKER':
           return self.replaceRandom(vFile)
@@ -416,6 +482,9 @@ class estimateCharm(object):
           self.csv = csv.reader(self.csvFile)
           for row in self.csv:
               self.progress[row[0]][row[1]] = row[2]
+              self.mutations[row[0]] = self.mutations[row[0]] + row[2]
+              self.errors[row[0]][row[1]] = row[3]
+              self.charm[row[0]][row[1]] = row[4]
           self.csvFile.close()
         except (IOError):
           pass
@@ -424,8 +493,13 @@ class estimateCharm(object):
         self.csv.writerow([
           "file",
           "line",
-          "datapoints"
+          "mutants",
+          "errors",
+          "charm",
+          "delta"
         ])
+        self.detailsFile = open(self.details, 'a')
+        self.detailsCsv = csv.writer(self.detailsFile)
         self.lm = language
         self.charmFiles = list()
         self.addCharmFile(self.charmFileNames)

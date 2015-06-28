@@ -1,31 +1,11 @@
 # About
 
-UnnaturalCode is a system with the purpose of augmenting the compiler's own
-syntax error location strategies. It is designed to assist the developer in
-locating syntax errors in their software. For more information, please consult
-the the [UnnaturalCode
-paper](http://webdocs.cs.ualberta.ca/~joshua2/syntax.pdf) (preprint).
-
-* [Video Demo](https://www.youtube.com/watch?v=mIMpfh7rDEk)
-* [Slides](http://webdocs.cs.ualberta.ca/~joshua2/syntax_presentation.pdf)
-* [Installation](INSTALL.md)
-* [About the Authors](AUTHORS.md)
-
-UnnaturalCode should be considered proof-of-concept quality software. The
-primary author of UnnaturalCode, Joshua Charles Campbell can be reached at <joshua2@ualberta.ca>.
-
-# Use
-
-To start the HTTP server:
-
-    python -m unnaturalcode.http
+EstimateCharm is a tool for estimating per-line charm in Python programs.
 
 # Licensing
 
-Assume that UnnaturalCode is licensed under the [AGPL3+](LICENSE) unless otherwise
+Assume that EstimateCharm is licensed under the [AGPL3+](LICENSE) unless otherwise
 specified.
-
-&copy; 2010-2012 Abram Hindle, Prem Devanbu, Earl T. Barr, Daryl Posnett
 
 &copy; 2012-2014 Joshua Charles Campbell, Abram Hindle, Alex Wilson
 
@@ -47,11 +27,12 @@ with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
 Now we aren't going to impose any extra requirements, but we ask kindly if you 
 are using this academically that you should consider citing our relevant work:
 
-    @InProceedings{campbellMSR2014,
-      author =       {Joshua Charles Campbell and Abram Hindle and José Nelson Amaral},
-      title =        {{Syntax Errors Just Aren’t Natural: Improving Error Reporting with Language Models}},
-      booktitle = {Proceedings of the 11th Working Conference on Mining Software Repositories},
-      year =      {2014},
-      pages =     {10}
+    @article{campbell2015charming,
+      title={The charming code that error messages are talking about},
+      author={Campbell, Joshua C and Hindle, Abram},
+      journal={PeerJ PrePrints},
+      volume={3},
+      pages={e1388},
+      year={2015},
+      publisher={PeerJ Inc. San Francisco, USA}
     }
-    

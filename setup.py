@@ -24,7 +24,7 @@ setup(
         ],
     },
     author = "Joshua Charles Campbell",
-    description = "Compiler Error Augmentation System",
+    description = "Code Charm Estimation Tool",
     license='AGPL3+',
     include_package_data = True,
     install_requires = requires,

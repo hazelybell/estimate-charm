@@ -20,8 +20,9 @@ from estimatecharm.unnaturalCode import *
 from logging import debug, info, warning, error
 
 from estimatecharm import flexibleTokenize
+import re
 
-import sys, token;
+import sys, token
 try:
   from cStringIO import StringIO
 except ImportError:

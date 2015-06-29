@@ -14,8 +14,7 @@
 #
 #    You should have received a copy of the GNU Affero General Public License
 #    along with EstimateCharm.  If not, see <http://www.gnu.org/licenses/>.
-from estimatecharm.ucUtil import *
-import sys, os, zmq
+import sys, os
 import logging
 from logging import debug, info, warning, error
 from copy import copy
@@ -29,30 +28,6 @@ zctx = None
 
 ucParanoid = os.getenv("PARANOID", False)
 
-@singleton
-class unnaturalCode(object):
-    """Singleton class for UC."""
-    
-    def __init__(self, logFilePath=None, logLevel=None):
-        """Initialize global context."""
-        self.logFilePath = (logFilePath or os.getenv("ucLogFile", "/tmp/ucLog-%i" % os.getpid()))
-        self.logLevel = (logLevel or os.getenv("ucLogLevel", "DEBUG").upper())
-        # from http://docs.python.org/2/howto/logging.html#logging-basic-tutorial 2013-10-04
-        # LICENSE: PSF
-        numeric_level = getattr(logging, self.logLevel.upper(), None)
-        if not isinstance(numeric_level, int):
-            raise ValueError('Invalid log level: %s' % loglevel)
-        # end from
-        if not logging.getLogger():
-            logging.basicConfig(filename=self.logFilePath, level=numeric_level)
-        debug("UC Init")
-        global zctx
-        if not zctx:
-            self.zctx = zmq.Context()
-            zctx = self.zctx
-        self.forceTrain = toBool(os.getenv("ucForceTrain", "false"))
-        self.forceValidate = toBool(os.getenv("ucValidate", "false"))
-        
 class ucPos(tuple):
     def __new__(cls, *args):
         if isinstance(args[0], ucPos):

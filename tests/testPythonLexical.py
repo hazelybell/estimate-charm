@@ -5,14 +5,11 @@
 import unittest
 from logging import debug, info, warning, error
 
-from unnaturalcode.ucUtil import *
 from unnaturalcode.unnaturalCode import *
-from unnaturalcode.sourceModel import *
 from unnaturalcode.pythonSource import *
-from unnaturalcode.mitlmCorpus import *
-from unnaturalcode.modelValidator import *
+from unnaturalcode.estimateCharm import *
 
-import os, os.path, zmq, sys, shutil, token, gc
+import os, os.path, sys, shutil, token, gc
 from tempfile import *
 
 from unnaturalcode.ucTestData import *
@@ -22,8 +19,6 @@ from unnaturalcode.ucTestData import *
 strlex = lambda lexemes, i: str(pythonSource(lexemes)[i])
 # Helper. Same as strlex, but takes a single dict representing a lexeme.
 strlexd = lambda lexeme: str(pythonLexeme.fromDict(lexeme))
-
-ucGlobal = None
 
 logging.getLogger(__name__).setLevel(logging.DEBUG)
 

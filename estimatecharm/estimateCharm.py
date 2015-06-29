@@ -18,7 +18,6 @@
 
 from estimatecharm.unnaturalCode import *
 from estimatecharm.pythonSource import *
-from estimatecharm.sourceModel import *
 
 from logging import debug, info, warning, error
 import logging

@@ -16,7 +16,6 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with EstimateCharm.  If not, see <http://www.gnu.org/licenses/>.
 
-from estimatecharm.ucUtil import *
 from estimatecharm.unnaturalCode import *
 from logging import debug, info, warning, error
 

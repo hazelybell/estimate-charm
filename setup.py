@@ -18,9 +18,7 @@ setup(
       ),
     entry_points = {
         "console_scripts": [
-            "ucwrap = estimatecharm.wrap:main",
-            "uclearn = estimatecharm.learn:main",
-            "uccheck = estimatecharm.wrap:check"
+            "estimatecharm = estimatecharm.estimateCharm:main",
         ],
     },
     author = "Joshua Charles Campbell",

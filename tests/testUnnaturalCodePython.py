@@ -25,15 +25,15 @@ must be set.
 import unittest
 from logging import debug, info, warning, error
 
-from unnaturalcode.unnaturalCode import *
-from unnaturalcode.pythonSource import *
-from unnaturalcode.estimateCharm import *
+from estimatecharm.unnaturalCode import *
+from estimatecharm.pythonSource import *
+from estimatecharm.estimateCharm import *
 
 import os, os.path, zmq, sys, shutil, token, gc
 from glob import glob
 from tempfile import *
 
-from unnaturalcode.ucTestData import *
+from estimatecharm.ucTestData import *
 
 logging.getLogger(__name__).setLevel(logging.DEBUG)
 

@@ -16,13 +16,13 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
 
-from unnaturalcode.ucUtil import *
-from unnaturalcode.unnaturalCode import *
+from estimatecharm.ucUtil import *
+from estimatecharm.unnaturalCode import *
 from logging import debug, info, warning, error
 
-from unnaturalcode import flexibleTokenize
+from estimatecharm import flexibleTokenize
 
-import sys, token, zmq;
+import sys, token;
 try:
   from cStringIO import StringIO
 except ImportError:
@@ -120,22 +120,3 @@ class pythonSource(ucSource):
                 r.append(ls[i])
         assert len(r)
         return pythonSource(r)
-
-class LexPyMQ(object):
-	def __init__(self, lexer):
-		self.lexer = lexer
-		self.zctx = zmq.Context()
-		self.socket = self.zctx.socket(zmq.REP)
-
-	def run(self):
-		self.socket.bind("tcp://lo:32132")
-
-		while True:
-			msg = self.socket.recv_json(0)
-			# there are definitely new lines in the code
-			assert msg.get('python'), 'received non-python code'
-			code = msg.get('body', '')
-			self.socket.send_json(list(tokenize.generate_tokens(StringIO(code).readline)))
-
-if __name__ == '__main__':
-	LexPyMQ(LexPy()).run()

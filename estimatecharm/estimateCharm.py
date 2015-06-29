@@ -16,10 +16,10 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with UnnaturalCode.  If not, see <http://www.gnu.org/licenses/>.
 
-from unnaturalcode.ucUtil import *
-from unnaturalcode.unnaturalCode import *
-from unnaturalcode.pythonSource import *
-from unnaturalcode.sourceModel import *
+from estimatecharm.ucUtil import *
+from estimatecharm.unnaturalCode import *
+from estimatecharm.pythonSource import *
+from estimatecharm.sourceModel import *
 
 from logging import debug, info, warning, error
 import logging
@@ -39,7 +39,7 @@ try:
   from Queue import Empty
 except ImportError:
   from queue import Empty
-from unnaturalcode import flexibleTokenize
+from estimatecharm import flexibleTokenize
 
 import pdb
 import math

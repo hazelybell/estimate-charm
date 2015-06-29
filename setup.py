@@ -2,7 +2,7 @@
 import sys
 from setuptools import setup, find_packages
 
-from unnaturalcode import __version__
+from estimatecharm import __version__
 
 with open('requirements.txt') as f:
     requires = [l.strip() for l in f.readlines()]
@@ -11,16 +11,16 @@ with open('test-requirements.txt') as f:
     tests_require = [l.strip() for l in f.readlines()]
 
 setup(
-    name = "unnaturalcode",
+    name = "estimatecharm",
     version = __version__,
     packages = find_packages(
         exclude = ["testdata"]
       ),
     entry_points = {
         "console_scripts": [
-            "ucwrap = unnaturalcode.wrap:main",
-            "uclearn = unnaturalcode.learn:main",
-            "uccheck = unnaturalcode.wrap:check"
+            "ucwrap = estimatecharm.wrap:main",
+            "uclearn = estimatecharm.learn:main",
+            "uccheck = estimatecharm.wrap:check"
         ],
     },
     author = "Joshua Charles Campbell",

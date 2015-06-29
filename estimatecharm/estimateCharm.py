@@ -530,7 +530,7 @@ def main():
         parser=argparse.ArgumentParser(description="Estimates charm for Python source code.")
         parser.add_argument("input_file", help="Python source file to estimate charm for.", nargs="+")
         parser.add_argument("-o", "--results-file", help="File to store results in.", default="charm.csv")
-        parser.add_argument("-d", "--details-file", help="File to store extra detailed results in.", default=None)
+        parser.add_argument("-d", "--details-file", help="File to store extra detailed results in.", default="detail.csv")
         parser.add_argument("-a", "--activate", help="VirtualEnv activate.py to run before input files (if any)", default=None)
         parser.add_argument("-e", "--maximum-error", help="Sets the maximum allowed error (the minimum precision) of the results", default=0.1, type=float)
         args = parser.parse_args()

@@ -14,7 +14,7 @@ setup(
     name = "estimatecharm",
     version = __version__,
     packages = find_packages(
-        exclude = ["testdata"]
+        #exclude = ["testdata"]
       ),
     entry_points = {
         "console_scripts": [

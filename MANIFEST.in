@@ -1,2 +1,1 @@
-recursive-include unnaturalcode/testdata *
 include *requirements.txt
